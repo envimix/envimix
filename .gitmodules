@@ -1,0 +1,3 @@
+[submodule "ManiaScriptSharp"]
+	path = ManiaScriptSharp
+	url = https://github.com/BigBang1112/maniascript-sharp

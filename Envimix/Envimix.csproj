@@ -1,9 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ManiaScriptSharp\ManiaScriptSharp.Generator\ManiaScriptSharp.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\ManiaScriptSharp\ManiaScriptSharp.ManiaPlanet\ManiaScriptSharp.ManiaPlanet.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="ManiaScriptSharp" />
+		<Using Static="true" Include="ManiaScriptSharp.ManiaScript" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--<AdditionalFiles Include="buildsettings.yml" />-->
+		<AdditionalFiles Include="..\ManiaScriptSharp\ManialinkXsd\manialink_v3_ns.xsd" />
+	</ItemGroup>
 
 </Project>

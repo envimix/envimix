@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manialink version="3">
+	<label pos="1 10" z-index="0" size="100 25" text="3" halign="center" valign="center2" textsize="25" textfont="RajdhaniMono" textprefix="$o$i" textemboss="1" id="LabelCountdown"/>
+	<label pos="1 10" z-index="1" size="100 25" text="3" halign="center" valign="center2" textsize="25" textfont="RajdhaniMono" textprefix="$o$i" id="LabelCountdownEffect"/>
+</manialink>
