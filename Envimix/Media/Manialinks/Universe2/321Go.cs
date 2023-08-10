@@ -8,6 +8,18 @@ public class _321Go : CTmMlScriptIngame, IContext
     public int PreviousSecond;
     public bool PreviousIsVisible;
 
+    bool IsVisible()
+    {
+        var Net_CutOffTimeLimit = Netread<int>.For(Teams[0]);
+        return GetPlayer().RaceStartTime > 0 && (GetPlayer().RaceStartTime < Net_CutOffTimeLimit.Get() || (Net_CutOffTimeLimit.Get() == -1 && GameTime - GetPlayer().RaceStartTime > -3000));
+    }
+
+    CTmMlPlayer GetPlayer()
+    {
+        if (GUIPlayer is not null) return GUIPlayer;
+        return InputPlayer;
+    }
+
     public void Main()
     {
         PreviousSecond = MathLib.FloorInteger(Now / 1000f);
@@ -30,20 +42,30 @@ public class _321Go : CTmMlScriptIngame, IContext
 
         if (!IsVisible())
         {
-            return; // generated as return, should act as continue
+            return; // generated as return, should act as continue, or just migrated to a method
         }
 
         var time = GameTime - GetPlayer().RaceStartTime;
         var animTime = time % 1000;
-        if (animTime < 0) animTime = 1000 - animTime * -1;
+
+        if (animTime < 0)
+        {
+            animTime = 1000 - animTime * -1;
+        }
 
         if (MathLib.FloorInteger(time / 1000) != PreviousSecond && animTime < 500)
         {
             PreviousSecond = MathLib.FloorInteger(time / 1000f);
-            if (PreviousSecond < 0)
-                Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 1, 1);
-            else if (PreviousSecond == 0)
-                Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 0, 1);
+
+            switch (PreviousSecond)
+            {
+                case < 0:
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 1, 1);
+                    break;
+                case 0:
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 0, 1);
+                    break;
+            }
         }
 
         if (animTime <= 100)
@@ -55,7 +77,7 @@ public class _321Go : CTmMlScriptIngame, IContext
         }
         else if (animTime >= 900 && time <= 0)
         {
-            LabelCountdown.Opacity = AnimLib.EaseLinear(animTime - 900, 1, -1, 100);
+            LabelCountdown.Opacity = AnimLib.EaseLinear(animTime - 900, _Base: 1, _Change: -1, _Duration: 100);
             LabelCountdown.RelativeScale = AnimLib.EaseLinear(animTime - 900, 1, -.5f, 100);
             LabelCountdownEffect.Opacity = AnimLib.EaseLinear(animTime - 900, 1, -1, 100);
             LabelCountdownEffect.RelativeScale = AnimLib.EaseLinear(animTime - 900, 1, -.5f, 100);
@@ -89,17 +111,5 @@ public class _321Go : CTmMlScriptIngame, IContext
             LabelCountdown.Value = "";
             LabelCountdownEffect.Value = "";
         }
-    }
-
-    bool IsVisible()
-    {
-        var Net_CutOffTimeLimit = Netread<int>.For(Teams[0]);
-        return GetPlayer().RaceStartTime > 0 && (GetPlayer().RaceStartTime < Net_CutOffTimeLimit.Get() || (Net_CutOffTimeLimit.Get() == -1 && GameTime - GetPlayer().RaceStartTime > -3000));
-    }
-
-    CTmMlPlayer GetPlayer()
-    {
-        if (GUIPlayer is not null) return GUIPlayer;
-        return InputPlayer;
     }
 }
