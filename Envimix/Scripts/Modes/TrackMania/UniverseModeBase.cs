@@ -53,17 +53,7 @@ public class UniverseModeBase : CTmMode, IContext
 
     public int GetMapCountByEnvironment(string environment)
     {
-        var amount = 0;
-
-        foreach (var map in MapList)
-        {
-            if (map.CollectionName == environment)
-            {
-                amount += 1;
-            }
-        }
-
-        return amount;
+        return MapList.Count(map => map.CollectionName == environment);
     }
 
     public void SpawnAllWaitingPlayers(int team, bool frozen)
@@ -127,7 +117,7 @@ public class UniverseModeBase : CTmMode, IContext
         return result;
     }
 
-    public void Log(string scriptName, string text)
+    protected static void Log(string scriptName, string text)
     {
         ManiaScript.Log($"[{scriptName}] {text}");
     }
