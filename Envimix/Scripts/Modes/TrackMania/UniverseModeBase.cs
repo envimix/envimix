@@ -102,6 +102,11 @@ public class UniverseModeBase : CTmMode, IContext
         netCutOffTimeLimit.Set(value);
     }
 
+    protected static void Log(string scriptName, string text)
+    {
+        ManiaScript.Log($"[{scriptName}] {text}");
+    }
+
     public string ReadFile(string fileName)
     {
         var request = Http.CreateGet("file://Media/" + fileName);
@@ -115,11 +120,6 @@ public class UniverseModeBase : CTmMode, IContext
 
         Http.Destroy(request);
         return result;
-    }
-
-    protected static void Log(string scriptName, string text)
-    {
-        ManiaScript.Log($"[{scriptName}] {text}");
     }
 
     public virtual void BeforeServerInit() { }
