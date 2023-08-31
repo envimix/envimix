@@ -25,6 +25,84 @@ public class UniverseModeBase : CTmMode, IContext
     public bool IsWarmUp = false;
     public int PodiumStartTime = -1;
 
+    [Netwrite] public new int CutOffTimeLimit { get; set; }
+    [Netwrite] public new string MapPlayerModelName { get; set; } = "";
+
+    [Netwrite] public int CurrentWarmUpNb { get; set; }
+
+    public virtual void BeforeServerInit() { }
+    public virtual void Settings() { }
+
+    public virtual void OnServerInit()
+    {
+        Log("UniverseModeBase", "Initializing server...");
+    }
+
+    public virtual void BeforeServerStart() { }
+    public virtual void OnServerStart() { }
+
+    public virtual void BeforeMapInit()
+    {
+        WarmUpStartTime = -1;
+        IsWarmUp = CurrentWarmUpNb > 0;
+        PodiumStartTime = -1;
+
+        MatchEndRequested = false;
+
+        UIManager.UIAll.UISequence = CUIConfig.EUISequence.None;
+    }
+
+    public virtual void OnMapInit() { }
+    public virtual void BeforeMapLoad() { }
+    public virtual void WhileMapLoad() { }
+
+    public virtual void OnMapLoad()
+    {
+        MapPlayerModelName = base.MapPlayerModelName;
+    }
+
+    public virtual void BeforeMapIntroStart() { }
+
+    public virtual void OnMapIntroStart()
+    {
+        UIManager.UIAll.UISequence = CUIConfig.EUISequence.Intro;
+    }
+
+    public virtual void WhileMapIntro() { }
+
+    public virtual void OnMapIntroEnd()
+    {
+        UIManager.UIAll.UISequence = CUIConfig.EUISequence.Playing;
+    }
+
+    public virtual void BeforeMapStart()
+    {
+        var barrier = Synchro_AddBarrier();
+        Wait(() => Synchro_BarrierReached(barrier) || ServerShutdownRequested);
+    }
+
+    public virtual void OnMapStart() { }
+    public virtual void OnWarmUpStart() { }
+    public virtual void OnGameStart() { }
+
+    public virtual void BeforeEvent()
+    {
+        IsWarmUp = CurrentWarmUpNb > 0;
+    }
+
+    public virtual void OnLoop() { }
+    public virtual void OnWarmUpLoop() { }
+    public virtual void OnWarmUpEnd() { }
+    public virtual void OnWarmUpNext() { }
+    public virtual void OnGameLoop() { }
+    public virtual void UpdateSettings() { }
+    public virtual void OnGameEnd() { }
+    public virtual void OnPodiumStart() { }
+    public virtual void OnPodiumLoop() { }
+    public virtual void OnPodiumEnd() { }
+    public virtual void OnMapEnd() { }
+    public virtual void BeforeMapEnd() { }
+
     public void OpenNewLadder()
     {
         Ladder_CancelMatchRequest();
@@ -95,13 +173,6 @@ public class UniverseModeBase : CTmMode, IContext
         }
     }
 
-    public void SetCutOffTimeLimit(int value)
-    {
-        CutOffTimeLimit = value;
-        var netCutOffTimeLimit = Netwrite<int>.For(Teams[0]);
-        netCutOffTimeLimit.Set(value);
-    }
-
     protected static void Log(string scriptName, string text)
     {
         ManiaScript.Log($"[{scriptName}] {text}");
@@ -121,57 +192,6 @@ public class UniverseModeBase : CTmMode, IContext
         Http.Destroy(request);
         return result;
     }
-
-    public virtual void BeforeServerInit() { }
-    public virtual void Settings() { }
-
-    public virtual void OnServerInit()
-    {
-        Log("UniverseModeBase", "Initializing server...");
-    }
-
-    public virtual void BeforeServerStart() { }
-    public virtual void OnServerStart() { }
-
-    public virtual void BeforeMapInit()
-    {
-        var netCurrentWarmUpNb = Netwrite<int>.For(Teams[0]);
-        netCurrentWarmUpNb.Set(WarmUpNb);
-
-        WarmUpStartTime = -1;
-        IsWarmUp = netCurrentWarmUpNb > 0;
-        PodiumStartTime = -1;
-
-        MatchEndRequested = false;
-
-        UIManager.UIAll.UISequence = CUIConfig.EUISequence.None;
-    }
-
-    public virtual void OnMapInit() { }
-    public virtual void BeforeMapLoad() { }
-    public virtual void WhileMapLoad() { }
-    public virtual void OnMapLoad() { }
-    public virtual void BeforeMapIntroStart() { }
-    public virtual void OnMapIntroStart() { }
-    public virtual void WhileMapIntro() { }
-    public virtual void OnMapIntroEnd() { }
-    public virtual void BeforeMapStart() { }
-    public virtual void OnMapStart() { }
-    public virtual void OnWarmUpStart() { }
-    public virtual void OnGameStart() { }
-    public virtual void BeforeEvent() { }
-    public virtual void OnLoop() { }
-    public virtual void OnWarmUpLoop() { }
-    public virtual void OnWarmUpEnd() { }
-    public virtual void OnWarmUpNext() { }
-    public virtual void OnGameLoop() { }
-    public virtual void UpdateSettings() { }
-    public virtual void OnGameEnd() { }
-    public virtual void OnPodiumStart() { }
-    public virtual void OnPodiumLoop() { }
-    public virtual void OnPodiumEnd() { }
-    public virtual void OnMapEnd() { }
-    public virtual void BeforeMapEnd() { }
 
     public void Main()
     {
@@ -226,7 +246,7 @@ public class UniverseModeBase : CTmMode, IContext
             if (WarmUpNb > 0)
             {
                 WarmUpStartTime = Now; // Start the first warmup now
-                SetCutOffTimeLimit(WarmUpStartTime + WarmUpDuration * 1000 + 3000); // Set the time limit to be the warmup length
+                CutOffTimeLimit = WarmUpStartTime + WarmUpDuration * 1000 + 3000; // Set the time limit to be the warmup length
                 OnWarmUpStart();
             }
             else
@@ -250,9 +270,7 @@ public class UniverseModeBase : CTmMode, IContext
 
                 OnLoop();
 
-                var netCurrentWarmUpNb = Netwrite<int>.For(Teams[0]);
-
-                if (WarmUpNb > 0 && netCurrentWarmUpNb > 0)
+                if (WarmUpNb > 0 && CurrentWarmUpNb > 0)
                 {
                     OnWarmUpLoop();
 
@@ -265,10 +283,10 @@ public class UniverseModeBase : CTmMode, IContext
                         var barrier = Synchro_AddBarrier();
                         Wait(() => Synchro_BarrierReached(barrier) || ServerShutdownRequested);
 
-                        netCurrentWarmUpNb -= 1;
+                        CurrentWarmUpNb -= 1;
 
                         // One-run action after warmup ended
-                        if (netCurrentWarmUpNb == 0)
+                        if (CurrentWarmUpNb == 0)
                         {
                             OnWarmUpEnd();
                             OnGameStart();
@@ -276,7 +294,7 @@ public class UniverseModeBase : CTmMode, IContext
                         else
                         {
                             WarmUpStartTime = Now; // Start the first warmup now
-                            SetCutOffTimeLimit(WarmUpStartTime + WarmUpDuration * 1000 + 3000); // Set the time limit to be the warmup length
+                            CutOffTimeLimit = WarmUpStartTime + WarmUpDuration * 1000 + 3000; // Set the time limit to be the warmup length
                             OnWarmUpNext();
                         }
                     }
@@ -297,7 +315,7 @@ public class UniverseModeBase : CTmMode, IContext
             if (!Reload && !ReloadMap && !Terminate && !ServerShutdownRequested)
             {
                 PodiumStartTime = Now;
-                SetCutOffTimeLimit(PodiumStartTime + ChatTime * 1000);
+                CutOffTimeLimit = PodiumStartTime + ChatTime * 1000;
 
                 UnspawnAllPlayers();
                 UIManager.UIAll.UISequence = CUIConfig.EUISequence.Podium;

@@ -17,13 +17,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!--<AdditionalFiles Include="buildsettings.yml" />-->
+		<AdditionalFiles Include="buildsettings.yml" />
 		<AdditionalFiles Include="..\ManiaScriptSharp\ManialinkXsd\manialink_v3_ns.xsd" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="out\Media\Manialinks\Universe2\" />
-	  <Folder Include="out\Scripts\Modes\TrackMania\" />
 	</ItemGroup>
 
 </Project>
