@@ -22,8 +22,7 @@ public class _321Go : CTmMlScriptIngame, IContext
 
     bool IsVisible()
     {
-        Log(CutOffTimeLimit);
-        return GetPlayer().RaceStartTime > 0 && (GetPlayer().RaceStartTime < CutOffTimeLimit || (CutOffTimeLimit == -1 && GameTime - GetPlayer().RaceStartTime > -3000));
+        return GetPlayer().RaceStartTime > 0 /*&& (GetPlayer().RaceStartTime < CutOffTimeLimit || (CutOffTimeLimit == -1 && GameTime - GetPlayer().RaceStartTime > -3000))*/;
     }
 
     public void Main()

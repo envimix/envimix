@@ -130,7 +130,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
             return;
         }
 
-        int difference = 0;
+        int difference;
         if (IndependantLaps)
         {
             difference = e.LapTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInLap];
@@ -206,7 +206,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
         FrameCheckpoint.ClipWindowRelativePosition.X = 32;
         //Frame_Distance.ClipWindowRelativePosition.X = -32.;
 
-        FrameCheckpointCounter.ClipWindowRelativePosition.X = -6;
+        FrameCheckpointCounter.ClipWindowRelativePosition.Y = -6;
         FrameDistance.ClipWindowRelativePosition.Y = -6;
 
         LastGear = GetOwner().EngineCurGear;
@@ -225,7 +225,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
         }
 
         FrameTime.ClipWindowRelativePosition.Y = AnimLib.EaseOutQuad(Now - Start, -20, 20, 500);
-        FrameCheckpoint.ClipWindowRelativePosition.Y = AnimLib.EaseOutQuad(Now - Start - 100, 40, -40, 500);
+        FrameCheckpoint.ClipWindowRelativePosition.X = AnimLib.EaseOutQuad(Now - Start - 100, 40, -40, 500);
         FrameSpeed.ClipWindowRelativePosition.X = AnimLib.EaseOutQuad(Now - Start - 100, -40, 40, 500);
         FrameGear.ClipWindowRelativePosition.X = AnimLib.EaseOutQuad(Now - Start - 100, -30, 30, 1000);
         FrameInfo.ClipWindowRelativePosition.X = AnimLib.EaseOutQuad(Now - Start - 100, 30, -30, 1000);
@@ -287,7 +287,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
         LabelSpeed.RelativeScale = rpmRatio * 0.2f + 0.9f;
         LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o{TextLib.FormatReal(GetOwner().Distance - DistanceOffset, 2, false, false)}$tm";
 
-        var checkpointCount = 0;
+        int checkpointCount;
         if (IndependantLaps)
         {
             checkpointCount = MapCheckpointPos.Count;

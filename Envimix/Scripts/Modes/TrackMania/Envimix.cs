@@ -191,8 +191,14 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), "Creating manialinks...");
 
-        CreateLayer("Dashboard", "321Go.xml");
-        CreateLayer("Dashboard", "Dashboard.xml");
+        CreateLayer("321Go");
+        CreateLayer("Dashboard");
+        CreateLayer("PrePostLoading");
+    }
+
+    public void CreateLayer(string layerName)
+    {
+        CreateLayer(layerName, $"Manialinks/Universe2/{layerName}.xml");
     }
 
     public string GetDefaultCar()

@@ -399,10 +399,10 @@ public class UniverseModeBase : CTmMode, IContext
         UIManager.UILayerDestroy(Layers[layerName]);
     }
 
-    public void CreateLayer(string layerName, string universeXml)
+    public void CreateLayer(string layerName, string manialinkXml)
     {
         var layer = UIManager.UILayerCreate();
-        layer.ManialinkPage = ReadFile("Manialinks/Universe2/" + universeXml);
+        layer.ManialinkPage = ReadFile(manialinkXml);
         Layers[layerName] = layer;
         UIManager.UIAll.UILayers.Add(layer);
     }
