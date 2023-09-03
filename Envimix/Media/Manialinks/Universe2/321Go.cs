@@ -8,16 +8,22 @@ public class _321Go : CTmMlScriptIngame, IContext
     public int PreviousSecond;
     public bool PreviousIsVisible;
 
-    bool IsVisible()
-    {
-        var Net_CutOffTimeLimit = Netread<int>.For(Teams[0]);
-        return GetPlayer().RaceStartTime > 0 && (GetPlayer().RaceStartTime < Net_CutOffTimeLimit.Get() || (Net_CutOffTimeLimit.Get() == -1 && GameTime - GetPlayer().RaceStartTime > -3000));
-    }
+    [Netread] public required int CutOffTimeLimit { get; set; }
 
     CTmMlPlayer GetPlayer()
     {
-        if (GUIPlayer is not null) return GUIPlayer;
+        if (GUIPlayer is not null)
+        {
+            return GUIPlayer;
+        }
+
         return InputPlayer;
+    }
+
+    bool IsVisible()
+    {
+        Log(CutOffTimeLimit);
+        return GetPlayer().RaceStartTime > 0 && (GetPlayer().RaceStartTime < CutOffTimeLimit || (CutOffTimeLimit == -1 && GameTime - GetPlayer().RaceStartTime > -3000));
     }
 
     public void Main()
@@ -53,7 +59,7 @@ public class _321Go : CTmMlScriptIngame, IContext
             animTime = 1000 - animTime * -1;
         }
 
-        if (MathLib.FloorInteger(time / 1000) != PreviousSecond && animTime < 500)
+        if (MathLib.FloorInteger(time / 1000f) != PreviousSecond && animTime < 500)
         {
             PreviousSecond = MathLib.FloorInteger(time / 1000f);
 

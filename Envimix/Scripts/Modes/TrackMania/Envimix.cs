@@ -183,16 +183,26 @@ public class Envimix : UniverseModeBase
 
         ItemList_End();
 
-        Log("Envimix", """All items successfully added!""");
+        Log(nameof(Envimix), "All items successfully added!");
 
-        //foreach (var (name, car) in Cars) DisplayedCars.Add(name);
-        //foreach (var (name, car) in UnitedCars) DisplayedCars.Add(name);
-        //foreach (var (name, car) in CustomCars) DisplayedCars.Add(name);
+        foreach (var (name, car) in Cars) DisplayedCars.Add(name);
+        foreach (var (name, car) in UnitedCars) DisplayedCars.Add(name);
+        foreach (var (name, car) in CustomCars) DisplayedCars.Add(name);
+
+        Log(nameof(Envimix), "Creating manialinks...");
+
+        CreateLayer("Dashboard", "321Go.xml");
+        CreateLayer("Dashboard", "Dashboard.xml");
     }
 
     public string GetDefaultCar()
     {
         return MapPlayerModelName;
+    }
+
+    public override void OnGameLoop()
+    {
+        SpawnAllWaitingPlayers();
     }
 
     public Dictionary<string, Dictionary<string, Ident>> GetAllCars()
