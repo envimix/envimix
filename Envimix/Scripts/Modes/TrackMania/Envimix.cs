@@ -1,4 +1,7 @@
-﻿namespace Envimix.Scripts.Modes.TrackMania;
+﻿using Envimix.Scripts.Libs.BigBang1112;
+using System.Collections.Immutable;
+
+namespace Envimix.Scripts.Modes.TrackMania;
 
 public class Envimix : UniverseModeBase
 {
@@ -194,6 +197,98 @@ public class Envimix : UniverseModeBase
         CreateLayer("321Go");
         CreateLayer("Dashboard");
         CreateLayer("PrePostLoading");
+
+        Log(nameof(Envimix), "All manialinks successfully created!");
+
+        foreach (var player in AllPlayers)
+        {
+            var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
+            prepareLoading.Set(-1);
+        }
+    }
+
+    public override void OnServerStart()
+    {
+        CutOffTimeLimit = -1;
+
+        UiRounds = true;
+        Scores_Sort(CTmMode.ETmScoreSortOrder.TotalPoints);
+
+        if (!EnableStadiumEnvimix)
+        {
+            var amountOfStadiumMaps = GetMapCountByEnvironment("Stadium");
+
+            if (amountOfStadiumMaps == MapList.Count)
+            {
+                Log(nameof(Envimix), "PROBLEM: Current map list contains only Stadium maps. Make sure you have enabled S_EnableStadiumEnvimix or choose a different map list. Terminating the server...");
+                Sleep(5000);
+                Terminate = true;
+            }
+            else if (amountOfStadiumMaps > 0)
+            {
+                Log(nameof(Envimix), $"NOTE: Current map list contains one or more Stadium maps. They are going to be skipped. To allow Stadium envimix, enable setting S_EnableStadiumEnvimix and make sure you provide the cars in the Items/{VehicleFolder} folder.");
+            }
+        }
+    }
+
+    public override void OnMapLoad()
+    {
+        if (!EnableStadiumEnvimix && Map.MapInfo.CollectionName == "Stadium")
+        {
+            Log(nameof(Envimix), $"PROBLEM: Stadium environment is not currently supported. You can enable Stadium envimix by setting S_EnableStadiumEnvimix to True. Make sure you provide the cars in the Items/{VehicleFolder} folder.");
+            MatchEndRequested = true;
+        }
+    }
+
+    public override void OnMapStart()
+    {
+        Log(nameof(Envimix), $"Starting map {TextLib.StripFormatting(Map.MapInfo.Name)}...");
+    }
+
+    public override void OnMapEnd()
+    {
+        Log(nameof(Envimix), $"Ending map {TextLib.StripFormatting(Map.MapInfo.Name)}...");
+
+        foreach (var player in Players)
+        {
+            UnspawnPlayer(player);
+        }
+
+        if (!Reload)
+        {
+            if (MapQueue.Length > 0)
+            {
+                var mapInfo = MapList[MapQueue[0]];
+
+                if (!EnableStadiumEnvimix && mapInfo.CollectionName == "Stadium")
+                {
+                    Log(nameof(Envimix), $"Skipping {mapInfo.Name}: Stadium environment");
+                }
+                else
+                {
+                    NextMapIndex = MapQueue[0];
+                }
+
+                MapQueue.Remove(0);
+            }
+
+            while (!EnableStadiumEnvimix)
+            {
+                var mapInfo = MapList[MapQueue[0]];
+
+                if (mapInfo.CollectionName == "Stadium")
+                {
+                    NextMapIndex += 1;
+                }
+                else
+                {
+                    break;
+                }
+
+                Log(nameof(Envimix), $"Skipping {mapInfo.Name}: Stadium environment");
+                Yield();
+            }
+        }
     }
 
     public void CreateLayer(string layerName)
@@ -239,5 +334,386 @@ public class Envimix : UniverseModeBase
         }
 
         return allCars;
+    }
+
+    public bool SpawnEnvimixPlayer(CTmPlayer player, string car, int raceStartTime)
+    {
+        var allCars = GetAllCars();
+
+        if (player is null || !allCars.ContainsKey(car))
+        {
+            return false;
+        }
+
+        var netUserSkins = Netread<Dictionary<string, string>>.For(UIManager.GetUI(player));
+        var userSkins = netUserSkins.Get();
+
+        var skin = "";
+        if (userSkins.ContainsKey(car) && allCars[car].ContainsKey(userSkins[car]))
+        {
+            skin = userSkins[car];
+        }
+
+        player.ForceModelId = allCars[car][skin];
+
+        var netCar = Netwrite<string>.For(player);
+        netCar.Set(car);
+
+        var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(player.Score);
+
+        if (envimixBestRace.Get().ContainsKey(netCar.Get()))
+        {
+            Record.ToResult(player.Score.BestRace, envimixBestRace.Get()[netCar.Get()]);
+        }
+        else
+        {
+            player.Score.BestRace = null;
+        }
+
+        var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(player.Score);
+
+        if (envimixPrevRace.Get().ContainsKey(netCar.Get()))
+        {
+            Record.ToResult(player.Score.PrevRace, envimixPrevRace.Get()[netCar.Get()]);
+        }
+        else
+        {
+            player.Score.PrevRace = null;
+        }
+
+        var spawned = true;
+
+        var rst = raceStartTime;
+
+        if (rst == -2)
+        {
+            rst = -1;
+        }
+
+        SpawnPlayer(player, player.CurrentClan, rst);
+
+        if (raceStartTime == -2)
+        {
+            if (CutOffTimeLimit < 0)
+            {
+                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car) * 3000 + 3000;
+            }
+            else
+            {
+                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car) * 3000 + 3000;
+            }
+
+            spawned = false;
+        }
+        else if (!EnableDefaultCar && ItemCars[netCar] == GetDefaultCar())
+        {
+            player.RaceStartTime = -1;
+            spawned = false;
+        }
+
+        Ladder_AddPlayer(player.Score);
+        return spawned;
+    }
+
+    public bool SpawnEnvimixPlayer(CTmPlayer player, string car, bool frozen)
+    {
+        if (frozen)
+        {
+            return SpawnEnvimixPlayer(player, car, -2);
+        }
+
+        return SpawnEnvimixPlayer(player, car, -1);
+    }
+
+    public bool SpawnEnvimixPlayer(CTmPlayer _Player, string _Car)
+    {
+        return SpawnEnvimixPlayer(_Player, _Car, false);
+    }
+
+    public void SpawnAllEnvimixPlayers(string car, bool frozen)
+    {
+        foreach (var player in PlayersWaiting)
+        {
+            var netCar = Netwrite<string>.For(player);
+            netCar.Set(car);
+            var spawned = SpawnEnvimixPlayer(player, netCar.Get(), frozen);
+        }
+    }
+
+    public void SpawnAllEnvimixPlayers(bool frozen)
+    {
+        foreach (var player in PlayersWaiting)
+        {
+            var netCar = Netwrite<string>.For(player);
+            var spawned = SpawnEnvimixPlayer(player, netCar, frozen);
+        }
+    }
+
+    public void SpawnAllEnvimixPlayers()
+    {
+        SpawnAllEnvimixPlayers(false);
+    }
+
+    public void UpdateSkin(CTmPlayer player, string skin)
+    {
+        var car = Netwrite<string>.For(player);
+	
+	    var allCars = GetAllCars();
+	
+	    ImmutableArray<string> sortedNames = new();
+	    if (Skins.ContainsKey(car))
+        {
+            foreach (var (name, carSkin) in Skins[car])
+            {
+                sortedNames.Add(name);
+            }
+
+            sortedNames = sortedNames.Sort();
+	    }
+	
+	    var actualSkin = "";
+        if (allCars[car].ContainsKey(skin))
+        {
+            actualSkin = skin;
+        }
+	
+	    player.ForceModelId = allCars[car][actualSkin];
+	
+	    if (skin == "")
+        {
+		    if (CutOffTimeLimit < 0)
+            {
+                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car) * 3000 + 3000;
+            }
+            else
+            {
+                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car) * 3000 + 3000;
+            }
+        }
+	    else
+        {
+		    if (CutOffTimeLimit < 0)
+            {
+                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car) * 3000 + (sortedNames.IndexOf(skin) + 1) * 3000 + 3000;
+            }
+            else
+            {
+                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car) * 3000 + (sortedNames.IndexOf(skin) + 1) * 3000 + 3000;
+            }
+        }
+    }
+
+    ImmutableArray<CTmResult> GetRecords(bool referenceCondition, bool similarityCondition)
+    {
+	    return new();
+    }
+
+    ImmutableArray<Record.SRecord> GetBestRecords(string car)
+    {
+        ImmutableArray<Record.SRecord> records = new();
+
+        Record.SRecord record = new()
+        {
+            Time = -1
+        };
+
+        foreach (var score in Scores)
+        {
+            var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+
+            if (envimixBestRace.Get().ContainsKey(car) && (record.Time == -1 || envimixBestRace.Get()[car].Time < record.Time))
+            {
+                record = envimixBestRace.Get()[car];
+            }
+        }
+
+	    if (record.Time != -1)
+        {
+		    foreach (var score in Scores)
+            {
+                var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+
+                if (envimixBestRace.Get().ContainsKey(car) && envimixBestRace.Get()[car].Time == record.Time)
+                {
+                    records.Add(envimixBestRace.Get()[car]);
+                }
+            }
+	    }
+
+	    return records;
+    }
+
+    public int GetBestTime(string car)
+    {
+	    var time = -1;
+	    var records = GetBestRecords(car);
+
+	    if (records.Length > 0)
+        {
+            time = records[0].Time;
+        }
+
+        return time;
+    }
+
+    public ImmutableArray<Record.SRecord> GetWorstRecords(string car)
+    {
+	    return new();
+    }
+
+    public int GetWorstTime(string car)
+    {
+	    var time = -1;
+	    var records = GetWorstRecords(car);
+
+	    if (records.Length > 0)
+        {
+            time = records[0].Time;
+        }
+
+        return time;
+    }
+
+    public ImmutableArray<Record.SRecord> GetRecords(string car)
+    {
+	    ImmutableArray<Record.SRecord> records = new();
+
+	    foreach (var score in Scores)
+        {
+            var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+
+		    if (envimixBestRace.Get().ContainsKey(car) && envimixBestRace.Get()[car].Time != -1)
+            {
+                records.Add(envimixBestRace.Get()[car]);
+            }
+        }
+
+	    return records;
+    }
+
+    public Dictionary<string, float> GetPlayerWRPB(CTmScore score)
+    {
+        Dictionary<string, float> wrPbs = new();
+
+	    foreach (var (car, model) in GetAllCars())
+        {
+		    var bestTime = GetBestTime(car);
+
+            var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+            var wrPb = 0f;
+
+		    if (envimixBestRace.Get().ContainsKey(car))
+            {
+                if (envimixBestRace.Get()[car].Time == 0)
+                {
+                    wrPb = 1;
+                }
+                else
+                {
+                    wrPb = bestTime / MathLib.ToReal(envimixBestRace.Get()[car].Time);
+                }
+            }
+
+            wrPbs[car] = wrPb;
+	    }
+
+	    return wrPbs;
+    }
+
+    public Dictionary<string, int> GetPlayerActivityPoints(CTmScore score)
+    {
+	    Dictionary<string, int> activityPoints = new();
+
+	    foreach (var (car, wrPb) in GetPlayerWRPB(score))
+        {
+		    var records = GetRecords(car);
+
+		    if (records.Length > 0 && wrPb > 0)
+            {
+                activityPoints[car] = MathLib.NearestInteger(1000 * MathLib.Exp(GetRecords(car).Length * (wrPb - 1)));
+            }
+            else
+            {
+                activityPoints[car] = 0;
+            }
+        }
+
+	    return activityPoints;
+    }
+
+    public Dictionary<string, int> GetPlayerSkillpoints(CTmScore score)
+    {
+	    return new();
+    }
+
+    public float GetPlayerWRPB(CTmScore score, string car)
+    {
+	    return GetPlayerWRPB(score)[car];
+    }
+
+    public int GetPlayerActivityPoints(CTmScore score, string car)
+    {
+	    return GetPlayerActivityPoints(score)[car];
+    }
+
+    public int GetPlayerSkillpoints(CTmScore score, string car)
+    {
+	    return -1;
+    }
+
+    public void UpdateScores()
+    {
+        for (var i = 0; i < ClanScores.Count; i++)
+        {
+            ClanScores[i] = 0;
+        }
+
+	    foreach (var score in Scores)
+        {
+            var envimixPoints = Netwrite<Dictionary<string, int>>.For(score);
+            envimixPoints.Set(GetPlayerActivityPoints(score));
+		    score.Points = 0;
+
+		    foreach(var (car, points) in envimixPoints.Get())
+            {
+                score.Points += points;
+            }
+
+            ClanScores[score.TeamNum] += score.Points;
+	    }
+
+	    Scores_Sort(CTmMode.ETmScoreSortOrder.TotalPoints);
+    }
+
+    public void ClearScores()
+    {
+	    foreach (var score in Scores)
+        {
+            var envimixPoints = Netwrite<Dictionary<string, int>>.For(score);
+            var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+            var envimixBestLap = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+            var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+            envimixPoints.Get().Clear();
+            envimixBestRace.Get().Clear();
+            envimixBestLap.Get().Clear();
+            envimixPrevRace.Get().Clear();
+	    }
+
+	    Scores_Clear();
+    }
+
+    public void NoticeMessage(IList<CUIConfig> uis, string text)
+    {
+	    foreach (var ui in uis)
+        {
+            var noticeMessage = Netwrite<string>.For(ui);
+            noticeMessage.Set(text);
+	    }
+    }
+
+    public void NoticeMessage(CUIConfig ui, string text)
+    {
+        var noticeMessage = Netwrite<string>.For(ui);
+        noticeMessage.Set(text);
     }
 }
