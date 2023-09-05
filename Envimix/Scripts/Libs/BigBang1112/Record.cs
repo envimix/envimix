@@ -75,7 +75,7 @@ public static class Record
         tempRace.Set(t);
 
         e.Player.CurRace.Score = 0; // nefunguje v independent
-        e.Distance = 0.0f; // nefunguje v independent
+        e.Distance = 0; // nefunguje v independent
     }
 
     public static void CheckpointTempResult(CTmModeEvent e, bool independentLaps)
@@ -83,7 +83,13 @@ public static class Record
         var tempRace = Netwrite<SRecord>.For(e.Player.Score);
         var t = tempRace.Get();
 
-        SCheckpoint checkpoint;
+        SCheckpoint checkpoint = new()
+        {
+            Score = e.StuntsScore,
+            NbRespawns = e.NbRespawns,
+            Distance = e.Distance,
+            Speed = e.Speed
+        };
 
         if (independentLaps)
         {
@@ -93,11 +99,6 @@ public static class Record
         {
             checkpoint.Time = e.RaceTime;
         }
-
-        checkpoint.Score = e.StuntsScore;
-        checkpoint.NbRespawns = e.NbRespawns;
-        checkpoint.Distance = e.Distance;
-        checkpoint.Speed = e.Speed;
 
         t.Checkpoints.Add(checkpoint);
         tempRace.Set(t);

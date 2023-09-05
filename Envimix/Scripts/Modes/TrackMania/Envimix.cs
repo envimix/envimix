@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
+[Include(typeof(Record))]
 public class Envimix : UniverseModeBase
 {
     public struct SSkin
@@ -14,14 +15,17 @@ public class Envimix : UniverseModeBase
     [Setting(As = "Enable TM2 cars")]
     public bool EnableTM2Cars = true;
 
+    [Setting(As = "Enable TrafficCar")]
+    public bool EnableTrafficCar = false;
+
     [Setting(As = "Enable United cars")]
     public bool EnableUnitedCars = false;
 
-    [Setting(As = "Enable default car")]
-    public bool EnableDefaultCar = false;
-
     [Setting(As = "Enable custom cars")]
     public bool EnableCustomCars = false;
+
+    [Setting(As = "Enable default car")]
+    public bool EnableDefaultCar = false;
 
     [Setting(As = "* Enable Stadium envimix")]
     public bool EnableStadiumEnvimix = false; // Wrong usage can crash scripts
@@ -152,6 +156,7 @@ public class Envimix : UniverseModeBase
             }
         }
 
+        // Minor copypaste behaviour, worth refactoring
         if (EnableUnitedCars)
         {
             foreach (var car in unitedCarNames)
@@ -272,6 +277,7 @@ public class Envimix : UniverseModeBase
                 MapQueue.Remove(0);
             }
 
+            // Minor copypaste behaviour, worth refactoring
             while (!EnableStadiumEnvimix)
             {
                 var mapInfo = MapList[MapQueue[0]];
@@ -299,11 +305,6 @@ public class Envimix : UniverseModeBase
     public string GetDefaultCar()
     {
         return MapPlayerModelName;
-    }
-
-    public override void OnGameLoop()
-    {
-        SpawnAllWaitingPlayers();
     }
 
     public Dictionary<string, Dictionary<string, Ident>> GetAllCars()
@@ -336,34 +337,34 @@ public class Envimix : UniverseModeBase
         return allCars;
     }
 
-    public bool SpawnEnvimixPlayer(CTmPlayer player, string car, int raceStartTime)
+    public bool SpawnEnvimixPlayer(CTmPlayer player, string carName, int raceStartTime)
     {
         var allCars = GetAllCars();
 
-        if (player is null || !allCars.ContainsKey(car))
+        if (player is null || !allCars.ContainsKey(carName))
         {
             return false;
         }
 
-        var netUserSkins = Netread<Dictionary<string, string>>.For(UIManager.GetUI(player));
-        var userSkins = netUserSkins.Get();
+        var userSkins = Netread<Dictionary<string, string>>.For(UIManager.GetUI(player));
+        var skins = userSkins.Get();
 
         var skin = "";
-        if (userSkins.ContainsKey(car) && allCars[car].ContainsKey(userSkins[car]))
+        if (skins.ContainsKey(carName) && allCars[carName].ContainsKey(skins[carName]))
         {
-            skin = userSkins[car];
+            skin = skins[carName];
         }
 
-        player.ForceModelId = allCars[car][skin];
+        player.ForceModelId = allCars[carName][skin];
 
-        var netCar = Netwrite<string>.For(player);
-        netCar.Set(car);
+        var car = Netwrite<string>.For(player);
+        car.Set(carName);
 
         var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(player.Score);
 
-        if (envimixBestRace.Get().ContainsKey(netCar.Get()))
+        if (envimixBestRace.Get().ContainsKey(carName))
         {
-            Record.ToResult(player.Score.BestRace, envimixBestRace.Get()[netCar.Get()]);
+            Record.ToResult(player.Score.BestRace, envimixBestRace.Get()[carName]);
         }
         else
         {
@@ -372,9 +373,9 @@ public class Envimix : UniverseModeBase
 
         var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(player.Score);
 
-        if (envimixPrevRace.Get().ContainsKey(netCar.Get()))
+        if (envimixPrevRace.Get().ContainsKey(carName))
         {
-            Record.ToResult(player.Score.PrevRace, envimixPrevRace.Get()[netCar.Get()]);
+            Record.ToResult(player.Score.PrevRace, envimixPrevRace.Get()[carName]);
         }
         else
         {
@@ -396,16 +397,16 @@ public class Envimix : UniverseModeBase
         {
             if (CutOffTimeLimit < 0)
             {
-                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car) * 3000 + 3000;
+                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(carName) * 3000 + 3000;
             }
             else
             {
-                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car) * 3000 + 3000;
+                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(carName) * 3000 + 3000;
             }
 
             spawned = false;
         }
-        else if (!EnableDefaultCar && ItemCars[netCar] == GetDefaultCar())
+        else if (!EnableDefaultCar && ItemCars[carName] == GetDefaultCar())
         {
             player.RaceStartTime = -1;
             spawned = false;
@@ -430,13 +431,13 @@ public class Envimix : UniverseModeBase
         return SpawnEnvimixPlayer(_Player, _Car, false);
     }
 
-    public void SpawnAllEnvimixPlayers(string car, bool frozen)
+    public void SpawnAllEnvimixPlayers(string carName, bool frozen)
     {
         foreach (var player in PlayersWaiting)
         {
-            var netCar = Netwrite<string>.For(player);
-            netCar.Set(car);
-            var spawned = SpawnEnvimixPlayer(player, netCar.Get(), frozen);
+            var car = Netwrite<string>.For(player);
+            car.Set(carName);
+            var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
         }
     }
 
@@ -444,8 +445,8 @@ public class Envimix : UniverseModeBase
     {
         foreach (var player in PlayersWaiting)
         {
-            var netCar = Netwrite<string>.For(player);
-            var spawned = SpawnEnvimixPlayer(player, netCar, frozen);
+            var car = Netwrite<string>.For(player);
+            var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
         }
     }
 
@@ -461,9 +462,9 @@ public class Envimix : UniverseModeBase
 	    var allCars = GetAllCars();
 	
 	    ImmutableArray<string> sortedNames = new();
-	    if (Skins.ContainsKey(car))
+	    if (Skins.ContainsKey(car.Get()))
         {
-            foreach (var (name, carSkin) in Skins[car])
+            foreach (var (name, carSkin) in Skins[car.Get()])
             {
                 sortedNames.Add(name);
             }
@@ -472,43 +473,43 @@ public class Envimix : UniverseModeBase
 	    }
 	
 	    var actualSkin = "";
-        if (allCars[car].ContainsKey(skin))
+        if (allCars[car.Get()].ContainsKey(skin))
         {
             actualSkin = skin;
         }
 	
-	    player.ForceModelId = allCars[car][actualSkin];
+	    player.ForceModelId = allCars[car.Get()][actualSkin];
 	
 	    if (skin == "")
         {
 		    if (CutOffTimeLimit < 0)
             {
-                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car) * 3000 + 3000;
+                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
             }
             else
             {
-                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car) * 3000 + 3000;
+                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
             }
         }
 	    else
         {
 		    if (CutOffTimeLimit < 0)
             {
-                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car) * 3000 + (sortedNames.IndexOf(skin) + 1) * 3000 + 3000;
+                player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car.Get()) * 3000 + (sortedNames.IndexOf(skin) + 1) * 3000 + 3000;
             }
             else
             {
-                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car) * 3000 + (sortedNames.IndexOf(skin) + 1) * 3000 + 3000;
+                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car.Get()) * 3000 + (sortedNames.IndexOf(skin) + 1) * 3000 + 3000;
             }
         }
     }
 
-    ImmutableArray<CTmResult> GetRecords(bool referenceCondition, bool similarityCondition)
+    public static ImmutableArray<CTmResult> GetRecords(bool referenceCondition, bool similarityCondition)
     {
 	    return new();
     }
 
-    ImmutableArray<Record.SRecord> GetBestRecords(string car)
+    public ImmutableArray<Record.SRecord> GetBestRecords(string car)
     {
         ImmutableArray<Record.SRecord> records = new();
 
@@ -556,12 +557,12 @@ public class Envimix : UniverseModeBase
         return time;
     }
 
-    public ImmutableArray<Record.SRecord> GetWorstRecords(string car)
+    public static ImmutableArray<Record.SRecord> GetWorstRecords(string car)
     {
 	    return new();
     }
 
-    public int GetWorstTime(string car)
+    public static int GetWorstTime(string car)
     {
 	    var time = -1;
 	    var records = GetWorstRecords(car);
@@ -641,7 +642,7 @@ public class Envimix : UniverseModeBase
 	    return activityPoints;
     }
 
-    public Dictionary<string, int> GetPlayerSkillpoints(CTmScore score)
+    public static Dictionary<string, int> GetPlayerSkillpoints(CTmScore score)
     {
 	    return new();
     }
@@ -656,7 +657,7 @@ public class Envimix : UniverseModeBase
 	    return GetPlayerActivityPoints(score)[car];
     }
 
-    public int GetPlayerSkillpoints(CTmScore score, string car)
+    public static int GetPlayerSkillpoints(CTmScore score, string car)
     {
 	    return -1;
     }
@@ -674,7 +675,7 @@ public class Envimix : UniverseModeBase
             envimixPoints.Set(GetPlayerActivityPoints(score));
 		    score.Points = 0;
 
-		    foreach(var (car, points) in envimixPoints.Get())
+		    foreach (var (car, points) in envimixPoints.Get())
             {
                 score.Points += points;
             }
@@ -702,7 +703,7 @@ public class Envimix : UniverseModeBase
 	    Scores_Clear();
     }
 
-    public void NoticeMessage(IList<CUIConfig> uis, string text)
+    public static void NoticeMessage(IList<CUIConfig> uis, string text)
     {
 	    foreach (var ui in uis)
         {
@@ -711,7 +712,7 @@ public class Envimix : UniverseModeBase
 	    }
     }
 
-    public void NoticeMessage(CUIConfig ui, string text)
+    public static void NoticeMessage(CUIConfig ui, string text)
     {
         var noticeMessage = Netwrite<string>.For(ui);
         noticeMessage.Set(text);
