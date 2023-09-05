@@ -1,10 +1,4 @@
-﻿using ManiaScriptSharp;
-using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using System.Numerics;
-using static System.Formats.Asn1.AsnWriter;
-
-namespace Envimix.Scripts.Modes.TrackMania;
+﻿namespace Envimix.Scripts.Modes.TrackMania;
 
 public class EnvimixTeamAttack : Envimix
 {
@@ -100,7 +94,7 @@ public class EnvimixTeamAttack : Envimix
     {
         if (!ItemCars.ContainsValue(MapPlayerModelName))
         {
-            Log(nameof(Envimix), "NOTE: No item car was found of the current MapPlayerModelName. Players were not pre-spawned.");
+            Log(nameof(EnvimixTeamAttack), "NOTE: No item car was found of the current MapPlayerModelName. Players were not pre-spawned.");
             return;
         }
 
@@ -108,11 +102,11 @@ public class EnvimixTeamAttack : Envimix
         foreach (var player in PlayersWaiting)
         {
             var car = Netwrite<string>.For(player);
-
             car.Set(ItemCars.KeyOf(MapPlayerModelName));
 
             if (car.Get() == "")
             {
+                Log(nameof(EnvimixTeamAttack), $"NOTE: {player.User.Name} has Net_Car set to empty string. Player was not pre-spawned.");
                 continue;
             }
 
@@ -181,27 +175,7 @@ public class EnvimixTeamAttack : Envimix
 
             foreach (var player in Players)
             {
-                var clientCar = Netread<string>.For(UIManager.GetUI(player));
-                var car = Netwrite<string>.For(player);
-        
-                if (clientCar.Get() != car.Get())
-                {
-                    if (DisplayedCars.Contains(clientCar.Get()))
-                    {
-                        car.Set(clientCar.Get());
-                    }
-
-                    var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen: true);
-
-                    if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
-                    {
-                        NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
-                    }
-                    else
-                    {
-                        NoticeMessage(UIManager.GetUI(player), $"You have selected $ff0{car.Get()}$g!\nPlease wait before the game starts.");
-                    }
-                }
+                TrySpawnEnvimixPlayer(player, frozen: true);
             }
 
             Yield();
@@ -229,26 +203,7 @@ public class EnvimixTeamAttack : Envimix
             // why to reset notice again?
             NoticeMessage(UIManager.GetUI(player), "");
 
-            var car = Netwrite<string>.For(player);
-
-            if (car.Get() != "")
-            {
-                var spawned = SpawnEnvimixPlayer(player, car.Get(), CutOffTimeLimit - TimeLimit * 1000);
-
-                if (spawned)
-                {
-                    Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
-                }
-
-                if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
-                {
-                    NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
-                }
-                else
-                {
-                    NoticeMessage(UIManager.GetUI(player), "");
-                }
-            }
+            TrySpawnEnvimixPlayer(player, frozen: false);
         }
 
         /*declare Integer[Text] PlayerTeams;
@@ -280,6 +235,52 @@ public class EnvimixTeamAttack : Envimix
         UseForcedClans = true;
     }
 
+    private bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen)
+    {
+        var clientCar = Netread<string>.For(UIManager.GetUI(player));
+        var car = Netwrite<string>.For(player);
+
+        // Validation of available cars, invalid car currently ignores changing anything
+        if (DisplayedCars.Contains(clientCar.Get()))
+        {
+            car.Set(clientCar.Get());
+        }
+
+        bool spawned;
+        if (frozen)
+        {
+            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+        }
+        else if (CutOffTimeLimit - Now < TimeLimit * 1000)
+        {
+            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+        }
+        else
+        {
+            spawned = SpawnEnvimixPlayer(player, car.Get(), CutOffTimeLimit - TimeLimit * 1000);
+        }
+
+        if (spawned)
+        {
+            Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
+        }
+
+        if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
+        {
+            NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
+        }
+        else if (CarSelectionMode)
+        {
+            NoticeMessage(UIManager.GetUI(player), $"You have selected $ff0{car.Get()}$g!\nPlease wait before the game starts.");
+        }
+        else
+        {
+            NoticeMessage(UIManager.GetUI(player), "");
+        }
+
+        return spawned;
+    }
+
     private void ProcessUpdateSkinEvent(CUIConfigEvent e)
     {
         switch (e.CustomEventType)
@@ -309,40 +310,7 @@ public class EnvimixTeamAttack : Envimix
         foreach (var player in PlayersWaiting)
         {
             // In game loop and in time attack, this means when full respawn
-
-            // The actual car of the player
-            var car = Netwrite<string>.For(player);
-
-            // Car that player wishes
-            var clientCar = Netread<string>.For(UIManager.GetUI(player));
-
-            // Since we're in time attack mode, we only check if the player's choice is available
-            if (GetAllCars().ContainsKey(clientCar.Get()))
-            {
-                // Apply the client choice
-                car.Set(clientCar.Get()); 
-
-                var spawned = SpawnEnvimixPlayer(player, car.Get());
-
-                // TODO: Needs tweaking if default car is disabled
-                if (spawned)
-                {
-                    Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
-                }
-
-                if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
-                {
-                    NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
-                }
-                else
-                {
-                    NoticeMessage(UIManager.GetUI(player), "");
-                }
-            }
-            else if (clientCar.Get() == "")
-            {
-                // Special check for no car selected
-            }
+            TrySpawnEnvimixPlayer(player, frozen: false);
         }
     }
 
