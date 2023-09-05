@@ -9,7 +9,7 @@ public class _321Go : CTmMlScriptIngame, IContext
     public bool PreviousIsVisible;
 
     [Netread] public required int CutOffTimeLimit { get; set; }
-
+    
     CTmMlPlayer GetPlayer()
     {
         if (GUIPlayer is not null)
@@ -22,7 +22,10 @@ public class _321Go : CTmMlScriptIngame, IContext
 
     bool IsVisible()
     {
-        return GetPlayer().RaceStartTime > 0 /*&& (GetPlayer().RaceStartTime < CutOffTimeLimit || (CutOffTimeLimit == -1 && GameTime - GetPlayer().RaceStartTime > -3000))*/;
+        return GetPlayer().RaceStartTime > 0
+            && (GetPlayer().RaceStartTime < CutOffTimeLimit
+                || (CutOffTimeLimit == -1 && GameTime - GetPlayer().RaceStartTime > -3000)
+            );
     }
 
     public void Main()
