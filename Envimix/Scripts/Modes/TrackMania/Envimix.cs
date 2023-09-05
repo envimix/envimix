@@ -25,7 +25,7 @@ public class Envimix : UniverseModeBase
     public bool EnableCustomCars = false;
 
     [Setting(As = "Enable default car")]
-    public bool EnableDefaultCar = false;
+    public bool EnableDefaultCar = true;
 
     [Setting(As = "* Enable Stadium envimix")]
     public bool EnableStadiumEnvimix = false; // Wrong usage can crash scripts
@@ -62,6 +62,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public required IList<string> DisplayedCars { get; set; }
     [Netwrite] public required Dictionary<string, string> ItemCars { get; set; }
     [Netwrite] public required Dictionary<string, Dictionary<string, SSkin>> Skins { get; set; }
+    [Netwrite] public bool CarSelectionMode { get; set; }
 
     public override void OnServerInit()
     {
@@ -83,8 +84,8 @@ public class Envimix : UniverseModeBase
         UIManager.UIAll.OverlayHideCheckPointList = true;
         UIManager.UIAll.OverlayHideEndMapLadderRecap = true;
 
-        var tm2CarNames = new[] { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar" };
-        var unitedCarNames = new[] { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
+        ImmutableArray<string> tm2CarNames = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar" };
+        ImmutableArray<string> unitedCarNames = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
 
         Cars.Clear();
         SpecialCars.Clear();
@@ -302,6 +303,21 @@ public class Envimix : UniverseModeBase
         CreateLayer(layerName, $"Manialinks/Universe2/{layerName}.xml");
     }
 
+    public static void NoticeMessage(IList<CUIConfig> uis, string text)
+    {
+        foreach (var ui in uis)
+        {
+            var noticeMessage = Netwrite<string>.For(ui);
+            noticeMessage.Set(text);
+        }
+    }
+
+    public static void NoticeMessage(CUIConfig ui, string text)
+    {
+        var noticeMessage = Netwrite<string>.For(ui);
+        noticeMessage.Set(text);
+    }
+
     public string GetDefaultCar()
     {
         return MapPlayerModelName;
@@ -426,11 +442,6 @@ public class Envimix : UniverseModeBase
         return SpawnEnvimixPlayer(player, car, -1);
     }
 
-    public bool SpawnEnvimixPlayer(CTmPlayer _Player, string _Car)
-    {
-        return SpawnEnvimixPlayer(_Player, _Car, false);
-    }
-
     public void SpawnAllEnvimixPlayers(string carName, bool frozen)
     {
         foreach (var player in PlayersWaiting)
@@ -453,6 +464,57 @@ public class Envimix : UniverseModeBase
     public void SpawnAllEnvimixPlayers()
     {
         SpawnAllEnvimixPlayers(false);
+    }
+
+    public bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen, int timeLimit)
+    {
+        var clientCar = Netread<string>.For(UIManager.GetUI(player));
+        var car = Netwrite<string>.For(player);
+
+        // Validation of available cars, invalid car currently ignores changing anything but passes the spawn attempt
+        if (DisplayedCars.Contains(clientCar.Get()))
+        {
+            car.Set(clientCar.Get());
+        }
+
+        bool spawned;
+        if (frozen)
+        {
+            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+        }
+        else if (timeLimit < 0 || CutOffTimeLimit - Now < timeLimit * 1000)
+        {
+            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+        }
+        else
+        {
+            spawned = SpawnEnvimixPlayer(player, car.Get(), CutOffTimeLimit - timeLimit * 1000);
+        }
+
+        if (spawned)
+        {
+            Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
+        }
+
+        if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
+        {
+            NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
+        }
+        else if (CarSelectionMode)
+        {
+            NoticeMessage(UIManager.GetUI(player), $"You have selected $ff0{car.Get()}$g!\nPlease wait before the game starts.");
+        }
+        else
+        {
+            NoticeMessage(UIManager.GetUI(player), "");
+        }
+
+        return spawned;
+    }
+
+    public bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen)
+    {
+        return TrySpawnEnvimixPlayer(player, frozen, timeLimit: -1);
     }
 
     public void UpdateSkin(CTmPlayer player, string skin)
@@ -701,20 +763,5 @@ public class Envimix : UniverseModeBase
 	    }
 
 	    Scores_Clear();
-    }
-
-    public static void NoticeMessage(IList<CUIConfig> uis, string text)
-    {
-	    foreach (var ui in uis)
-        {
-            var noticeMessage = Netwrite<string>.For(ui);
-            noticeMessage.Set(text);
-	    }
-    }
-
-    public static void NoticeMessage(CUIConfig ui, string text)
-    {
-        var noticeMessage = Netwrite<string>.For(ui);
-        noticeMessage.Set(text);
     }
 }

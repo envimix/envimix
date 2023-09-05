@@ -8,8 +8,6 @@ public class EnvimixTeamAttack : Envimix
     [Setting(As = "Car select time")]
     public int CarSelectTime = 10;
 
-    [Netwrite] public bool CarSelectionMode { get; set; }
-
     public override void OnServerInit()
     {
         Users_DestroyAllFakes();
@@ -175,7 +173,7 @@ public class EnvimixTeamAttack : Envimix
 
             foreach (var player in Players)
             {
-                TrySpawnEnvimixPlayer(player, frozen: true);
+                TrySpawnEnvimixTeamAttackPlayer(player, frozen: true);
             }
 
             Yield();
@@ -203,7 +201,7 @@ public class EnvimixTeamAttack : Envimix
             // why to reset notice again?
             NoticeMessage(UIManager.GetUI(player), "");
 
-            TrySpawnEnvimixPlayer(player, frozen: false);
+            TrySpawnEnvimixTeamAttackPlayer(player, frozen: false);
         }
 
         /*declare Integer[Text] PlayerTeams;
@@ -235,50 +233,9 @@ public class EnvimixTeamAttack : Envimix
         UseForcedClans = true;
     }
 
-    private bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen)
+    private bool TrySpawnEnvimixTeamAttackPlayer(CTmPlayer player, bool frozen)
     {
-        var clientCar = Netread<string>.For(UIManager.GetUI(player));
-        var car = Netwrite<string>.For(player);
-
-        // Validation of available cars, invalid car currently ignores changing anything
-        if (DisplayedCars.Contains(clientCar.Get()))
-        {
-            car.Set(clientCar.Get());
-        }
-
-        bool spawned;
-        if (frozen)
-        {
-            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
-        }
-        else if (CutOffTimeLimit - Now < TimeLimit * 1000)
-        {
-            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
-        }
-        else
-        {
-            spawned = SpawnEnvimixPlayer(player, car.Get(), CutOffTimeLimit - TimeLimit * 1000);
-        }
-
-        if (spawned)
-        {
-            Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
-        }
-
-        if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
-        {
-            NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
-        }
-        else if (CarSelectionMode)
-        {
-            NoticeMessage(UIManager.GetUI(player), $"You have selected $ff0{car.Get()}$g!\nPlease wait before the game starts.");
-        }
-        else
-        {
-            NoticeMessage(UIManager.GetUI(player), "");
-        }
-
-        return spawned;
+        return TrySpawnEnvimixPlayer(player, frozen, TimeLimit);
     }
 
     private void ProcessUpdateSkinEvent(CUIConfigEvent e)
@@ -310,7 +267,7 @@ public class EnvimixTeamAttack : Envimix
         foreach (var player in PlayersWaiting)
         {
             // In game loop and in time attack, this means when full respawn
-            TrySpawnEnvimixPlayer(player, frozen: false);
+            TrySpawnEnvimixTeamAttackPlayer(player, frozen: false);
         }
     }
 
