@@ -13,6 +13,8 @@ public class EnvimixTeamAttack : Envimix
         Users_DestroyAllFakes();
         //Users_CreateFake("longlonglonglonglong longlonglonglonglong name", 0);
 
+        UiDisplayStuntsNames = true;
+
         UseClans = true;
         Teams[0].Name = "Team Red";
         Teams[0].ColorPrimary = new Vec3(1, 0, 0);
@@ -99,8 +101,9 @@ public class EnvimixTeamAttack : Envimix
         // Pre-spawn all non-spec players with default car
         foreach (var player in PlayersWaiting)
         {
+            PrepareJoinedPlayer(player);
+
             var car = Netwrite<string>.For(player);
-            car.Set(ItemCars.KeyOf(MapPlayerModelName));
 
             if (car.Get() == "")
             {
@@ -169,6 +172,16 @@ public class EnvimixTeamAttack : Envimix
                         break;
                 }
                 //+++OnUIChatEvent+++
+            }
+
+            foreach (var e in PendingEvents)
+            {
+                switch (e.Type)
+                {
+                    case CTmModeEvent.EType.OnPlayerAdded:
+                        PrepareJoinedPlayer(e.Player);
+                        break;
+                }
             }
 
             foreach (var player in Players)
@@ -268,6 +281,16 @@ public class EnvimixTeamAttack : Envimix
         {
             // In game loop and in time attack, this means when full respawn
             TrySpawnEnvimixTeamAttackPlayer(player, frozen: false);
+        }
+    }
+
+    public override void OnEvent(CTmModeEvent e)
+    {
+        switch (e.Type)
+        {
+            case CTmModeEvent.EType.OnPlayerAdded:
+                PrepareJoinedPlayer(e.Player);
+                break;
         }
     }
 

@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3">
+	<frame id="FrameMap" scale="0.85" pos="158 88">
+		<frame id="FrameMapName" pos="-40 -7.5">
+			<frame id="FrameMapNameBg" pos="40 0" data-size="80">
+				<quad z-index="0" size="80 15" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
+				<quad z-index="2" size="79.5 14.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25"/>
+			</frame>
+			<frame id="FrameLabelMapName" pos="37.5 7" clip="True" clipposn="-38 -7.5" clipsizen="74.5 13" z-index="3">
+				<label id="LabelMapName" z-index="0" size="90 12" textsize="12" textfont="Oswald" halign="right" pos="0 -1.25"/>
+				<label id="LabelMapName2" z-index="0" size="90 12" textsize="12" textfont="Oswald" halign="right" pos="0 -1.25"/>
+			</frame>
+		</frame>
+		<frame id="FrameCar" pos="-27.5 -20">
+			<frame id="FrameCarBg" pos="27.5 0">
+				<quad z-index="0" size="55 8" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
+				<quad z-index="2" size="54.5 7.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25"/>
+			</frame>
+			<frame id="FrameLabelCar" pos="25 4.5" clip="True" clipposn="-25 -5" clipsizen="50 10" z-index="3">
+				<label id="LabelCar" z-index="0" size="90 7" textsize="4" textfont="Oswald" halign="right" pos="0 -1.9" textprefix="$o"/>
+				<label id="LabelCar2" z-index="0" size="90 7" textsize="4" textfont="Oswald" halign="right" pos="0 -1.9" textprefix="$o"/>
+			</frame>
+		</frame>
+		<frame id="FrameLaps" pos="-27.5 -28" hidden="1">
+			<frame id="FrameLapsBg" pos="27.5 0">
+				<quad z-index="0" size="20 6" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
+			</frame>
+			<label id="LabelLaps" z-index="3" size="20 5" textsize="2" textfont="RajdhaniMono" textprefix=" 1/1" valign="center" halign="center" pos="17.5 0.4" textemboss="1"/>
+		</frame>
+	</frame>
+	<quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" scriptevents="1" hidden="1"/>
+	<frame id="FrameSpecials" z-index="10">
+		<frame id="FrameSpecialsCar" hidden="1">
+			<quad pos="0 0" halign="center" z-index="-1" size="100 30" style="Bgs1" substyle="BgCardList" valign="center"/>
+			<label id="LabelMapName" z-index="0" size="90 7" textsize="6" textfont="Oswald" pos="0 5" textemboss="1" halign="center" valign="center2"/>
+			<frame pos="42 -7.5">
+				<quad id="QuadButtonExit" z-index="0" size="10 10" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="600" valign="center"/>
+				<label z-index="1" size="10 10" text="" valign="center2" textfont="RajdhaniMono" halign="center" pos="0 -0.8" textsize="3"/>
+			</frame>
+		</frame>
+		<frame id="FrameSpecialsCar" hidden="1">
+			<quad pos="0 0" halign="center" z-index="-1" size="100 30" style="Bgs1" substyle="BgCardList" valign="center"/>
+			<label id="LabelCarName" z-index="0" size="90 7" textsize="6" textfont="Oswald" pos="0 5" textemboss="1" halign="center" valign="center2"/>
+			<frame pos="42 -7.5">
+				<quad id="QuadButtonExit" z-index="0" size="10 10" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="600" valign="center"/>
+				<label z-index="1" size="10 10" text="" valign="center2" textfont="RajdhaniMono" halign="center" pos="0 -0.8" textsize="3"/>
+			</frame>
+		</frame>
+	</frame>
+</manialink>

@@ -21,7 +21,7 @@
 		</frame>
 		<frame id="FrameSpeed" pos="45 5" clip="1" clipsizen="40 15">
 			<quad z-index="0" size="30 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-			<quad id="QuadSpeedFreewheeling" z-index="5" size="30 10" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" colorize="F00" opacity="0"/>
+			<quad id="QuadSpeedFreewheeling" z-index="5" size="29.25 9.5" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" colorize="F00" opacity="0"/>
 			<label id="LabelSpeed" pos="0 0.5" z-index="4" size="25 5" text="0" halign="center" valign="center2" textfont="RajdhaniMono" textsize="3" textcolor="EEE"/>
 			<gauge id="GaugeRPM" pos="0 -3" z-index="3" size="28 6.5" style="EnergyBar" halign="center" drawbg="0" valign="center" centered="1"/>
 		</frame>

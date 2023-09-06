@@ -40,7 +40,7 @@ public class UniverseModeBase : CTmMode, IContext
 
     public virtual void OnServerInit()
     {
-        Log("UniverseModeBase", "Initializing server...");
+        Log(nameof(UniverseModeBase), "Initializing server...");
     }
 
     public virtual void BeforeServerStart() { }

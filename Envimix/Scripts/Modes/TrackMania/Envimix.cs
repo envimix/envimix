@@ -12,11 +12,20 @@ public class Envimix : UniverseModeBase
         public string Icon;
     }
 
+    public struct SLoginRequest
+    {
+        public string Login;
+        public string TokenType;
+        public string Token;
+    }
+
+    public const string EnvimixWebAPI = "http://localhost:32771";
+
     [Setting(As = "Enable TM2 cars")]
     public bool EnableTM2Cars = true;
 
     [Setting(As = "Enable TrafficCar")]
-    public bool EnableTrafficCar = false;
+    public bool EnableTrafficCar = true;
 
     [Setting(As = "Enable United cars")]
     public bool EnableUnitedCars = false;
@@ -84,7 +93,15 @@ public class Envimix : UniverseModeBase
         UIManager.UIAll.OverlayHideCheckPointList = true;
         UIManager.UIAll.OverlayHideEndMapLadderRecap = true;
 
+        //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
+
         ImmutableArray<string> tm2CarNames = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar" };
+
+        if (EnableTrafficCar)
+        {
+            tm2CarNames.Add("TrafficCar");
+        }
+        
         ImmutableArray<string> unitedCarNames = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
 
         Cars.Clear();
@@ -203,6 +220,9 @@ public class Envimix : UniverseModeBase
         CreateLayer("321Go");
         CreateLayer("Dashboard");
         CreateLayer("PrePostLoading");
+        CreateLayer("TimeLimit");
+        CreateLayer("Map");
+        CreateLayer("Checkpoint");
 
         Log(nameof(Envimix), "All manialinks successfully created!");
 
@@ -211,6 +231,25 @@ public class Envimix : UniverseModeBase
             var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
             prepareLoading.Set(-1);
         }
+
+        LoginToEnvimixWebApi();
+    }
+
+    public void LoginToEnvimixWebApi()
+    {
+        ServerAdmin.Authentication_GetToken(null, "Envimix");
+        Wait(() => ServerAdmin.Authentication_GetTokenResponseReceived);
+
+        SLoginRequest loginRequest = new()
+        {
+            Login = ServerLogin,
+            TokenType = "Ingame",
+            Token = ServerAdmin.Authentication_Token
+        };
+
+        var request = Http.CreatePost($"{EnvimixWebAPI}/login", loginRequest.ToJson(), "Content-Type: application/json");
+        Wait(() => request.IsCompleted);
+        Log(nameof(Envimix), $"Login response: {request}");
     }
 
     public override void OnServerStart()
@@ -264,11 +303,9 @@ public class Envimix : UniverseModeBase
         {
             if (MapQueue.Length > 0)
             {
-                var mapInfo = MapList[MapQueue[0]];
-
-                if (!EnableStadiumEnvimix && mapInfo.CollectionName == "Stadium")
+                if (!EnableStadiumEnvimix && MapList[MapQueue[0]].CollectionName == "Stadium")
                 {
-                    Log(nameof(Envimix), $"Skipping {mapInfo.Name}: Stadium environment");
+                    Log(nameof(Envimix), $"Skipping {MapList[MapQueue[0]].Name} from manual queue: Stadium environment");
                 }
                 else
                 {
@@ -281,9 +318,9 @@ public class Envimix : UniverseModeBase
             // Minor copypaste behaviour, worth refactoring
             while (!EnableStadiumEnvimix)
             {
-                var mapInfo = MapList[MapQueue[0]];
+                var mapName = MapList[NextMapIndex].Name;
 
-                if (mapInfo.CollectionName == "Stadium")
+                if (MapList[NextMapIndex].CollectionName == "Stadium")
                 {
                     NextMapIndex += 1;
                 }
@@ -292,7 +329,7 @@ public class Envimix : UniverseModeBase
                     break;
                 }
 
-                Log(nameof(Envimix), $"Skipping {mapInfo.Name}: Stadium environment");
+                Log(nameof(Envimix), $"Skipping {mapName}: Stadium environment");
                 Yield();
             }
         }
@@ -763,5 +800,11 @@ public class Envimix : UniverseModeBase
 	    }
 
 	    Scores_Clear();
+    }
+
+    public void PrepareJoinedPlayer(CTmPlayer player)
+    {
+        var car = Netwrite<string>.For(player);
+        car.Set(ItemCars.KeyOf(MapPlayerModelName));
     }
 }
