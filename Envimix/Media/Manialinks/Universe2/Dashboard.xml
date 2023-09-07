@@ -5,14 +5,14 @@
 			<quad z-index="0" size="60 15" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 			<label id="LabelTimeRed" pos="0 -0.5" z-index="2" size="55 10" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="8" textcolor="F00" scale="1.05" hidden="1"/>
 			<label id="LabelTimeBlue" pos="0 -0.5" z-index="2" size="55 10" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="8" textcolor="00F" scale="1.05" hidden="1"/>
-			<label id="LabelTime" pos="0 -0.5" z-index="3" size="55 10" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="8" textcolor="EEE"/>
-			<quad id="QuadSteerLeft" pos="0 7.25" z-index="0" size="29 0.75" bgcolor="FFFA" halign="right" valign="bottom" style="Bgs1" substyle="BgWindow4"/>
-			<quad id="QuadSteerRight" pos="0 7.25" z-index="0" size="29 0.75" bgcolor="FFFA" halign="left" valign="bottom" style="Bgs1" substyle="BgWindow4"/>
+			<label id="LabelTime" pos="0 -0.5" z-index="3" size="55 10" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="8"/>
+			<quad id="QuadSteerLeft" pos="0 7.25" z-index="0" size="29 0.75" halign="right" valign="bottom" style="Bgs1" substyle="BgWindow4"/>
+			<quad id="QuadSteerRight" pos="0 7.25" z-index="0" size="29 0.75" halign="left" valign="bottom" style="Bgs1" substyle="BgWindow4"/>
 			<quad id="QuadBrake" pos="0 -7.5" z-index="1" size="58 1" halign="center" valign="bottom" opacity="0" style="Bgs1" substyle="BgMetalBar" colorize="F00"/>
 		</frame>
 		<frame id="FrameCheckpoint" pos="-45 5" clip="1" clipsizen="40 15">
 			<quad z-index="0" size="30 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-			<label id="LabelCP" pos="0 -0.4" z-index="3" size="22 5" text="-:--.---" halign="center" valign="center2" textfont="RajdhaniMono" textsize="3" opacity=".9" textcolor="EEE"/>
+			<label id="LabelCP" pos="0 -0.4" z-index="3" size="22 5" text="-:--.---" halign="center" valign="center2" textfont="RajdhaniMono" textsize="3" opacity=".9"/>
 			<quad id="QuadCP" z-index="2" size="29 9" valign="center" halign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="03F" opacity="0"/>
 		</frame>
 		<frame id="FrameCheckpointCounter" pos="-45 12" clip="1" clipsizen="30 6">
@@ -22,7 +22,7 @@
 		<frame id="FrameSpeed" pos="45 5" clip="1" clipsizen="40 15">
 			<quad z-index="0" size="30 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 			<quad id="QuadSpeedFreewheeling" z-index="5" size="29.25 9.5" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" colorize="F00" opacity="0"/>
-			<label id="LabelSpeed" pos="0 0.5" z-index="4" size="25 5" text="0" halign="center" valign="center2" textfont="RajdhaniMono" textsize="3" textcolor="EEE"/>
+			<label id="LabelSpeed" pos="0 0.5" z-index="4" size="25 5" text="0" halign="center" valign="center2" textfont="RajdhaniMono" textsize="3"/>
 			<gauge id="GaugeRPM" pos="0 -3" z-index="3" size="28 6.5" style="EnergyBar" halign="center" drawbg="0" valign="center" centered="1"/>
 		</frame>
 		<frame id="FrameDistance" pos="45 12" clip="1" clipsizen="30 6">
@@ -31,7 +31,7 @@
 		</frame>
 		<frame id="FrameGear" pos="66 4" clip="1" clipsizen="13 10">
 			<quad z-index="0" size="12 8" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-			<label id="LabelGear" pos="0 -.3" z-index="3" size="12 8" text="1" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2" textcolor="EEE"/>
+			<label id="LabelGear" pos="0 -.3" z-index="3" size="12 8" text="1" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2"/>
 		</frame>
 		<frame id="FrameInfo" pos="-66 4" clip="1" clipsizen="13 10">
 			<quad z-index="0" size="12 8" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>

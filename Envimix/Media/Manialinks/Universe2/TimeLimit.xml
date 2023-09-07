@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<manialink version="3">
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
 	<frame id="FrameTimeLimit" pos="158 -40" scale="0.85">
 		<frame pos="-26.25 0">
 			<quad z-index="0" size="52.5 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 			<quad id="QuadMode" z-index="2" size="52 9.75" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" colorize="FC6" opacity=".25" hidden="1"/>
-			<frame id="FrameTimeLimitLabel" z-index="3" clip="True" clipsizen="40 9">
+			<frame id="FrameTimeLimitLabel" z-index="3" clip="1" clipsizen="40 9">
 				<label id="LabelTimeLimit" size="32.5 5" text="0:00" halign="center" valign="center2" textfont="RajdhaniMono" pos="0 -.45" textsize="4.5"/>
 			</frame>
 		</frame>
