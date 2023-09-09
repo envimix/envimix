@@ -1,6 +1,4 @@
-﻿using ManiaScriptSharp;
-using System.Collections.Immutable;
-using System.Xml.Linq;
+﻿using System.Collections.Immutable;
 
 namespace Envimix.Media.Manialinks.Universe2;
 
@@ -23,9 +21,9 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameSkins;
 	[ManialinkControl] public required CMlFrame FrameButtonSpectator;
 	[ManialinkControl] public required CMlQuad QuadButtonContinue;
-	[ManialinkControl] public required CMlFrame FrameVehicles;
+	[ManialinkControl(IgnoreValidation = true)] public required CMlFrame FrameVehicles;
 	[ManialinkControl] public required CMlFrame FrameVehicleList;
-    [ManialinkControl] public required CMlFrame FrameTimeLimit;
+    //[ManialinkControl] public required CMlFrame FrameTimeLimit;
     [ManialinkControl] public required CMlFrame FrameTeamMessage;
     [ManialinkControl] public required CMlFrame FrameRedPlayerCount;
     [ManialinkControl] public required CMlFrame FrameBluePlayerCount;
@@ -43,7 +41,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelMode;
     [ManialinkControl] public required CMlLabel LabelPlayerCount;
     [ManialinkControl] public required CMlLabel LabelSpectatorCount;
-    [ManialinkControl] public required CMlLabel LabelTimeLimit;
+    //[ManialinkControl] public required CMlLabel LabelTimeLimit;
     [ManialinkControl] public required CMlFrame FramePlayers;
     [ManialinkControl] public required CMlQuad QuadSkinScrollbar;
     [ManialinkControl] public required CMlQuad QuadSkinScrollable;
@@ -51,8 +49,8 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelLock;
     [ManialinkControl] public required CMlFrame FrameArrow;
     [ManialinkControl] public required CMlFrame FrameGhostArrow;
-    [ManialinkControl] public required CMlQuad QuadEnvimix;
-    [ManialinkControl] public required CMlQuad QuadEnvimixLoading;
+    //[ManialinkControl] public required CMlQuad QuadEnvimix;
+    //[ManialinkControl] public required CMlQuad QuadEnvimixLoading;
     [ManialinkControl] public required CMlLabel LabelRedPlayerCount;
     [ManialinkControl] public required CMlLabel LabelBluePlayerCount;
     [ManialinkControl] public required CMlFrame FrameTeamInfo;
@@ -60,8 +58,8 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadJoinBlue;
     [ManialinkControl] public required CMlQuad QuadJoinRedLock;
     [ManialinkControl] public required CMlQuad QuadJoinRed;
-    [ManialinkControl] public required CMlFrame FrameLabelTeamMessage;
-    [ManialinkControl] public required CMlFrame FrameLabelTimeLimit;
+    //[ManialinkControl] public required CMlFrame FrameLabelTeamMessage;
+    //[ManialinkControl] public required CMlFrame FrameLabelTimeLimit;
     [ManialinkControl] public required CMlQuad QuadButtonSkin;
     [ManialinkControl] public required CMlQuad QuadButtonAdvanced;
     [ManialinkControl] public required CMlQuad QuadButtonModeHelp;
@@ -442,7 +440,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 break;
             case "QuadSkin":
                 var SOffset = MathLib.NearestInteger((float)FrameSkinList.Parent.ScrollOffset.Y / 15f);
-                var Index = TextLib.ToInteger(control.Parent.DataAttributeGet("index")) + SOffset - 1;
+                var Index = control.Parent.Parent.Controls.IndexOf(control.Parent) + SOffset - 1;
                 var CName = DisplayedCars[VehicleIndex];
 
                 if (Index == -1)
@@ -941,8 +939,8 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 for (var i = 0; i < 2; i++)
                 {
-                    FrameTimeLimit.Controls[i].Size.X = 0;
-                    AnimMgr.Add(FrameTimeLimit.Controls[i], "<quad size=\"50 7\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    //FrameTimeLimit.Controls[i].Size.X = 0;
+                    //AnimMgr.Add(FrameTimeLimit.Controls[i], "<quad size=\"50 7\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
 
                     FrameTeamMessage.Controls[i].Size.X = 0;
                     AnimMgr.Add(FrameTeamMessage.Controls[i], "<quad size=\"55 7\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
@@ -1065,7 +1063,7 @@ public class Menu : CTmMlScriptIngame, IContext
             LabelSpectatorCount.Value = $"{Playground.ServerInfo.SpectatorCount}/{Playground.ServerInfo.MaxSpectatorCount}";
         }
 
-        if (CutOffTimeLimit == -1)
+        /*if (CutOffTimeLimit == -1)
         {
             LabelTimeLimit.Value = "-:--";
         }
@@ -1076,7 +1074,7 @@ public class Menu : CTmMlScriptIngame, IContext
         else
         {
             LabelTimeLimit.Value = TextLib.TimeToText(CutOffTimeLimit - GameTime);
-        }
+        }*/
 
         if (Players.Count > 5)
         {
@@ -1178,14 +1176,14 @@ public class Menu : CTmMlScriptIngame, IContext
 
         FrameGhostArrow.RelativePosition_V3.Y = FrameVehicles.ScrollAnimOffset.Y - FrameVehicles.ScrollOffset.Y;
 
-        if (QuadEnvimix.DownloadInProgress)
+        /*if (QuadEnvimix.DownloadInProgress)
         {
             QuadEnvimixLoading.Show();
         }
         else
         {
             QuadEnvimixLoading.Hide();
-        }
+        }*/
 
         foreach (var control in Page.GetClassChildren_Result)
         {
@@ -1282,8 +1280,8 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (MenuOpenTime != -1)
         {
-            FrameLabelTeamMessage.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - MenuOpenTime, 0, 55, 600);
-            FrameLabelTimeLimit.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - MenuOpenTime, 0, 50, 500);
+            //FrameLabelTeamMessage.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - MenuOpenTime, 0, 55, 600);
+            //FrameLabelTimeLimit.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - MenuOpenTime, 0, 50, 500);
         }
 
         if (UseForcedClans != PrevUseForcedClans)

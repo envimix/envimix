@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/BigBang1112/manialink-xsd/main/manialink_v3_ns.xsd">
 	<framemodel id="FramemodelSkin">
 		<quad z-index="0" size="77 15" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" id="QuadSkin" halign="center" pos="-1.5 0"/>
 		<quad z-index="1" size="12.5 12.5" halign="center" valign="center" pos="-30 -7.5" id="QuadIcon"/>
@@ -117,19 +117,19 @@
 			</frame>
 			<frame pos="-110 39" z-index="1">
 				<quad size="80 105" halign="center" style="Bgs1" substyle="BgGradV" z-index="-1"/>
-				<frame pos="38" z-index="1">
+				<frame pos="38 0" z-index="1">
 					<quad z-index="0" size="2 105" style="Bgs1" substyle="BgCardList" id="QuadSkinScrollable" scriptevents="1" halign="center"/>
 					<quad z-index="1" size="2 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadSkinScrollbar" scriptevents="1" halign="center" hidden="0"/>
 				</frame>
 				<frame clip="1" clipposn="0 -52.5" clipsizen="80 105" scroll="1" scrollgrid="15 15" scrollmax="0 100">
 					<frame id="FrameSkinList">
-						<frameinstance modelid="FramemodelSkin" data-index="0"/>
-						<frameinstance modelid="FramemodelSkin" data-index="1" pos="0 -15"/>
-						<frameinstance modelid="FramemodelSkin" data-index="2" pos="0 -30"/>
-						<frameinstance modelid="FramemodelSkin" data-index="3" pos="0 -45"/>
-						<frameinstance modelid="FramemodelSkin" data-index="4" pos="0 -60"/>
-						<frameinstance modelid="FramemodelSkin" data-index="5" pos="0 -75"/>
-						<frameinstance modelid="FramemodelSkin" data-index="6" pos="0 -90"/>
+						<frameinstance modelid="FramemodelSkin"/>
+						<frameinstance modelid="FramemodelSkin" pos="0 -15"/>
+						<frameinstance modelid="FramemodelSkin" pos="0 -30"/>
+						<frameinstance modelid="FramemodelSkin" pos="0 -45"/>
+						<frameinstance modelid="FramemodelSkin" pos="0 -60"/>
+						<frameinstance modelid="FramemodelSkin" pos="0 -75"/>
+						<frameinstance modelid="FramemodelSkin" pos="0 -90"/>
 					</frame>
 				</frame>
 			</frame>
@@ -211,7 +211,7 @@
 		</frame>
 		<frame pos="0 5" id="FrameTeamInfo">
 			<frame pos="0 -64.5">
-				<frame>
+				<frame id="FrameTeamMessage">
 					<quad z-index="0" size="80 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 					<frame z-index="3">
 						<label size="80 5" text="Choose your team" halign="center" valign="center2" textfont="RajdhaniMono" pos="0 -.1" textsize="3" textprefix="$t" translate="1" id="LabelTeamMessage"/>
@@ -220,7 +220,7 @@
 			</frame>
 			<frame pos="0 -77.5" id="FrameJoinTeam">
 				<quad z-index="0" size="80 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
-				<frame id="FrameRecPlayerCount" pos="-48 0">
+				<frame id="FrameRedPlayerCount" pos="-48 0">
 					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
 					<label pos="0 -0.35" z-index="2" size="10 10" text="10" valign="center2" textfont="RajdhaniMono" halign="center" textemboss="1" id="LabelRedPlayerCount" textsize="5"/>
 				</frame>
