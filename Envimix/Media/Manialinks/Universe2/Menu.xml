@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/BigBang1112/manialink-xsd/main/manialink_v3_ns.xsd">
 	<framemodel id="FramemodelSkin">
-		<quad z-index="0" size="77 15" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" id="QuadSkin" halign="center" pos="-1.5 0"/>
-		<quad z-index="1" size="12.5 12.5" halign="center" valign="center" pos="-30 -7.5" id="QuadIcon"/>
-		<label pos="-20 -8" z-index="1" size="55 10" text="Default" valign="center2" textfont="RajdhaniMono" textsize="4" textprefix="$t" id="LabelName"/>
-		<quad z-index="0" size="78 14.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="-2 -0.25"/>
+		<quad z-index="0" size="75.75 14.5" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadSkin" halign="center" pos="-1.5 0"/>
+		<quad z-index="1" size="12.5 12.5" halign="center" valign="center" pos="-30 -7.25" id="QuadIcon"/>
+		<label pos="-20 -7.75" z-index="1" size="55 10" text="Default" valign="center2" textfont="RajdhaniMono" textsize="4" textprefix="$t" id="LabelName"/>
+		<quad z-index="0" size="76 14.5" style="Bgs1" substyle="BgCardList" halign="center" pos="-1.5 0" opacity=".5" modulatecolor="258"/>
 	</framemodel>
 	<frame z-index="10">
 		<quad pos="0 0" z-index="-2" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" id="QuadBackground"/>
@@ -28,34 +28,34 @@
 					<label z-index="0" size="35 4" text="$aaa[unknown]" textsize="1.5" textfont="Oswald" valign="top" id="LabelValidator" pos="0 -2.5"/>
 				</frame>
 				<frame pos="0 42" z-index="1">
-					<quad size="79 11" halign="center" z-index="-1" modulatecolor="036" opacity=".5" style="Bgs1" substyle="BgCardList"/>
+					<quad size="79 11" halign="center" z-index="-1" modulatecolor="258" opacity=".5" style="Bgs1" substyle="BgCardList"/>
 					<label pos="-36 -3" z-index="0" size="40 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname"/>
 					<label pos="35 -3.2" z-index="0" size="27.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime"/>
 					<quad pos="38 -4" z-index="1" size="5 5" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" hidden="1"/>
 				</frame>
 				<frame pos="0 30">
-					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Continue" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
 				<frame pos="0 20" id="FrameButtonSpectator" data-checked="False" data-startanimate="-1">
-					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSpectator" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSpectator" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" text="  $tSpectator" valign="center2" textfont="RajdhaniMono" id="LABEL" translate="1"/>
 				</frame>
 				<frame pos="0 9">
-					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkin" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkin" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-36 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Choose skin" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
 				<frame pos="0 -1">
-					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonAdvanced" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonAdvanced" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Advanced options" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
 				<frame z-index="0" pos="0 -11">
-					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonManageServer" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonManageServer" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Manage server" valign="center2" textfont="RajdhaniMono" translate="1" halign="left"/>
 				</frame>
 				<frame pos="0 -35">
@@ -74,13 +74,13 @@
 					</frame>
 					<label pos="-5.5 -10" z-index="0" size="33 4" text="$aaa[unknown mode]" textsize="2" textfont="BiryaniDemiBold" id="LabelMode"/>
 					<frame pos="33 -11.5">
-						<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="036" opacity=".5"/>
-						<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".5" id="QuadButtonModeHelp" data-nav="True"/>
+						<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5"/>
+						<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadButtonModeHelp" data-nav="True"/>
 						<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" style="TextTitle3"/>
 					</frame>
 					<frame pos="33 -25">
-						<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="036" opacity=".5"/>
-						<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".5" id="QuadButtonServerSettings" data-nav="True"/>
+						<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5"/>
+						<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadButtonServerSettings" data-nav="True"/>
 						<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" style="TextTitle3"/>
 					</frame>
 					<label pos="-5.5 -23" z-index="0" size="18 5" textprefix="📷 " text="0/10$ff0🔒" textfont="RajdhaniMono" valign="bottom" textsize="2" id="LabelSpectatorCount" scriptevents="1" style="TextCardRaceRank"/>
@@ -106,19 +106,17 @@
 		<frame id="FrameSkins" pos="-110 0" hidden="1">
 			<frame z-index="-1" pos="-110 0">
 				<quad z-index="0" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-				<quad z-index="1" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgGradV"/>
 			</frame>
 			<label pos="-110 75" z-index="0" size="70 15" text="Choose skin" textsize="12" textfont="Oswald" valign="top" textemboss="1" translate="1" halign="center"/>
 			<label z-index="0" pos="-110 61" size="70 7" textprefix="$o" text="$aaa[unknown]" textsize="7" textfont="Oswald" valign="top" textemboss="1" halign="center" id="LabelSkinCar"/>
 			<frame pos="-110 50">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" id="QuadButtonSkinPlay" halign="center"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkinPlay" halign="center" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Play" valign="center2" textfont="RajdhaniMono" translate="1"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
 			</frame>
 			<frame pos="-110 39" z-index="1">
-				<quad size="80 105" halign="center" style="Bgs1" substyle="BgGradV" z-index="-1"/>
 				<frame pos="38 0" z-index="1">
-					<quad z-index="0" size="2 105" style="Bgs1" substyle="BgCardList" id="QuadSkinScrollable" scriptevents="1" halign="center"/>
+					<quad z-index="0" size="2 104.5" style="Bgs1" substyle="BgCardList" id="QuadSkinScrollable" scriptevents="1" halign="center"/>
 					<quad z-index="1" size="2 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadSkinScrollbar" scriptevents="1" halign="center" hidden="0"/>
 				</frame>
 				<frame clip="1" clipposn="0 -52.5" clipsizen="80 105" scroll="1" scrollgrid="15 15" scrollmax="0 100">
@@ -134,9 +132,9 @@
 				</frame>
 			</frame>
 			<frame pos="-110 -68">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" id="QuadButtonSkinBack" halign="center"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkinBack" halign="center" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Back" valign="center2" textfont="RajdhaniMono" translate="1"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
 			</frame>
 			<frame pos="55 -65" hidden="1">
 				<quad z-index="-1" size="30 30" halign="center" valign="center" image="file://Media/Images/CircleBlack.png" opacity=".5"/>
@@ -151,53 +149,52 @@
 		<frame id="FrameAdvancedSettings" pos="-110 0" hidden="1">
 			<frame z-index="-1" pos="-110 0">
 				<quad z-index="0" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-				<quad z-index="1" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgGradV"/>
 			</frame>
 			<label pos="-110 70" z-index="0" size="70 10" text="Advanced options" textsize="8" textfont="Oswald" valign="center2" textemboss="1" translate="1" halign="center"/>
 			<frame pos="-110 62">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" halign="center" data-nav="True"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Enable animations" valign="center2" textfont="RajdhaniMono" translate="1" textsize="3"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
+				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Enable animations" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
 			<frame pos="-110 52">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" halign="center" data-nav="True"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Animate scoreboard" valign="center2" textfont="RajdhaniMono" translate="1" textsize="3"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
+				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Animate scoreboard" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
 			<frame pos="-110 42">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" halign="center" data-nav="True"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Blur scoreboard" valign="center2" textfont="RajdhaniMono" translate="1" textsize="3"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
+				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Blur scoreboard" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
 			<frame pos="-110 32">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" halign="center" data-nav="True"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Swap panels" valign="center2" textfont="RajdhaniMono" translate="1" textsize="3"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
+				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Swap panels" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
 			<frame pos="-110 22">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" halign="center" data-nav="True"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Colorblind mode" valign="center2" textfont="RajdhaniMono" translate="1" textsize="3"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
+				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Colorblind mode" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
 			<frame pos="-110 12">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" halign="center" data-nav="True"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Use old UI" valign="center2" textfont="RajdhaniMono" translate="1" textsize="3"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
+				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Use old UI" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
 			<frame pos="-110 -48">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" id="QuadButtonParameters" halign="center" data-nav="True"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad id="QuadButtonParameters" size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Script Parameters" valign="center2" textfont="RajdhaniMono" translate="1"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
 			</frame>
 			<frame pos="-110 -58">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" id="QuadButtonAdvancedSettings" halign="center" data-nav="True"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad id="QuadButtonAdvancedSettings" size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Advanced settings" valign="center2" textfont="RajdhaniMono" translate="1"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
 			</frame>
 			<frame pos="-110 -68">
-				<quad z-index="0" size="80 10" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="036" opacity=".5" id="QuadButtonSettingsBack" halign="center" data-nav="True"/>
+				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+				<quad id="QuadButtonSettingsBack" size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Back" valign="center2" textfont="RajdhaniMono" translate="1"/>
-				<quad z-index="0" size="80 9.5" style="Bgs1InRace" substyle="BgGradV" halign="center" pos="0 -0.25"/>
 			</frame>
 			<frame pos="55 -65" hidden="1">
 				<quad z-index="-1" size="30 30" halign="center" valign="center" image="file://Media/Images/CircleBlack.png" opacity=".5"/>
@@ -222,7 +219,7 @@
 				<quad z-index="0" size="80 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
 				<frame id="FrameRedPlayerCount" pos="-48 0">
 					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
-					<label pos="0 -0.35" z-index="2" size="10 10" text="10" valign="center2" textfont="RajdhaniMono" halign="center" textemboss="1" id="LabelRedPlayerCount" textsize="5"/>
+					<label pos="0 -0.35" z-index="2" size="10 10" text="10" valign="center2" textfont="RajdhaniMono" halign="center" id="LabelRedPlayerCount" textsize="5"/>
 				</frame>
 				<frame id="FrameJoinRed" z-index="2" pos="-19.5 0">
 					<quad z-index="0" size="39 13" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" modulatecolor="F00" opacity=".5"/>
@@ -232,7 +229,7 @@
 				<frame id="FrameBluePlayerCount" z-index="2" pos="48 0">
 					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
 					<quad z-index="1" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgGradV" hidden="1"/>
-					<label pos="0 -0.35" z-index="2" size="10 10" text="10" valign="center2" textfont="RajdhaniMono" halign="center" textemboss="1" id="LabelBluePlayerCount" textsize="5"/>
+					<label pos="0 -0.35" z-index="2" size="10 10" text="10" valign="center2" textfont="RajdhaniMono" halign="center" id="LabelBluePlayerCount" textsize="5"/>
 				</frame>
 				<frame id="FrameJoinBlue" z-index="2" pos="19.5 0">
 					<quad z-index="0" size="39 13" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" modulatecolor="00F" opacity=".5"/>
