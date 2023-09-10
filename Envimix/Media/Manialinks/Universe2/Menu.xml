@@ -8,99 +8,99 @@
 	</framemodel>
 	<frame z-index="10">
 		<quad pos="0 0" z-index="-2" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" id="QuadBackground"/>
-		<frame id="FrameMenu" pos="-110 0">
-			<frame z-index="-1">
-				<quad z-index="0" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-			</frame>
-			<frame pos="-35 75" clip="1" clipposn="36 -6" clipsizen="70 21" id="FrameLabelMapName">
-				<label z-index="0" size="70 15" text="$aaa[unknown]" textsize="16" textfont="Oswald" valign="top" textemboss="1"/>
-				<label z-index="0" size="70 15" text="$aaa[unknown]" textsize="16" textfont="Oswald" valign="top" textemboss="1"/>
-			</frame>
-			<frame pos="-35 58" clip="1" clipposn="36 -2.5" clipsizen="70 10" id="FrameLabelMapType">
-				<label z-index="0" size="70 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
-				<label z-index="0" size="70 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
-			</frame>
-			<frame pos="35 50" clip="1" clipposn="-17 -2.5" clipsizen="35 10" id="FrameLabelCar">
-				<label z-index="0" size="35 7" text="$aaa[unknown]" textsize="4" textfont="Oswald" valign="top" id="LabelCar" textprefix="$o" halign="right" textemboss="1"/>
-				<label z-index="0" size="35 7" text="$aaa[unknown]" textsize="4" textfont="Oswald" valign="top" id="LabelCar2" textprefix="$o" halign="right" textemboss="1"/>
-			</frame>
-			<frame pos="-35 50">
-				<label z-index="0" size="35 6" text="VALIDATED BY:" textsize="0.5" textfont="Oswald" id="LabelValidatorText" valign="top"/>
-				<label z-index="0" size="35 4" text="$aaa[unknown]" textsize="1.5" textfont="Oswald" valign="top" id="LabelValidator" pos="0 -2.5"/>
-			</frame>
-			<frame pos="0 42" z-index="1">
-				<quad size="79 11" halign="center" z-index="-1" modulatecolor="036" opacity=".5" style="Bgs1" substyle="BgCardList"/>
-				<label pos="-36 -3" z-index="0" size="40 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname"/>
-				<label pos="35 -3.2" z-index="0" size="27.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime"/>
-				<quad pos="38 -4" z-index="1" size="5 5" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" hidden="1"/>
-			</frame>
-			<frame pos="0 30">
-				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Continue" valign="center2" textfont="RajdhaniMono" translate="1"/>
-			</frame>
-			<frame pos="0 20" id="FrameButtonSpectator" data-checked="False" data-startanimate="-1">
-				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSpectator" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" text="  $tSpectator" valign="center2" textfont="RajdhaniMono" id="LABEL" translate="1"/>
-			</frame>
-			<frame pos="0 9">
-				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkin" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
-				<label pos="-36 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Choose skin" valign="center2" textfont="RajdhaniMono" translate="1"/>
-			</frame>
-			<frame pos="0 -1">
-				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonAdvanced" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Advanced options" valign="center2" textfont="RajdhaniMono" translate="1"/>
-			</frame>
-			<frame z-index="0" pos="0 -11">
-				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
-				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonManageServer" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Manage server" valign="center2" textfont="RajdhaniMono" translate="1" halign="left"/>
-			</frame>
-			<frame pos="0 -35">
-				<label pos="0 5" z-index="0" size="75 15" text="ENVIMIX" halign="center" valign="center2" textsize="8" textfont="Gotham/Gotham-Bold"/>
-				<label pos="0 -3" z-index="0" size="70 5" text="$aaa[unknown server name]" textsize="3" textfont="Oswald" halign="center" id="LabelServerName" scriptevents="1" style="TextCardRaceRank"/>
-				<quad z-index="-1" size="30 20" style="Bgs1" substyle="BgCardList" halign="center" pos="-22.5 -9" opacity=".5"/>
-				<frame pos="-22.5 -10.5" clip="1" clipsizen="30 17.5" clipposn="0 -8.5">
-					<frame id="FramePlayers">
-						<label pos="0 0" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
-						<label pos="0 -3.5" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
-						<label pos="0 -7" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
-						<label pos="0 -10.5" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
-						<label pos="0 -14" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
-						<label pos="0 -17.5" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
+		<frame id="FrameMenu">
+			<frame z-index="-1" pos="-110 0">
+				<quad z-index="-1" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
+				<frame pos="-35 75" clip="1" clipposn="36 -6" clipsizen="70 21" id="FrameLabelMapName">
+					<label z-index="0" size="70 15" text="$aaa[unknown]" textsize="16" textfont="Oswald" valign="top" textemboss="1"/>
+					<label z-index="0" size="70 15" text="$aaa[unknown]" textsize="16" textfont="Oswald" valign="top" textemboss="1"/>
+				</frame>
+				<frame pos="-35 58" clip="1" clipposn="36 -2.5" clipsizen="70 10" id="FrameLabelMapType">
+					<label z-index="0" size="70 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
+					<label z-index="0" size="70 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
+				</frame>
+				<frame pos="35 50" clip="1" clipposn="-17 -2.5" clipsizen="35 10" id="FrameLabelCar">
+					<label z-index="0" size="35 7" text="$aaa[unknown]" textsize="4" textfont="Oswald" valign="top" id="LabelCar" textprefix="$o" halign="right" textemboss="1"/>
+					<label z-index="0" size="35 7" text="$aaa[unknown]" textsize="4" textfont="Oswald" valign="top" id="LabelCar2" textprefix="$o" halign="right" textemboss="1"/>
+				</frame>
+				<frame pos="-35 50">
+					<label z-index="0" size="35 6" text="VALIDATED BY:" textsize="0.5" textfont="Oswald" id="LabelValidatorText" valign="top"/>
+					<label z-index="0" size="35 4" text="$aaa[unknown]" textsize="1.5" textfont="Oswald" valign="top" id="LabelValidator" pos="0 -2.5"/>
+				</frame>
+				<frame pos="0 42" z-index="1">
+					<quad size="79 11" halign="center" z-index="-1" modulatecolor="036" opacity=".5" style="Bgs1" substyle="BgCardList"/>
+					<label pos="-36 -3" z-index="0" size="40 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname"/>
+					<label pos="35 -3.2" z-index="0" size="27.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime"/>
+					<quad pos="38 -4" z-index="1" size="5 5" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" hidden="1"/>
+				</frame>
+				<frame pos="0 30">
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Continue" valign="center2" textfont="RajdhaniMono" translate="1"/>
+				</frame>
+				<frame pos="0 20" id="FrameButtonSpectator" data-checked="False" data-startanimate="-1">
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSpectator" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<label pos="-35 -5.25" z-index="1" size="70 10" text="  $tSpectator" valign="center2" textfont="RajdhaniMono" id="LABEL" translate="1"/>
+				</frame>
+				<frame pos="0 9">
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkin" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<label pos="-36 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Choose skin" valign="center2" textfont="RajdhaniMono" translate="1"/>
+				</frame>
+				<frame pos="0 -1">
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonAdvanced" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Advanced options" valign="center2" textfont="RajdhaniMono" translate="1"/>
+				</frame>
+				<frame z-index="0" pos="0 -11">
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="036" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonManageServer" halign="center" data-nav="True" pos="0 -0.125" colorize="369"/>
+					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Manage server" valign="center2" textfont="RajdhaniMono" translate="1" halign="left"/>
+				</frame>
+				<frame pos="0 -35">
+					<label pos="0 5" z-index="0" size="75 15" text="ENVIMIX" halign="center" valign="center2" textsize="8" textfont="Gotham/Gotham-Bold"/>
+					<label pos="0 -3" z-index="0" size="70 5" text="$aaa[unknown server name]" textsize="3" textfont="Oswald" halign="center" id="LabelServerName" scriptevents="1" style="TextCardRaceRank"/>
+					<quad z-index="-1" size="30 20" style="Bgs1" substyle="BgCardList" halign="center" pos="-22.5 -9" opacity=".5"/>
+					<frame pos="-22.5 -10.5" clip="1" clipsizen="30 17.5" clipposn="0 -8.5">
+						<frame id="FramePlayers">
+							<label pos="0 0" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
+							<label pos="0 -3.5" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
+							<label pos="0 -7" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
+							<label pos="0 -10.5" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
+							<label pos="0 -14" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
+							<label pos="0 -17.5" z-index="0" size="25 3" text="$aaa[unknown player]" textsize="1" textfont="Oswald" halign="center"/>
+						</frame>
 					</frame>
+					<label pos="-5.5 -10" z-index="0" size="33 4" text="$aaa[unknown mode]" textsize="2" textfont="BiryaniDemiBold" id="LabelMode"/>
+					<frame pos="33 -11.5">
+						<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="036" opacity=".5"/>
+						<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".5" id="QuadButtonModeHelp" data-nav="True"/>
+						<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" style="TextTitle3"/>
+					</frame>
+					<frame pos="33 -25">
+						<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="036" opacity=".5"/>
+						<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".5" id="QuadButtonServerSettings" data-nav="True"/>
+						<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" style="TextTitle3"/>
+					</frame>
+					<label pos="-5.5 -23" z-index="0" size="18 5" textprefix="📷 " text="0/10$ff0🔒" textfont="RajdhaniMono" valign="bottom" textsize="2" id="LabelSpectatorCount" scriptevents="1" style="TextCardRaceRank"/>
+					<label pos="-5.5 -28" z-index="0" size="18 5" textprefix="👥 " text="0/10$ff0🔒" textfont="RajdhaniMono" valign="bottom" textsize="2" id="LabelPlayerCount" scriptevents="1" style="TextCardRaceRank"/>
+					<label pos="36 -28" z-index="0" size="40 4" text="0:00" textsize="3" textfont="BiryaniDemiBold" id="LabelTimeLimitOld" halign="right" valign="bottom" hidden="1"/>
 				</frame>
-				<label pos="-5.5 -10" z-index="0" size="33 4" text="$aaa[unknown mode]" textsize="2" textfont="BiryaniDemiBold" id="LabelMode"/>
-				<frame pos="33 -11.5">
-					<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="036" opacity=".5"/>
-					<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".5" id="QuadButtonModeHelp" data-nav="True"/>
-					<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" style="TextTitle3"/>
+				<frame pos="0 -68">
+					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="F00" opacity=".5"/>
+					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonExit" halign="center" data-nav="True" pos="0 -0.125" colorize="F22"/>
+					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Exit" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
-				<frame pos="33 -25">
-					<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="036" opacity=".5"/>
-					<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".5" id="QuadButtonServerSettings" data-nav="True"/>
-					<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" style="TextTitle3"/>
+				<frame pos="165 -65" hidden="1">
+					<quad z-index="-1" size="30 30" halign="center" valign="center" image="file://Media/Images/CircleBlack.png" opacity=".5"/>
+					<quad z-index="0" size="30 30" image="file://Media/Images/MoonBlack.png" halign="center" valign="center" opacity=".5"/>
+					<quad z-index="0" size="60 60" halign="center" valign="center" style="Bgs1" substyle="Glow" hidden="1"/>
 				</frame>
-				<label pos="-5.5 -23" z-index="0" size="18 5" textprefix="📷 " text="0/10$ff0🔒" textfont="RajdhaniMono" valign="bottom" textsize="2" id="LabelSpectatorCount" scriptevents="1" style="TextCardRaceRank"/>
-				<label pos="-5.5 -28" z-index="0" size="18 5" textprefix="👥 " text="0/10$ff0🔒" textfont="RajdhaniMono" valign="bottom" textsize="2" id="LabelPlayerCount" scriptevents="1" style="TextCardRaceRank"/>
-				<label pos="36 -28" z-index="0" size="40 4" text="0:00" textsize="3" textfont="BiryaniDemiBold" id="LabelTimeLimitOld" halign="right" valign="bottom" hidden="1"/>
-			</frame>
-			<frame pos="0 -68">
-				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="F00" opacity=".5"/>
-				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonExit" halign="center" data-nav="True" pos="0 -0.125" colorize="F22"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Exit" valign="center2" textfont="RajdhaniMono" translate="1"/>
-			</frame>
-			<frame pos="165 -65" hidden="1">
-				<quad z-index="-1" size="30 30" halign="center" valign="center" image="file://Media/Images/CircleBlack.png" opacity=".5"/>
-				<quad z-index="0" size="30 30" image="file://Media/Images/MoonBlack.png" halign="center" valign="center" opacity=".5"/>
-				<quad z-index="0" size="60 60" halign="center" valign="center" style="Bgs1" substyle="Glow" hidden="1"/>
-			</frame>
-			<frame z-index="2" id="FrameTooltip" hidden="1">
-				<quad pos="0 0" z-index="-1" size="43.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip"/>
-				<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.gg/v6TW88m" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
+				<frame z-index="2" id="FrameTooltip" hidden="1">
+					<quad pos="0 0" z-index="-1" size="43.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip"/>
+					<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.gg/v6TW88m" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
+				</frame>
 			</frame>
 		</frame>
 		<frame id="FrameSkins" pos="-110 0" hidden="1">
@@ -256,7 +256,7 @@
 					<label pos="62 -0.3" z-index="1" size="20 20" text="🔒" halign="center" valign="center2" textsize="8" textemboss="1" textcolor="222" id="LabelLock" hidden="1"/>
 				</frame>
 			</frame>
-			<frame pos="110 0" clip="1" clipsizen="320 160">
+			<frame pos="110 0" clip="1" clipsizen="320 160" id="FrameVehicles">
 				<frame id="FrameInnerVehicles"/>
 			</frame>
 		</frame>

@@ -84,14 +84,14 @@ public class Menu : CTmMlScriptIngame, IContext
     public CMlQuad NavFocusedControl;
     public bool PreviousEnableDefaultCar;
 	public int UserShift;
-    public double PreviousScrollOffset;
+    public float PreviousScrollOffset;
     public Vec2 PreviousSkinScrollOffset;
 	public CUIConfig.EUISequence PreviousUISequence;
 	public int MenuOpenTime = -1;
 	public bool PrevUseForcedClans;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
-    [Netwrite] public Dictionary<string, string> UserSkins { get; set; }
+    [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
     [Netread] public bool EnableDefaultCar { get; set; }
     [Netread] public string MapPlayerModelName { get; set; }
     [Netread] public int CutOffTimeLimit { get; set; }
@@ -127,241 +127,148 @@ public class Menu : CTmMlScriptIngame, IContext
         MenuNavigation += Menu_MenuNavigation;
     }
 
-    private void Menu_MenuNavigation(CMlScriptEvent.EMenuNavAction action)
+    CTmMlPlayer GetPlayer()
     {
-        switch (action)
+        if (GUIPlayer is not null) return GUIPlayer;
+        return InputPlayer;
+    }
+
+    static string TimeToTextWithMilli(int time)
+    {
+        return $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
+    }
+
+    string GetCar()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        return car.Get();
+    }
+
+    private void UpdateVehicles()
+    {
+        for (var i = 0; i < FrameInnerVehicles.Controls.Count; i++)
         {
-            case CMlScriptEvent.EMenuNavAction.Cancel:
-                if (UI.UISequence == CUIConfig.EUISequence.Intro)
-                {
-                    if (ShowMenuLittleLater == -1)
-                        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
-                    ShowMenuLittleLater = Now;
-                }
-                else if (MenuKind == "Skin")
-                {
-                    AnimMgr.Flush(FrameMenu);
-                    AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                    AnimMgr.Add(FrameSkins, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                    MenuKind = "";
-                }
-                else if (MenuKind == "Settings")
-                {
-                    AnimMgr.Flush(FrameMenu);
-                    AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                    AnimMgr.Add(FrameAdvancedSettings, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                    MenuKind = "";
-                }
-                else
-                    CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
-                break;
-            case CMlScriptEvent.EMenuNavAction.Select:
-                if (NavOnVehicle)
-                {
-                    if (VehicleIndex < DisplayedCars.Length)
-                    {
-                        if (IsSpectator)
-                        {
-                            // suggest the player to play that car or something lol
-                        }
-                        else
-                        {
-                            if (InputPlayer.RaceStartTime - GameTime < 0)
-                            {
-                                SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
-                            }
-                            else
-                            {
-                                SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "False" });
-                            }
-                        }
+            var frame = (FrameInnerVehicles.Controls[i] as CMlFrame)!;
+            var quadVehicle = (frame.GetFirstChild("QuadVehicle") as CMlQuad)!;
+            var labelDefault = (frame.GetFirstChild("LabelDefault") as CMlLabel)!;
+            var labelVehicle = (frame.GetFirstChild("LabelVehicle") as CMlLabel)!;
 
-                        if (MenuKind == "Skin")
-                        {
-                            AnimMgr.Flush(FrameMenu);
-                            AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                            AnimMgr.Add(FrameSkins, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                            MenuKind = "";
-                        }
-                        else if (MenuKind == "Settings")
-                        {
-                            AnimMgr.Flush(FrameMenu);
-                            AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                            AnimMgr.Add(FrameAdvancedSettings, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                            MenuKind = "";
-                        }
+            if (DisplayedCars.Contains(GetCar()) && i == VehicleIndex)
+            {
+                quadVehicle.StyleSelected = true;
+            }
+            else
+            {
+                quadVehicle.StyleSelected = false;
+            }
 
-                        CloseInGameMenu(CMlScriptIngame.EInGameMenuResult.Resume);
-                    }
-                }
-                else
-                {
-                    if (NavFocusedControl == QuadButtonContinue)
-                    {
-                        QUAD_BUTTON_CONTINUE();
-                    }
-                    else if (NavFocusedControl == QuadButtonExit)
-                    {
-                        QUAD_BUTTON_EXIT();
-                    }
-                    else if (NavFocusedControl == QuadButtonManageServer)
-                    {
-                        QUAD_BUTTON_MANAGESERVER();
-                    }
-                    else if (NavFocusedControl == QuadButtonModeHelp)
-                    {
+            if (DisplayedCars.Length <= i)
+            {
+                continue;
+            }
 
-                    }
-                    else if (NavFocusedControl == QuadButtonServerSettings)
-                    {
-                        
-                    }
-                    else if (NavFocusedControl == QuadButtonAdvanced)
-                    {
-                        QUAD_BUTTON_ADVANCED();
-                    }
-                    else if (NavFocusedControl == QuadButtonSkin)
-                    {
-                        QUAD_BUTTON_SKIN();
-                    }
-                    else if (NavFocusedControl == QuadButtonSpectator)
-                    {
-                        QUAD_BUTTON_SPECTATOR();
-                    }
-                }
-                break;
-            case CMlScriptEvent.EMenuNavAction.Up:
-                if (NavOnVehicle)
+            if (ItemCars[DisplayedCars[i]] != MapPlayerModelName)
+            {
+                labelVehicle.Opacity = 1;
+                labelDefault.Hide();
+                continue;
+            }
+
+            if (EnableDefaultCar)
+            {
+                labelVehicle.Opacity = 1;
+                labelDefault.Opacity = 1;
+            }
+            else
+            {
+                labelVehicle.Opacity = 0.5f;
+                labelDefault.Opacity = 0.5f;
+            }
+
+            labelDefault.Show();
+        }
+    }
+
+    private void UpdateSkins()
+    {
+        var carName = DisplayedCars[VehicleIndex];
+
+        ImmutableArray<string> sortedNames = new();
+
+        if (Skins.ContainsKey(carName))
+        {
+            foreach (var (name, skin) in Skins[carName])
+            {
+                sortedNames.Add(name);
+            }
+
+            sortedNames = sortedNames.Sort();
+        }
+
+        var offset = MathLib.NearestInteger((float)FrameSkinList.Parent.ScrollOffset.Y / 15f);
+
+        for (var i = 0; i < FrameSkinList.Controls.Count; i++)
+        {
+            var frame = (FrameSkinList.Controls[i] as CMlFrame)!;
+            var quadSkin = (frame.GetFirstChild("QuadSkin") as CMlQuad)!;
+            var quadIcon = (frame.GetFirstChild("QuadIcon") as CMlQuad)!;
+            var labelName = (frame.GetFirstChild("LabelName") as CMlLabel)!;
+
+            if (i + offset == 0)
+            {
+                labelName.Value = TextLib.GetTranslatedText("Default");
+                quadIcon.ChangeImageUrl("");
+
+                if (UserSkins.ContainsKey(carName))
                 {
-                    FrameVehicles.Scroll(new Vec2(0, -1));
+                    if (UserSkins[carName] == "")
+                    {
+                        quadSkin.StyleSelected = true;
+                    }
+                    else
+                    {
+                        quadSkin.StyleSelected = false;
+                    }
                 }
                 else
                 {
-                    if (NavFocusedControl.StyleSelected)
-                    {
-                        NavFocusedControl.StyleSelected = false;
-
-                        if (NavFocusedControl == QuadButtonContinue)
-                        {
-                            NavFocusedControl = QuadButtonExit;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonExit)
-                        {
-                            NavFocusedControl = QuadButtonManageServer;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonManageServer)
-                        {
-                            NavFocusedControl = QuadButtonServerSettings;
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonModeHelp)
-                        {
-                            NavFocusedControl = QuadButtonAdvanced;
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonServerSettings)
-                        {
-                            NavFocusedControl = QuadButtonModeHelp;
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonAdvanced)
-                        {
-                            NavFocusedControl = QuadButtonSkin;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonSkin)
-                        {
-                            NavFocusedControl = QuadButtonSpectator;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonSpectator)
-                        {
-                            NavFocusedControl = QuadButtonContinue;
-                            Focus2();
-                        }
-                    }
-
-                    NavFocusedControl.StyleSelected = true;
+                    quadSkin.StyleSelected = true;
                 }
-                break;
-            case CMlScriptEvent.EMenuNavAction.Down:
-                if (NavOnVehicle)
+
+                frame.Show();
+
+                continue;
+            }
+
+            if (!Skins.ContainsKey(carName) || Skins[carName].Count <= i + offset - 1)
+            {
+                frame.Hide();
+                continue;
+            }
+
+            var name = sortedNames[i + offset - 1];
+            var skin = Skins[carName][name];
+
+            labelName.Value = name;
+            quadIcon.ChangeImageUrl("file://Media/" + skin.Icon);
+
+            if (UserSkins.ContainsKey(carName))
+            {
+                if (UserSkins[carName] == name)
                 {
-                    FrameVehicles.Scroll(new Vec2(0, 1));
+                    quadSkin.StyleSelected = true;
                 }
                 else
                 {
-                    if (NavFocusedControl.StyleSelected)
-                    {
-                        NavFocusedControl.StyleSelected = false;
+                    quadSkin.StyleSelected = false;
+                }
+            }
+            else
+            {
+                quadSkin.StyleSelected = true;
+            }
 
-                        if (NavFocusedControl == QuadButtonContinue)
-                        {
-                            NavFocusedControl = QuadButtonSpectator;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonExit)
-                        {
-                            NavFocusedControl = QuadButtonContinue;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonManageServer)
-                        {
-                            NavFocusedControl = QuadButtonExit;
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonModeHelp)
-                        {
-                            NavFocusedControl = QuadButtonServerSettings;
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonServerSettings)
-                        {
-                            NavFocusedControl = QuadButtonManageServer;
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonAdvanced)
-                        {
-                            NavFocusedControl = QuadButtonModeHelp;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonSkin)
-                        {
-                            NavFocusedControl = QuadButtonAdvanced;
-                            Focus2();
-                        }
-                        else if (NavFocusedControl == QuadButtonSpectator)
-                        {
-                            NavFocusedControl = QuadButtonSkin;
-                            Focus2();
-                        }
-                    }
-
-                    NavFocusedControl.StyleSelected = true;
-                }
-                break;
-            case CMlScriptEvent.EMenuNavAction.Left:
-                NavFocusedControl.StyleSelected = false;
-                NavOnVehicle = !NavOnVehicle;
-                if (!NavOnVehicle)
-                {
-                    NavFirstControl.StyleSelected = true;
-                    NavFocusedControl = NavFirstControl;
-                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
-                }
-                break;
-            case CMlScriptEvent.EMenuNavAction.Right:
-                NavFocusedControl.StyleSelected = false;
-                NavOnVehicle = !NavOnVehicle;
-                if (!NavOnVehicle)
-                {
-                    NavFirstControl.StyleSelected = true;
-                    NavFocusedControl = NavFirstControl;
-                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
-                }
-                break;
+            frame.Show();
         }
     }
 
@@ -372,7 +279,7 @@ public class Menu : CTmMlScriptIngame, IContext
             case "QuadVehicle":
                 PreviousVehicleIndex = VehicleIndex;
                 var index = TextLib.ToInteger(control.Parent.DataAttributeGet("id"));
-                FrameVehicles.Scroll(new Vec2(0f, (index - PreviousVehicleIndex) * 1));
+                FrameVehicles.Scroll(new Vec2(0f, (index - PreviousVehicleIndex) * 1f));
 
                 if (PreviousVehicleIndex - index == 0)
                 {
@@ -445,7 +352,9 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 if (Index == -1)
                 {
-                    UserSkins[CName] = "";
+                    var userSkins = UserSkins;
+                    userSkins[CName] = "";
+                    UserSkins = userSkins;
                 }
                 else
                 {
@@ -463,7 +372,9 @@ public class Menu : CTmMlScriptIngame, IContext
 
                     if (Index < SNames.Length)
                     {
-                        UserSkins[CName] = SNames[Index];
+                        var userSkins = UserSkins;
+                        userSkins[CName] = SNames[Index];
+                        UserSkins = userSkins;
                     }
                 }
                 UpdateSkins();
@@ -502,7 +413,6 @@ public class Menu : CTmMlScriptIngame, IContext
         }
     }
 
-
     private void Focus2()
     {
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
@@ -512,150 +422,6 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 3, 1);
     }
-
-    CTmMlPlayer GetPlayer()
-	{
-		if (GUIPlayer is not null) return GUIPlayer;
-		return InputPlayer;
-	}
-
-	string GetCar()
-	{
-		var car = Netread<string>.For(GetPlayer());
-		return car.Get();
-	}
-
-	static string TimeToTextWithMilli(int time)
-	{
-		return TextLib.TimeToText(time, true) + MathLib.Abs(time % 10);
-	}
-
-	private void UpdateVehicles()
-	{
-        for (var i = 0; i < FrameInnerVehicles.Controls.Count; i++)
-        {
-            var frame = (FrameInnerVehicles.Controls[i] as CMlFrame)!;
-            var quadVehicle = (frame.GetFirstChild("QuadVehicle") as CMlQuad)!;
-            var labelDefault = (frame.GetFirstChild("LabelDefault") as CMlLabel)!;
-            var labelVehicle = (frame.GetFirstChild("LabelVehicle") as CMlLabel)!;
-
-            if (DisplayedCars.Contains(GetCar()) && i == VehicleIndex)
-            {
-                quadVehicle.StyleSelected = true;
-            }
-            else
-            {
-                quadVehicle.StyleSelected = false;
-            }
-
-            if (DisplayedCars.Length <= i)
-            {
-                continue;
-            }
-
-            if (ItemCars[DisplayedCars[i]] != MapPlayerModelName)
-            {
-                labelVehicle.Opacity = 1;
-                labelDefault.Hide();
-				continue;
-            }
-
-            if (EnableDefaultCar)
-            {
-                labelVehicle.Opacity = 1;
-                labelDefault.Opacity = 1;
-            }
-            else
-            {
-                labelVehicle.Opacity = 0.5f;
-                labelDefault.Opacity = 0.5f;
-            }
-
-            labelDefault.Show();
-        }
-    }
-
-	private void UpdateSkins()
-	{
-		var carName = DisplayedCars[VehicleIndex];
-
-		ImmutableArray<string> sortedNames = new();
-
-		if (Skins.ContainsKey(carName))
-		{
-			foreach (var (name, skin) in Skins[carName])
-			{
-				sortedNames.Add(name);
-			}
-
-			sortedNames = sortedNames.Sort();
-		}
-
-		var offset = MathLib.NearestInteger((float)FrameSkinList.Parent.ScrollOffset.Y / 15f);
-
-		for (var i = 0; i < FrameSkinList.Controls.Count; i++)
-		{
-			var frame = (FrameSkinList.Controls[i] as CMlFrame)!;
-			var quadSkin = (frame.GetFirstChild("QuadSkin") as CMlQuad)!;
-			var quadIcon = (frame.GetFirstChild("QuadIcon") as CMlQuad)!;
-			var labelName = (frame.GetFirstChild("LabelName") as CMlLabel)!;
-
-			if (i + offset == 0)
-			{
-				labelName.Value = TextLib.GetTranslatedText("Default");
-				quadIcon.ChangeImageUrl("");
-
-				if (UserSkins.ContainsKey(carName))
-				{
-					if (UserSkins[carName] == "")
-					{
-						quadSkin.StyleSelected = true;
-					}
-					else
-					{
-						quadSkin.StyleSelected = false;
-					}
-				}
-				else
-				{
-					quadSkin.StyleSelected = true;
-				}
-
-				frame.Show();
-
-				continue;
-			}
-
-            if (!Skins.ContainsKey(carName) || Skins[carName].Count <= i + offset - 1)
-            {
-                frame.Hide();
-            }
-
-            var name = sortedNames[i + offset - 1];
-            var skin = Skins[carName][name];
-
-            labelName.Value = name;
-            quadIcon.ChangeImageUrl("file://Media/" + skin.Icon);
-
-            if (UserSkins.ContainsKey(carName))
-            {
-				if (UserSkins[carName] == name)
-				{
-					quadSkin.StyleSelected = true;
-				}
-				else
-				{
-					quadSkin.StyleSelected = false;
-				}
-            }
-            else
-            {
-                quadSkin.StyleSelected = true;
-            }
-
-            frame.Show();
-        }
-	}
 
 	private void SetSlidingText(CMlFrame frame, string value)
 	{
@@ -797,13 +563,251 @@ public class Menu : CTmMlScriptIngame, IContext
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
-	private bool IsCarLocked()
+    private bool IsCarLocked()
 	{
 		return (GetPlayer().RaceStartTime > 0 && GameTime - GetPlayer().RaceStartTime >= 0)
 			|| UI.UISequence == CUIConfig.EUISequence.Intro || IsSpectator;
 		//return (InputPlayer.RaceStartTime > 0 && GameTime - InputPlayer.RaceStartTime >= 0)
 		//	|| (Net_CutOffTimeLimit == -1 && InputPlayer.RaceStartTime == 0);  - issues with disabled default car and no time limit
 	}
+
+    private void Menu_MenuNavigation(CMlScriptEvent.EMenuNavAction action)
+    {
+        switch (action)
+        {
+            case CMlScriptEvent.EMenuNavAction.Cancel:
+                if (UI.UISequence == CUIConfig.EUISequence.Intro)
+                {
+                    if (ShowMenuLittleLater == -1)
+                        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
+                    ShowMenuLittleLater = Now;
+                }
+                else if (MenuKind == "Skin")
+                {
+                    AnimMgr.Flush(FrameMenu);
+                    AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    AnimMgr.Add(FrameSkins, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    MenuKind = "";
+                }
+                else if (MenuKind == "Settings")
+                {
+                    AnimMgr.Flush(FrameMenu);
+                    AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    AnimMgr.Add(FrameAdvancedSettings, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    MenuKind = "";
+                }
+                else
+                    CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
+                break;
+            case CMlScriptEvent.EMenuNavAction.Select:
+                if (NavOnVehicle)
+                {
+                    if (VehicleIndex < DisplayedCars.Length)
+                    {
+                        if (IsSpectator)
+                        {
+                            // suggest the player to play that car or something lol
+                        }
+                        else
+                        {
+                            if (InputPlayer.RaceStartTime - GameTime < 0)
+                            {
+                                SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
+                            }
+                            else
+                            {
+                                SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "False" });
+                            }
+                        }
+
+                        if (MenuKind == "Skin")
+                        {
+                            AnimMgr.Flush(FrameMenu);
+                            AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                            AnimMgr.Add(FrameSkins, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                            MenuKind = "";
+                        }
+                        else if (MenuKind == "Settings")
+                        {
+                            AnimMgr.Flush(FrameMenu);
+                            AnimMgr.Add(FrameMenu, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                            AnimMgr.Add(FrameAdvancedSettings, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                            MenuKind = "";
+                        }
+
+                        CloseInGameMenu(CMlScriptIngame.EInGameMenuResult.Resume);
+                    }
+                }
+                else
+                {
+                    if (NavFocusedControl == QuadButtonContinue)
+                    {
+                        QUAD_BUTTON_CONTINUE();
+                    }
+                    else if (NavFocusedControl == QuadButtonExit)
+                    {
+                        QUAD_BUTTON_EXIT();
+                    }
+                    else if (NavFocusedControl == QuadButtonManageServer)
+                    {
+                        QUAD_BUTTON_MANAGESERVER();
+                    }
+                    else if (NavFocusedControl == QuadButtonModeHelp)
+                    {
+
+                    }
+                    else if (NavFocusedControl == QuadButtonServerSettings)
+                    {
+
+                    }
+                    else if (NavFocusedControl == QuadButtonAdvanced)
+                    {
+                        QUAD_BUTTON_ADVANCED();
+                    }
+                    else if (NavFocusedControl == QuadButtonSkin)
+                    {
+                        QUAD_BUTTON_SKIN();
+                    }
+                    else if (NavFocusedControl == QuadButtonSpectator)
+                    {
+                        QUAD_BUTTON_SPECTATOR();
+                    }
+                }
+                break;
+            case CMlScriptEvent.EMenuNavAction.Up:
+                if (NavOnVehicle)
+                {
+                    FrameVehicles.Scroll(new Vec2(0, -1f));
+                }
+                else
+                {
+                    if (NavFocusedControl.StyleSelected)
+                    {
+                        NavFocusedControl.StyleSelected = false;
+
+                        if (NavFocusedControl == QuadButtonContinue)
+                        {
+                            NavFocusedControl = QuadButtonExit;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonExit)
+                        {
+                            NavFocusedControl = QuadButtonManageServer;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonManageServer)
+                        {
+                            NavFocusedControl = QuadButtonServerSettings;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonModeHelp)
+                        {
+                            NavFocusedControl = QuadButtonAdvanced;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonServerSettings)
+                        {
+                            NavFocusedControl = QuadButtonModeHelp;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonAdvanced)
+                        {
+                            NavFocusedControl = QuadButtonSkin;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonSkin)
+                        {
+                            NavFocusedControl = QuadButtonSpectator;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonSpectator)
+                        {
+                            NavFocusedControl = QuadButtonContinue;
+                            Focus2();
+                        }
+                    }
+
+                    NavFocusedControl.StyleSelected = true;
+                }
+                break;
+            case CMlScriptEvent.EMenuNavAction.Down:
+                if (NavOnVehicle)
+                {
+                    FrameVehicles.Scroll(new Vec2(0, 1));
+                }
+                else
+                {
+                    if (NavFocusedControl.StyleSelected)
+                    {
+                        NavFocusedControl.StyleSelected = false;
+
+                        if (NavFocusedControl == QuadButtonContinue)
+                        {
+                            NavFocusedControl = QuadButtonSpectator;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonExit)
+                        {
+                            NavFocusedControl = QuadButtonContinue;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonManageServer)
+                        {
+                            NavFocusedControl = QuadButtonExit;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonModeHelp)
+                        {
+                            NavFocusedControl = QuadButtonServerSettings;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonServerSettings)
+                        {
+                            NavFocusedControl = QuadButtonManageServer;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonAdvanced)
+                        {
+                            NavFocusedControl = QuadButtonModeHelp;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonSkin)
+                        {
+                            NavFocusedControl = QuadButtonAdvanced;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadButtonSpectator)
+                        {
+                            NavFocusedControl = QuadButtonSkin;
+                            Focus2();
+                        }
+                    }
+
+                    NavFocusedControl.StyleSelected = true;
+                }
+                break;
+            case CMlScriptEvent.EMenuNavAction.Left:
+                NavFocusedControl.StyleSelected = false;
+                NavOnVehicle = !NavOnVehicle;
+                if (!NavOnVehicle)
+                {
+                    NavFirstControl.StyleSelected = true;
+                    NavFocusedControl = NavFirstControl;
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+                }
+                break;
+            case CMlScriptEvent.EMenuNavAction.Right:
+                NavFocusedControl.StyleSelected = false;
+                NavOnVehicle = !NavOnVehicle;
+                if (!NavOnVehicle)
+                {
+                    NavFirstControl.StyleSelected = true;
+                    NavFocusedControl = NavFirstControl;
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+                }
+                break;
+        }
+    }
 
     public void Main()
     {
@@ -855,7 +859,9 @@ public class Menu : CTmMlScriptIngame, IContext
 
         foreach (var car in DisplayedCars)
         {
-            UserSkins[car] = "";
+            var userSkins = UserSkins;
+            userSkins[car] = "";
+            UserSkins = userSkins;
         }
 
 		FrameMenu.RelativePosition_V3.X = -110;
@@ -882,10 +888,10 @@ public class Menu : CTmMlScriptIngame, IContext
         while (VehicleIndex > 0 && FrameVehicles.ScrollOffset.Y != VehicleIndex * 20)
         {
             Yield();
-            FrameVehicles.ScrollOffset.Y = VehicleIndex * 20;
+            FrameVehicles.ScrollOffset.Y = VehicleIndex * 20f;
         }
 
-        PreviousScrollOffset = FrameVehicles.ScrollOffset.Y;
+        PreviousScrollOffset = (float)FrameVehicles.ScrollOffset.Y;
         PreviousSkinScrollOffset = FrameSkinList.Parent.ScrollOffset;
         PreviousUISequence = UI.UISequence;
 		
@@ -1115,10 +1121,10 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (FrameVehicles.ScrollOffset.Y != PreviousScrollOffset)
         {
-            var difference = FrameVehicles.ScrollOffset.Y - PreviousScrollOffset;
+            var difference = (float)(FrameVehicles.ScrollOffset.Y - PreviousScrollOffset);
             var indexChange = MathLib.NearestInteger((float)difference / 20);
             VehicleIndex += indexChange;
-            PreviousScrollOffset = FrameVehicles.ScrollOffset.Y;
+            PreviousScrollOffset = (float)FrameVehicles.ScrollOffset.Y;
         }
 
         if (Skins.ContainsKey(DisplayedCars[VehicleIndex]))

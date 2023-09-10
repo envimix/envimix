@@ -217,12 +217,33 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), "Creating manialinks...");
 
-        CreateLayer("321Go");
-        CreateLayer("Dashboard");
-        CreateLayer("PrePostLoading");
-        CreateLayer("TimeLimit");
-        CreateLayer("Map");
-        CreateLayer("Checkpoint");
+        CreateLayer("321Go", CUILayer.EUILayerType.Normal);
+        CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
+        CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
+        CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
+        CreateLayer("Map", CUILayer.EUILayerType.Normal);
+        CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
+
+        var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";
+        vehicleManialink = $"{vehicleManialink}<frame id=\"FrameInnerVehicles\">";
+
+        for (var i = 0; i < DisplayedCars.Count; i++)
+        {
+            var vehicle = DisplayedCars[i];
+            vehicleManialink = $"{vehicleManialink}    <frame pos=\"0 {-i * 20}\" data-id=\"{i}\">";
+            vehicleManialink = $"{vehicleManialink}        <frame z-index=\"0\" id=\"FrameBackground\">";
+            vehicleManialink = $"{vehicleManialink}            <quad z-index=\"0\" size=\"80 19\" valign=\"center\" halign=\"center\" style=\"Bgs1\" substyle=\"BgCardList\" opacity=\"1\"/>";
+            vehicleManialink = $"{vehicleManialink}        </frame>";
+            vehicleManialink = $"{vehicleManialink}        <quad z-index=\"1\" size=\"80 19\" id=\"QuadVehicle\" valign=\"center\" halign=\"center\" style=\"Bgs1\" substyle=\"BgCardInventoryItem\" scriptevents=\"1\" modulatecolor=\"036\" opacity=\".5\"/>";
+            vehicleManialink = $"{vehicleManialink}        <label pos=\"0 -0.5\" z-index=\"2\" size=\"70 10\" text=\"{vehicle}\" halign=\"center\" valign=\"center2\" textsize=\"6\" textfont=\"RajdhaniMono\" id=\"LabelVehicle\"/>";
+            vehicleManialink = $"{vehicleManialink}        <label pos=\"37.5 -8\" z-index=\"2\" size=\"75 5\" text=\"Default\" textprefix=\"$t\" halign=\"right\" valign=\"bottom\" textfont=\"Oswald\" textsize=\"2\" textcolor=\"FF0\" id=\"LabelDefault\" translate=\"1\" hidden=\"1\"/>";
+            vehicleManialink = $"{vehicleManialink}        <quad pos=\"35 5\" z-index=\"3\" size=\"7.5 7.5\" halign=\"center\" valign=\"center\" style=\"BgRaceScore2\" substyle=\"Fame\" id=\"QuadStar\" hidden=\"1\"/>";
+            vehicleManialink = $"{vehicleManialink}     </frame>";
+        }
+
+        vehicleManialink = $"{vehicleManialink}</frame>";
+
+        CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
 
         Log(nameof(Envimix), "All manialinks successfully created!");
 
@@ -299,45 +320,57 @@ public class Envimix : UniverseModeBase
             UnspawnPlayer(player);
         }
 
-        if (!Reload)
+        QueueMapIndex();
+    }
+
+    private void QueueMapIndex()
+    {
+        if (Reload)
         {
-            if (MapQueue.Length > 0)
-            {
-                if (!EnableStadiumEnvimix && MapList[MapQueue[0]].CollectionName == "Stadium")
-                {
-                    Log(nameof(Envimix), $"Skipping {MapList[MapQueue[0]].Name} from manual queue: Stadium environment");
-                }
-                else
-                {
-                    NextMapIndex = MapQueue[0];
-                }
+            return;
+        }
 
-                MapQueue.Remove(0);
+        if (MapQueue.Length > 0)
+        {
+            if (!EnableStadiumEnvimix && MapList[MapQueue[0]].CollectionName == "Stadium")
+            {
+                Log(nameof(Envimix), $"Skipping {MapList[MapQueue[0]].Name} from manual queue: Stadium environment");
+            }
+            else
+            {
+                NextMapIndex = MapQueue[0];
             }
 
-            // Minor copypaste behaviour, worth refactoring
-            while (!EnableStadiumEnvimix)
+            MapQueue.Remove(0);
+        }
+
+        // Minor copypaste behaviour, worth refactoring
+        while (!EnableStadiumEnvimix)
+        {
+            var mapName = MapList[NextMapIndex].Name;
+
+            if (MapList[NextMapIndex].CollectionName == "Stadium")
             {
-                var mapName = MapList[NextMapIndex].Name;
-
-                if (MapList[NextMapIndex].CollectionName == "Stadium")
-                {
-                    NextMapIndex += 1;
-                }
-                else
-                {
-                    break;
-                }
-
-                Log(nameof(Envimix), $"Skipping {mapName}: Stadium environment");
-                Yield();
+                NextMapIndex += 1;
             }
+            else
+            {
+                break;
+            }
+
+            Log(nameof(Envimix), $"Skipping {mapName}: Stadium environment");
+            Yield();
         }
     }
 
-    public void CreateLayer(string layerName)
+    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType)
     {
-        CreateLayer(layerName, $"Manialinks/Universe2/{layerName}.xml");
+        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml");
+    }
+
+    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
+    {
+        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
     }
 
     public static void NoticeMessage(IList<CUIConfig> uis, string text)
