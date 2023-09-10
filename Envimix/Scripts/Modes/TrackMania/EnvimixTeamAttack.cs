@@ -8,6 +8,9 @@ public class EnvimixTeamAttack : Envimix
     [Setting(As = "Car select time")]
     public int CarSelectTime = 10;
 
+    [Setting(As = "Custom countdown")]
+    public int CustomCountdown = -1;
+
     public override void OnServerInit()
     {
         Users_DestroyAllFakes();
@@ -47,12 +50,9 @@ public class EnvimixTeamAttack : Envimix
                         if (e.CustomEventData.Count > 0)
                         {
                             var carName = e.CustomEventData[0];
-                            var car = Netwrite<string>.For(player);
+                            SetValidClientCar(player, carName);
 
-                            if (DisplayedCars.Contains(carName))
-                            {
-                                car.Set(carName);
-                            }
+                            var car = Netwrite<string>.For(player);
 
                             if (e.CustomEventData.Count > 1)
                             {
@@ -154,7 +154,7 @@ public class EnvimixTeamAttack : Envimix
         OpenNewLadder();
 
         // Loop during the countdown
-        while (CutOffTimeLimit - Now > 0)
+        while (CutOffTimeLimit - Now > 0 && !Reload && !ReloadMap && !Terminate && !ServerShutdownRequested && !MatchEndRequested)
         {
             foreach (var e in UIManager.PendingEvents)
             {
@@ -208,7 +208,6 @@ public class EnvimixTeamAttack : Envimix
             CutOffTimeLimit = Now + TimeLimit * 1000 + 3000;
         }
 
-        // Minor copypaste behaviour, worth refactoring
         foreach (var player in Players)
         {
             // why to reset notice again?
@@ -248,7 +247,22 @@ public class EnvimixTeamAttack : Envimix
 
     private bool TrySpawnEnvimixTeamAttackPlayer(CTmPlayer player, bool frozen)
     {
-        return TrySpawnEnvimixPlayer(player, frozen, TimeLimit);
+        if (!frozen)
+        {
+            if (CutOffTimeLimit - Now >= TimeLimit * 1000)
+            {
+                return TrySpawnEnvimixPlayer(player, CutOffTimeLimit - TimeLimit * 1000);
+            }
+
+            if (CustomCountdown < 0)
+            {
+                return TrySpawnEnvimixPlayer(player, -1);
+            }
+
+            return TrySpawnEnvimixPlayer(player, Now + CustomCountdown);
+        }
+
+        return TrySpawnEnvimixPlayer(player, frozen);
     }
 
     private void ProcessUpdateSkinEvent(CUIConfigEvent e)

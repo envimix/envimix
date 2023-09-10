@@ -40,6 +40,9 @@ public class Envimix : UniverseModeBase
     [Setting(As = "* Enable Stadium envimix")]
     public bool EnableStadiumEnvimix = false; // Wrong usage can crash scripts
 
+    [Setting(As = "* Enable TrafficCar in Stadium", ReloadOnChange = true)]
+    public bool EnableTrafficCarInStadium = false; // Wrong usage can crash scripts
+
     [Setting(As = "* Use United models", ReloadOnChange = true)]
     public bool UseUnitedModels = false; // Wrong usage can crash scripts
 
@@ -155,7 +158,7 @@ public class Envimix : UniverseModeBase
 
                 itemCars[car] = itemName;
 
-                if (EnableStadiumEnvimix && car != "StadiumCar")
+                if (EnableStadiumEnvimix && car != "StadiumCar" && (EnableTrafficCarInStadium || car != "TrafficCar"))
                 {
                     itemName = $"{VehicleFolder}{TextLib.Replace(VehicleFileFormat, "%1", car)}";
                     SpecialCars[car] = new()
@@ -424,6 +427,13 @@ public class Envimix : UniverseModeBase
         return allCars;
     }
 
+    /// <summary>
+    /// Spawn an Envimix player without performing any validations on the car name.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="carName"></param>
+    /// <param name="raceStartTime"></param>
+    /// <returns></returns>
     public bool SpawnEnvimixPlayer(CTmPlayer player, string carName, int raceStartTime)
     {
         var allCars = GetAllCars();
@@ -442,6 +452,7 @@ public class Envimix : UniverseModeBase
             skin = skins[carName];
         }
 
+        Log("sss", carName);
         player.ForceModelId = allCars[carName][skin];
 
         var car = Netwrite<string>.For(player);
@@ -537,30 +548,34 @@ public class Envimix : UniverseModeBase
         SpawnAllEnvimixPlayers(false);
     }
 
-    public bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen, int timeLimit)
+    public void SetValidClientCar(CTmPlayer player, string clientCar)
     {
-        var clientCar = Netread<string>.For(UIManager.GetUI(player));
         var car = Netwrite<string>.For(player);
 
         // Validation of available cars, invalid car currently ignores changing anything but passes the spawn attempt
-        if (DisplayedCars.Contains(clientCar.Get()))
+        if (DisplayedCars.Contains(clientCar))
         {
-            car.Set(clientCar.Get());
+            // Disallow spawning TrafficCar in Stadium when it's disabled
+            if (Map.CollectionName != "Stadium" || (!EnableTrafficCarInStadium && clientCar != "TrafficCar"))
+            {
+                car.Set(clientCar);
+            }
         }
+    }
 
-        bool spawned;
-        if (frozen)
-        {
-            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
-        }
-        else if (timeLimit < 0 || CutOffTimeLimit - Now < timeLimit * 1000)
-        {
-            spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
-        }
-        else
-        {
-            spawned = SpawnEnvimixPlayer(player, car.Get(), CutOffTimeLimit - timeLimit * 1000);
-        }
+    public void SetValidClientCar(CTmPlayer player)
+    {
+        var clientCar = Netread<string>.For(UIManager.GetUI(player));
+        SetValidClientCar(player, clientCar.Get());
+    }
+
+    public bool TrySpawnEnvimixPlayer(CTmPlayer player, int raceStartTime)
+    {
+        SetValidClientCar(player);
+
+        var car = Netwrite<string>.For(player);
+
+        var spawned = SpawnEnvimixPlayer(player, car.Get(), raceStartTime);
 
         if (spawned)
         {
@@ -585,7 +600,12 @@ public class Envimix : UniverseModeBase
 
     public bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen)
     {
-        return TrySpawnEnvimixPlayer(player, frozen, timeLimit: -1);
+        if (frozen)
+        {
+            return TrySpawnEnvimixPlayer(player, -2);
+        }
+        
+        return TrySpawnEnvimixPlayer(player, -1);
     }
 
     public void UpdateSkin(CTmPlayer player, string skin)
