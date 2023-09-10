@@ -15,9 +15,13 @@
 					<label z-index="0" size="70 15" text="$aaa[unknown]" textsize="16" textfont="Oswald" valign="top" textemboss="1"/>
 					<label z-index="0" size="70 15" text="$aaa[unknown]" textsize="16" textfont="Oswald" valign="top" textemboss="1"/>
 				</frame>
-				<frame pos="-35 58" clip="1" clipposn="36 -2.5" clipsizen="70 10" id="FrameLabelMapType">
-					<label z-index="0" size="70 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
-					<label z-index="0" size="70 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
+				<frame pos="-35.25 58" clip="1" clipposn="22.5 -2.5" clipsizen="45 10" id="FrameLabelMapType">
+					<label z-index="0" size="40 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
+					<label z-index="0" size="40 7" text="$aaa[unknown]" textsize="5" textfont="Oswald" valign="top" textemboss="1"/>
+				</frame>
+				<frame pos="35 57.5" clip="1" clipposn="-12.5 -2.5" clipsizen="25 10">
+					<label z-index="0" size="35 6" text="MAP BY:" textsize="0.5" textfont="Oswald" id="LabelMapAuthorText" halign="right"/>
+					<label z-index="0" size="35 4" text="$aaa[unknown]" textsize="1.5" textfont="Oswald" valign="top" id="LabelMapAuthor" pos="0 -2.5" halign="right"/>
 				</frame>
 				<frame pos="35 50" clip="1" clipposn="-17 -2.5" clipsizen="35 10" id="FrameLabelCar">
 					<label z-index="0" size="35 7" text="$aaa[unknown]" textsize="4" textfont="Oswald" valign="top" id="LabelCar" textprefix="$o" halign="right" textemboss="1"/>

@@ -8,6 +8,11 @@ public class Map : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameLabelMapName;
     [ManialinkControl] public required CMlLabel LabelMapName;
     [ManialinkControl] public required CMlLabel LabelMapName2;
+    [ManialinkControl] public required CMlFrame FrameMapAuthor;
+    [ManialinkControl] public required CMlFrame FrameMapAuthorBg;
+    [ManialinkControl] public required CMlFrame FrameLabelMapAuthor;
+    [ManialinkControl] public required CMlLabel LabelMapAuthor;
+    [ManialinkControl] public required CMlLabel LabelMapAuthor2;
     [ManialinkControl] public required CMlFrame FrameCar;
     [ManialinkControl] public required CMlFrame FrameCarBg;
     [ManialinkControl] public required CMlFrame FrameLabelCar;
@@ -15,6 +20,7 @@ public class Map : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelCar2;
 
     public string PreviousMapName = "";
+    public string PreviousMapAuthor = "";
     public string PreviousCar = "";
     public bool PreviousIsVisible;
 
@@ -107,6 +113,7 @@ public class Map : CTmMlScriptIngame, IContext
         else
         {
             AdjustMapNameFrame();
+            AdjustMapAuthorFrame();
             AdjustCarFrame();
         }
 
@@ -135,10 +142,28 @@ public class Map : CTmMlScriptIngame, IContext
             AnimMgr.AddChain(label, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
         }
 
+        foreach (var control in FrameMapAuthorBg.Controls)
+        {
+            control.Size.X = 0;
+            AnimMgr.Add(control, $"<quad size=\"{FrameMapAuthorBg.DataAttributeGet("size")} 8\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+
+        foreach (var control in FrameLabelMapAuthor.Controls)
+        {
+            if (control is not CMlLabel label)
+            {
+                continue;
+            }
+
+            label.Opacity = 0;
+            AnimMgr.Add(label, "<label opacity=\"0\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.AddChain(label, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+
         foreach (var control in FrameCarBg.Controls)
         {
             control.Size.X = 0;
-            AnimMgr.Add(control, $"<quad size=\"{FrameCarBg.DataAttributeGet("size")} 8\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(control, $"<quad size=\"{FrameCarBg.DataAttributeGet("size")} 10\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
         }
 
         foreach (var control in FrameLabelCar.Controls)
@@ -210,7 +235,7 @@ public class Map : CTmMlScriptIngame, IContext
         foreach (var control in FrameCarBg.Controls)
         {
             control.Size.X = 0;
-            AnimMgr.Add(control, $"<quad size=\"{FrameCarBg.DataAttributeGet("size")} 8\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(control, $"<quad size=\"{FrameCarBg.DataAttributeGet("size")} 10\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
         }
 
         foreach (var control in FrameLabelCar.Controls)
@@ -260,6 +285,43 @@ public class Map : CTmMlScriptIngame, IContext
         else
         {
             FrameMapName.Visible = true;
+        }
+    }
+
+    private void AdjustMapAuthorFrame()
+    {
+        if (Map.MapInfo.AuthorNickName == PreviousMapAuthor)
+        {
+            return;
+        }
+
+        foreach (var control in FrameMapAuthorBg.Controls)
+        {
+            if (control is not CMlQuad quad)
+            {
+                continue;
+            }
+
+            quad.Size.X = LabelMapAuthor.ComputeWidth(Map.MapInfo.AuthorNickName) + 6;
+
+            if (quad.Size.X > 80)
+            {
+                quad.Size.X = 80;
+            }
+
+            FrameMapAuthorBg.DataAttributeSet("size", quad.Size.X.ToString());
+        }
+
+        SetSlidingText(FrameLabelMapAuthor, Map.MapInfo.AuthorNickName);
+        PreviousMapAuthor = Map.MapInfo.AuthorNickName;
+
+        if (PreviousMapAuthor is "")
+        {
+            FrameMapAuthor.Visible = false;
+        }
+        else
+        {
+            FrameMapAuthor.Visible = true;
         }
     }
 }

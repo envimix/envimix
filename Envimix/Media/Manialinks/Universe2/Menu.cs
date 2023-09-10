@@ -71,12 +71,14 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadButtonSkinBack;
     [ManialinkControl] public required CMlQuad QuadButtonSettingsBack;
     [ManialinkControl] public required CMlFrame FrameQuicktip;
+    [ManialinkControl] public required CMlLabel LabelMapAuthor;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
     public string MenuKind;
     public string PreviousMapUid;
     public string PreviousCar;
+    public string PreviousMapAuthor;
     public bool IsMenuOpen;
     public int ShowMenuLittleLater = -1;
     public bool NavOnVehicle;
@@ -1024,6 +1026,12 @@ public class Menu : CTmMlScriptIngame, IContext
         }
 
         MoveSlidingText(FrameLabelMapName, 10, -0.01f);
+
+        if (Map.MapInfo.AuthorNickName != PreviousMapAuthor)
+        {
+            LabelMapAuthor.SetText(Map.MapInfo.AuthorNickName);
+            PreviousMapAuthor = Map.MapInfo.AuthorNickName;
+        }
 
         if (car.Get() != PreviousCar)
         {
