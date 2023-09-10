@@ -17,8 +17,8 @@
 				<quad z-index="2" size="54.5 7.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
 			</frame>
 			<frame id="FrameLabelMapAuthor" pos="25 4.5" clip="1" clipposn="-25 -5" clipsizen="50 10" z-index="3">
-				<label id="LabelMapAuthor" z-index="0" size="90 7" textsize="4" textfont="Oswald" halign="right" pos="0 -1.9" textprefix="$o"/>
-				<label id="LabelMapAuthor2" z-index="0" size="90 7" textsize="4" textfont="Oswald" halign="right" pos="0 -1.9" textprefix="$o"/>
+				<label id="LabelMapAuthor" z-index="0" size="90 7" textsize="4" textfont="Oswald" halign="right" pos="0 -1.9"/>
+				<label id="LabelMapAuthor2" z-index="0" size="90 7" textsize="4" textfont="Oswald" halign="right" pos="0 -1.9"/>
 			</frame>
 		</frame>
 		<frame id="FrameCar" pos="-27.5 -30">

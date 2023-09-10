@@ -302,7 +302,7 @@ public class Map : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            quad.Size.X = LabelMapAuthor.ComputeWidth(Map.MapInfo.AuthorNickName) + 6;
+            quad.Size.X = LabelMapAuthor.ComputeWidth(Map.MapInfo.AuthorNickName) + 5;
 
             if (quad.Size.X > 80)
             {
