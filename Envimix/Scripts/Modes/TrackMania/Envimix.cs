@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 namespace Envimix.Scripts.Modes.TrackMania;
 
 [Include(typeof(Record))]
+[SettingsChangeDetectors]
 public class Envimix : UniverseModeBase
 {
     public struct SSkin
@@ -21,37 +22,37 @@ public class Envimix : UniverseModeBase
 
     public const string EnvimixWebAPI = "http://localhost:32771";
 
-    [Setting(As = "Enable TM2 cars")]
+    [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
     public bool EnableTM2Cars = true;
 
-    [Setting(As = "Enable TrafficCar")]
+    [Setting(As = "Enable TrafficCar", ReloadOnChange = true)]
     public bool EnableTrafficCar = true;
 
-    [Setting(As = "Enable United cars")]
+    [Setting(As = "Enable United cars", ReloadOnChange = true)]
     public bool EnableUnitedCars = false;
 
-    [Setting(As = "Enable custom cars")]
+    [Setting(As = "Enable custom cars", ReloadOnChange = true)]
     public bool EnableCustomCars = false;
 
-    [Setting(As = "Enable default car")]
+    [Setting(As = "Enable default car", CallOnChange = nameof(UpdateDefaultCarAvailability))]
     public bool EnableDefaultCar = true;
 
     [Setting(As = "* Enable Stadium envimix")]
     public bool EnableStadiumEnvimix = false; // Wrong usage can crash scripts
 
-    [Setting(As = "* Use United models")]
+    [Setting(As = "* Use United models", ReloadOnChange = true)]
     public bool UseUnitedModels = false; // Wrong usage can crash scripts
 
-    [Setting(As = "* Vehicle folder")]
+    [Setting(As = "* Vehicle folder", ReloadOnChange = true)]
     public string VehicleFolder = "Vehicles/"; // Wrong usage can crash scripts
 
-    [Setting(As = "* Vehicle file format")]
+    [Setting(As = "* Vehicle file format", ReloadOnChange = true)]
     public string VehicleFileFormat = "%1.Item.Gbx"; // Wrong usage can crash scripts
 
-    [Setting(As = "* Cars.json file")]
+    [Setting(As = "* Cars.json file", ReloadOnChange = true)]
     public string CarsFile = "Cars.json";
 
-    [Setting(As = "* Skins.json file")]
+    [Setting(As = "* Skins.json file", ReloadOnChange = true)]
     public string SkinsFile = "";
 
     [Setting(As = "Use skillpoints")]
@@ -839,5 +840,23 @@ public class Envimix : UniverseModeBase
     {
         var car = Netwrite<string>.For(player);
         car.Set(ItemCars.KeyOf(MapPlayerModelName));
+    }
+
+    private void UpdateDefaultCarAvailability()
+    {
+        if (EnableDefaultCar)
+        {
+            return;
+        }
+
+        foreach (var player in Players)
+        {
+            var car = Netwrite<string>.For(player);
+
+            if (ItemCars[car.Get()] == GetDefaultCar())
+            {
+                player.RaceStartTime = -1;
+            }
+        }
     }
 }
