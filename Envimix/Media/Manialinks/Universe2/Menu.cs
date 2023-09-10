@@ -948,11 +948,11 @@ public class Menu : CTmMlScriptIngame, IContext
                     //FrameTimeLimit.Controls[i].Size.X = 0;
                     //AnimMgr.Add(FrameTimeLimit.Controls[i], "<quad size=\"50 7\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
 
-                    FrameTeamMessage.Controls[i].Size.X = 0;
-                    AnimMgr.Add(FrameTeamMessage.Controls[i], "<quad size=\"55 7\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
+                    //FrameTeamMessage.Controls[i].Size.X = 0;
+                    //AnimMgr.Add(FrameTeamMessage.Controls[i], "<quad size=\"55 7\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
 
-                FrameRedPlayerCount.RelativePosition_V3.X = 12.5;
+                /*FrameRedPlayerCount.RelativePosition_V3.X = 12.5;
                 FrameRedPlayerCount.Parent.RelativePosition_V3.X = 10;
                 AnimMgr.Add(FrameRedPlayerCount.Parent, "<frame pos=\"-21.5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
                 AnimMgr.Add(FrameRedPlayerCount, "<frame pos=\"0 0\"/>", 700, CAnimManager.EAnimManagerEasing.QuadOut);
@@ -969,7 +969,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 FrameJoinRed.RelativePosition_V3.X = 29.5;
                 AnimMgr.Add(FrameJoinRed, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
                 FrameJoinBlue.RelativePosition_V3.X = -29.5;
-                AnimMgr.Add(FrameJoinBlue, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.Add(FrameJoinBlue, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);*/
 
                 MenuOpenTime = Now;
             }
@@ -1292,7 +1292,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (UseForcedClans != PrevUseForcedClans)
         {
-            if (UseForcedClans)
+            /*if (UseForcedClans)
             {
                 FrameTeamMessage.RelativePosition_V3.Y = -0;
                 AnimMgr.Add(FrameTeamMessage, "<frame pos=\"0 -8\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
@@ -1301,7 +1301,7 @@ public class Menu : CTmMlScriptIngame, IContext
             {
                 FrameTeamMessage.RelativePosition_V3.Y = -8;
                 AnimMgr.Add(FrameTeamMessage, "<frame pos=\"0 0\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
-            }
+            }*/
             PrevUseForcedClans = UseForcedClans;
         }
     }

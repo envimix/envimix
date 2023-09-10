@@ -452,7 +452,6 @@ public class Envimix : UniverseModeBase
             skin = skins[carName];
         }
 
-        Log("sss", carName);
         player.ForceModelId = allCars[carName][skin];
 
         var car = Netwrite<string>.For(player);
