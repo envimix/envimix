@@ -277,6 +277,11 @@ public class UniverseModeBase : CTmMode, IContext
 
     public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string manialinkXml, string toReplace, string replaceWith)
     {
+        if (Layers.ContainsKey(layerName))
+        {
+            DestroyLayer(layerName);
+        }
+
         var layer = UIManager.UILayerCreate();
         layer.Type = layerType;
         layer.ManialinkPage = TextLib.Replace(ReadFile(manialinkXml), toReplace, replaceWith);
