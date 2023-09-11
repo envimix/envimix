@@ -61,7 +61,7 @@ public class EnvimixTeamAttack : Envimix
                                 if (respawn)
                                 {
                                     var frozen = e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
-                                    var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+                                    var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
                                 }
                             }
                         }
@@ -247,22 +247,42 @@ public class EnvimixTeamAttack : Envimix
 
     private bool TrySpawnEnvimixTeamAttackPlayer(CTmPlayer player, bool frozen)
     {
-        if (!frozen)
+        if (frozen)
         {
-            if (CutOffTimeLimit - Now >= TimeLimit * 1000)
-            {
-                return TrySpawnEnvimixPlayer(player, CutOffTimeLimit - TimeLimit * 1000);
-            }
-
-            if (CustomCountdown < 0)
-            {
-                return TrySpawnEnvimixPlayer(player, -1);
-            }
-
-            return TrySpawnEnvimixPlayer(player, Now + CustomCountdown);
+            return TrySpawnEnvimixPlayer(player, frozen);
         }
 
-        return TrySpawnEnvimixPlayer(player, frozen);
+        if (CutOffTimeLimit - Now >= TimeLimit * 1000)
+        {
+            return TrySpawnEnvimixPlayer(player, CutOffTimeLimit - TimeLimit * 1000);
+        }
+
+        if (CustomCountdown < 0)
+        {
+            return TrySpawnEnvimixPlayer(player, -1);
+        }
+
+        return TrySpawnEnvimixPlayer(player, Now + CustomCountdown);
+    }
+
+    public bool SpawnEnvimixTeamAttackPlayer(CTmPlayer player, string car, bool frozen)
+    {
+        if (frozen)
+        {
+            return SpawnEnvimixPlayer(player, car, frozen);
+        }
+
+        if (CutOffTimeLimit - Now >= TimeLimit * 1000)
+        {
+            return SpawnEnvimixPlayer(player, car, CutOffTimeLimit - TimeLimit * 1000);
+        }
+
+        if (CustomCountdown < 0)
+        {
+            return SpawnEnvimixPlayer(player, car, -1);
+        }
+
+        return SpawnEnvimixPlayer(player, car, Now + CustomCountdown);
     }
 
     private void ProcessUpdateSkinEvent(CUIConfigEvent e)
