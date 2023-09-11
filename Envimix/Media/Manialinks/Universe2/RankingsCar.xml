@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+	<framemodel id="FramemodelCar">
+		<frame clip="1" clipposn="26.25 0" clipsizen="52.5 5.6">
+			<frame id="FrameInner">
+				<frame>
+					<frame>
+						<quad z-index="0" size="22.5 6" valign="center" style="Bgs1" substyle="BgCardList" />
+						<quad z-index="2" size="22.5 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
+					</frame>
+					<frame z-index="1" pos="2.5 0">
+						<label pos="0 0.3" z-index="0" size="24 5" text="$aaa[unknown]" valign="center" textfont="Oswald" textsize="2" id="LabelCar"/>
+					</frame>
+				</frame>
+				<frame pos="22.5 0">
+					<frame>
+						<quad z-index="0" size="20 6" valign="center" style="Bgs1" substyle="BgCardList" />
+						<quad z-index="2" size="20 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
+					</frame>
+					<frame z-index="1" pos="10 0">
+						<label pos="0 0.3" z-index="0" size="15 5" text="-:--.---" halign="center" valign="center" textfont="OswaldMono" textsize="1.75" id="LabelTime"/>
+					</frame>
+				</frame>
+				<frame pos="42.5 0">
+					<frame>
+						<quad z-index="0" size="10 6" valign="center" style="Bgs1" substyle="BgCardList" />
+						<quad z-index="2" size="10 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
+					</frame>
+					<frame z-index="1" pos="5 0">
+						<label pos="0 0.3" z-index="0" size="7.5 5" text="1st" halign="center" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" id="LabelRank"/>
+					</frame>
+				</frame>
+			</frame>
+		</frame>
+	</framemodel>
+	<frame pos="-158 88" id="FrameRankingsCar" scale="0.85">
+		<frame pos="26.25 -3">
+			<frame id="FrameRankingsCarPlayerBg">
+				<quad z-index="0" size="52.5 6" halign="center" valign="center" style="Bgs1" substyle="BgCardList"/>
+			</frame>
+			<frame z-index="1" id="FrameLabelPlayer" clip="1" clipsizen="52.5 6">
+				<label pos="0 0.2" z-index="0" size="47 5" text="$aaa[unknown]" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" halign="center" id="LabelPlayer"/>
+			</frame>
+		</frame>
+		<frame pos="0 -9" id="FrameCars">
+			<frameinstance modelid="FramemodelCar"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -6"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -12"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -18"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -24"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -30"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -36"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -42"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -48"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -54"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -60"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -66"/>
+			<frameinstance modelid="FramemodelCar" pos="0 -72"/>
+		</frame>
+	</frame>
+</manialink>

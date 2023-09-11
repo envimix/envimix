@@ -76,6 +76,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public int VehicleIndex;
     public int PreviousVehicleIndex;
     public string MenuKind;
+    public string PreviousMenuKind;
     public string PreviousMapUid;
     public string PreviousCar;
     public string PreviousMapAuthor;
@@ -868,6 +869,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
 		FrameMenu.RelativePosition_V3.X = -110;
         FrameVehicleList.RelativePosition_V3.X = 110;
+        FrameTeamInfo.RelativePosition_V3.Y = -50;
 
         if (ItemCars.ContainsKey(MapPlayerModelName))
         {
@@ -944,6 +946,9 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 FrameVehicleList.RelativePosition_V3.X = 110;
                 AnimMgr.Add(FrameVehicleList, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+
+                FrameTeamInfo.RelativePosition_V3.Y = -50;
+                AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 5\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
 
                 for (var i = 0; i < 2; i++)
                 {
@@ -1239,13 +1244,18 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (UseClans)
         {
-            if (MenuKind == "Skin")
+            FrameTeamInfo.Show();
+
+            if (MenuKind != PreviousMenuKind)
             {
-                FrameTeamInfo.Hide();
-            }
-            else
-            {
-                FrameTeamInfo.Show();
+                if (MenuKind == "Skin")
+                {
+                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -50\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                }
+                else
+                {
+                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 5\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                }
             }
 
             if (UseForcedClans)
@@ -1312,5 +1322,7 @@ public class Menu : CTmMlScriptIngame, IContext
             }*/
             PrevUseForcedClans = UseForcedClans;
         }
+
+        PreviousMenuKind = MenuKind;
     }
 }

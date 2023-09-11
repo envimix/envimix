@@ -33,8 +33,8 @@
 				</frame>
 				<frame pos="0 42" z-index="1">
 					<quad size="79 11" halign="center" z-index="-1" modulatecolor="258" opacity=".5" style="Bgs1" substyle="BgCardList"/>
-					<label pos="-36 -3" z-index="0" size="40 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname"/>
-					<label pos="35 -3.2" z-index="0" size="27.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime"/>
+					<label pos="-36 -2.8" z-index="0" size="40 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname"/>
+					<label pos="35 -3" z-index="0" size="27.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime"/>
 					<quad pos="38 -4" z-index="1" size="5 5" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" hidden="1"/>
 				</frame>
 				<frame pos="0 30">

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/BigBang1112/manialink-xsd/main/manialink_v3_ns.xsd">
 	<frame z-index="100">
 		<frame id="FrameTop" pos="0 0">
 			<quad z-index="0" size="320 12.5" halign="center" valign="bottom" pos="0 -10" style="Bgs1InRace" substyle="BgGradTop" id="QuadTopShadow" hidden="1"/>
