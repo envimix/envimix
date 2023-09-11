@@ -238,6 +238,8 @@ public class Envimix : UniverseModeBase
         CreateLayer("LiveRankingsCar", CUILayer.EUILayerType.Normal);
         CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
         CreateLayer("Score", CUILayer.EUILayerType.Normal);
+        CreateLayer("Rating", CUILayer.EUILayerType.Normal);
+        CreateLayer("Notice", CUILayer.EUILayerType.Normal);
 
         var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";
         vehicleManialink = $"{vehicleManialink}<frame id=\"FrameInnerVehicles\">";
@@ -268,7 +270,7 @@ public class Envimix : UniverseModeBase
             prepareLoading.Set(-1);
         }
 
-        LoginToEnvimixWebApi();
+        //LoginToEnvimixWebApi();
     }
 
     public void LoginToEnvimixWebApi()
@@ -319,8 +321,6 @@ public class Envimix : UniverseModeBase
             Log(nameof(Envimix), $"PROBLEM: Stadium environment is not currently supported. You can enable Stadium envimix by setting S_EnableStadiumEnvimix to True. Make sure you provide the cars in the Items/{VehicleFolder} folder.");
             MatchEndRequested = true;
         }
-
-        UIManager.HoldLoadingScreen = false;
 
         foreach (var player in AllPlayers)
         {
