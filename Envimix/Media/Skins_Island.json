@@ -1,0 +1,294 @@
+{
+	"CanyonCar": {},
+	"StadiumCar": {},
+	"ValleyCar": {},
+	"LagoonCar": {},
+	"DesertCar": {
+		"Blackdevil": {
+			"File": "CarCommon/DesertCar/Blackdevil.zip",
+			"Icon": "Icon/DesertCar/Blackdevil.dds"
+		},
+		"Pinkroadster": {
+			"File": "CarCommon/DesertCar/Pinkroadster.zip",
+			"Icon": "Icon/DesertCar/Pinkroadster.dds"
+		},
+		"Funkyrace": {
+			"File": "CarCommon/DesertCar/FunkyRace.zip",
+			"Icon": "Icon/DesertCar/FunkyRace.dds"
+		},
+		"Laggonracer": {
+			"File": "CarCommon/DesertCar/Laggonracer.zip",
+			"Icon": "Icon/DesertCar/Laggonracer.dds"
+		},
+		"Lagoonracer": {
+			"File": "CarCommon/DesertCar/Lagoonracer.zip",
+			"Icon": "Icon/DesertCar/Lagoonracer.dds"
+		},
+		"Silvermania": {
+			"File": "CarCommon/DesertCar/Silvermania.zip",
+			"Icon": "Icon/DesertCar/Silvermania.dds"
+		},
+		"Masterfire": {
+			"File": "CarCommon/DesertCar/Masterfire.zip",
+			"Icon": "Icon/DesertCar/Masterfire.dds"
+		},
+		"Toggleindustry": {
+			"File": "CarCommon/DesertCar/Toggleindustry.zip",
+			"Icon": "Icon/DesertCar/Toggleindustry.dds"
+		}
+	},
+	"RallyCar": {
+		"BlackSun": {
+			"File": "CarCommon/RallyCar/BlackSun.zip",
+			"Icon": "Icon/RallyCar/BlackSun.dds"
+		},
+		"DeepSeaKing": {
+			"File": "CarCommon/RallyCar/DeepSeaKing.zip",
+			"Icon": "Icon/RallyCar/DeepSeaKing.dds"
+		},
+		"MadCow": {
+			"File": "CarCommon/RallyCar/MadCow.zip",
+			"Icon": "Icon/RallyCar/MadCow.dds"
+		},
+		"PurpleQueen": {
+			"File": "CarCommon/RallyCar/PurpleQueen.zip",
+			"Icon": "Icon/RallyCar/PurpleQueen.dds"
+		},
+		"GrewHawk": {
+			"File": "CarCommon/RallyCar/GrewHawk.zip",
+			"Icon": "Icon/RallyCar/GrewHawk.dds"
+		},
+		"SilverBird": {
+			"File": "CarCommon/RallyCar/SilverBird.zip",
+			"Icon": "Icon/RallyCar/SilverBird.dds"
+		},
+		"ToadBox": {
+			"File": "CarCommon/RallyCar/ToadBox.zip",
+			"Icon": "Icon/RallyCar/ToadBox.dds"
+		}
+	},
+	"SnowCar": {
+		"Bubblecat": {
+			"File": "CarCommon/SnowCar/Bubblecat.zip",
+			"Icon": "Icon/SnowCar/Bubblecat.dds"
+		},
+		"Cerisier": {
+			"File": "CarCommon/SnowCar/Cerisier.zip",
+			"Icon": "Icon/SnowCar/Cerisier.dds"
+		},
+		"Dragon": {
+			"File": "CarCommon/SnowCar/Dragon.zip",
+			"Icon": "Icon/SnowCar/Dragon.dds"
+		},
+		"Jungle": {
+			"File": "CarCommon/SnowCar/Jungle.zip",
+			"Icon": "Icon/SnowCar/Jungle.dds"
+		},
+		"Panda": {
+			"File": "CarCommon/SnowCar/Panda.zip",
+			"Icon": "Icon/SnowCar/Panda.dds"
+		},
+		"Rally": {
+			"File": "CarCommon/SnowCar/Rally.zip",
+			"Icon": "Icon/SnowCar/Rally.dds"
+		},
+		"Prochaine": {
+			"File": "CarCommon/SnowCar/Prochaine.zip",
+			"Icon": "Icon/SnowCar/Prochaine.dds"
+		}
+	},
+	"IslandCar": {
+		"Default": {
+			"File": "CarCommon/Default.zip",
+			"Icon": "Icon/IslandCar/Default.dds"
+		},
+		"Ruby": {
+			"File": "CarCommon/Ruby.zip",
+			"Icon": "Icon/IslandCar/Ruby.dds"
+		},
+		"Blue": {
+			"File": "CarCommon/Blue.zip",
+			"Icon": "Icon/IslandCar/Blue.dds"
+		},
+		"Green": {
+			"File": "CarCommon/Green.zip",
+			"Icon": "Icon/IslandCar/Green.dds"
+		},
+		"Red": {
+			"File": "CarCommon/Red.zip",
+			"Icon": "Icon/IslandCar/Red.dds"
+		},
+		"White": {
+			"File": "CarCommon/White.zip",
+			"Icon": "Icon/IslandCar/White.dds"
+		},
+		"Black": {
+			"File": "CarCommon/Black.zip",
+			"Icon": "Icon/IslandCar/Black.dds"
+		},
+		"Yellow": {
+			"File": "CarCommon/Yellow.zip",
+			"Icon": "Icon/IslandCar/Yellow.dds"
+		},
+		"RestyledRed": {
+			"File": "CarCommon/RestyledRed.zip",
+			"Icon": "Icon/IslandCar/RestyledRed.dds"
+		},
+		"RestyledOrange": {
+			"File": "CarCommon/RestyledOrange.zip",
+			"Icon": "Icon/IslandCar/RestyledOrange.dds"
+		},
+		"RestyledBlack": {
+			"File": "CarCommon/RestyledBlack.zip",
+			"Icon": "Icon/IslandCar/RestyledBlack.dds"
+		},
+		"RestyledGT": {
+			"File": "CarCommon/RestyledGT.zip",
+			"Icon": "Icon/IslandCar/RestyledGT.dds"
+		},
+		"MK2": {
+			"File": "CarCommon/MK2.zip",
+			"Icon": "Icon/IslandCar/MK2.dds"
+		},
+		"MK2 Extrem Device": {
+			"File": "CarCommon/MK2 Extrem Device.zip",
+			"Icon": "Icon/IslandCar/MK2 Extrem Device.dds"
+		},
+		"DirtyBlue": {
+			"File": "CarCommon/DirtyBlue.zip",
+			"Icon": "Icon/IslandCar/DirtyBlue.dds"
+		},
+		"Dark Plasma": {
+			"File": "CarCommon/Dark Plasma.zip",
+			"Icon": "Icon/IslandCar/Dark Plasma.dds"
+		},
+		"GT": {
+			"File": "CarCommon/GT.zip",
+			"Icon": "Icon/IslandCar/GT.dds"
+		},
+		"Star": {
+			"File": "CarCommon/Star.zip",
+			"Icon": "Icon/IslandCar/Star.dds"
+		},
+		"Dark Blue": {
+			"File": "CarCommon/Dark Blue.zip",
+			"Icon": "Icon/IslandCar/Dark Blue.dds"
+		},
+		"Deep Green": {
+			"File": "CarCommon/Deep Green.zip",
+			"Icon": "Icon/IslandCar/Deep Green.dds"
+		},
+		"Twenty Bolts": {
+			"File": "CarCommon/Twenty Bolts.zip",
+			"Icon": "Icon/IslandCar/Twenty Bolts.dds"
+		},
+		"Candy": {
+			"File": "CarCommon/Candy.zip",
+			"Icon": "Icon/IslandCar/Candy.dds"
+		},
+		"Blodimarini": {
+			"File": "CarCommon/Blodimarini.zip",
+			"Icon": "Icon/IslandCar/Blodimarini.dds"
+		},
+		"Galinetta": {
+			"File": "CarCommon/Galinetta.zip",
+			"Icon": "Icon/IslandCar/Galinetta.dds"
+		},
+		"Steph": {
+			"File": "CarCommon/Steph.zip",
+			"Icon": "Icon/IslandCar/Steph.dds"
+		},
+		"Griff": {
+			"File": "CarCommon/Griff.zip",
+			"Icon": "Icon/IslandCar/Griff.dds"
+		},
+		"Marsupio": {
+			"File": "CarCommon/Marsupio.zip",
+			"Icon": "Icon/IslandCar/Marsupio.dds"
+		},
+		"Red2": {
+			"File": "CarCommon/Red2.zip",
+			"Icon": "Icon/IslandCar/Red2.dds"
+		},
+		"RedComet": {
+			"File": "CarCommon/RedComet.zip",
+			"Icon": "Icon/IslandCar/RedComet.dds"
+		},
+		"Spider": {
+			"File": "CarCommon/Spider.zip",
+			"Icon": "Icon/IslandCar/Spider.dds"
+		},
+		"WingRed": {
+			"File": "CarCommon/WingRed.zip",
+			"Icon": "Icon/IslandCar/WingRed.dds"
+		},
+		"Golden11": {
+			"File": "CarCommon/Golden11.zip",
+			"Icon": "Icon/IslandCar/Golden11.dds"
+		},
+		"White Dream": {
+			"File": "CarCommon/White Dream.zip",
+			"Icon": "Icon/IslandCar/White Dream.dds"
+		},
+		"Tribal": {
+			"File": "CarCommon/Tribal.zip",
+			"Icon": "Icon/IslandCar/Tribal.dds"
+		},
+		"Montenegro": {
+			"File": "CarCommon/Montenegro.zip",
+			"Icon": "Icon/IslandCar/Montenegro.dds"
+		}
+	},
+	"BayCar": {
+		"Black": {
+			"File": "CarCommon/BayCar/Black.zip",
+			"Icon": "Icon/BayCar/Black.dds"
+		},
+		"Blue": {
+			"File": "CarCommon/BayCar/Blue.zip",
+			"Icon": "Icon/BayCar/Blue.dds"
+		},
+		"Green": {
+			"File": "CarCommon/BayCar/Green.zip",
+			"Icon": "Icon/BayCar/Green.dds"
+		},
+		"Red": {
+			"File": "CarCommon/BayCar/Red.zip",
+			"Icon": "Icon/BayCar/Red.dds"
+		},
+		"White": {
+			"File": "CarCommon/BayCar/White.zip",
+			"Icon": "Icon/BayCar/White.dds"
+		},
+		"Yellow": {
+			"File": "CarCommon/BayCar/Yellow.zip",
+			"Icon": "Icon/BayCar/Yellow.dds"
+		}
+	},
+	"CoastCar": {
+		"Black": {
+			"File": "CarCommon/CoastCar/Black.zip",
+			"Icon": "Icon/CoastCar/Black.dds"
+		},
+		"Blue": {
+			"File": "CarCommon/CoastCar/Blue.zip",
+			"Icon": "Icon/CoastCar/Blue.dds"
+		},
+		"Green": {
+			"File": "CarCommon/CoastCar/Green.zip",
+			"Icon": "Icon/CoastCar/Green.dds"
+		},
+		"Red": {
+			"File": "CarCommon/CoastCar/Red.zip",
+			"Icon": "Icon/CoastCar/Red.dds"
+		},
+		"White": {
+			"File": "CarCommon/CoastCar/White.zip",
+			"Icon": "Icon/CoastCar/White.dds"
+		},
+		"Yellow": {
+			"File": "CarCommon/CoastCar/Yellow.zip",
+			"Icon": "Icon/CoastCar/Yellow.dds"
+		}
+	}
+}

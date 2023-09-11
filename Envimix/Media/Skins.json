@@ -1,0 +1,163 @@
+{
+	"CanyonCar": {
+		"Ace": {
+			"File": "CanyonCar/Ace.zip",
+			"Icon": "Images/Skins/CanyonCar/Ace.dds"
+		},
+		"Defrag": {
+			"File": "CanyonCar/Defrag.zip",
+			"Icon": "Images/Skins/CanyonCar/Defrag.dds"
+		},
+		"Duke": {
+			"File": "CanyonCar/Duke.zip",
+			"Icon": "Images/Skins/CanyonCar/Duke.dds"
+		},
+		"EXD": {
+			"File": "CanyonCar/EXD.zip",
+			"Icon": "Images/Skins/CanyonCar/EXD.dds"
+		},
+		"ForTOne": {
+			"File": "CanyonCar/ForTOne.zip",
+			"Icon": "Images/Skins/CanyonCar/ForTOne.dds"
+		},
+		"Fusi5n": {
+			"File": "CanyonCar/Fusi5n.zip",
+			"Icon": "Images/Skins/CanyonCar/Fusi5n.dds"
+		},
+		"Gramberg": {
+			"File": "CanyonCar/Gramberg.zip",
+			"Icon": "Images/Skins/CanyonCar/Gramberg.dds"
+		},
+		"GT500": {
+			"File": "CanyonCar/GT500.zip",
+			"Icon": "Images/Skins/CanyonCar/GT500.dds"
+		},
+		"JustForward": {
+			"File": "CanyonCar/JustForward.zip",
+			"Icon": "Images/Skins/CanyonCar/JustForward.dds"
+		},
+		"Liberty": {
+			"File": "CanyonCar/Liberty.zip",
+			"Icon": "Images/Skins/CanyonCar/Liberty.dds"
+		},
+		"Magma": {
+			"File": "CanyonCar/Magma.zip",
+			"Icon": "Images/Skins/CanyonCar/Magma.dds"
+		},
+		"MP": {
+			"File": "CanyonCar/MP.zip",
+			"Icon": "Images/Skins/CanyonCar/MP.dds"
+		},
+		"NTeam": {
+			"File": "CanyonCar/NTeam.zip",
+			"Icon": "Images/Skins/CanyonCar/NTeam.dds"
+		},
+		"SafetyCar": {
+			"File": "CanyonCar/SafetyCar.zip",
+			"Icon": "Images/Skins/CanyonCar/SafetyCar.dds"
+		},
+		"Tecnivals": {
+			"File": "CanyonCar/Tecnivals.zip",
+			"Icon": "Images/Skins/CanyonCar/Tecnivals.dds"
+		}
+	},
+	"StadiumCar": {},
+	"ValleyCar": {
+		"AzurSwift": {
+			"File": "ValleyCar/AzurSwift.zip",
+			"Icon": "Images/Skins/ValleyCar/AzurSwift.dds"
+		},
+		"Grass99TM": {
+			"File": "ValleyCar/Grass99TM.zip",
+			"Icon": "Images/Skins/ValleyCar/Grass99TM.dds"
+		},
+		"KingMustard": {
+			"File": "ValleyCar/KingMustard.zip",
+			"Icon": "Images/Skins/ValleyCar/KingMustard.dds"
+		},
+		"RedTurn": {
+			"File": "ValleyCar/RedTurn.zip",
+			"Icon": "Images/Skins/ValleyCar/RedTurn.dds"
+		},
+		"ShadowMantis": {
+			"File": "ValleyCar/ShadowMantis.zip",
+			"Icon": "Images/Skins/ValleyCar/ShadowMantis.dds"
+		},
+		"StraightBlue": {
+			"File": "ValleyCar/StraightBlue.zip",
+			"Icon": "Images/Skins/ValleyCar/StraightBlue.dds"
+		},
+		"TheWasp": {
+			"File": "ValleyCar/TheWasp.zip",
+			"Icon": "Images/Skins/ValleyCar/TheWasp.dds"
+		},
+		"TriGen": {
+			"File": "ValleyCar/TriGen.zip",
+			"Icon": "Images/Skins/ValleyCar/TriGen.dds"
+		},
+		"WhiteLegend": {
+			"File": "ValleyCar/WhiteLegend.zip",
+			"Icon": "Images/Skins/ValleyCar/WhiteLegend.dds"
+		},
+		"Windleaf": {
+			"File": "ValleyCar/Windleaf.zip",
+			"Icon": "Images/Skins/ValleyCar/Windleaf.dds"
+		}
+	},
+	"LagoonCar": {
+		"Aloha": {
+			"File": "LagoonCar/Aloha.zip",
+			"Icon": "Images/Skins/LagoonCar/Aloha.dds"
+		},
+		"Coral": {
+			"File": "LagoonCar/Coral.zip",
+			"Icon": "Images/Skins/LagoonCar/Coral.dds"
+		},
+		"Farewell": {
+			"File": "LagoonCar/Farewell.zip",
+			"Icon": "Images/Skins/LagoonCar/Farewell.dds"
+		},
+		"jellyfish": {
+			"File": "LagoonCar/jellyfish.zip",
+			"Icon": "Images/Skins/LagoonCar/jellyfish.dds"
+		},
+		"Ocean": {
+			"File": "LagoonCar/Ocean.zip",
+			"Icon": "Images/Skins/LagoonCar/Ocean.dds"
+		},
+		"Orchid": {
+			"File": "LagoonCar/Orchid.zip",
+			"Icon": "Images/Skins/LagoonCar/Orchid.dds"
+		},
+		"R3D": {
+			"File": "LagoonCar/R3D.zip",
+			"Icon": "Images/Skins/LagoonCar/R3D.dds"
+		},
+		"Ray": {
+			"File": "LagoonCar/Ray.zip",
+			"Icon": "Images/Skins/LagoonCar/Ray.dds"
+		},
+		"Samurai": {
+			"File": "LagoonCar/Samurai.zip",
+			"Icon": "Images/Skins/LagoonCar/Samurai.dds"
+		},
+		"Shark": {
+			"File": "LagoonCar/Shark.zip",
+			"Icon": "Images/Skins/LagoonCar/Shark.dds"
+		},
+		"Thunder": {
+			"File": "LagoonCar/Thunder.zip",
+			"Icon": "Images/Skins/LagoonCar/Thunder.dds"
+		},
+		"Wave": {
+			"File": "LagoonCar/Wave.zip",
+			"Icon": "Images/Skins/LagoonCar/Wave.dds"
+		}
+	},
+	"DesertCar": {},
+	"RallyCar": {},
+	"SnowCar": {},
+	"IslandCar": {},
+	"BayCar": {},
+	"CoastCar": {}
+}
