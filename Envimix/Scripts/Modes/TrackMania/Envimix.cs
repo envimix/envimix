@@ -20,6 +20,14 @@ public class Envimix : UniverseModeBase
         public string Token;
     }
 
+    public struct SChatMessage
+    {
+        public string Login;
+        public string Nickname;
+        public string Content;
+        public int Timestamp;
+    }
+
     public const string EnvimixWebAPI = "http://localhost:32771";
 
     [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
@@ -227,6 +235,9 @@ public class Envimix : UniverseModeBase
         CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
         CreateLayer("Map", CUILayer.EUILayerType.Normal);
         CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
+        CreateLayer("LiveRankingsCar", CUILayer.EUILayerType.Normal);
+        CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
+        CreateLayer("Score", CUILayer.EUILayerType.Normal);
 
         var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";
         vehicleManialink = $"{vehicleManialink}<frame id=\"FrameInnerVehicles\">";
@@ -308,6 +319,14 @@ public class Envimix : UniverseModeBase
             Log(nameof(Envimix), $"PROBLEM: Stadium environment is not currently supported. You can enable Stadium envimix by setting S_EnableStadiumEnvimix to True. Make sure you provide the cars in the Items/{VehicleFolder} folder.");
             MatchEndRequested = true;
         }
+
+        UIManager.HoldLoadingScreen = false;
+
+        foreach (var player in AllPlayers)
+        {
+            var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
+            prepareLoading.Set(-1);
+        }
     }
 
     public override void OnMapStart()
@@ -325,6 +344,94 @@ public class Envimix : UniverseModeBase
         }
 
         QueueMapIndex();
+    }
+
+    public override void BeforeMapEnd()
+    {
+        foreach (var player in AllPlayers)
+        {
+            var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
+            prepareLoading.Set(Now);
+        }
+
+        Sleep(1500);
+        UIManager.HoldLoadingScreen = true;
+    }
+
+    public override void OnPlayerLap(CTmModeEvent e)
+    {
+        if (IndependantLaps)
+        {
+            e.Player.Score.PrevRace = e.Player.Score.TempResult;
+        }
+    }
+
+    public override void OnPlayerFinish(CTmModeEvent e)
+    {
+        var tempRace = Netwrite<Record.SRecord>.For(e.Player.Score);
+        var car = Netwrite<string>.For(e.Player);
+        var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
+        var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
+
+        envimixPrevRace.Get()[car.Get()] = tempRace.Get();
+        Record.ToResult(e.Player.Score.PrevRace, tempRace.Get());
+
+        if (!envimixBestRace.Get().ContainsKey(car.Get()) || envimixBestRace.Get()[car.Get()].Time == -1)
+        {
+            envimixBestRace.Get()[car.Get()] = tempRace.Get();
+            Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
+            //log("first finish");
+        }
+        else if (tempRace.Get().Time < envimixBestRace.Get()[car.Get()].Time)
+        {
+            envimixBestRace.Get()[car.Get()] = tempRace.Get();
+            Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
+            //log("improvement");
+        }
+        else if (tempRace.Get().Time == envimixBestRace.Get()[car.Get()].Time)
+        {
+            //log("equal");
+        }
+
+        Record.ResetTempResult(e);
+
+        UpdateScores();
+    }
+
+    public override void OnPlayerAdded(CTmModeEvent e)
+    {
+        SChatMessage chatMsg = new()
+        {
+            Login = e.Player.User.Login,
+            Content = $"$<{e.Player.User.Name}$> has joined the server",
+            Timestamp = Now
+        };
+
+        SendMessage(chatMsg);
+    }
+
+    public override void OnPlayerRemoved(CTmModeEvent e)
+    {
+        SChatMessage chatMsg = new()
+        {
+            Login = e.User.Login,
+            Content = $"$<{e.User.Name}$> has left the server",
+            Timestamp = Now
+        };
+
+        SendMessage(chatMsg);
+    }
+
+    public void SendMessage(SChatMessage message)
+    {
+        /*declare netwrite Integer Net_Chat_NewMessage for Teams[0];
+        declare netwrite SChatMessage[] Net_Chat_Messages for Teams[0];
+
+        Net_Chat_NewMessage = Now;
+        Net_Chat_Messages.addfirst(_Message);*/
+
+        Log(nameof(Envimix), $"{message.Login}: {message.Content}");
+        UIManager.UIAll.SendChat(message.Content);
     }
 
     private void QueueMapIndex()
