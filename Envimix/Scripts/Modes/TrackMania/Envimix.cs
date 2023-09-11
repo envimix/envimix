@@ -82,7 +82,6 @@ public class Envimix : UniverseModeBase
 
     [Netwrite] public required IList<string> DisplayedCars { get; set; }
     [Netwrite] public required Dictionary<string, string> ItemCars { get; set; }
-    [Netwrite] public required Dictionary<string, Dictionary<string, SSkin>> Skins { get; set; }
     [Netwrite] public bool CarSelectionMode { get; set; }
 
     public override void OnServerInit()
@@ -121,6 +120,8 @@ public class Envimix : UniverseModeBase
         UnitedCars.Clear();
         CustomCars.Clear();
         DisplayedCars.Clear();
+
+        var skins = Netwrite<Dictionary<string, Dictionary<string, SSkin>>>.For(Teams[0]);
         
         if (SkinsFile != "")
         {
@@ -132,9 +133,9 @@ public class Envimix : UniverseModeBase
             {
                 Log("Envimix", $"NOTE: {SkinsFile} is empty or nonexisting. Skin system is going to be disabled.");
             }
-            else if (!Skins.FromJson(skinContent))
+            else if (!skins.Get().FromJson(skinContent))
             {
-                Skins.Clear();
+                skins.Get().Clear();
                 Log("Envimix", $"NOTE: {SkinsFile} has a JSON issue. Skin system is going to be disabled.");
             }
         }
@@ -155,9 +156,9 @@ public class Envimix : UniverseModeBase
                     [""] = ItemList_Add(itemName)
                 };
 
-                if (Skins.ContainsKey(car))
+                if (skins.Get().ContainsKey(car))
                 {
-                    foreach (var (name, skin) in Skins[car])
+                    foreach (var (name, skin) in skins.Get()[car])
                     {
                         Log("Envimix", $"Adding {itemName} with skin {skin.File}...");
                         Cars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
@@ -174,9 +175,9 @@ public class Envimix : UniverseModeBase
                         [""] = ItemList_Add(itemName)
                     };
 
-                    if (Skins.ContainsKey(car))
+                    if (skins.Get().ContainsKey(car))
                     {
-                        foreach (var (name, skin) in Skins[car])
+                        foreach (var (name, skin) in skins.Get()[car])
                         {
                             Log("Envimix", $"Adding {itemName} with skin {skin.File}...");
                             SpecialCars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
@@ -204,9 +205,9 @@ public class Envimix : UniverseModeBase
                     [""] = ItemList_Add(itemName)
                 };
 
-                if (Skins.ContainsKey(car))
+                if (skins.Get().ContainsKey(car))
                 {
-                    foreach (var (name, skin) in Skins[car])
+                    foreach (var (name, skin) in skins.Get()[car])
                     {
                         Log("Envimix", $"Adding {itemName} with skin {skin.File}...");
                         UnitedCars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
@@ -316,6 +317,8 @@ public class Envimix : UniverseModeBase
 
     public override void OnMapLoad()
     {
+        UIManager.HoldLoadingScreen = false;
+
         if (!EnableStadiumEnvimix && Map.MapInfo.CollectionName == "Stadium")
         {
             Log(nameof(Envimix), $"PROBLEM: Stadium environment is not currently supported. You can enable Stadium envimix by setting S_EnableStadiumEnvimix to True. Make sure you provide the cars in the Items/{VehicleFolder} folder.");
@@ -717,13 +720,14 @@ public class Envimix : UniverseModeBase
     public void UpdateSkin(CTmPlayer player, string skin)
     {
         var car = Netwrite<string>.For(player);
-	
-	    var allCars = GetAllCars();
+        var skins = Netwrite<Dictionary<string, Dictionary<string, SSkin>>>.For(Teams[0]);
+
+        var allCars = GetAllCars();
 	
 	    ImmutableArray<string> sortedNames = new();
-	    if (Skins.ContainsKey(car.Get()))
+	    if (skins.Get().ContainsKey(car.Get()))
         {
-            foreach (var (name, carSkin) in Skins[car.Get()])
+            foreach (var (name, carSkin) in skins.Get()[car.Get()])
             {
                 sortedNames.Add(name);
             }
