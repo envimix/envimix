@@ -34,6 +34,8 @@ public class RankingsCar : CTmMlScriptIngame, IContext
     public int VisibleTime = -1;
 
     [Netread] public ImmutableArray<string> DisplayedCars { get; }
+    [Netread] public bool EnableDefaultCar { get; set; }
+    [Netread] public string MapPlayerModelName { get; set; }
 
     CTmMlPlayer GetPlayer()
     {
@@ -114,11 +116,13 @@ public class RankingsCar : CTmMlScriptIngame, IContext
             }
         }
 
+        var iOffset = 0;
+
         for (int i = 0; i < FrameCars.Controls.Count; i++)
         {
             var frame = (FrameCars.Controls[i] as CMlFrame)!;
 
-            if (DisplayedCars.Length <= i)
+            if (DisplayedCars.Length <= i + iOffset)
             {
                 frame.Hide();
                 continue;
@@ -128,7 +132,14 @@ public class RankingsCar : CTmMlScriptIngame, IContext
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
 
-            var car = DisplayedCars[i];
+            var car = DisplayedCars[i + iOffset];
+
+            if (!EnableDefaultCar && car == MapPlayerModelName)
+            {
+                iOffset += 1;
+                car = DisplayedCars[i + iOffset];
+            }
+
             labelCar.Value = car;
 
             if (GetPlayer().Score is not null)
