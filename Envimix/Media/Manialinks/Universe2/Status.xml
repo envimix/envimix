@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3">
+	<frame pos="0 88" id="FrameAllTimeLimit" scale="0.85">
+		<frame pos="0 -3.5" id="FrameTeam">
+			<quad z-index="0" size="40 7" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
+			<quad z-index="2" size="39 6" valign="center" halign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="F00" opacity=".5" id="QuadTeam" hidden="1"/>
+			<frame z-index="3" id="FrameTeamLabel" clip="True" clipsizen="40 9">
+				<label size="32.5 5" text="TEAM RED" halign="center" valign="center2" textfont="RajdhaniMono" pos="0 -.35" textsize="2" id="LabelTeam"/>
+			</frame>
+		</frame>
+		<frame pos="0 -12.5" id="FramePointStatus">
+			<quad z-index="0" size="50 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
+			<frame z-index="2">
+				<label pos="-15 -0.25" z-index="3" size="17 8" text="50" halign="center" valign="center2" textfont="RajdhaniMono" id="LabelRedPoints"/>
+				<quad z-index="2" size="17 8.5" pos="-23.5 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="F00" opacity=".5" id="QuadRedPoints"/>
+				<label pos="8.5 -0.25" z-index="3" size="30 8" text="200" halign="center" valign="center2" textfont="RajdhaniMono" id="LabelBluePoints"/>
+				<quad z-index="2" size="30 8.5" pos="23.5 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="00F" opacity=".5" id="QuadBluePoints" halign="right"/>
+			</frame>
+		</frame>
+	</frame>
+</manialink>
