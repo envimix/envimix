@@ -22,7 +22,6 @@ public class UniverseModeBase : CTmMode, IContext
 
     public bool Reload = true;
     public bool Terminate = false;
-    public bool ReloadMap = false;
     public ImmutableArray<int> MapQueue;
     public int WarmUpStartTime = -1;
     public bool IsWarmUp = false;
@@ -174,8 +173,7 @@ public class UniverseModeBase : CTmMode, IContext
 
     public virtual void OnMapEnd()
     {
-        if (ReloadMap) NextMapIndex -= 1;
-        if (Reload) NextMapIndex = 0;
+        //if (Reload) NextMapIndex = 0;
     }
 
     public virtual void BeforeMapEnd() { }
@@ -294,6 +292,16 @@ public class UniverseModeBase : CTmMode, IContext
         CreateLayer(layerName, layerType, manialinkXml, "", "");
     }
 
+    public bool Terminated()
+    {
+        return Reload || Terminate || ServerShutdownRequested;
+    }
+
+    public bool TerminatedMatch()
+    {
+        return Reload || Terminate || ServerShutdownRequested || MatchEndRequested;
+    }
+
     public void Main()
     {
         // nothing
@@ -310,7 +318,7 @@ public class UniverseModeBase : CTmMode, IContext
         BeforeServerStart();
         OnServerStart();
 
-        while (!Reload && !Terminate && !ServerShutdownRequested)
+        while (!Terminated())
         {
             BeforeMapInit();
             OnMapInit();
@@ -331,7 +339,7 @@ public class UniverseModeBase : CTmMode, IContext
                 BeforeMapIntroStart();
                 OnMapIntroStart();
 
-                while (!UIManager.UIAll.UISequenceIsCompleted && !ServerShutdownRequested)
+                while (!UIManager.UIAll.UISequenceIsCompleted && !Terminated())
                 {
                     WhileMapIntro();
                     Yield();
@@ -355,9 +363,7 @@ public class UniverseModeBase : CTmMode, IContext
                 OnGameStart();
             }
 
-            ReloadMap = false;
-
-            while (!Reload && !ReloadMap && !Terminate && !ServerShutdownRequested && !MatchEndRequested)
+            while (!TerminatedMatch())
             {
                 BeforeEvent();
 
@@ -409,8 +415,7 @@ public class UniverseModeBase : CTmMode, IContext
 
             OnGameEnd();
 
-
-            if (!Reload && !ReloadMap && !Terminate && !ServerShutdownRequested)
+            if (!Terminated())
             {
                 PodiumStartTime = Now;
                 CutOffTimeLimit = PodiumStartTime + ChatTime * 1000;
@@ -420,7 +425,7 @@ public class UniverseModeBase : CTmMode, IContext
 
                 OnPodiumStart();
 
-                while (!Reload && !ReloadMap && !Terminate && !ServerShutdownRequested && Now - PodiumStartTime < ChatTime * 1000)
+                while (!Terminated() && Now - PodiumStartTime < ChatTime * 1000)
                 {
                     OnPodiumLoop();
                     Yield();

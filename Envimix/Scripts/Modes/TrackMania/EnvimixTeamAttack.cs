@@ -154,7 +154,7 @@ public class EnvimixTeamAttack : Envimix
         OpenNewLadder();
 
         // Loop during the countdown
-        while (CutOffTimeLimit - Now > 0 && !Reload && !ReloadMap && !Terminate && !ServerShutdownRequested && !MatchEndRequested)
+        while (CutOffTimeLimit - Now > 0 && !TerminatedMatch())
         {
             foreach (var e in UIManager.PendingEvents)
             {
