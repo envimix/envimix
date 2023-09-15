@@ -26,6 +26,15 @@ public class Envimix : UniverseModeBase
         public string Token;
     }
 
+    public struct SEnvimaniaSessionRecordRequest
+    {
+        public string Login;
+        public string Nickname;
+        public string Zone;
+        public Dictionary<string, string> GameplayStyles;
+        public Record.SRecord Record;
+    }
+
     public struct SChatMessage
     {
         public string Login;
@@ -365,8 +374,13 @@ public class Envimix : UniverseModeBase
     public CHttpRequest? EnvimaniaHealthRequest;
     public CHttpRequest? EnvimaniaCloseRequest;
 
-    public void RequestEnvimaniaSession()
+    public bool RequestEnvimaniaSession()
     {
+        if (EnvimixWebAPI is "")
+        {
+            return false;
+        }
+
         Log(nameof(Envimix), "Requesting Envimania session (ManiaPlanet token)...");
 
         ManiaPlanetAuthenticationRequested = true;
@@ -376,10 +390,17 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionTokenReceived = -1;
         EnvimaniaHealthReceived = -1;
         ServerAdmin.Authentication_GetToken(null, "Envimix");
+
+        return true;
     }
 
     public bool CloseEnvimaniaSession()
     {
+        if (EnvimixWebAPI is "")
+        {
+            return false;
+        }
+
         if (EnvimaniaSessionToken is "")
         {
             Log(nameof(Envimix), "Cannot close Envimania session without a session token.");
@@ -409,6 +430,11 @@ public class Envimix : UniverseModeBase
 
     public void CheckEnvimaniaSession()
     {
+        if (EnvimixWebAPI is "")
+        {
+            return;
+        }
+
         // Session request creation
         if (ManiaPlanetAuthenticationRequested && ServerAdmin.Authentication_GetTokenResponseReceived && ManiaPlanetAuthenticationToken != ServerAdmin.Authentication_Token)
         {
@@ -499,7 +525,7 @@ public class Envimix : UniverseModeBase
             else if (Now - EnvimaniaHealthReceived >= 60000)
             {
                 EnvimaniaHealthReceived = -1;
-                EnvimaniaHealthRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/health", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
+                EnvimaniaHealthRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/health", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}");
             }
         }
 
@@ -539,6 +565,37 @@ public class Envimix : UniverseModeBase
             Http.Destroy(EnvimaniaCloseRequest);
             EnvimaniaCloseRequest = null;
         }
+
+        ImmutableArray<CHttpRequest> recordRequestsToRemove = new();
+
+        foreach (var recRequest in EnvimaniaSessionRecordRequests)
+        {
+            if (recRequest is null || !recRequest.IsCompleted)
+            {
+                continue;
+            }
+
+            if (recRequest.StatusCode == 200)
+            {
+                Log(nameof(Envimix), "Envimania session record sent (200).");
+            }
+            else
+            {
+                // HUGE TODO:
+                // 1. Retry on failure
+                // 2. If retry fails, save the record to server memory and send it later
+                // 3. If the server crashes/closes, the record is lost (server is not allowed to write on persistent disk, maybe)
+                Log(nameof(Envimix), $"Envimania session record failed ({recRequest.StatusCode}).");
+            }
+
+            Http.Destroy(recRequest);
+            recordRequestsToRemove.Add(recRequest);
+        }
+
+        foreach (var recRequest in recordRequestsToRemove)
+        {
+            EnvimaniaSessionRecordRequests.Remove(recRequest);
+        }
     }
 
     #endregion
@@ -562,6 +619,8 @@ public class Envimix : UniverseModeBase
             e.Player.Score.PrevRace = e.Player.Score.TempResult;
         }
     }
+
+    public IList<CHttpRequest> EnvimaniaSessionRecordRequests;
 
     public override void OnPlayerFinish(CTmModeEvent e)
     {
@@ -593,6 +652,25 @@ public class Envimix : UniverseModeBase
         Record.ResetTempResult(e);
 
         UpdateScores();
+
+        if (EnvimaniaSessionToken is not "")
+        {
+            var gameplayStyles = new Dictionary<string, string>();
+            gameplayStyles["Car"] = car.Get();
+
+            SEnvimaniaSessionRecordRequest recordRequest = new()
+            {
+                Login = e.Player.User.Login,
+                Nickname = e.Player.User.Name,
+                Zone = e.Player.User.ZonePath,
+                GameplayStyles = gameplayStyles,
+                Record = tempRace.Get()
+            };
+
+            var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
+
+            EnvimaniaSessionRecordRequests.Add(envimaniaRecordRequest);
+        }
     }
 
     public override void OnPlayerAdded(CTmModeEvent e)
