@@ -353,9 +353,10 @@ public class Envimix : UniverseModeBase
     }
 
     public bool ManiaPlanetAuthenticationRequested;
-    public string? ManiaPlanetAuthenticationToken;
+    public required string ManiaPlanetAuthenticationToken;
     public CHttpRequest? EnvimaniaSessionRequest;
-    public string? EnvimaniaSessionToken;
+    public int EnvimaniaSessionRequestTimeout;
+    public required string EnvimaniaSessionToken;
     public int EnvimaniaSessionTokenReceived;
     public int EnvimaniaHealthReceived;
     public CHttpRequest? EnvimaniaHealthRequest;
@@ -366,7 +367,8 @@ public class Envimix : UniverseModeBase
         Log(nameof(Envimix), "Requesting Envimania session (ManiaPlanet token)...");
 
         ManiaPlanetAuthenticationRequested = true;
-        EnvimaniaSessionToken = null;
+        EnvimaniaSessionRequestTimeout = -1;
+        EnvimaniaSessionToken = "";
         EnvimaniaSessionTokenReceived = -1;
         EnvimaniaHealthReceived = -1;
         ServerAdmin.Authentication_GetToken(null, "Envimix");
@@ -374,7 +376,7 @@ public class Envimix : UniverseModeBase
 
     public bool CloseEnvimaniaSession()
     {
-        if (EnvimaniaSessionToken is null)
+        if (EnvimaniaSessionToken is "")
         {
             Log(nameof(Envimix), "Cannot close Envimania session without a session token.");
             return false;
@@ -387,10 +389,23 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
+    void DirectlyRequestEnvimaniaSession()
+    {
+        SEnvimaniaSessionRequest sessionRequest = new()
+        {
+            ServerLogin = ServerLogin,
+            Token = ServerAdmin.Authentication_Token,
+            MapUid = Map.MapInfo.MapUid
+        };
+
+        Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
+
+        EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), "Content-Type: application/json");
+    }
+
     public void CheckEnvimaniaSession()
     {
         // Session request creation
-        // TODO: Some manual timeout handling
         if (ManiaPlanetAuthenticationRequested && ServerAdmin.Authentication_GetTokenResponseReceived && ManiaPlanetAuthenticationToken != ServerAdmin.Authentication_Token)
         {
             Log(nameof(Envimix), "ManiaPlanet authentication token received.");
@@ -398,16 +413,13 @@ public class Envimix : UniverseModeBase
             ManiaPlanetAuthenticationRequested = false;
             ManiaPlanetAuthenticationToken = ServerAdmin.Authentication_Token;
 
-            SEnvimaniaSessionRequest sessionRequest = new()
-            {
-                ServerLogin = ServerLogin,
-                Token = ManiaPlanetAuthenticationToken,
-                MapUid = Map.MapInfo.MapUid
-            };
+            DirectlyRequestEnvimaniaSession();
+        }
 
-            Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
-
-            EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), "Content-Type: application/json");
+        if (EnvimaniaSessionRequestTimeout != -1 && Now - EnvimaniaSessionRequestTimeout >= 10000)
+        {
+            DirectlyRequestEnvimaniaSession();
+            EnvimaniaSessionRequestTimeout = -1;
         }
 
         // Session response handle
@@ -415,19 +427,31 @@ public class Envimix : UniverseModeBase
         {
             if (EnvimaniaSessionRequest.StatusCode != 200)
             {
-                Log(nameof(Envimix), $"Envimania session creation failed ({EnvimaniaSessionRequest.StatusCode}).");
+                Log(nameof(Envimix), $"Envimania session creation failed ({EnvimaniaSessionRequest.StatusCode}). Retry in 10 seconds.");
                 Http.Destroy(EnvimaniaSessionRequest);
                 EnvimaniaSessionRequest = null;
+                EnvimaniaSessionRequestTimeout = Now;
+                ManiaPlanetAuthenticationRequested = true; // Smol hack
                 return;
             }
 
-            Log(nameof(Envimix), EnvimaniaSessionToken is null ? "Envimania session created (200)." : "Envimania session refreshed (200).");
+            string logMsg;
+            if (EnvimaniaSessionToken is "")
+            {
+                logMsg = "Envimania session created (200).";
+            }
+            else
+            {
+                logMsg = "Envimania session refreshed (200).";
+            }
+
+            Log(nameof(Envimix), logMsg);
 
             SEnvimaniaSessionResponse sessionResponse = new();
             
             if (sessionResponse.FromJson(EnvimaniaSessionRequest.Result) && sessionResponse.ServerLogin == ServerLogin)
             {
-                EnvimaniaSessionToken = sessionResponse.Token;
+                EnvimaniaSessionToken = sessionResponse.Token!;
             }
 
             Http.Destroy(EnvimaniaSessionRequest);
@@ -435,7 +459,7 @@ public class Envimix : UniverseModeBase
         }
 
         // Actions while assumed to be in session
-        if (EnvimaniaSessionToken is not null)
+        if (EnvimaniaSessionToken is not "")
         {
             if (EnvimaniaSessionTokenReceived == -1)
             {
@@ -457,6 +481,7 @@ public class Envimix : UniverseModeBase
             // otherwise health check every 1 minute
             else if (Now - EnvimaniaHealthReceived >= 60000)
             {
+                EnvimaniaHealthReceived = -1;
                 EnvimaniaHealthRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/health", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
             }
         }
@@ -478,11 +503,12 @@ public class Envimix : UniverseModeBase
         }
 
         // Handling session close
+        // TODO: Retry (just 3 times) on failure
         if (EnvimaniaCloseRequest is not null && EnvimaniaCloseRequest.IsCompleted)
         {
             if (EnvimaniaCloseRequest.StatusCode == 200)
             {
-                EnvimaniaSessionToken = null;
+                EnvimaniaSessionToken = "";
                 EnvimaniaSessionTokenReceived = -1;
                 EnvimaniaHealthReceived = -1;
 
