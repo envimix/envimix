@@ -352,10 +352,13 @@ public class Envimix : UniverseModeBase
         CheckEnvimaniaSession();
     }
 
+    #region Envimania
+
     public bool ManiaPlanetAuthenticationRequested;
     public required string ManiaPlanetAuthenticationToken;
     public CHttpRequest? EnvimaniaSessionRequest;
     public int EnvimaniaSessionRequestTimeout;
+    public int EnvimaniaSessionFirstRequestTimeout;
     public required string EnvimaniaSessionToken;
     public int EnvimaniaSessionTokenReceived;
     public int EnvimaniaHealthReceived;
@@ -368,6 +371,7 @@ public class Envimix : UniverseModeBase
 
         ManiaPlanetAuthenticationRequested = true;
         EnvimaniaSessionRequestTimeout = -1;
+        EnvimaniaSessionFirstRequestTimeout = -1;
         EnvimaniaSessionToken = "";
         EnvimaniaSessionTokenReceived = -1;
         EnvimaniaHealthReceived = -1;
@@ -418,6 +422,13 @@ public class Envimix : UniverseModeBase
 
         if (EnvimaniaSessionRequestTimeout != -1 && Now - EnvimaniaSessionRequestTimeout >= 10000)
         {
+            // Request a new ManiaPlanet token after 30 minutes of failure
+            if (Now - EnvimaniaSessionFirstRequestTimeout >= 1800000)
+            {
+                RequestEnvimaniaSession();
+                return;
+            }
+
             DirectlyRequestEnvimaniaSession();
             EnvimaniaSessionRequestTimeout = -1;
         }
@@ -431,6 +442,12 @@ public class Envimix : UniverseModeBase
                 Http.Destroy(EnvimaniaSessionRequest);
                 EnvimaniaSessionRequest = null;
                 EnvimaniaSessionRequestTimeout = Now;
+
+                if (EnvimaniaSessionFirstRequestTimeout == -1)
+                {
+                    EnvimaniaSessionFirstRequestTimeout = Now;
+                }
+
                 ManiaPlanetAuthenticationRequested = true; // Smol hack
                 return;
             }
@@ -523,6 +540,8 @@ public class Envimix : UniverseModeBase
             EnvimaniaCloseRequest = null;
         }
     }
+
+    #endregion
 
     public override void BeforeMapEnd()
     {
