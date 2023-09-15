@@ -13,10 +13,16 @@ public class Envimix : UniverseModeBase
         public string Icon;
     }
 
-    public struct SLoginRequest
+    public struct SEnvimaniaSessionRequest
     {
-        public string Login;
-        public string TokenType;
+        public string ServerLogin;
+        public string Token;
+        public string MapUid;
+    }
+
+    public struct SEnvimaniaSessionResponse
+    {
+        public string ServerLogin;
         public string Token;
     }
 
@@ -27,8 +33,6 @@ public class Envimix : UniverseModeBase
         public string Content;
         public int Timestamp;
     }
-
-    public const string EnvimixWebAPI = "http://localhost:32771";
 
     [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
     public bool EnableTM2Cars = true;
@@ -65,6 +69,9 @@ public class Envimix : UniverseModeBase
 
     [Setting(As = "* Skins.json file", ReloadOnChange = true)]
     public string SkinsFile = "";
+
+    [Setting(As = "Envimania Web API")]
+    public string EnvimixWebAPI = "http://localhost:32771";
 
     [Setting(As = "Use skillpoints")]
     public bool UseSkillpoints = false;
@@ -271,25 +278,6 @@ public class Envimix : UniverseModeBase
             var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
             prepareLoading.Set(-1);
         }
-
-        //LoginToEnvimixWebApi();
-    }
-
-    public void LoginToEnvimixWebApi()
-    {
-        ServerAdmin.Authentication_GetToken(null, "Envimix");
-        Wait(() => ServerAdmin.Authentication_GetTokenResponseReceived);
-
-        SLoginRequest loginRequest = new()
-        {
-            Login = ServerLogin,
-            TokenType = "Ingame",
-            Token = ServerAdmin.Authentication_Token
-        };
-
-        var request = Http.CreatePost($"{EnvimixWebAPI}/login", loginRequest.ToJson(), "Content-Type: application/json");
-        Wait(() => request.IsCompleted);
-        Log(nameof(Envimix), $"Login response: {request}");
     }
 
     public override void OnServerStart()
@@ -336,6 +324,8 @@ public class Envimix : UniverseModeBase
     public override void OnMapStart()
     {
         Log(nameof(Envimix), $"Starting map {TextLib.StripFormatting(Map.MapInfo.Name)}...");
+
+        RequestEnvimaniaSession();
     }
 
     public override void OnMapEnd()
@@ -348,6 +338,164 @@ public class Envimix : UniverseModeBase
         }
 
         QueueMapIndex();
+
+        CloseEnvimaniaSession();
+    }
+
+    public override void WhileMapIntro()
+    {
+        CheckEnvimaniaSession();
+    }
+
+    public override void OnLoop()
+    {
+        CheckEnvimaniaSession();
+    }
+
+    public bool ManiaPlanetAuthenticationRequested;
+    public string? ManiaPlanetAuthenticationToken;
+    public CHttpRequest? EnvimaniaSessionRequest;
+    public string? EnvimaniaSessionToken;
+    public int EnvimaniaSessionTokenReceived;
+    public int EnvimaniaHealthReceived;
+    public CHttpRequest? EnvimaniaHealthRequest;
+    public CHttpRequest? EnvimaniaCloseRequest;
+
+    public void RequestEnvimaniaSession()
+    {
+        Log(nameof(Envimix), "Requesting Envimania session (ManiaPlanet token)...");
+
+        ManiaPlanetAuthenticationRequested = true;
+        EnvimaniaSessionToken = null;
+        EnvimaniaSessionTokenReceived = -1;
+        EnvimaniaHealthReceived = -1;
+        ServerAdmin.Authentication_GetToken(null, "Envimix");
+    }
+
+    public bool CloseEnvimaniaSession()
+    {
+        if (EnvimaniaSessionToken is null)
+        {
+            Log(nameof(Envimix), "Cannot close Envimania session without a session token.");
+            return false;
+        }
+
+        Log(nameof(Envimix), "Closing Envimania session...");
+
+        EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Bearer {EnvimaniaSessionToken}");
+
+        return true;
+    }
+
+    public void CheckEnvimaniaSession()
+    {
+        // Session request creation
+        // TODO: Some manual timeout handling
+        if (ManiaPlanetAuthenticationRequested && ServerAdmin.Authentication_GetTokenResponseReceived && ManiaPlanetAuthenticationToken != ServerAdmin.Authentication_Token)
+        {
+            Log(nameof(Envimix), "ManiaPlanet authentication token received.");
+
+            ManiaPlanetAuthenticationRequested = false;
+            ManiaPlanetAuthenticationToken = ServerAdmin.Authentication_Token;
+
+            SEnvimaniaSessionRequest sessionRequest = new()
+            {
+                ServerLogin = ServerLogin,
+                Token = ManiaPlanetAuthenticationToken,
+                MapUid = Map.MapInfo.MapUid
+            };
+
+            Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
+
+            EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), "Content-Type: application/json");
+        }
+
+        // Session response handle
+        if (EnvimaniaSessionRequest is not null && EnvimaniaSessionRequest.IsCompleted)
+        {
+            if (EnvimaniaSessionRequest.StatusCode != 200)
+            {
+                Log(nameof(Envimix), $"Envimania session creation failed ({EnvimaniaSessionRequest.StatusCode}).");
+                Http.Destroy(EnvimaniaSessionRequest);
+                EnvimaniaSessionRequest = null;
+                return;
+            }
+
+            Log(nameof(Envimix), EnvimaniaSessionToken is null ? "Envimania session created (200)." : "Envimania session refreshed (200).");
+
+            SEnvimaniaSessionResponse sessionResponse = new();
+            
+            if (sessionResponse.FromJson(EnvimaniaSessionRequest.Result) && sessionResponse.ServerLogin == ServerLogin)
+            {
+                EnvimaniaSessionToken = sessionResponse.Token;
+            }
+
+            Http.Destroy(EnvimaniaSessionRequest);
+            EnvimaniaSessionRequest = null;
+        }
+
+        // Actions while assumed to be in session
+        if (EnvimaniaSessionToken is not null)
+        {
+            if (EnvimaniaSessionTokenReceived == -1)
+            {
+                EnvimaniaSessionTokenReceived = Now;
+            }
+
+            if (EnvimaniaHealthReceived == -1)
+            {
+                EnvimaniaHealthReceived = Now;
+            }
+
+            // request new ManiaPlanet auth token every 20 minutes, session token expires in 30 minutes
+            // no new session, only refreshed internally, swapped token
+            if (Now - EnvimaniaSessionTokenReceived >= 1200000)
+            {
+                Log(nameof(Envimix), "Running Envimania session refresh...");
+                RequestEnvimaniaSession();
+            }
+            // otherwise health check every 1 minute
+            else if (Now - EnvimaniaHealthReceived >= 60000)
+            {
+                EnvimaniaHealthRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/health", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
+            }
+        }
+
+        // Health checks
+        if (EnvimaniaHealthRequest is not null && EnvimaniaHealthRequest.IsCompleted)
+        {
+            if (EnvimaniaHealthRequest.StatusCode == 200)
+            {
+                Log(nameof(Envimix), "Envimania is healthy (200).");
+            }
+            else
+            {
+                Log(nameof(Envimix), $"Envimania is unhealthy ({EnvimaniaHealthRequest.StatusCode}).");
+            }
+
+            Http.Destroy(EnvimaniaHealthRequest);
+            EnvimaniaHealthRequest = null;
+        }
+
+        // Handling session close
+        if (EnvimaniaCloseRequest is not null && EnvimaniaCloseRequest.IsCompleted)
+        {
+            if (EnvimaniaCloseRequest.StatusCode == 200)
+            {
+                EnvimaniaSessionToken = null;
+                EnvimaniaSessionTokenReceived = -1;
+                EnvimaniaHealthReceived = -1;
+
+                Log(nameof(Envimix), "Envimania session closed (200).");
+            }
+            else
+            {
+                Log(nameof(Envimix), $"Envimania session close failed ({EnvimaniaCloseRequest.StatusCode}).");
+            }
+
+            Http.Destroy(EnvimaniaCloseRequest);
+            EnvimaniaCloseRequest = null;
+        }
     }
 
     public override void BeforeMapEnd()
@@ -480,11 +628,13 @@ public class Envimix : UniverseModeBase
 
     public void CreateLayer(string layerName, CUILayer.EUILayerType layerType)
     {
+        Log(nameof(Envimix), "Creating layer " + layerName + "...");
         CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml");
     }
 
     public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
     {
+        Log(nameof(Envimix), "Creating layer " + layerName + "...");
         CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
     }
 

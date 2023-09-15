@@ -189,6 +189,7 @@ public class EnvimixTeamAttack : Envimix
                 TrySpawnEnvimixTeamAttackPlayer(player, frozen: true);
             }
 
+            CheckEnvimaniaSession();
             Yield();
         }
 
