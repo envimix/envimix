@@ -15,8 +15,6 @@ public class Envimix : UniverseModeBase
 
     public struct SEnvimaniaSessionRequest
     {
-        public string ServerLogin;
-        public string Token;
         public string MapUid;
     }
 
@@ -80,7 +78,7 @@ public class Envimix : UniverseModeBase
     public string SkinsFile = "";
 
     [Setting(As = "Envimania Web API")]
-    public string EnvimixWebAPI = "http://localhost:32771";
+    public string EnvimixWebAPI = "http://localhost:5198";
 
     [Setting(As = "Use skillpoints")]
     public bool UseSkillpoints = false;
@@ -370,8 +368,8 @@ public class Envimix : UniverseModeBase
     public int EnvimaniaSessionFirstRequestTimeout;
     public required string EnvimaniaSessionToken;
     public int EnvimaniaSessionTokenReceived;
-    public int EnvimaniaHealthReceived;
-    public CHttpRequest? EnvimaniaHealthRequest;
+    public int EnvimaniaStatusReceived;
+    public CHttpRequest? EnvimaniaStatusRequest;
     public CHttpRequest? EnvimaniaCloseRequest;
 
     public bool RequestEnvimaniaSession()
@@ -388,7 +386,7 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionFirstRequestTimeout = -1;
         EnvimaniaSessionToken = "";
         EnvimaniaSessionTokenReceived = -1;
-        EnvimaniaHealthReceived = -1;
+        EnvimaniaStatusReceived = -1;
         ServerAdmin.Authentication_GetToken(null, "Envimix");
 
         return true;
@@ -409,7 +407,7 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), "Closing Envimania session...");
 
-        EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Bearer {EnvimaniaSessionToken}");
+        EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Envimania {EnvimaniaSessionToken}");
 
         return true;
     }
@@ -418,14 +416,12 @@ public class Envimix : UniverseModeBase
     {
         SEnvimaniaSessionRequest sessionRequest = new()
         {
-            ServerLogin = ServerLogin,
-            Token = ServerAdmin.Authentication_Token,
             MapUid = Map.MapInfo.MapUid
         };
 
         Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
 
-        EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), "Content-Type: application/json");
+        EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
     }
 
     public void CheckEnvimaniaSession()
@@ -491,10 +487,21 @@ public class Envimix : UniverseModeBase
             Log(nameof(Envimix), logMsg);
 
             SEnvimaniaSessionResponse sessionResponse = new();
-            
-            if (sessionResponse.FromJson(EnvimaniaSessionRequest.Result) && sessionResponse.ServerLogin == ServerLogin)
+
+            if (!sessionResponse.FromJson(EnvimaniaSessionRequest.Result))
             {
-                EnvimaniaSessionToken = sessionResponse.Token!;
+                Log(nameof(Envimix), "Envimania session creation failed (JSON issue).");
+            }
+            else
+            {
+                if (sessionResponse.ServerLogin != ServerLogin)
+                {
+                    Log(nameof(Envimix), "Envimania session creation failed (server login mismatch).");
+                }
+                else
+                {
+                    EnvimaniaSessionToken = sessionResponse.Token!;
+                }
             }
 
             Http.Destroy(EnvimaniaSessionRequest);
@@ -509,9 +516,9 @@ public class Envimix : UniverseModeBase
                 EnvimaniaSessionTokenReceived = Now;
             }
 
-            if (EnvimaniaHealthReceived == -1)
+            if (EnvimaniaStatusReceived == -1)
             {
-                EnvimaniaHealthReceived = Now;
+                EnvimaniaStatusReceived = Now;
             }
 
             // request new ManiaPlanet auth token every 20 minutes, session token expires in 30 minutes
@@ -522,27 +529,27 @@ public class Envimix : UniverseModeBase
                 RequestEnvimaniaSession();
             }
             // otherwise health check every 1 minute
-            else if (Now - EnvimaniaHealthReceived >= 60000)
+            else if (Now - EnvimaniaStatusReceived >= 60000)
             {
-                EnvimaniaHealthReceived = -1;
-                EnvimaniaHealthRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/health", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}");
+                EnvimaniaStatusReceived = -1;
+                EnvimaniaStatusRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/status", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
             }
         }
 
         // Health checks
-        if (EnvimaniaHealthRequest is not null && EnvimaniaHealthRequest.IsCompleted)
+        if (EnvimaniaStatusRequest is not null && EnvimaniaStatusRequest.IsCompleted)
         {
-            if (EnvimaniaHealthRequest.StatusCode == 200)
+            if (EnvimaniaStatusRequest.StatusCode == 200)
             {
                 Log(nameof(Envimix), "Envimania is healthy (200).");
             }
             else
             {
-                Log(nameof(Envimix), $"Envimania is unhealthy ({EnvimaniaHealthRequest.StatusCode}).");
+                Log(nameof(Envimix), $"Envimania is unhealthy ({EnvimaniaStatusRequest.StatusCode}).");
             }
 
-            Http.Destroy(EnvimaniaHealthRequest);
-            EnvimaniaHealthRequest = null;
+            Http.Destroy(EnvimaniaStatusRequest);
+            EnvimaniaStatusRequest = null;
         }
 
         // Handling session close
@@ -553,7 +560,7 @@ public class Envimix : UniverseModeBase
             {
                 EnvimaniaSessionToken = "";
                 EnvimaniaSessionTokenReceived = -1;
-                EnvimaniaHealthReceived = -1;
+                EnvimaniaStatusReceived = -1;
 
                 Log(nameof(Envimix), "Envimania session closed (200).");
             }
