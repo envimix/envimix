@@ -29,7 +29,7 @@ public class Envimix : UniverseModeBase
         public string Login;
         public string Nickname;
         public string Zone;
-        public Dictionary<string, string> GameplayStyles;
+        public Dictionary<string, string> Categories;
         public Record.SRecord Record;
     }
 
@@ -595,13 +595,13 @@ public class Envimix : UniverseModeBase
                 Log(nameof(Envimix), $"Envimania session record failed ({recRequest.StatusCode}).");
             }
 
-            Http.Destroy(recRequest);
             recordRequestsToRemove.Add(recRequest);
         }
 
         foreach (var recRequest in recordRequestsToRemove)
         {
             EnvimaniaSessionRecordRequests.Remove(recRequest);
+            Http.Destroy(recRequest);
         }
     }
 
@@ -627,7 +627,7 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    public IList<CHttpRequest> EnvimaniaSessionRecordRequests;
+    public ImmutableArray<CHttpRequest> EnvimaniaSessionRecordRequests;
 
     public override void OnPlayerFinish(CTmModeEvent e)
     {
@@ -656,28 +656,28 @@ public class Envimix : UniverseModeBase
             //log("equal");
         }
 
-        Record.ResetTempResult(e);
-
-        UpdateScores();
-
         if (EnvimaniaSessionToken is not "")
         {
-            var gameplayStyles = new Dictionary<string, string>();
-            gameplayStyles["Car"] = car.Get();
+            var categories = new Dictionary<string, string>();
+            categories["Car"] = car.Get();
 
             SEnvimaniaSessionRecordRequest recordRequest = new()
             {
                 Login = e.Player.User.Login,
                 Nickname = e.Player.User.Name,
                 Zone = e.Player.User.ZonePath,
-                GameplayStyles = gameplayStyles,
+                Categories = categories,
                 Record = tempRace.Get()
             };
 
-            var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
+            var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
 
             EnvimaniaSessionRecordRequests.Add(envimaniaRecordRequest);
         }
+
+        Record.ResetTempResult(e);
+
+        UpdateScores();
     }
 
     public override void OnPlayerAdded(CTmModeEvent e)

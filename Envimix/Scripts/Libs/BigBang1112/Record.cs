@@ -15,7 +15,6 @@ public static class Record
 
     public struct SRecord
     {
-        public string Login;
         public int Time;
         public int Score;
         public int NbRespawns;
@@ -42,7 +41,6 @@ public static class Record
     {
         SRecord record = new()
         {
-            Login = player.User.Login,
             Time = result.Time,
             Score = result.Score,
             NbRespawns = result.NbRespawns,

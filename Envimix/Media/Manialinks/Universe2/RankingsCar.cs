@@ -15,7 +15,6 @@ public class RankingsCar : CTmMlScriptIngame, IContext
 
     public struct SRecord
     {
-        public string Login;
         public int Time;
         public int Score;
         public int NbRespawns;
