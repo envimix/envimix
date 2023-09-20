@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/BigBang1112/manialink-xsd/main/manialink_v3_ns.xsd">
 	<framemodel id="FramemodelSkin">
-		<quad z-index="0" size="75.75 14.5" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadSkin" halign="center" pos="-1.5 0"/>
+		<quad z-index="0" size="75.75 14.5" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadSkin" halign="center" pos="-1.5 0"/>
 		<quad z-index="1" size="12.5 12.5" halign="center" valign="center" pos="-30 -7.25" id="QuadIcon"/>
 		<label pos="-20 -7.75" z-index="1" size="55 10" text="Default" valign="center2" textfont="RajdhaniMono" textsize="4" textprefix="$t" id="LabelName"/>
 		<quad z-index="0" size="76 14.5" style="Bgs1" substyle="BgCardList" halign="center" pos="-1.5 0" opacity=".5" modulatecolor="258"/>
@@ -215,29 +215,29 @@
 				<frame id="FrameTeamMessage">
 					<quad z-index="0" size="80 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 					<frame z-index="3">
-						<label size="80 5" text="Choose your team" halign="center" valign="center2" textfont="RajdhaniMono" pos="0 -.1" textsize="3" textprefix="$t" translate="1" id="LabelTeamMessage"/>
+						<label size="80 5" text="Choose your team" halign="center" valign="center2" textfont="RajdhaniMono" pos="0 -.25" textsize="3" textprefix="$t" translate="1" id="LabelTeamMessage"/>
 					</frame>
 				</frame>
 			</frame>
 			<frame pos="0 7.5" id="FrameJoinTeam">
-				<quad z-index="0" size="80 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
+				<quad z-index="0" size="80 15" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 				<frame id="FrameRedPlayerCount" pos="-48 0">
-					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
+					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 					<label pos="0 -0.35" z-index="2" size="10 10" text="10" valign="center2" textfont="RajdhaniMono" halign="center" id="LabelRedPlayerCount" textsize="5"/>
 				</frame>
 				<frame id="FrameJoinRed" z-index="2" pos="-19.5 0">
 					<quad z-index="0" size="39 13" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" modulatecolor="F00" opacity=".5"/>
-					<quad z-index="1" size="39 13" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="F00" opacity=".5" halign="center" data-nav="True" valign="center" id="QuadJoinRed"/>
+					<quad z-index="1" size="39 13" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="F00" opacity=".5" halign="center" data-nav="True" valign="center" id="QuadJoinRed"/>
 					<quad z-index="3" size="10 10" halign="center" valign="center" style="Icons64x64_1" substyle="StatePrivate" id="QuadJoinRedLock"/>
 				</frame>
 				<frame id="FrameBluePlayerCount" z-index="2" pos="48 0">
-					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
-					<quad z-index="1" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgGradV" hidden="1"/>
+					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
+					<quad z-index="1" size="15 15" valign="center" halign="center" style="Bgs1" substyle="BgGradV" hidden="1"/>
 					<label pos="0 -0.35" z-index="2" size="10 10" text="10" valign="center2" textfont="RajdhaniMono" halign="center" id="LabelBluePlayerCount" textsize="5"/>
 				</frame>
 				<frame id="FrameJoinBlue" z-index="2" pos="19.5 0">
 					<quad z-index="0" size="39 13" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" modulatecolor="00F" opacity=".5"/>
-					<quad z-index="1" size="39 13" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="00F" opacity=".5" halign="center" data-nav="True" valign="center" id="QuadJoinBlue"/>
+					<quad z-index="1" size="39 13" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="00F" opacity=".5" halign="center" data-nav="True" valign="center" id="QuadJoinBlue"/>
 					<quad z-index="3" size="10 10" halign="center" valign="center" style="Icons64x64_1" substyle="StatePrivate" id="QuadJoinBlueLock"/>
 				</frame>
 			</frame>

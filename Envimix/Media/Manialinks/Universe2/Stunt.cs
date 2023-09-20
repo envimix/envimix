@@ -60,6 +60,8 @@ public class Stunt : CTmMlScriptIngame, IContext
             { CTmMlPlayer.ESceneVehiclePhyStuntFigure.WreckStraightJump, "Wreck Straight Jump" },
             { CTmMlPlayer.ESceneVehiclePhyStuntFigure.WreckTwister, "Wreck Twister" },
         };
+
+        Wait(() => GetPlayer() is not null);
     }
 
     public void Loop()
