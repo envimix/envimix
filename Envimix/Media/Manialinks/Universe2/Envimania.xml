@@ -47,7 +47,7 @@
 			<frame id="FrameEnvimaniaYourRecordBg" pos="-26 0">
 				<quad z-index="0" size="42.5 6" style="Bgs1" substyle="BgCardList" halign="center"/>
 			</frame>
-			<frame pos="-45 -3" z-index="3" id="FrameYourRecord" hidden="0">
+			<frame pos="-45 -3" z-index="3" id="FrameYourRecord" clip="1" clipposn="21.25 0" clipsizen="42.5 6">
 				<frameinstance modelid="FramemodelRecord"/>
 			</frame>
 		</frame>

@@ -28,6 +28,8 @@ public class Envimania : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameLabelCar;
     [ManialinkControl] public required CMlFrame FrameEnvimaniaRecordsBg;
     [ManialinkControl] public required CMlFrame FrameRecords;
+    [ManialinkControl] public required CMlFrame FrameEnvimaniaYourRecordBg;
+    [ManialinkControl] public required CMlFrame FrameYourRecord;
 
     public bool PreviousVisible;
     public int VisibleTime = -1;
@@ -73,10 +75,17 @@ public class Envimania : CTmMlScriptIngame, IContext
                     control.Size.X = 0;
                     AnimMgr.Add(control, "<quad size=\"42.5 8\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
+
                 foreach (var control in FrameEnvimaniaRecordsBg.Controls)
                 {
                     control.Size.X = 0;
                     AnimMgr.Add(control, "<quad size=\"42.5 82.5\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+                }
+
+                foreach (var control in FrameEnvimaniaYourRecordBg.Controls)
+                {
+                    control.Size.X = 0;
+                    AnimMgr.Add(control, "<quad size=\"42.5 6\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
 
                 VisibleTime = Now;
@@ -89,11 +98,13 @@ public class Envimania : CTmMlScriptIngame, IContext
         {
             FrameLabelCar.ClipWindowSize.X = 45;
             FrameRecords.ClipWindowSize.X = 45;
+            FrameYourRecord.ClipWindowSize.X = 45;
         }
         else
         {
             FrameLabelCar.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 400);
             FrameRecords.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 500);
+            FrameYourRecord.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 400);
         }
     }
 }
