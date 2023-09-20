@@ -13,11 +13,6 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnServerInit()
     {
-        Users_DestroyAllFakes();
-        //Users_CreateFake("longlonglonglonglong longlonglonglonglong name", 0);
-
-        UiDisplayStuntsNames = true;
-
         UseClans = true;
         Teams[0].Name = "Team Red";
         Teams[0].ColorPrimary = new Vec3(1, 0, 0);

@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+	<label id="LabelStunt" pos="-110 60" z-index="0" size="87 10" text="Flipping Chaos 360!" textsize="5" textprefix="$i$o" textfont="Oswald" textemboss="1" hidden="0"/>
+</manialink>
