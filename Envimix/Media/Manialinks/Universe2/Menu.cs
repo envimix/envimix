@@ -72,6 +72,10 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadButtonSettingsBack;
     [ManialinkControl] public required CMlFrame FrameQuicktip;
     [ManialinkControl] public required CMlLabel LabelMapAuthor;
+    [ManialinkControl] public required CMlFrame FrameMultiplayer;
+    [ManialinkControl] public required CMlFrame FrameButtonManageServer;
+    [ManialinkControl] public required CMlFrame FrameButtonChooseSkin;
+    [ManialinkControl] public required CMlFrame FrameButtonAdvancedOptions;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -145,6 +149,11 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         var car = Netread<string>.For(GetPlayer());
         return car.Get();
+    }
+
+    bool IsSolo()
+    {
+        return CurrentServerLogin is "";
     }
 
     private void UpdateVehicles()
@@ -827,6 +836,16 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             Yield();
             ShowInGameMenu();
+        }
+
+        FrameMultiplayer.Visible = !IsSolo();
+        FrameButtonSpectator.Visible = !IsSolo();
+        FrameButtonManageServer.Visible = !IsSolo();
+
+        if (IsSolo())
+        {
+            FrameButtonChooseSkin.RelativePosition_V3.Y = 20;
+            FrameButtonAdvancedOptions.RelativePosition_V3.Y = 10;
         }
 
         PreviousEnableDefaultCar = EnableDefaultCar;

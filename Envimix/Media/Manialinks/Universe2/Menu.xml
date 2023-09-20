@@ -47,22 +47,22 @@
 					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSpectator" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" text="  $tSpectator" valign="center2" textfont="RajdhaniMono" id="LABEL" translate="1"/>
 				</frame>
-				<frame pos="0 9">
+				<frame id="FrameButtonChooseSkin" pos="0 9">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkin" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-36 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Choose skin" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
-				<frame pos="0 -1">
+				<frame id="FrameButtonAdvancedOptions" pos="0 -1">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonAdvanced" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Advanced options" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
-				<frame z-index="0" pos="0 -11">
+				<frame id="FrameButtonManageServer" z-index="0" pos="0 -11">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonManageServer" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Manage server" valign="center2" textfont="RajdhaniMono" translate="1" halign="left"/>
 				</frame>
-				<frame pos="0 -35">
+				<frame pos="0 -35" id="FrameMultiplayer">
 					<label pos="0 5" z-index="0" size="75 15" text="ENVIMIX" halign="center" valign="center2" textsize="8" textfont="Gotham/Gotham-Bold"/>
 					<label pos="0 -3" z-index="0" size="70 5" text="$aaa[unknown server name]" textsize="3" textfont="Oswald" halign="center" id="LabelServerName" scriptevents="1" style="TextCardRaceRank"/>
 					<quad z-index="-1" size="30 20" style="Bgs1" substyle="BgCardList" halign="center" pos="-22.5 -9" opacity=".5"/>
