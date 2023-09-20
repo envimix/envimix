@@ -33,7 +33,7 @@
 			</frame>
 		</frame>
 	</framemodel>
-	<frame pos="-158 88" id="FrameRankingsCar" scale="0.85">
+	<frame pos="-158 88" id="FrameRankingsCar" scale="0.69">
 		<frame pos="26.25 -3">
 			<frame id="FrameRankingsCarPlayerBg">
 				<quad z-index="0" size="52.5 6" halign="center" valign="center" style="Bgs1" substyle="BgCardList"/>

@@ -210,8 +210,8 @@
 				<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.gg/v6TW88m" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
 			</frame>
 		</frame>
-		<frame pos="0 5" id="FrameTeamInfo">
-			<frame pos="0 -64.5">
+		<frame pos="0 -80" id="FrameTeamInfo">
+			<frame pos="0 20.5">
 				<frame id="FrameTeamMessage">
 					<quad z-index="0" size="80 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 					<frame z-index="3">
@@ -219,7 +219,7 @@
 					</frame>
 				</frame>
 			</frame>
-			<frame pos="0 -77.5" id="FrameJoinTeam">
+			<frame pos="0 7.5" id="FrameJoinTeam">
 				<quad z-index="0" size="80 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
 				<frame id="FrameRedPlayerCount" pos="-48 0">
 					<quad z-index="0" size="15 15" valign="center" halign="center" style="Bgs1InRace" substyle="BgCardList"/>

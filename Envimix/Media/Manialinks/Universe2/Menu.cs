@@ -869,7 +869,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
 		FrameMenu.RelativePosition_V3.X = -110;
         FrameVehicleList.RelativePosition_V3.X = 110;
-        FrameTeamInfo.RelativePosition_V3.Y = -50;
+        FrameTeamInfo.RelativePosition_V3.Y = -135;
 
         if (ItemCars.ContainsKey(MapPlayerModelName))
         {
@@ -947,8 +947,8 @@ public class Menu : CTmMlScriptIngame, IContext
                 FrameVehicleList.RelativePosition_V3.X = 110;
                 AnimMgr.Add(FrameVehicleList, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
 
-                FrameTeamInfo.RelativePosition_V3.Y = -50;
-                AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 5\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                FrameTeamInfo.RelativePosition_V3.Y = -135;
+                AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -80\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
 
                 for (var i = 0; i < 2; i++)
                 {
@@ -1250,11 +1250,11 @@ public class Menu : CTmMlScriptIngame, IContext
             {
                 if (MenuKind == "Skin")
                 {
-                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -50\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -135\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
                 else
                 {
-                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 5\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -80\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
             }
 

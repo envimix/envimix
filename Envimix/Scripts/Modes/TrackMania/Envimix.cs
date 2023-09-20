@@ -256,6 +256,8 @@ public class Envimix : UniverseModeBase
         CreateLayer("Rating", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Status", CUILayer.EUILayerType.Normal);
+        CreateLayer("Envimania", CUILayer.EUILayerType.Normal);
+        //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
         var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";
         vehicleManialink = $"{vehicleManialink}<frame id=\"FrameInnerVehicles\">";
@@ -346,7 +348,7 @@ public class Envimix : UniverseModeBase
 
         QueueMapIndex();
 
-        CloseEnvimaniaSession();
+        CheckEnvimaniaSession();
     }
 
     public override void WhileMapIntro()
@@ -528,7 +530,7 @@ public class Envimix : UniverseModeBase
                 Log(nameof(Envimix), "Running Envimania session refresh...");
                 RequestEnvimaniaSession();
             }
-            // otherwise health check every 1 minute
+            // otherwise status check every 1 minute
             else if (Now - EnvimaniaStatusReceived >= 60000)
             {
                 EnvimaniaStatusReceived = -1;
@@ -536,16 +538,16 @@ public class Envimix : UniverseModeBase
             }
         }
 
-        // Health checks
+        // Status checks
         if (EnvimaniaStatusRequest is not null && EnvimaniaStatusRequest.IsCompleted)
         {
             if (EnvimaniaStatusRequest.StatusCode == 200)
             {
-                Log(nameof(Envimix), "Envimania is healthy (200).");
+                Log(nameof(Envimix), "Envimania is available (200).");
             }
             else
             {
-                Log(nameof(Envimix), $"Envimania is unhealthy ({EnvimaniaStatusRequest.StatusCode}).");
+                Log(nameof(Envimix), $"Envimania is not available ({EnvimaniaStatusRequest.StatusCode}).");
             }
 
             Http.Destroy(EnvimaniaStatusRequest);
@@ -614,6 +616,8 @@ public class Envimix : UniverseModeBase
             var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
             prepareLoading.Set(Now);
         }
+
+        CloseEnvimaniaSession();
 
         Sleep(1500);
         UIManager.HoldLoadingScreen = true;

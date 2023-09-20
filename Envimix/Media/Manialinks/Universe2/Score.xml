@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-	<frame pos="158 -54" id="FrameScore" scale="0.85">
+	<frame pos="158 -51" id="FrameScore" scale="0.85">
 		<frame pos="-21.25 0">
 			<quad z-index="0" size="42.5 12.5" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 			<frame z-index="3" clip="1" clipsizen="40 12" id="FrameInnerScore">
