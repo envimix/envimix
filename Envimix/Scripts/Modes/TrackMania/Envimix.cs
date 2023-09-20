@@ -504,6 +504,8 @@ public class Envimix : UniverseModeBase
                 else
                 {
                     EnvimaniaSessionToken = sessionResponse.Token!;
+
+                    // TODO: Declare complex records struct dictionary for Teams[0] and read it from response
                 }
             }
 
@@ -665,6 +667,7 @@ public class Envimix : UniverseModeBase
         {
             var categories = new Dictionary<string, string>();
             categories["Car"] = car.Get();
+            categories["Gravity"] = "1"; // Server does not support gravity yet
 
             SEnvimaniaSessionRecordRequest recordRequest = new()
             {
