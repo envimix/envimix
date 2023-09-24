@@ -1311,4 +1311,28 @@ public class Envimix : UniverseModeBase
             }
         }
     }
+
+    public void ProcessUpdateSkinEvent(CUIConfigEvent e)
+    {
+        switch (e.CustomEventType)
+        {
+            case "Skin":
+                if (e.CustomEventData.Count > 0)
+                {
+                    var carName = e.CustomEventData[0];
+                    var player = GetPlayer(e.UI);
+                    var car = Netwrite<string>.For(player);
+
+                    if (DisplayedCars.Contains(carName) && car.Get() == carName)
+                    {
+                        if (e.CustomEventData.Count > 1)
+                        {
+                            var skin = e.CustomEventData[1];
+                            UpdateSkin(player, skin);
+                        }
+                    }
+                }
+                break;
+        }
+    }
 }
