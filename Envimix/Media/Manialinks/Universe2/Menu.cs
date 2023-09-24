@@ -73,6 +73,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameQuicktip;
     [ManialinkControl] public required CMlLabel LabelMapAuthor;
     [ManialinkControl] public required CMlFrame FrameMultiplayer;
+    [ManialinkControl] public required CMlFrame FrameSingleplayer;
     [ManialinkControl] public required CMlFrame FrameButtonManageServer;
     [ManialinkControl] public required CMlFrame FrameButtonChooseSkin;
     [ManialinkControl] public required CMlFrame FrameButtonAdvancedOptions;
@@ -839,6 +840,7 @@ public class Menu : CTmMlScriptIngame, IContext
         }
 
         FrameMultiplayer.Visible = !IsSolo();
+        FrameSingleplayer.Visible = IsSolo();
         FrameButtonSpectator.Visible = !IsSolo();
         FrameButtonManageServer.Visible = !IsSolo();
 
