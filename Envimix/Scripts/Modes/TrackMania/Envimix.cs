@@ -247,17 +247,22 @@ public class Envimix : UniverseModeBase
 
         CreateLayer("321Go", CUILayer.EUILayerType.Normal);
         CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
-        CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
-        CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
+
+        if (!IsSolo())
+        {
+            CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
+            CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
+            CreateLayer("LiveRankingsCar", CUILayer.EUILayerType.Normal);
+            CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
+            CreateLayer("Score", CUILayer.EUILayerType.Normal);
+            CreateLayer("Rating", CUILayer.EUILayerType.Normal);
+            CreateLayer("Status", CUILayer.EUILayerType.Normal);
+            CreateLayer("Envimania", CUILayer.EUILayerType.Normal);
+        }
+
         CreateLayer("Map", CUILayer.EUILayerType.Normal);
         CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
-        CreateLayer("LiveRankingsCar", CUILayer.EUILayerType.Normal);
-        CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
-        CreateLayer("Score", CUILayer.EUILayerType.Normal);
-        CreateLayer("Rating", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
-        CreateLayer("Status", CUILayer.EUILayerType.Normal);
-        CreateLayer("Envimania", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
         //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
@@ -1273,6 +1278,36 @@ public class Envimix : UniverseModeBase
             if (ItemCars[car.Get()] == GetDefaultCar())
             {
                 player.RaceStartTime = -1;
+            }
+        }
+    }
+
+    public void PrespawnEnvimixPlayers()
+    {
+        if (!ItemCars.ContainsValue(MapPlayerModelName))
+        {
+            Log(nameof(EnvimixTeamAttack), "NOTE: No item car was found of the current MapPlayerModelName. Players were not pre-spawned.");
+            return;
+        }
+
+        // Pre-spawn all non-spec players with default car
+        foreach (var player in PlayersWaiting)
+        {
+            PrepareJoinedPlayer(player);
+
+            var car = Netwrite<string>.For(player);
+
+            if (car.Get() == "")
+            {
+                Log(nameof(EnvimixTeamAttack), $"NOTE: {player.User.Name} has Net_Car set to empty string. Player was not pre-spawned.");
+                continue;
+            }
+
+            var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen: true);
+
+            if (spawned)
+            {
+                Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
             }
         }
     }

@@ -178,6 +178,11 @@ public class UniverseModeBase : CTmMode, IContext
 
     public virtual void BeforeMapEnd() { }
 
+    public bool IsSolo()
+    {
+        return ScoreMgr is not null;
+    }
+
     public void OpenNewLadder()
     {
         Ladder_CancelMatchRequest();

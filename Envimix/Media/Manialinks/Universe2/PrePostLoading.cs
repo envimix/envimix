@@ -13,10 +13,25 @@ public class PrePostLoading : CTmMlScriptIngame, IContext
 
     [Netread(NetFor.UI)] public required int PrepareLoading { get; set; }
 
+    bool IsSolo()
+    {
+        return CurrentServerLogin is "";
+    }
+
+    int GetGameTime()
+    {
+        if (IsSolo())
+        {
+            return Now;
+        }
+        
+        return GameTime;
+    }
+
     public void Main()
     {
         PrevPrepareLoading = PrepareLoading;
-        OpenAnimation = GameTime;
+        OpenAnimation = GetGameTime();
     }
 
     public void Loop()
@@ -26,11 +41,11 @@ public class PrePostLoading : CTmMlScriptIngame, IContext
             if (PrepareLoading == -1)
             {
                 CloseAnimation = -1;
-                OpenAnimation = GameTime;
+                OpenAnimation = GetGameTime();
             }
             else
             {
-                CloseAnimation = GameTime;
+                CloseAnimation = GetGameTime();
                 OpenAnimation = -1;
             }
 
@@ -58,21 +73,21 @@ public class PrePostLoading : CTmMlScriptIngame, IContext
 
         if (CloseAnimation == -1)
         {
-            if (OpenAnimation != -1 && GameTime - OpenAnimation > 2000)
+            if (OpenAnimation != -1 && GetGameTime() - OpenAnimation > 2000)
             {
                 FrameTop.RelativePosition_V3.Y = 100;
                 FrameBottom.RelativePosition_V3.Y = -100;
             }
             else if (OpenAnimation != -1)
             {
-                FrameTop.RelativePosition_V3.Y = AnimLib.EaseInQuad(GameTime - OpenAnimation - 1000, _Base: 0, _Change: 100, _Duration: 1000);
-                FrameBottom.RelativePosition_V3.Y = AnimLib.EaseInQuad(GameTime - OpenAnimation - 1000, _Base: 0, _Change: -100, _Duration: 1000);
+                FrameTop.RelativePosition_V3.Y = AnimLib.EaseInQuad(GetGameTime() - OpenAnimation - 1000, _Base: 0, _Change: 100, _Duration: 1000);
+                FrameBottom.RelativePosition_V3.Y = AnimLib.EaseInQuad(GetGameTime() - OpenAnimation - 1000, _Base: 0, _Change: -100, _Duration: 1000);
             }
         }
         else
         {
-            FrameTop.RelativePosition_V3.Y = AnimLib.EaseInQuad(GameTime - CloseAnimation, _Base: 100, _Change: -100, _Duration: 1000);
-            FrameBottom.RelativePosition_V3.Y = AnimLib.EaseInQuad(GameTime - CloseAnimation, _Base: -100, _Change: 100, _Duration: 1000);
+            FrameTop.RelativePosition_V3.Y = AnimLib.EaseInQuad(GetGameTime() - CloseAnimation, _Base: 100, _Change: -100, _Duration: 1000);
+            FrameBottom.RelativePosition_V3.Y = AnimLib.EaseInQuad(GetGameTime() - CloseAnimation, _Base: -100, _Change: 100, _Duration: 1000);
         }
     }
 }
