@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+	<frame pos="-120 50">
+		<label pos="0 10" z-index="0" size="30 20" text="4" halign="center" valign="center2" textsize="20" textfont="RajdhaniMono" textemboss="1"/>
+		<label id="LabelPlay4" pos="-0 0" z-index="0" size="20 5" text="Play" halign="center" style="CardButtonMedium" scriptevents="1"/>
+		<label id="LabelExplore4" pos="0 -8" z-index="0" size="20 5" text="Explore" halign="center" style="CardButtonSmallS" scriptevents="1"/>
+	</frame>
+	<frame pos="-80 50">
+		<label pos="0 10" z-index="0" size="30 20" text="7" halign="center" valign="center2" textsize="20" textfont="RajdhaniMono" textemboss="1"/>
+		<label id="LabelPlay7" pos="-0 0" z-index="0" size="20 5" text="Play" halign="center" style="CardButtonMedium" scriptevents="1"/>
+		<label id="LabelExplore7" pos="0 -8" z-index="0" size="20 5" text="Explore" halign="center" style="CardButtonSmallS" scriptevents="1"/>
+	</frame>
+	<frame pos="-40 50">
+		<label pos="0 10" z-index="0" size="30 20" text="10" halign="center" valign="center2" textsize="20" textfont="RajdhaniMono" textemboss="1"/>
+		<label id="LabelPlay10" pos="-0 0" z-index="0" size="20 5" text="Play" halign="center" style="CardButtonMedium" scriptevents="1"/>
+		<label id="LabelExplore10" pos="0 -8" z-index="0" size="20 5" text="Explore" halign="center" style="CardButtonSmallS" scriptevents="1"/>
+	</frame>
+	<label id="LabelSolo" pos="120 60" z-index="0" size="20 5" text="Solo" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
+	<label id="LabelLocal" pos="120 50" z-index="0" size="20 5" text="Local" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
+	<label id="LabelInternet" pos="120 40" z-index="0" size="20 5" text="Internet" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
+	<label id="LabelEditor" pos="120 30" z-index="0" size="20 5" text="Editor" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
+	<label id="LabelProfile" pos="120 20" z-index="0" size="20 5" text="Profile" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
+	<quad pos="60 -45" z-index="0" size="80 35" style="TitleLogos" substyle="Title"/>
+</manialink>
