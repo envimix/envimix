@@ -29,7 +29,8 @@ public class Envimix : UniverseModeBase
         public string Login;
         public string Nickname;
         public string Zone;
-        public Dictionary<string, string> Categories;
+        public string Car;
+        public int Gravity;
         public Record.SRecord Record;
     }
 
@@ -665,16 +666,13 @@ public class Envimix : UniverseModeBase
 
         if (EnvimaniaSessionToken is not "")
         {
-            var categories = new Dictionary<string, string>();
-            categories["Car"] = car.Get();
-            categories["Gravity"] = "1"; // Server does not support gravity yet
-
             SEnvimaniaSessionRecordRequest recordRequest = new()
             {
                 Login = e.Player.User.Login,
                 Nickname = e.Player.User.Name,
                 Zone = e.Player.User.ZonePath,
-                Categories = categories,
+                Car = car.Get(),
+                Gravity = 10, // Server does not support gravity yet (10 is equivalent 1.0)
                 Record = tempRace.Get()
             };
 
