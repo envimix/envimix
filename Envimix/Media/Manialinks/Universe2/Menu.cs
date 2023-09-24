@@ -1329,16 +1329,15 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (UseForcedClans != PrevUseForcedClans)
         {
-            /*if (UseForcedClans)
+            if (UseForcedClans)
             {
-                FrameTeamMessage.RelativePosition_V3.Y = -0;
-                AnimMgr.Add(FrameTeamMessage, "<frame pos=\"0 -8\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.Add(FrameTeamInfo, "<frame scale=\"0.75\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
             }
             else
             {
-                FrameTeamMessage.RelativePosition_V3.Y = -8;
-                AnimMgr.Add(FrameTeamMessage, "<frame pos=\"0 0\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
-            }*/
+                AnimMgr.Add(FrameTeamInfo, "<frame scale=\"1\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+
             PrevUseForcedClans = UseForcedClans;
         }
 
