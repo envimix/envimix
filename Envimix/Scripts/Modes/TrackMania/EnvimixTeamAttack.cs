@@ -1,4 +1,6 @@
-﻿namespace Envimix.Scripts.Modes.TrackMania;
+﻿using System.Numerics;
+
+namespace Envimix.Scripts.Modes.TrackMania;
 
 public class EnvimixTeamAttack : Envimix
 {
@@ -36,35 +38,8 @@ public class EnvimixTeamAttack : Envimix
         switch (e.Type)
         {
             case CUIConfigEvent.EType.OnLayerCustomEvent:
-                var player = GetPlayer(e.UI);
                 ProcessUpdateSkinEvent(e);
-        
-                switch (e.CustomEventType)
-                {
-                    case "Car":
-                        if (e.CustomEventData.Count > 0)
-                        {
-                            var carName = e.CustomEventData[0];
-                            SetValidClientCar(player, carName);
-
-                            var car = Netwrite<string>.For(player);
-
-                            if (e.CustomEventData.Count > 1)
-                            {
-                                var respawn = e.CustomEventData[1] == "True";
-
-                                if (respawn)
-                                {
-                                    var frozen = e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
-                                    var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
-                                }
-                            }
-                        }
-                        break;
-                    case "JoinTeam":
-                        Log(nameof(EnvimixTeamAttack), "JoinTeam");
-                        break;
-                }
+                ProcessUpdateCarEvent(e, forceFreeze: false);
                 break;
         }
 
@@ -127,6 +102,7 @@ public class EnvimixTeamAttack : Envimix
                 {
                     case CUIConfigEvent.EType.OnLayerCustomEvent:
                         ProcessUpdateSkinEvent(e);
+                        ProcessUpdateCarEvent(e, forceFreeze: true);
         
                         switch (e.CustomEventType)
                         {
@@ -149,7 +125,7 @@ public class EnvimixTeamAttack : Envimix
                 }
             }
 
-            foreach (var player in Players)
+            foreach (var player in PlayersWaiting)
             {
                 TrySpawnEnvimixTeamAttackPlayer(player, frozen: true);
             }
@@ -334,6 +310,34 @@ public class EnvimixTeamAttack : Envimix
         else
         {
             NbLaps = -1;
+        }
+    }
+
+    private void ProcessUpdateCarEvent(CUIConfigEvent e, bool forceFreeze)
+    {
+        switch (e.CustomEventType)
+        {
+            case "Car":
+                if (e.CustomEventData.Count > 0)
+                {
+                    var carName = e.CustomEventData[0];
+                    var player = GetPlayer(e.UI);
+                    SetValidClientCar(player, carName);
+
+                    var car = Netwrite<string>.For(player);
+
+                    if (e.CustomEventData.Count > 1)
+                    {
+                        var respawn = e.CustomEventData[1] == "True";
+
+                        if (respawn)
+                        {
+                            var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
+                            var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
+                        }
+                    }
+                }
+                break;
         }
     }
 }
