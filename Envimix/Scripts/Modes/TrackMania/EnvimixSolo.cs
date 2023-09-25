@@ -11,6 +11,11 @@ public class EnvimixSolo : Envimix
     [Setting] public new string EnvimixWebAPI = "";
     [Setting] public new string SkinsFile = "Skins_Turbo.json";
 
+    public override void OnServerInit()
+    {
+        ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixSingleplayerClient.Script.txt";
+    }
+
     public override void OnMapLoad()
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load

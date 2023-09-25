@@ -2,4 +2,8 @@
 
 public class EnvimixTimeAttack : Envimix
 {
+    public override void OnServerInit()
+    {
+        CreateServersideLayers();
+    }
 }

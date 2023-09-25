@@ -245,24 +245,43 @@ public class Envimix : UniverseModeBase
         foreach (var (name, car) in Cars) DisplayedCars.Add(name);
         foreach (var (name, car) in UnitedCars) DisplayedCars.Add(name);
         foreach (var (name, car) in CustomCars) DisplayedCars.Add(name);
+    }
 
-        Log(nameof(Envimix), "Creating manialinks...");
+    public override void BeforeServerStart()
+    {
+        foreach (var player in AllPlayers)
+        {
+            var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
+            prepareLoading.Set(-1);
+        }
+    }
+
+    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType)
+    {
+        Log(nameof(Envimix), "Creating layer " + layerName + "...");
+        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml");
+    }
+
+    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
+    {
+        Log(nameof(Envimix), "Creating layer " + layerName + "...");
+        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
+    }
+
+    public void CreateServersideLayers()
+    {
+        Log(nameof(EnvimixTimeAttack), "Creating manialinks...");
 
         CreateLayer("321Go", CUILayer.EUILayerType.Normal);
         CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
-
-        if (!IsSolo())
-        {
-            CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
-            CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
-            CreateLayer("LiveRankingsCar", CUILayer.EUILayerType.Normal);
-            CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
-            CreateLayer("Score", CUILayer.EUILayerType.Normal);
-            CreateLayer("Rating", CUILayer.EUILayerType.Normal);
-            CreateLayer("Status", CUILayer.EUILayerType.Normal);
-            CreateLayer("Envimania", CUILayer.EUILayerType.Normal);
-        }
-
+        CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
+        CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
+        CreateLayer("LiveRankingsCar", CUILayer.EUILayerType.Normal);
+        CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
+        CreateLayer("Score", CUILayer.EUILayerType.Normal);
+        CreateLayer("Rating", CUILayer.EUILayerType.Normal);
+        CreateLayer("Status", CUILayer.EUILayerType.Normal);
+        CreateLayer("Envimania", CUILayer.EUILayerType.Normal);
         CreateLayer("Map", CUILayer.EUILayerType.Normal);
         CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
@@ -291,12 +310,6 @@ public class Envimix : UniverseModeBase
         CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
 
         Log(nameof(Envimix), "All manialinks successfully created!");
-
-        foreach (var player in AllPlayers)
-        {
-            var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
-            prepareLoading.Set(-1);
-        }
     }
 
     public override void OnServerStart()
@@ -768,18 +781,6 @@ public class Envimix : UniverseModeBase
             Log(nameof(Envimix), $"Skipping {mapName}: Stadium environment");
             Yield();
         }
-    }
-
-    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType)
-    {
-        Log(nameof(Envimix), "Creating layer " + layerName + "...");
-        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml");
-    }
-
-    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
-    {
-        Log(nameof(Envimix), "Creating layer " + layerName + "...");
-        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
     }
 
     public static void NoticeMessage(IList<CUIConfig> uis, string text)
