@@ -335,8 +335,8 @@ public class Dashboard : CTmMlScriptIngame, IContext
             LastGear = GetOwner().EngineCurGear;
         }
 
-        QuadSteerLeft.Size.X = MathLib.Clamp(-GetOwner().InputSteer, _Min: 0, _Max: 1) * 28;
-        QuadSteerRight.Size.X = MathLib.Clamp(GetOwner().InputSteer, _Min: 0, _Max: 1) * 28;
+        QuadSteerLeft.Size.X = MathLib.Clamp(-GetOwner().InputSteer, _Min: 0, _Max: 1) * 30;
+        QuadSteerRight.Size.X = MathLib.Clamp(GetOwner().InputSteer, _Min: 0, _Max: 1) * 30;
 
         // If player started or stopped braking
         if (GetOwner().InputIsBraking != PreviousBrakeState)
