@@ -8,6 +8,7 @@ public class EnvimixSolo : Envimix
     [Setting] public new bool EnableTrafficCarInStadium = false; // TODO: Fix
     [Setting] public new bool UseUnitedModels = true;
     [Setting] public new string EnvimixWebAPI = "";
+    [Setting] public new string SkinsFile = "Skins_Turbo.json";
 
     public override void OnMapLoad()
     {
