@@ -166,7 +166,7 @@ public class Menu : CTmMlScriptIngame, IContext
             var labelDefault = (frame.GetFirstChild("LabelDefault") as CMlLabel)!;
             var labelVehicle = (frame.GetFirstChild("LabelVehicle") as CMlLabel)!;
 
-            if (DisplayedCars.Contains(GetCar()) && i == VehicleIndex)
+            if ((DisplayedCars.Contains(GetCar()) || GetCar() == "") && i == VehicleIndex)
             {
                 quadVehicle.StyleSelected = true;
             }
