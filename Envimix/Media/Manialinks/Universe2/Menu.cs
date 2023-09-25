@@ -730,7 +730,15 @@ public class Menu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonSkin)
                         {
-                            NavFocusedControl = QuadButtonSpectator;
+                            if (IsSolo())
+                            {
+                                NavFocusedControl = QuadButtonContinue;
+                            }
+                            else
+                            {
+                                NavFocusedControl = QuadButtonSpectator;
+                            }
+
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonSpectator)
@@ -756,7 +764,15 @@ public class Menu : CTmMlScriptIngame, IContext
 
                         if (NavFocusedControl == QuadButtonContinue)
                         {
-                            NavFocusedControl = QuadButtonSpectator;
+                            if (IsSolo())
+                            {
+                                NavFocusedControl = QuadButtonSkin;
+                            }
+                            else
+                            {
+                                NavFocusedControl = QuadButtonSpectator;
+                            }
+                            
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonExit)
