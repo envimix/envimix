@@ -7,6 +7,7 @@ public class EnvimixSolo : Envimix
     [Setting] public new bool EnableTrafficCar = false; // TODO: Fix
     [Setting] public new bool EnableTrafficCarInStadium = false; // TODO: Fix
     [Setting] public new bool UseUnitedModels = true;
+    [Setting] public new bool AlwaysUseVehicleItems = true;
     [Setting] public new string EnvimixWebAPI = "";
     [Setting] public new string SkinsFile = "Skins_Turbo.json";
 
@@ -17,36 +18,55 @@ public class EnvimixSolo : Envimix
         PrespawnEnvimixPlayers();
     }
 
-    public override void OnGameStart()
+    public override void OnUIEvent(CUIConfigEvent e)
     {
-        while (true)
+        switch (e.Type)
         {
-            foreach (var e in UIManager.PendingEvents)
-            {
-                switch (e.Type)
+            case CUIConfigEvent.EType.OnLayerCustomEvent:
+                ProcessUpdateSkinEvent(e);
+                ProcessUpdateCarEvent(e);
+                break;
+        }
+    }
+
+    public override void OnPlayerAdded(CTmModeEvent e)
+    {
+        PrepareJoinedPlayer(e.Player);
+    }
+
+    public override void OnGameLoop()
+    {
+        foreach (var player in PlayersWaiting)
+        {
+            TrySpawnEnvimixPlayer(player, frozen: false);
+        }
+    }
+
+    private void ProcessUpdateCarEvent(CUIConfigEvent e)
+    {
+        switch (e.CustomEventType)
+        {
+            case "Car":
+                if (e.CustomEventData.Count > 0)
                 {
-                    case CUIConfigEvent.EType.OnLayerCustomEvent:
-                        ProcessUpdateSkinEvent(e);
-                        break;
+                    var carName = e.CustomEventData[0];
+                    var player = GetPlayer(e.UI);
+                    SetValidClientCar(player, carName);
+
+                    var car = Netwrite<string>.For(player);
+
+                    if (e.CustomEventData.Count > 1)
+                    {
+                        var respawn = true; // always respawn on Car event
+
+                        if (respawn)
+                        {
+                            var frozen = e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
+                            var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+                        }
+                    }
                 }
-            }
-
-            foreach (var e in PendingEvents)
-            {
-                switch (e.Type)
-                {
-                    case CTmModeEvent.EType.OnPlayerAdded:
-                        PrepareJoinedPlayer(e.Player);
-                        break;
-                }
-            }
-
-            foreach (var player in Players)
-            {
-                TrySpawnEnvimixPlayer(player, frozen: true);
-            }
-
-            Yield();
+                break;
         }
     }
 }
