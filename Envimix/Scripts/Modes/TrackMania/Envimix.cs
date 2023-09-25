@@ -66,6 +66,9 @@ public class Envimix : UniverseModeBase
     [Setting(As = "* Use United models", ReloadOnChange = true)]
     public bool UseUnitedModels = false; // Wrong usage can crash scripts
 
+    [Setting(As = "* Always use vehicle items", ReloadOnChange = true)]
+    public bool AlwaysUseVehicleItems = false; // Wrong usage can crash scripts
+
     [Setting(As = "* Vehicle folder", ReloadOnChange = true)]
     public string VehicleFolder = "Vehicles/"; // Wrong usage can crash scripts
 
@@ -182,7 +185,7 @@ public class Envimix : UniverseModeBase
 
                 itemCars[car] = itemName;
 
-                if (EnableStadiumEnvimix && car != "StadiumCar" && (EnableTrafficCarInStadium || car != "TrafficCar"))
+                if ((AlwaysUseVehicleItems || (EnableStadiumEnvimix && car != "StadiumCar")) && (EnableTrafficCarInStadium || car != "TrafficCar"))
                 {
                     itemName = $"{VehicleFolder}{TextLib.Replace(VehicleFileFormat, "%1", car)}";
                     SpecialCars[car] = new()
