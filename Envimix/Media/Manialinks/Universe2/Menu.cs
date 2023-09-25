@@ -313,6 +313,7 @@ public class Menu : CTmMlScriptIngame, IContext
                                 SendCustomEvent("Car", new[] { DisplayedCars[index], "False" });
                             }
                         }
+
                         if (MenuKind == "Skin")
                         {
                             AnimMgr.Flush(FrameMenu);
@@ -1023,7 +1024,14 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 if (CutOffTimeLimit != -1 && InputPlayer.RaceStartTime > CutOffTimeLimit && !IsSpectator)
                 {
-                    SendCustomEvent("Car",new [] { DisplayedCars[VehicleIndex], "True" });
+                    SendCustomEvent("Car", new [] { DisplayedCars[VehicleIndex], "True" });
+                }
+
+                // Solo specific spawning
+                // TODO: 3000 should be compatible with custom countdown
+                if (IsSolo() && InputPlayer.RaceStartTime - 3000 > GameTime)
+                {
+                    SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
                 }
             }
         }
