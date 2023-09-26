@@ -215,11 +215,11 @@ public class Map : CTmMlScriptIngame, IContext
         {
             if (control is CMlQuad quad)
             {
-                quad.Size.X = LabelCar.ComputeWidth(LabelCar.Value) + 6;
+                quad.Size.X = LabelCar.ComputeWidth(LabelCar.Value) + 5;
             }
         }
 
-        FrameCarBg.DataAttributeSet("size", (LabelCar.ComputeWidth(LabelCar.Value) + 6).ToString());
+        FrameCarBg.DataAttributeSet("size", (LabelCar.ComputeWidth(LabelCar.Value) + 5).ToString());
 
         PreviousCar = car.Get();
 
@@ -265,7 +265,7 @@ public class Map : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            quad.Size.X = LabelMapName.ComputeWidth(Map.MapInfo.Name) + 6;
+            quad.Size.X = LabelMapName.ComputeWidth(Map.MapInfo.Name) + 5;
 
             if (quad.Size.X > 80)
             {
