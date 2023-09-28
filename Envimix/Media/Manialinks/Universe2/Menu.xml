@@ -94,7 +94,7 @@
 				<frame id="FrameSingleplayer" pos="0 -5" z-index="1" hidden="1">
 					<frame pos="0 0">
 						<frame clip="1" clipsizen="55 6">
-							<label size="200 5" text="{{{{LOCAL}}}}" halign="center" valign="center2" style="TextButtonBig" textsize="2.5" translate="1" id="LABEL_GHOSTSECTION"/>
+							<label size="200 5" text="Local" halign="center" valign="center2" style="TextButtonBig" textsize="2.5" translate="1" id="LABEL_GHOSTSECTION"/>
 						</frame>
 						<quad pos="-32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" id="QUAD_GHOSTSECTION_PREVIOUS"/>
 						<quad pos="32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" rot="180" id="QUAD_GHOSTSECTION_NEXT"/>
@@ -195,7 +195,7 @@
 			</frame>
 			<frame pos="-110 39" z-index="1">
 				<frame pos="38 0" z-index="1">
-					<quad z-index="0" size="2 104.5" style="Bgs1" substyle="BgCardList" id="QuadSkinScrollable" scriptevents="1" halign="center"/>
+					<quad z-index="0" size="2 104.5" style="Bgs1" substyle="BgCardList" id="QuadSkinScrollable" opacity="0.5" scriptevents="1" halign="center"/>
 					<quad z-index="1" size="2 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadSkinScrollbar" scriptevents="1" halign="center" hidden="0"/>
 				</frame>
 				<frame clip="1" clipposn="0 -52.5" clipsizen="80 105" scroll="1" scrollgrid="15 15" scrollmax="0 100">

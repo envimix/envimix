@@ -1022,9 +1022,10 @@ public class Menu : CTmMlScriptIngame, IContext
             {
                 NavFocusedControl.StyleSelected = false;
 
+                // Multiplayer specific spawning
                 if (CutOffTimeLimit != -1 && InputPlayer.RaceStartTime > CutOffTimeLimit && !IsSpectator)
                 {
-                    SendCustomEvent("Car", new [] { DisplayedCars[VehicleIndex], "True" });
+                    SendCustomEvent("Car", new [] { DisplayedCars[VehicleIndex], "True", "False", "True" });
                 }
 
                 // Solo specific spawning
