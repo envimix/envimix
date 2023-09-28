@@ -909,7 +909,7 @@ public class Menu : CTmMlScriptIngame, IContext
         FrameVehicleList.RelativePosition_V3.X = 110;
         FrameTeamInfo.RelativePosition_V3.Y = -135;
 
-        if (ItemCars.ContainsKey(MapPlayerModelName))
+        if (ItemCars.ContainsValue(MapPlayerModelName))
         {
             ClientCar = ItemCars.KeyOf(MapPlayerModelName);
         }
