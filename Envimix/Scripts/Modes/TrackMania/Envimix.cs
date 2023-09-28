@@ -42,6 +42,12 @@ public class Envimix : UniverseModeBase
         public int Timestamp;
     }
 
+    public struct SEnvimaniaRecordsFilter
+    {
+        public string Car;
+        public int Gravity;
+    }
+
     [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
     public bool EnableTM2Cars = true;
 
@@ -630,6 +636,27 @@ public class Envimix : UniverseModeBase
             EnvimaniaSessionRecordRequests.Remove(recRequest);
             Http.Destroy(recRequest);
         }
+    }
+
+    public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> RecordsRequests;
+    public required Dictionary<SEnvimaniaRecordsFilter, bool> FinishedRecordsRequests;
+
+    public void RequestEnvimaniaRecords(string carName, int gravity)
+    {
+        SEnvimaniaRecordsFilter filter = new()
+        {
+            Car = carName,
+            Gravity = gravity
+        };
+
+        if (FinishedRecordsRequests.ContainsKey(filter) || RecordsRequests.ContainsKey(filter))
+        {
+            return;
+        }
+
+        Log(nameof(Envimix), $"{EnvimixWebAPI}/envimania/records?car={carName}&gravity={gravity}");
+
+        RecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records?car={carName}&gravity={gravity}", UseCache: false);
     }
 
     #endregion

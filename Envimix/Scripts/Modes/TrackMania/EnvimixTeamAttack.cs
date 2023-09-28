@@ -336,6 +336,13 @@ public class EnvimixTeamAttack : Envimix
                         {
                             var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
                             var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
+
+                            var isMenuEscape = e.CustomEventData.Count > 3 && e.CustomEventData[3] == "True";
+
+                            if (spawned || isMenuEscape)
+                            {
+                                RequestEnvimaniaRecords(carName, MathLib.NearestInteger(player.GravityCoef * 10));
+                            }
                         }
                     }
                 }
