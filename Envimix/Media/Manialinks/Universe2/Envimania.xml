@@ -21,26 +21,26 @@
 				<quad z-index="0" size="42.5 82.5" style="Bgs1" substyle="BgCardList" halign="center"/>
 			</frame>
 			<frame pos="-45 -3.5" z-index="3" clip="1" clipposn="21.25 -40" clipsizen="42.5 85" id="FrameRecords" hidden="0">
-				<frameinstance modelid="FramemodelRecord"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -4"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -8"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -12"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -16"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -20"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -24"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -28"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -32"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -36"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -40"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -44"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -48"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -52"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -56"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -60"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -64"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -68"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -72"/>
-				<frameinstance modelid="FramemodelRecord" pos="0 -76"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -4"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -8"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -12"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -16"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -20"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -24"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -28"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -32"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -36"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -40"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -44"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -48"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -52"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -56"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -60"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -64"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -68"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -72"/>
+				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -76"/>
 			</frame>
 		</frame>
 		<frame pos="0 -88.5">

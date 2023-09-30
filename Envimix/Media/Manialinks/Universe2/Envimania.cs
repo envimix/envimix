@@ -23,6 +23,29 @@ public class Envimania : CTmMlScriptIngame, IContext
         public ImmutableArray<SCheckpoint> Checkpoints;
     }
 
+    public struct SEnvimaniaRecord
+    {
+        public string Login;
+        public string Nickname;
+        public string Zone;
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+    }
+
+    public struct SEnvimaniaRecordsResponse
+    {
+        public ImmutableArray<SEnvimaniaRecord> Records;
+    }
+
+    public struct SEnvimaniaRecordsFilter
+    {
+        public string Car;
+        public int Gravity;
+    }
+
     [ManialinkControl] public required CMlFrame FrameEnvimania;
     [ManialinkControl] public required CMlFrame FrameEnvimaniaTitleBg;
     [ManialinkControl] public required CMlFrame FrameLabelCar;
@@ -31,8 +54,14 @@ public class Envimania : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameEnvimaniaYourRecordBg;
     [ManialinkControl] public required CMlFrame FrameYourRecord;
 
+    [Netread] public required Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse> EnvimaniaRecords { get; init; }
+    [Netread] public int EnvimaniaRecordsUpdatedAt { get; init; }
+
     public bool PreviousVisible;
     public int VisibleTime = -1;
+
+    public int PreviousEnvimaniaRecordsUpdatedAt;
+    public string PreviousCar = "";
 
     CTmMlPlayer GetPlayer()
     {
@@ -54,12 +83,21 @@ public class Envimania : CTmMlScriptIngame, IContext
         return !IsInGameMenuDisplayed;
     }
 
+    string GetCar()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        return car.Get();
+    }
+
     public void Main()
     {
         FrameEnvimania.Visible = IsVisible();
         PreviousVisible = FrameEnvimania.Visible;
 
         Wait(() => GetPlayer() is not null);
+
+        PreviousEnvimaniaRecordsUpdatedAt = EnvimaniaRecordsUpdatedAt;
+        PreviousCar = GetCar();
     }
 
     public void Loop()
@@ -105,6 +143,64 @@ public class Envimania : CTmMlScriptIngame, IContext
             FrameLabelCar.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 400);
             FrameRecords.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 500);
             FrameYourRecord.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 400);
+        }
+
+        if (EnvimaniaRecordsUpdatedAt != PreviousEnvimaniaRecordsUpdatedAt)
+        {
+            UpdateRecords();
+            PreviousEnvimaniaRecordsUpdatedAt = EnvimaniaRecordsUpdatedAt;
+        }
+
+        if (GetCar() != PreviousCar)
+        {
+            UpdateRecords();
+            PreviousCar = GetCar();
+        }
+    }
+
+    private void UpdateRecords()
+    {
+        SEnvimaniaRecordsFilter filter = new()
+        {
+            Car = GetCar(),
+            Gravity = 10 // TODO: Get gravity
+        };
+
+        var recResponse = EnvimaniaRecords[filter];
+
+        SEnvimaniaRecord prevRecord = new();
+        var rankOffset = 0;
+
+        for (int i = 0; i < FrameRecords.Controls.Count; i++)
+        {
+            var frame = (FrameRecords.Controls[i] as CMlFrame)!;
+
+            if (i >= recResponse.Records.Length)
+            {
+                frame.Visible = false;
+                continue;
+            }
+
+            frame.Visible = true;
+
+            var record = recResponse.Records[i];
+
+            var rank = i + 1 - rankOffset;
+
+            if (record.Time == prevRecord.Time && record.Score == prevRecord.Score && record.NbRespawns == prevRecord.NbRespawns && record.Distance == prevRecord.Distance && record.Speed == prevRecord.Speed)
+            {
+                rankOffset += 1;
+            }
+
+            var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
+            var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
+
+            labelRank.SetText(TextLib.FormatInteger(rank, 2));
+            labelNickname.SetText(record.Nickname);
+            labelTime.SetText(TimeToTextWithMilli(record.Time));
+
+            prevRecord = record;
         }
     }
 }

@@ -34,18 +34,35 @@ public class Envimix : UniverseModeBase
         public Record.SRecord Record;
     }
 
-    public struct SChatMessage
+    public struct SEnvimaniaRecord
     {
         public string Login;
         public string Nickname;
-        public string Content;
-        public int Timestamp;
+        public string Zone;
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+    }
+
+    public struct SEnvimaniaRecordsResponse
+    {
+        public ImmutableArray<SEnvimaniaRecord> Records;
     }
 
     public struct SEnvimaniaRecordsFilter
     {
         public string Car;
         public int Gravity;
+    }
+
+    public struct SChatMessage
+    {
+        public string Login;
+        public string Nickname;
+        public string Content;
+        public int Timestamp;
     }
 
     [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
@@ -107,6 +124,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public required IList<string> DisplayedCars { get; set; }
     [Netwrite] public required Dictionary<string, string> ItemCars { get; set; }
     [Netwrite] public bool CarSelectionMode { get; set; }
+    [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
 
     public override void OnServerInit()
     {
@@ -455,6 +473,41 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
     }
 
+    public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> RecordsRequests;
+    public required Dictionary<SEnvimaniaRecordsFilter, bool> FinishedRecordsRequests;
+
+    /// <summary>
+    /// Request leaderboards of certain leaderboard type.
+    /// </summary>
+    /// <param name="carName">The car name should be validated before passed.</param>
+    /// <param name="gravity"></param>
+    public bool RequestEnvimaniaRecords(string carName, int gravity)
+    {
+        SEnvimaniaRecordsFilter filter = new()
+        {
+            Car = carName,
+            Gravity = gravity
+        };
+
+        if (EnvimaniaSessionToken is "")
+        {
+            FinishedRecordsRequests[filter] = false;
+            return false;
+        }
+
+        if (FinishedRecordsRequests.ContainsKey(filter) || RecordsRequests.ContainsKey(filter))
+        {
+            return false;
+        }
+
+        Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
+
+        RecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaRecordsUpdatedAt = Now;
+
+        return true;
+    }
+
     public void CheckEnvimaniaSession()
     {
         if (EnvimixWebAPI is "")
@@ -567,6 +620,22 @@ public class Envimix : UniverseModeBase
                 EnvimaniaStatusReceived = -1;
                 EnvimaniaStatusRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/status", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
             }
+
+            ImmutableArray<SEnvimaniaRecordsFilter> recordsToRequestAgain = new();
+
+            foreach (var (filter, finished) in FinishedRecordsRequests)
+            {
+                if (!finished)
+                {
+                    recordsToRequestAgain.Add(filter);
+                }
+            }
+
+            foreach (var filter in recordsToRequestAgain)
+            {
+                FinishedRecordsRequests.Remove(filter);
+                RequestEnvimaniaRecords(filter.Car, filter.Gravity);
+            }
         }
 
         // Status checks
@@ -649,6 +718,20 @@ public class Envimix : UniverseModeBase
             if (recsRequest.StatusCode == 200)
             {
                 Log(nameof(Envimix), $"Records retrieved (200, {filter.Car}, G: {filter.Gravity}, Type: Time).");
+
+                SEnvimaniaRecordsResponse response = new();
+
+                if (response.FromJson(recsRequest.Result))
+                {
+                    var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                    envimaniaRecords.Get()[filter] = response;
+                    EnvimaniaRecordsUpdatedAt = Now;
+                    FinishedRecordsRequests[filter] = true;
+                }
+                else
+                {
+                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, Type: Time).");
+                }
             }
             else
             {
@@ -664,27 +747,6 @@ public class Envimix : UniverseModeBase
             RecordsRequests.Remove(filter);
             Http.Destroy(request);
         }
-    }
-
-    public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> RecordsRequests;
-    public required Dictionary<SEnvimaniaRecordsFilter, bool> FinishedRecordsRequests;
-
-    public void RequestEnvimaniaRecords(string carName, int gravity)
-    {
-        SEnvimaniaRecordsFilter filter = new()
-        {
-            Car = carName,
-            Gravity = gravity
-        };
-
-        if (FinishedRecordsRequests.ContainsKey(filter) || RecordsRequests.ContainsKey(filter))
-        {
-            return;
-        }
-
-        Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
-
-        RecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records?car={carName}&gravity={gravity}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
     }
 
     #endregion
