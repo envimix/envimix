@@ -706,17 +706,17 @@ public class Menu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonExit)
                         {
-                            NavFocusedControl = QuadButtonManageServer;
+                            NavFocusedControl = QuadButtonServerSettings;
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonManageServer)
                         {
-                            NavFocusedControl = QuadButtonServerSettings;
+                            NavFocusedControl = QuadButtonAdvanced;
                             Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonModeHelp)
                         {
-                            NavFocusedControl = QuadButtonAdvanced;
+                            NavFocusedControl = QuadButtonManageServer;
                             Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonServerSettings)
@@ -783,7 +783,7 @@ public class Menu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonManageServer)
                         {
-                            NavFocusedControl = QuadButtonExit;
+                            NavFocusedControl = QuadButtonModeHelp;
                             Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonModeHelp)
@@ -793,12 +793,12 @@ public class Menu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonServerSettings)
                         {
-                            NavFocusedControl = QuadButtonManageServer;
+                            NavFocusedControl = QuadButtonExit;
                             Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonAdvanced)
                         {
-                            NavFocusedControl = QuadButtonModeHelp;
+                            NavFocusedControl = QuadButtonManageServer;
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonSkin)
