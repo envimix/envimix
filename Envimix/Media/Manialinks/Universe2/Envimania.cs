@@ -35,15 +35,16 @@ public class Envimania : CTmMlScriptIngame, IContext
         public float Speed;
     }
 
-    public struct SEnvimaniaRecordsResponse
-    {
-        public ImmutableArray<SEnvimaniaRecord> Records;
-    }
-
     public struct SEnvimaniaRecordsFilter
     {
         public string Car;
         public int Gravity;
+    }
+
+    public struct SEnvimaniaRecordsResponse
+    {
+        public SEnvimaniaRecordsFilter Filter;
+        public ImmutableArray<SEnvimaniaRecord> Records;
     }
 
     [ManialinkControl] public required CMlFrame FrameEnvimania;
@@ -165,6 +166,16 @@ public class Envimania : CTmMlScriptIngame, IContext
             Car = GetCar(),
             Gravity = 10 // TODO: Get gravity
         };
+
+        if (!EnvimaniaRecords.ContainsKey(filter))
+        {
+            foreach (var control in FrameRecords.Controls)
+            {
+                control.Visible = false;
+            }
+
+            return;
+        }
 
         var recResponse = EnvimaniaRecords[filter];
 
