@@ -180,6 +180,10 @@
 					<quad pos="0 0" z-index="-1" size="43.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip"/>
 					<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.gg/v6TW88m" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
 				</frame>
+				<frame pos="45 50" clip="1" clipsizen="10.5 22">
+					<quad z-index="0" size="10 20" style="Bgs1" substyle="BgCardList" halign="right" valign="center"/>
+					<label pos="-2.25 0" z-index="1" size="20 5" text="GRAVITY" textfont="RajdhaniMono" halign="center" rot="90" textsize="1.5" valign="center"/>
+				</frame>
 			</frame>
 		</frame>
 		<frame id="FrameSkins" pos="-110 0" hidden="1">
