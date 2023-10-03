@@ -31,6 +31,7 @@ public class Envimix : UniverseModeBase
         public string Zone;
         public string Car;
         public int Gravity;
+        public bool IndependentLaps;
         public Record.SRecord Record;
     }
 
@@ -56,6 +57,8 @@ public class Envimix : UniverseModeBase
     {
         public string Car;
         public int Gravity;
+        public bool IndependentLaps;
+        public string Type;
     }
 
     public struct SEnvimaniaRecordsResponse
@@ -396,6 +399,13 @@ public class Envimix : UniverseModeBase
     {
         Log(nameof(Envimix), $"Starting map {TextLib.StripFormatting(Map.MapInfo.Name)}...");
 
+        // Reset Envimania records
+        var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+        envimaniaRecords.Get().Clear();
+        EnvimaniaFinishedRecordsRequests.Clear();
+        EnvimaniaStatusMessage = "Please wait...";
+        EnvimaniaRecordsUpdatedAt = Now;
+
         RequestEnvimaniaSession();
     }
 
@@ -499,12 +509,14 @@ public class Envimix : UniverseModeBase
     /// </summary>
     /// <param name="carName">The car name should be validated before passed.</param>
     /// <param name="gravity"></param>
-    public bool RequestEnvimaniaRecords(string carName, int gravity)
+    public bool RequestEnvimaniaRecords(string carName, int gravity, bool independentLaps)
     {
         SEnvimaniaRecordsFilter filter = new()
         {
             Car = carName,
-            Gravity = gravity
+            Gravity = gravity,
+            IndependentLaps = independentLaps,
+            Type = "Time" // TODO: Add support for other types
         };
 
         if (EnvimaniaSessionToken is "")
@@ -520,7 +532,7 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
 
-        EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&independentLaps={IndependantLaps}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
         EnvimaniaStatusMessage = "Loading records...";
         EnvimaniaRecordsUpdatedAt = Now;
 
@@ -653,7 +665,7 @@ public class Envimix : UniverseModeBase
             foreach (var filter in recordsToRequestAgain)
             {
                 EnvimaniaFinishedRecordsRequests.Remove(filter);
-                RequestEnvimaniaRecords(filter.Car, filter.Gravity);
+                RequestEnvimaniaRecords(filter.Car, filter.Gravity, filter.IndependentLaps);
             }
         }
 
@@ -816,9 +828,10 @@ public class Envimix : UniverseModeBase
                 }
                 else
                 {
-                    EnvimaniaStatusMessage = "Records failed to load (JSON issue)";
+                    EnvimaniaStatusMessage = "Records failed to load (JSON issue). Reported in server logs.";
 
-                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, Type: Time).");
+                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, IL: {filter.IndependentLaps}, Type: Time).");
+                    Log(nameof(Envimix), recsRequest.Result);
                 }
             }
             else
@@ -907,6 +920,7 @@ public class Envimix : UniverseModeBase
                 Zone = e.Player.User.ZonePath,
                 Car = car.Get(),
                 Gravity = gravity,
+                IndependentLaps = IndependantLaps,
                 Record = tempRace.Get()
             };
 
@@ -919,11 +933,22 @@ public class Envimix : UniverseModeBase
             SEnvimaniaRecordsFilter filter = new()
             {
                 Car = car.Get(),
-                Gravity = gravity
+                Gravity = gravity,
+                IndependentLaps = IndependantLaps,
+                Type = "Time" // TODO: Add support for other types
             };
 
             var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
-            var recResponse = envimaniaRecords.Get()[filter];
+
+            SEnvimaniaRecordsResponse recResponse = new()
+            {
+                Filter = filter
+            };
+
+            if (envimaniaRecords.Get().ContainsKey(filter))
+            {
+                recResponse = envimaniaRecords.Get()[filter];
+            }
 
             var insertIndex = -1;
 
@@ -981,6 +1006,7 @@ public class Envimix : UniverseModeBase
             }
 
             envimaniaRecords.Get()[filter] = recResponse;
+            Log("wtf", envimaniaRecords.Get()[filter].ToString());
             EnvimaniaRecordsUpdatedAt = Now;
         }
 

@@ -40,6 +40,8 @@ public class Envimania : CTmMlScriptIngame, IContext
     {
         public string Car;
         public int Gravity;
+        public bool IndependentLaps;
+        public string Type;
     }
 
     public struct SEnvimaniaRecordsResponse
@@ -68,6 +70,8 @@ public class Envimania : CTmMlScriptIngame, IContext
     public int PreviousEnvimaniaRecordsUpdatedAt;
     public string PreviousCar = "";
     public string PreviousEnvimaniaStatusMessage = "";
+
+    public required CMlLabel LabelYourRecordNickname;
 
     CTmMlPlayer GetPlayer()
     {
@@ -105,6 +109,8 @@ public class Envimania : CTmMlScriptIngame, IContext
         PreviousEnvimaniaRecordsUpdatedAt = EnvimaniaRecordsUpdatedAt;
         PreviousCar = GetCar();
         PreviousEnvimaniaStatusMessage = EnvimaniaStatusMessage;
+
+        LabelYourRecordNickname = (FrameYourRecord.GetFirstChild("LabelNickname") as CMlLabel)!;
     }
 
     public void Loop()
@@ -172,6 +178,8 @@ public class Envimania : CTmMlScriptIngame, IContext
             LabelEnvimaniaStatus.SetText(EnvimaniaStatusMessage);
             PreviousEnvimaniaStatusMessage = EnvimaniaStatusMessage;
         }
+
+        LabelYourRecordNickname.SetText(GetPlayer().User.Name);
     }
 
     private SEnvimaniaRecordsFilter GetFilter()
@@ -179,17 +187,34 @@ public class Envimania : CTmMlScriptIngame, IContext
         SEnvimaniaRecordsFilter filter = new()
         {
             Car = GetCar(),
-            Gravity = 10 // TODO: Get gravity
+            Gravity = 10, // TODO: Get gravity
+            IndependentLaps = IndependantLaps,
+            Type = "Time" // TODO: Get type
         };
 
         return filter;
     }
 
+    private void SetYouCouldBeHere()
+    {
+        foreach (var control in FrameRecords.Controls)
+        {
+            control.Visible = false;
+        }
+
+        var firstFrame = (FrameRecords.Controls[0] as CMlFrame)!;
+        firstFrame.Visible = true;
+
+        var labelNickname = (firstFrame.GetFirstChild("LabelNickname") as CMlLabel)!;
+        var labelTime = (firstFrame.GetFirstChild("LabelTime") as CMlLabel)!;
+
+        labelNickname.SetText("$i$888you could be here!");
+        labelTime.SetText("-:--.---");
+    }
+
     private void UpdateRecords()
     {
-        var filter = GetFilter();
-
-        if (!EnvimaniaRecords.ContainsKey(filter))
+        if (EnvimaniaStatusMessage is not "")
         {
             foreach (var control in FrameRecords.Controls)
             {
@@ -199,26 +224,19 @@ public class Envimania : CTmMlScriptIngame, IContext
             return;
         }
 
-        LabelEnvimaniaStatus.Hide();
+        var filter = GetFilter();
+
+        if (!EnvimaniaRecords.ContainsKey(filter))
+        {
+            SetYouCouldBeHere();
+            return;
+        }
 
         var recResponse = EnvimaniaRecords[filter];
 
         if (recResponse.Records.Length == 0)
         {
-            foreach (var control in FrameRecords.Controls)
-            {
-                control.Visible = false;
-            }
-
-            var firstFrame = (FrameRecords.Controls[0] as CMlFrame)!;
-            firstFrame.Visible = true;
-
-            var labelNickname = (firstFrame.GetFirstChild("LabelNickname") as CMlLabel)!;
-            var labelTime = (firstFrame.GetFirstChild("LabelTime") as CMlLabel)!;
-
-            labelNickname.SetText("$i$888you could be here!");
-            labelTime.SetText("-:--.---");
-
+            SetYouCouldBeHere();
             return;
         }
 
