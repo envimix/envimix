@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
 	<framemodel id="FramemodelRecord">
-		<label pos="0 0.3" z-index="0" size="5 5" text="01" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" id="LabelRank"/>
-		<frame pos="5.5 0.15" z-index="0">
+		<label pos="-19 0.3" z-index="0" size="5 5" text="01" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" id="LabelRank"/>
+		<frame pos="-13.5 0.15" z-index="0">
 			<label size="20.5 5" text="$aaa[unknown]" valign="center" textfont="Oswald" textsize="1.5" id="LabelNickname"/>
 		</frame>
-		<label pos="38 0.3" z-index="0" size="15 5" text="-:--.---" halign="right" valign="center" textfont="OswaldMono" textsize="1.75" id="LabelTime"/>
+		<label pos="19 0.3" z-index="0" size="15 5" text="-:--.---" halign="right" valign="center" textfont="OswaldMono" textsize="1.75" id="LabelTime"/>
 	</framemodel>
 	<frame pos="162 46" id="FrameEnvimania" scale=".85">
 		<frame pos="-26 -2">
@@ -20,7 +20,7 @@
 			<frame id="FrameEnvimaniaRecordsBg" pos="-26 0">
 				<quad z-index="0" size="42.5 82.5" style="Bgs1" substyle="BgCardList" halign="center"/>
 			</frame>
-			<frame pos="-45 -3.5" z-index="3" clip="1" clipposn="21.25 -40" clipsizen="42.5 85" id="FrameRecords" hidden="0">
+			<frame pos="-26 -3.5" z-index="3" clip="1" clipposn="0 -40" clipsizen="42.5 85" id="FrameRecords" hidden="0">
 				<frameinstance modelid="FramemodelRecord" hidden="1"/>
 				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -4"/>
 				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -8"/>

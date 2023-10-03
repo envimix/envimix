@@ -192,6 +192,13 @@ public class Envimania : CTmMlScriptIngame, IContext
                 continue;
             }
 
+            if (frame.Visible)
+            {
+                // TODO: Apply only when different
+                frame.RelativeScale = 1.02f;
+                AnimMgr.Add(frame, "<frame scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+
             frame.Visible = true;
 
             var record = recResponse.Records[i];
