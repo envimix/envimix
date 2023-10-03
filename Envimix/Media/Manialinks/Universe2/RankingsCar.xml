@@ -6,7 +6,7 @@
 				<frame>
 					<frame>
 						<quad z-index="0" size="22.5 6" valign="center" style="Bgs1" substyle="BgCardList" />
-						<quad z-index="2" size="22.5 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
+						<quad hidden="1" z-index="2" size="22.5 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
 					</frame>
 					<frame z-index="1" pos="2.5 0">
 						<label pos="0 0.3" z-index="0" size="24 5" text="$aaa[unknown]" valign="center" textfont="Oswald" textsize="2" id="LabelCar"/>
@@ -15,7 +15,7 @@
 				<frame pos="22.5 0">
 					<frame>
 						<quad z-index="0" size="20 6" valign="center" style="Bgs1" substyle="BgCardList" />
-						<quad z-index="2" size="20 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
+						<quad hidden="1" z-index="2" size="20 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
 					</frame>
 					<frame z-index="1" pos="10 0">
 						<label pos="0 0.3" z-index="0" size="15 5" text="-:--.---" halign="center" valign="center" textfont="OswaldMono" textsize="1.75" id="LabelTime"/>
@@ -24,7 +24,7 @@
 				<frame pos="42.5 0">
 					<frame>
 						<quad z-index="0" size="10 6" valign="center" style="Bgs1" substyle="BgCardList" />
-						<quad z-index="2" size="10 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
+						<quad hidden="1" z-index="2" size="10 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
 					</frame>
 					<frame z-index="1" pos="5 0">
 						<label pos="0 0.3" z-index="0" size="7.5 5" text="1st" halign="center" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" id="LabelRank"/>

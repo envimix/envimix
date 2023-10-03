@@ -4,7 +4,7 @@
 		<frame id="FrameMapName" pos="-40 -7.5">
 			<frame id="FrameMapNameBg" pos="40 0" data-size="80">
 				<quad z-index="0" size="80 15" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
-				<quad z-index="2" size="79.5 14.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
+				<quad hidden="1" z-index="2" size="79.5 14.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
 			</frame>
 			<frame id="FrameLabelMapName" pos="37.5 7" clip="1" clipposn="-38 -7.5" clipsizen="74.5 13" z-index="3">
 				<label id="LabelMapName" z-index="0" size="90 12" textsize="12" textfont="Oswald" halign="right" pos="0 -1.25"/>
@@ -14,7 +14,7 @@
 		<frame id="FrameMapAuthor" pos="-27.5 -20">
 			<frame id="FrameMapAuthorBg" pos="27.5 0">
 				<quad z-index="0" size="55 8" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
-				<quad z-index="2" size="54.5 7.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
+				<quad hidden="1" z-index="2" size="54.5 7.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
 			</frame>
 			<frame id="FrameLabelMapAuthor" pos="25 4.5" clip="1" clipposn="-25 -5" clipsizen="50 10" z-index="3">
 				<label id="LabelMapAuthor" z-index="0" size="90 7" textsize="4" textfont="Oswald" halign="right" pos="0 -1.9"/>
@@ -24,7 +24,7 @@
 		<frame id="FrameCar" pos="-27.5 -30">
 			<frame id="FrameCarBg" pos="27.5 0">
 				<quad z-index="0" size="55 10" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
-				<quad z-index="2" size="54.5 7.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
+				<quad hidden="1" z-index="2" size="54.5 7.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
 			</frame>
 			<frame id="FrameLabelCar" pos="25 5.5" clip="1" clipposn="-25 -5" clipsizen="50 10" z-index="3">
 				<label id="LabelCar" z-index="0" size="90 9" textsize="6" textfont="Oswald" halign="right" pos="0 -2" textprefix="$o"/>
