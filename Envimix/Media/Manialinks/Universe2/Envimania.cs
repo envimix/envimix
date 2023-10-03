@@ -33,6 +33,7 @@ public class Envimania : CTmMlScriptIngame, IContext
         public int NbRespawns;
         public float Distance;
         public float Speed;
+        public bool Verified;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -54,15 +55,19 @@ public class Envimania : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameRecords;
     [ManialinkControl] public required CMlFrame FrameEnvimaniaYourRecordBg;
     [ManialinkControl] public required CMlFrame FrameYourRecord;
+    [ManialinkControl] public required CMlFrame FrameEnvimaniaStatus;
+    [ManialinkControl] public required CMlLabel LabelEnvimaniaStatus;
 
     [Netread] public required Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse> EnvimaniaRecords { get; init; }
     [Netread] public int EnvimaniaRecordsUpdatedAt { get; init; }
+    [Netread] public required string EnvimaniaStatusMessage { get; init; }
 
     public bool PreviousVisible;
     public int VisibleTime = -1;
 
     public int PreviousEnvimaniaRecordsUpdatedAt;
     public string PreviousCar = "";
+    public string PreviousEnvimaniaStatusMessage = "";
 
     CTmMlPlayer GetPlayer()
     {
@@ -99,6 +104,7 @@ public class Envimania : CTmMlScriptIngame, IContext
 
         PreviousEnvimaniaRecordsUpdatedAt = EnvimaniaRecordsUpdatedAt;
         PreviousCar = GetCar();
+        PreviousEnvimaniaStatusMessage = EnvimaniaStatusMessage;
     }
 
     public void Loop()
@@ -138,16 +144,19 @@ public class Envimania : CTmMlScriptIngame, IContext
             FrameLabelCar.ClipWindowSize.X = 45;
             FrameRecords.ClipWindowSize.X = 45;
             FrameYourRecord.ClipWindowSize.X = 45;
+            FrameEnvimaniaStatus.ClipWindowSize.X = 45;
         }
         else
         {
             FrameLabelCar.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 400);
             FrameRecords.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 500);
             FrameYourRecord.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 400);
+            FrameEnvimaniaStatus.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime, 0, 45, 500);
         }
 
         if (EnvimaniaRecordsUpdatedAt != PreviousEnvimaniaRecordsUpdatedAt)
         {
+            LabelEnvimaniaStatus.SetText(EnvimaniaStatusMessage);
             UpdateRecords();
             PreviousEnvimaniaRecordsUpdatedAt = EnvimaniaRecordsUpdatedAt;
         }
@@ -157,15 +166,28 @@ public class Envimania : CTmMlScriptIngame, IContext
             UpdateRecords();
             PreviousCar = GetCar();
         }
+
+        if (EnvimaniaStatusMessage != PreviousEnvimaniaStatusMessage)
+        {
+            LabelEnvimaniaStatus.SetText(EnvimaniaStatusMessage);
+            PreviousEnvimaniaStatusMessage = EnvimaniaStatusMessage;
+        }
     }
 
-    private void UpdateRecords()
+    private SEnvimaniaRecordsFilter GetFilter()
     {
         SEnvimaniaRecordsFilter filter = new()
         {
             Car = GetCar(),
             Gravity = 10 // TODO: Get gravity
         };
+
+        return filter;
+    }
+
+    private void UpdateRecords()
+    {
+        var filter = GetFilter();
 
         if (!EnvimaniaRecords.ContainsKey(filter))
         {
@@ -177,7 +199,28 @@ public class Envimania : CTmMlScriptIngame, IContext
             return;
         }
 
+        LabelEnvimaniaStatus.Hide();
+
         var recResponse = EnvimaniaRecords[filter];
+
+        if (recResponse.Records.Length == 0)
+        {
+            foreach (var control in FrameRecords.Controls)
+            {
+                control.Visible = false;
+            }
+
+            var firstFrame = (FrameRecords.Controls[0] as CMlFrame)!;
+            firstFrame.Visible = true;
+
+            var labelNickname = (firstFrame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            var labelTime = (firstFrame.GetFirstChild("LabelTime") as CMlLabel)!;
+
+            labelNickname.SetText("$i$888you could be here!");
+            labelTime.SetText("-:--.---");
+
+            return;
+        }
 
         SEnvimaniaRecord prevRecord = new();
         var rankOffset = 0;
@@ -191,15 +234,6 @@ public class Envimania : CTmMlScriptIngame, IContext
                 frame.Visible = false;
                 continue;
             }
-
-            if (frame.Visible)
-            {
-                // TODO: Apply only when different
-                frame.RelativeScale = 1.02f;
-                AnimMgr.Add(frame, "<frame scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-            }
-
-            frame.Visible = true;
 
             var record = recResponse.Records[i];
 
@@ -217,6 +251,32 @@ public class Envimania : CTmMlScriptIngame, IContext
             labelRank.SetText(TextLib.FormatInteger(rank, 2));
             labelNickname.SetText(record.Nickname);
             labelTime.SetText(TimeToTextWithMilli(record.Time));
+
+            var opacity = 0.5f;
+
+            if (record.Verified)
+            {
+                opacity = 1;
+            }
+
+            if (frame.Visible)
+            {
+                // TODO: Apply only when different
+                //frame.RelativeScale = 1.02f;
+                //AnimMgr.Add(frame, "<frame scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+            else
+            {
+                frame.Visible = true;
+
+                labelRank.Opacity = 0;
+                labelNickname.Opacity = 0;
+                labelTime.Opacity = 0;
+            }
+
+            AnimMgr.Add(labelRank, $"<label opacity=\"{opacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(labelNickname, $"<label opacity=\"{opacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(labelTime, $"<label opacity=\"{opacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
 
             prevRecord = record;
         }

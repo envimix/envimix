@@ -16,11 +16,11 @@
 				<label pos="0 0.2" z-index="0" size="37 5" text="ENVIMANIA" valign="center" textfont="RajdhaniMono" textsize="2.5" translate="1" halign="center" id="LabelCar"/>
 			</frame>
 		</frame>
-		<frame pos="0 -6">
-			<frame id="FrameEnvimaniaRecordsBg" pos="-26 0">
+		<frame pos="-26 -6">
+			<frame id="FrameEnvimaniaRecordsBg" pos="0 0">
 				<quad z-index="0" size="42.5 82.5" style="Bgs1" substyle="BgCardList" halign="center"/>
 			</frame>
-			<frame pos="-26 -3.5" z-index="3" clip="1" clipposn="0 -40" clipsizen="42.5 85" id="FrameRecords" hidden="0">
+			<frame pos="0 -3.5" z-index="3" clip="1" clipposn="0 -40" clipsizen="42.5 85" id="FrameRecords" hidden="0">
 				<frameinstance modelid="FramemodelRecord" hidden="1"/>
 				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -4"/>
 				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -8"/>
@@ -42,12 +42,15 @@
 				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -72"/>
 				<frameinstance modelid="FramemodelRecord" hidden="1" pos="0 -76"/>
 			</frame>
+			<frame id="FrameEnvimaniaStatus" z-index="1" pos="0 -41" clip="1" clipposn="0 0" clipsizen="42.5 80">
+				<label id="LabelEnvimaniaStatus" size="35 20" text="Envimania not connected" halign="center" autonewline="1" textfont="RajdhaniMono" textsize="2" valign="center2"/>
+			</frame>
 		</frame>
-		<frame pos="0 -88.5">
-			<frame id="FrameEnvimaniaYourRecordBg" pos="-26 0">
+		<frame pos="-26 -88.5">
+			<frame id="FrameEnvimaniaYourRecordBg">
 				<quad z-index="0" size="42.5 6" style="Bgs1" substyle="BgCardList" halign="center"/>
 			</frame>
-			<frame pos="-45 -3" z-index="3" id="FrameYourRecord" clip="1" clipposn="21.25 0" clipsizen="42.5 6">
+			<frame pos="0 -3" z-index="3" id="FrameYourRecord" clip="1" clipposn="0 0" clipsizen="42.5 6">
 				<frameinstance modelid="FramemodelRecord"/>
 			</frame>
 		</frame>

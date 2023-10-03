@@ -49,6 +49,7 @@ public class Envimix : UniverseModeBase
         public int NbRespawns;
         public float Distance;
         public float Speed;
+        public bool Verified;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -136,6 +137,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public required Dictionary<string, string> ItemCars { get; set; }
     [Netwrite] public bool CarSelectionMode { get; set; }
     [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
+    [Netwrite] public required string EnvimaniaStatusMessage { get; set; }
 
     public override void OnServerInit()
     {
@@ -280,6 +282,8 @@ public class Envimix : UniverseModeBase
         foreach (var (name, car) in Cars) DisplayedCars.Add(name);
         foreach (var (name, car) in UnitedCars) DisplayedCars.Add(name);
         foreach (var (name, car) in CustomCars) DisplayedCars.Add(name);
+
+        EnvimaniaStatusMessage = "Envimania not connected";
     }
 
     public override void BeforeServerStart()
@@ -517,6 +521,7 @@ public class Envimix : UniverseModeBase
         Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
 
         EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaStatusMessage = "Loading records...";
         EnvimaniaRecordsUpdatedAt = Now;
 
         return true;
@@ -704,14 +709,18 @@ public class Envimix : UniverseModeBase
                     {
                         var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
                         envimaniaRecords.Get()[updatedRecords.Filter] = updatedRecords;
-                        EnvimaniaRecordsUpdatedAt = Now;
                         EnvimaniaFinishedRecordsRequests[updatedRecords.Filter] = true;
+                        EnvimaniaRecordsUpdatedAt = Now;
                     }
+
+                    EnvimaniaStatusMessage = "";
                 }
                 else
                 {
                     Log(nameof(Envimix), "Envimania session records failed (JSON issue).");
                     Log(nameof(Envimix), EnvimaniaRecordsRequest.Result);
+
+                    EnvimaniaStatusMessage = "Failed to receive records (JSON issue). Reported in server logs.";
                 }
             }
             else
@@ -801,11 +810,14 @@ public class Envimix : UniverseModeBase
                 {
                     var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
                     envimaniaRecords.Get()[filter] = response;
+                    EnvimaniaStatusMessage = "";
                     EnvimaniaRecordsUpdatedAt = Now;
                     EnvimaniaFinishedRecordsRequests[filter] = true;
                 }
                 else
                 {
+                    EnvimaniaStatusMessage = "Records failed to load (JSON issue)";
+
                     Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, Type: Time).");
                 }
             }
@@ -861,38 +873,115 @@ public class Envimix : UniverseModeBase
         envimixPrevRace.Get()[car.Get()] = tempRace.Get();
         Record.ToResult(e.Player.Score.PrevRace, tempRace.Get());
 
+        var firstFinishOrImprovement = false;
+
         if (!envimixBestRace.Get().ContainsKey(car.Get()) || envimixBestRace.Get()[car.Get()].Time == -1)
         {
             envimixBestRace.Get()[car.Get()] = tempRace.Get();
             Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
             //log("first finish");
+            firstFinishOrImprovement = true;
         }
         else if (tempRace.Get().Time < envimixBestRace.Get()[car.Get()].Time)
         {
             envimixBestRace.Get()[car.Get()] = tempRace.Get();
             Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
             //log("improvement");
+            firstFinishOrImprovement = true;
         }
         else if (tempRace.Get().Time == envimixBestRace.Get()[car.Get()].Time)
         {
             //log("equal");
         }
 
-        if (EnvimaniaSessionToken is not "")
+        // Runs only in multiplayer with Envimania
+        if (firstFinishOrImprovement && EnvimaniaSessionToken is not "")
         {
+            // Server does not support gravity yet (10 is equivalent 1.0)
+            var gravity = 10;
+
             SEnvimaniaSessionRecordRequest recordRequest = new()
             {
                 Login = e.Player.User.Login,
                 Nickname = e.Player.User.Name,
                 Zone = e.Player.User.ZonePath,
                 Car = car.Get(),
-                Gravity = 10, // Server does not support gravity yet (10 is equivalent 1.0)
+                Gravity = gravity,
                 Record = tempRace.Get()
             };
 
             //var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
 
             EnvimaniaSessionRecordRequests.Add(recordRequest);
+
+            // "Client-sided" leaderboard before the server responds for smoother experience
+
+            SEnvimaniaRecordsFilter filter = new()
+            {
+                Car = car.Get(),
+                Gravity = gravity
+            };
+
+            var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+            var recResponse = envimaniaRecords.Get()[filter];
+
+            var insertIndex = -1;
+
+            for (int i = 0; i < recResponse.Records.Length; i++)
+            {
+                var recInResponse = recResponse.Records[i];
+
+                // TODO: If leaderboard type is Time
+                if (recInResponse.Time <= recordRequest.Record.Time)
+                {
+                    continue;
+                }
+
+                insertIndex = i;
+
+                break;
+            }
+
+            SEnvimaniaRecord rec = new()
+            {
+                Login = recordRequest.Login,
+                Nickname = recordRequest.Nickname,
+                Zone = recordRequest.Zone,
+                Time = recordRequest.Record.Time,
+                Score = recordRequest.Record.Score,
+                Distance = recordRequest.Record.Distance,
+                Speed = recordRequest.Record.Speed,
+                NbRespawns = recordRequest.Record.NbRespawns
+            };
+
+            if (insertIndex == -1)
+            {
+                recResponse.Records.Add(rec);
+            }
+            else
+            {
+                ImmutableArray<SEnvimaniaRecord> recs = new();
+
+                for (int i = 0; i < recResponse.Records.Length; i++)
+                {
+                    if (i == insertIndex)
+                    {
+                        recs.Add(rec);
+                    }
+
+                    var existingRec = recResponse.Records[i];
+
+                    if (rec.Login != existingRec.Login)
+                    {
+                        recs.Add(existingRec);
+                    }
+                }
+
+                recResponse.Records = recs;
+            }
+
+            envimaniaRecords.Get()[filter] = recResponse;
+            EnvimaniaRecordsUpdatedAt = Now;
         }
 
         Record.ResetTempResult(e);
