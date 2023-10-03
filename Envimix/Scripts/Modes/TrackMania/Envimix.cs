@@ -1006,7 +1006,6 @@ public class Envimix : UniverseModeBase
             }
 
             envimaniaRecords.Get()[filter] = recResponse;
-            Log("wtf", envimaniaRecords.Get()[filter].ToString());
             EnvimaniaRecordsUpdatedAt = Now;
         }
 
