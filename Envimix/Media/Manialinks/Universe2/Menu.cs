@@ -77,6 +77,8 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameButtonManageServer;
     [ManialinkControl] public required CMlFrame FrameButtonChooseSkin;
     [ManialinkControl] public required CMlFrame FrameButtonAdvancedOptions;
+    [ManialinkControl] public required CMlFrame FrameGravity;
+    [ManialinkControl] public required CMlQuad QuadGravityButton;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -97,6 +99,7 @@ public class Menu : CTmMlScriptIngame, IContext
 	public CUIConfig.EUISequence PreviousUISequence;
 	public int MenuOpenTime = -1;
 	public bool PrevUseForcedClans;
+    public bool GravityOpen;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -133,6 +136,8 @@ public class Menu : CTmMlScriptIngame, IContext
         QuadButtonSettingsBack.MouseClick += QUAD_BUTTON_SETTINGS_BACK;
 
         MenuNavigation += Menu_MenuNavigation;
+
+        QuadGravityButton.MouseClick += QuadGravityButton_MouseClick;
     }
 
     CTmMlPlayer GetPlayer()
@@ -155,6 +160,20 @@ public class Menu : CTmMlScriptIngame, IContext
     bool IsSolo()
     {
         return CurrentServerLogin is "";
+    }
+
+    private void QuadGravityButton_MouseClick()
+    {
+        if (GravityOpen)
+        {
+            AnimMgr.Add(FrameGravity, "<frame pos=\"5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+        else
+        {
+            AnimMgr.Add(FrameGravity, "<frame pos=\"49.5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+
+        GravityOpen = !GravityOpen;
     }
 
     private void UpdateVehicles()
