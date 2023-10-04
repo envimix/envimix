@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Envimix.Scripts.Modes.TrackMania;
+﻿namespace Envimix.Scripts.Modes.TrackMania;
 
 public class EnvimixTeamAttack : Envimix
 {

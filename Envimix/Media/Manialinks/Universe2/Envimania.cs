@@ -23,11 +23,23 @@ public class Envimania : CTmMlScriptIngame, IContext
         public ImmutableArray<SCheckpoint> Checkpoints;
     }
 
-    public struct SEnvimaniaRecord
+    public struct SUserInfo
     {
         public string Login;
         public string Nickname;
         public string Zone;
+        public string AvatarUrl;
+        public string Language;
+        public string Description;
+        public Vec3 Color;
+        public string SteamUserId;
+        public int FameStars;
+        public float LadderPoints;
+    }
+
+    public struct SEnvimaniaRecord
+    {
+        public SUserInfo User;
         public int Time;
         public int Score;
         public int NbRespawns;
@@ -163,8 +175,6 @@ public class Envimania : CTmMlScriptIngame, IContext
 
         if (EnvimaniaRecordsUpdatedAt != PreviousEnvimaniaRecordsUpdatedAt)
         {
-            Log(EnvimaniaRecords);
-
             LabelEnvimaniaStatus.SetText(EnvimaniaStatusMessage);
             UpdateRecords();
             PreviousEnvimaniaRecordsUpdatedAt = EnvimaniaRecordsUpdatedAt;
@@ -276,7 +286,7 @@ public class Envimania : CTmMlScriptIngame, IContext
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
 
             labelRank.SetText(TextLib.FormatInteger(rank, 2));
-            labelNickname.SetText(record.Nickname);
+            labelNickname.SetText(record.User.Nickname);
             labelTime.SetText(TimeToTextWithMilli(record.Time));
 
             var opacity = 0.5f;

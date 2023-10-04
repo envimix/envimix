@@ -13,9 +13,24 @@ public class Envimix : UniverseModeBase
         public string Icon;
     }
 
+    public struct SUserInfo
+    {
+        public string Login;
+        public string Nickname;
+        public string Zone;
+        public string AvatarUrl;
+        public string Language;
+        public string Description;
+        public Vec3 Color;
+        public string SteamUserId;
+        public int FameStars;
+        public float LadderPoints;
+    }
+
     public struct SEnvimaniaSessionRequest
     {
         public string MapUid;
+        public ImmutableArray<string> Players;
     }
 
     public struct SEnvimaniaSessionResponse
@@ -26,9 +41,7 @@ public class Envimix : UniverseModeBase
 
     public struct SEnvimaniaSessionRecordRequest
     {
-        public string Login;
-        public string Nickname;
-        public string Zone;
+        public SUserInfo User;
         public string Car;
         public int Gravity;
         public bool IndependentLaps;
@@ -42,9 +55,7 @@ public class Envimix : UniverseModeBase
 
     public struct SEnvimaniaRecord
     {
-        public string Login;
-        public string Nickname;
-        public string Zone;
+        public SUserInfo User;
         public int Time;
         public int Score;
         public int NbRespawns;
@@ -144,7 +155,7 @@ public class Envimix : UniverseModeBase
 
     public override void OnServerInit()
     {
-        Log("Envimix", "Initializing server...");
+        Log(nameof(Envimix), "Initializing server...");
 
         UIManager.UIAll.OverlayHide321Go = true;
         UIManager.UIAll.OverlayHideChrono = true;
@@ -183,18 +194,18 @@ public class Envimix : UniverseModeBase
         
         if (SkinsFile != "")
         {
-            Log("Envimix", $"Reading {SkinsFile}...");
+            Log(nameof(Envimix), $"Reading {SkinsFile}...");
 
             var skinContent = ReadFile(SkinsFile);
 
             if (skinContent == "")
             {
-                Log("Envimix", $"NOTE: {SkinsFile} is empty or nonexisting. Skin system is going to be disabled.");
+                Log(nameof(Envimix), $"NOTE: {SkinsFile} is empty or nonexisting. Skin system is going to be disabled.");
             }
             else if (!skins.Get().FromJson(skinContent))
             {
                 skins.Get().Clear();
-                Log("Envimix", $"NOTE: {SkinsFile} has a JSON issue. Skin system is going to be disabled.");
+                Log(nameof(Envimix), $"NOTE: {SkinsFile} has a JSON issue. Skin system is going to be disabled.");
             }
         }
 
@@ -207,7 +218,7 @@ public class Envimix : UniverseModeBase
             foreach (var car in tm2CarNames)
             {
                 var itemName = car;
-                Log("Envimix", $"Adding {itemName}...");
+                Log(nameof(Envimix), $"Adding {itemName}...");
 
                 Cars[car] = new()
                 {
@@ -218,7 +229,7 @@ public class Envimix : UniverseModeBase
                 {
                     foreach (var (name, skin) in skins.Get()[car])
                     {
-                        Log("Envimix", $"Adding {itemName} with skin {skin.File}...");
+                        Log(nameof(Envimix), $"Adding {itemName} with skin {skin.File}...");
                         Cars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
                     }
                 }
@@ -237,7 +248,7 @@ public class Envimix : UniverseModeBase
                     {
                         foreach (var (name, skin) in skins.Get()[car])
                         {
-                            Log("Envimix", $"Adding {itemName} with skin {skin.File}...");
+                            Log(nameof(Envimix), $"Adding {itemName} with skin {skin.File}...");
                             SpecialCars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
                         }
                     }
@@ -257,7 +268,7 @@ public class Envimix : UniverseModeBase
                     itemName = $"{VehicleFolder}{TextLib.Replace(VehicleFileFormat, "%1", car)}";
                 }
 
-                Log("Envimix", $"Adding {itemName}...");
+                Log(nameof(Envimix), $"Adding {itemName}...");
                 UnitedCars[car] = new()
                 {
                     [""] = ItemList_Add(itemName)
@@ -267,7 +278,7 @@ public class Envimix : UniverseModeBase
                 {
                     foreach (var (name, skin) in skins.Get()[car])
                     {
-                        Log("Envimix", $"Adding {itemName} with skin {skin.File}...");
+                        Log(nameof(Envimix), $"Adding {itemName} with skin {skin.File}...");
                         UnitedCars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
                     }
                 }
@@ -442,6 +453,25 @@ public class Envimix : UniverseModeBase
         CheckEnvimaniaSession();
     }
 
+    public SUserInfo CreateUserInfo(CUser user)
+    {
+        SUserInfo userInfo = new()
+        {
+            Login = user.Login,
+            Nickname = user.Name,
+            Zone = user.ZonePath,
+            AvatarUrl = user.AvatarUrl,
+            Language = user.Language,
+            Description = user.Description,
+            Color = user.Color,
+            SteamUserId = user.SteamUserId,
+            FameStars = user.FameStars,
+            LadderPoints = user.LadderPoints
+        };
+
+        return userInfo;
+    }
+
     #region Envimania
 
     public bool ManiaPlanetAuthenticationRequested;
@@ -498,9 +528,17 @@ public class Envimix : UniverseModeBase
 
     void DirectlyRequestEnvimaniaSession()
     {
+        ImmutableArray<string> playerLogins = new();
+
+        foreach (var player in AllPlayers)
+        {
+            playerLogins.Add(player.User.Login);
+        }
+
         SEnvimaniaSessionRequest sessionRequest = new()
         {
-            MapUid = Map.MapInfo.MapUid
+            MapUid = Map.MapInfo.MapUid,
+            Players = playerLogins
         };
 
         Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
@@ -948,7 +986,7 @@ public class Envimix : UniverseModeBase
 
             foreach (var r in recResponse.Records)
             {
-                if (r.Login == e.Player.User.Login)
+                if (r.User.Login == e.Player.User.Login)
                 {
                     if (r.Time < tempRace.Get().Time)
                     {
@@ -963,9 +1001,7 @@ public class Envimix : UniverseModeBase
             {
                 SEnvimaniaSessionRecordRequest recordRequest = new()
                 {
-                    Login = e.Player.User.Login,
-                    Nickname = e.Player.User.Name,
-                    Zone = e.Player.User.ZonePath,
+                    User = CreateUserInfo(e.Player.User),
                     Car = car.Get(),
                     Gravity = gravity,
                     IndependentLaps = IndependantLaps,
@@ -995,9 +1031,7 @@ public class Envimix : UniverseModeBase
 
                 SEnvimaniaRecord rec = new()
                 {
-                    Login = recordRequest.Login,
-                    Nickname = recordRequest.Nickname,
-                    Zone = recordRequest.Zone,
+                    User = recordRequest.User,
                     Time = recordRequest.Record.Time,
                     Score = recordRequest.Record.Score,
                     Distance = recordRequest.Record.Distance,
@@ -1022,7 +1056,7 @@ public class Envimix : UniverseModeBase
 
                         var existingRec = recResponse.Records[i];
 
-                        if (rec.Login != existingRec.Login)
+                        if (rec.User.Login != existingRec.User.Login)
                         {
                             recs.Add(existingRec);
                         }
