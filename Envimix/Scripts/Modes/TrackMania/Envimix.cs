@@ -30,7 +30,7 @@ public class Envimix : UniverseModeBase
     public struct SEnvimaniaSessionRequest
     {
         public string MapUid;
-        public ImmutableArray<string> Players;
+        public ImmutableArray<SUserInfo> Players;
     }
 
     public struct SEnvimaniaSessionResponse
@@ -528,17 +528,17 @@ public class Envimix : UniverseModeBase
 
     void DirectlyRequestEnvimaniaSession()
     {
-        ImmutableArray<string> playerLogins = new();
+        ImmutableArray<SUserInfo> userInfos = new();
 
         foreach (var player in AllPlayers)
         {
-            playerLogins.Add(player.User.Login);
+            userInfos.Add(CreateUserInfo(player.User));
         }
 
         SEnvimaniaSessionRequest sessionRequest = new()
         {
             MapUid = Map.MapInfo.MapUid,
-            Players = playerLogins
+            Players = userInfos
         };
 
         Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
