@@ -303,20 +303,6 @@ public class EnvimixTeamAttack : Envimix
         CutOffTimeLimit = -1;
     }
 
-    public void SetLaps()
-    {
-        IndependantLaps = ForceLapsNb == 0;
-
-        if (ForceLapsNb > 0)
-        {
-            NbLaps = ForceLapsNb;
-        }
-        else
-        {
-            NbLaps = -1;
-        }
-    }
-
     private void ProcessUpdateCarEvent(CUIConfigEvent e, bool forceFreeze)
     {
         switch (e.CustomEventType)

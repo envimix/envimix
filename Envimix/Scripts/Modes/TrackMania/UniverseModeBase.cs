@@ -307,6 +307,20 @@ public class UniverseModeBase : CTmMode, IContext
         return Reload || Terminate || ServerShutdownRequested || MatchEndRequested;
     }
 
+    public void SetLaps()
+    {
+        IndependantLaps = ForceLapsNb == 0;
+
+        if (ForceLapsNb > 0)
+        {
+            NbLaps = ForceLapsNb;
+        }
+        else
+        {
+            NbLaps = -1;
+        }
+    }
+
     public void Main()
     {
         // nothing
