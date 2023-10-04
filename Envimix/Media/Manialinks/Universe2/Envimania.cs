@@ -111,6 +111,7 @@ public class Envimania : CTmMlScriptIngame, IContext
         PreviousEnvimaniaStatusMessage = EnvimaniaStatusMessage;
 
         LabelYourRecordNickname = (FrameYourRecord.GetFirstChild("LabelNickname") as CMlLabel)!;
+        (FrameYourRecord.GetFirstChild("LabelRank") as CMlLabel)!.SetText("00");
     }
 
     public void Loop()
@@ -162,6 +163,8 @@ public class Envimania : CTmMlScriptIngame, IContext
 
         if (EnvimaniaRecordsUpdatedAt != PreviousEnvimaniaRecordsUpdatedAt)
         {
+            Log(EnvimaniaRecords);
+
             LabelEnvimaniaStatus.SetText(EnvimaniaStatusMessage);
             UpdateRecords();
             PreviousEnvimaniaRecordsUpdatedAt = EnvimaniaRecordsUpdatedAt;
@@ -205,11 +208,17 @@ public class Envimania : CTmMlScriptIngame, IContext
         var firstFrame = (FrameRecords.Controls[0] as CMlFrame)!;
         firstFrame.Visible = true;
 
+        var labelRank = (firstFrame.GetFirstChild("LabelRank") as CMlLabel)!;
         var labelNickname = (firstFrame.GetFirstChild("LabelNickname") as CMlLabel)!;
         var labelTime = (firstFrame.GetFirstChild("LabelTime") as CMlLabel)!;
 
+        AnimMgr.Add(labelRank, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(labelNickname, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(labelTime, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+
         labelNickname.SetText("$i$888you could be here!");
         labelTime.SetText("-:--.---");
+
     }
 
     private void UpdateRecords()

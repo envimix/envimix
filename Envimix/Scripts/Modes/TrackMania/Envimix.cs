@@ -403,10 +403,19 @@ public class Envimix : UniverseModeBase
         var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
         envimaniaRecords.Get().Clear();
         EnvimaniaFinishedRecordsRequests.Clear();
-        EnvimaniaStatusMessage = "Please wait...";
-        EnvimaniaRecordsUpdatedAt = Now;
 
-        RequestEnvimaniaSession();
+        var requested = RequestEnvimaniaSession();
+
+        if (requested)
+        {
+            EnvimaniaStatusMessage = "Please wait...";
+        }
+        else
+        {
+            EnvimaniaStatusMessage = "Envimania not connected";
+        }
+
+        EnvimaniaRecordsUpdatedAt = Now;
     }
 
     public override void OnMapEnd()
@@ -579,6 +588,7 @@ public class Envimix : UniverseModeBase
                 Http.Destroy(EnvimaniaSessionRequest);
                 EnvimaniaSessionRequest = null;
                 EnvimaniaSessionRequestTimeout = Now;
+                EnvimaniaStatusMessage = "Envimania not connected";
 
                 if (EnvimaniaSessionFirstRequestTimeout == -1)
                 {
@@ -908,25 +918,10 @@ public class Envimix : UniverseModeBase
         }
 
         // Runs only in multiplayer with Envimania
-        if (firstFinishOrImprovement && EnvimaniaSessionToken is not "")
+        if (EnvimaniaSessionToken is not "" && firstFinishOrImprovement)
         {
             // Server does not support gravity yet (10 is equivalent 1.0)
             var gravity = 10;
-
-            SEnvimaniaSessionRecordRequest recordRequest = new()
-            {
-                Login = e.Player.User.Login,
-                Nickname = e.Player.User.Name,
-                Zone = e.Player.User.ZonePath,
-                Car = car.Get(),
-                Gravity = gravity,
-                IndependentLaps = IndependantLaps,
-                Record = tempRace.Get()
-            };
-
-            //var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
-
-            EnvimaniaSessionRecordRequests.Add(recordRequest);
 
             // "Client-sided" leaderboard before the server responds for smoother experience
 
@@ -940,6 +935,7 @@ public class Envimix : UniverseModeBase
 
             var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
 
+            // Use struct with no records as "client-side" default
             SEnvimaniaRecordsResponse recResponse = new()
             {
                 Filter = filter
@@ -950,63 +946,94 @@ public class Envimix : UniverseModeBase
                 recResponse = envimaniaRecords.Get()[filter];
             }
 
-            var insertIndex = -1;
-
-            for (int i = 0; i < recResponse.Records.Length; i++)
+            foreach (var r in recResponse.Records)
             {
-                var recInResponse = recResponse.Records[i];
-
-                // TODO: If leaderboard type is Time
-                if (recInResponse.Time <= recordRequest.Record.Time)
+                if (r.Login == e.Player.User.Login)
                 {
-                    continue;
+                    if (r.Time < tempRace.Get().Time)
+                    {
+                        firstFinishOrImprovement = false;
+                    }
+
+                    break;
                 }
-
-                insertIndex = i;
-
-                break;
             }
 
-            SEnvimaniaRecord rec = new()
+            if (firstFinishOrImprovement)
             {
-                Login = recordRequest.Login,
-                Nickname = recordRequest.Nickname,
-                Zone = recordRequest.Zone,
-                Time = recordRequest.Record.Time,
-                Score = recordRequest.Record.Score,
-                Distance = recordRequest.Record.Distance,
-                Speed = recordRequest.Record.Speed,
-                NbRespawns = recordRequest.Record.NbRespawns
-            };
+                SEnvimaniaSessionRecordRequest recordRequest = new()
+                {
+                    Login = e.Player.User.Login,
+                    Nickname = e.Player.User.Name,
+                    Zone = e.Player.User.ZonePath,
+                    Car = car.Get(),
+                    Gravity = gravity,
+                    IndependentLaps = IndependantLaps,
+                    Record = tempRace.Get()
+                };
 
-            if (insertIndex == -1)
-            {
-                recResponse.Records.Add(rec);
-            }
-            else
-            {
-                ImmutableArray<SEnvimaniaRecord> recs = new();
+                //var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+
+                EnvimaniaSessionRecordRequests.Add(recordRequest);
+
+                var insertIndex = -1;
 
                 for (int i = 0; i < recResponse.Records.Length; i++)
                 {
-                    if (i == insertIndex)
+                    var recInResponse = recResponse.Records[i];
+
+                    // TODO: If leaderboard type is Time
+                    if (recInResponse.Time <= recordRequest.Record.Time)
                     {
-                        recs.Add(rec);
+                        continue;
                     }
 
-                    var existingRec = recResponse.Records[i];
+                    insertIndex = i;
 
-                    if (rec.Login != existingRec.Login)
-                    {
-                        recs.Add(existingRec);
-                    }
+                    break;
                 }
 
-                recResponse.Records = recs;
-            }
+                SEnvimaniaRecord rec = new()
+                {
+                    Login = recordRequest.Login,
+                    Nickname = recordRequest.Nickname,
+                    Zone = recordRequest.Zone,
+                    Time = recordRequest.Record.Time,
+                    Score = recordRequest.Record.Score,
+                    Distance = recordRequest.Record.Distance,
+                    Speed = recordRequest.Record.Speed,
+                    NbRespawns = recordRequest.Record.NbRespawns
+                };
 
-            envimaniaRecords.Get()[filter] = recResponse;
-            EnvimaniaRecordsUpdatedAt = Now;
+                if (insertIndex == -1)
+                {
+                    recResponse.Records.Add(rec);
+                }
+                else
+                {
+                    ImmutableArray<SEnvimaniaRecord> recs = new();
+
+                    for (int i = 0; i < recResponse.Records.Length; i++)
+                    {
+                        if (i == insertIndex)
+                        {
+                            recs.Add(rec);
+                        }
+
+                        var existingRec = recResponse.Records[i];
+
+                        if (rec.Login != existingRec.Login)
+                        {
+                            recs.Add(existingRec);
+                        }
+                    }
+
+                    recResponse.Records = recs;
+                }
+
+                envimaniaRecords.Get()[filter] = recResponse;
+                EnvimaniaRecordsUpdatedAt = Now;
+            }
         }
 
         Record.ResetTempResult(e);

@@ -17,6 +17,8 @@ public class EnvimixTeamAttack : Envimix
     {
         CreateServersideLayers();
 
+        IndependantLaps = true;
+
         UseClans = true;
         Teams[0].Name = "Team Red";
         Teams[0].ColorPrimary = new Vec3(1, 0, 0);
