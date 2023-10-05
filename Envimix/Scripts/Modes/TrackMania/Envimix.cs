@@ -44,7 +44,7 @@ public class Envimix : UniverseModeBase
         public SUserInfo User;
         public string Car;
         public int Gravity;
-        public bool IndependentLaps;
+        public int Laps;
         public Record.SRecord Record;
     }
 
@@ -68,7 +68,7 @@ public class Envimix : UniverseModeBase
     {
         public string Car;
         public int Gravity;
-        public bool IndependentLaps;
+        public int Laps;
         public string Type;
     }
 
@@ -323,7 +323,7 @@ public class Envimix : UniverseModeBase
 
     public void CreateServersideLayers()
     {
-        Log(nameof(EnvimixTimeAttack), "Creating manialinks...");
+        Log(nameof(Envimix), "Creating manialinks...");
 
         CreateLayer("321Go", CUILayer.EUILayerType.Normal);
         CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
@@ -339,6 +339,7 @@ public class Envimix : UniverseModeBase
         CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
+        CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);
         //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
         var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";
@@ -556,13 +557,13 @@ public class Envimix : UniverseModeBase
     /// </summary>
     /// <param name="carName">The car name should be validated before passed.</param>
     /// <param name="gravity"></param>
-    public bool RequestEnvimaniaRecords(string carName, int gravity, bool independentLaps)
+    public bool RequestEnvimaniaRecords(string carName, int gravity, int laps)
     {
         SEnvimaniaRecordsFilter filter = new()
         {
             Car = carName,
             Gravity = gravity,
-            IndependentLaps = independentLaps,
+            Laps = laps,
             Type = "Time" // TODO: Add support for other types
         };
 
@@ -580,7 +581,12 @@ public class Envimix : UniverseModeBase
         Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
 
         EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&independentLaps={IndependantLaps}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
-        EnvimaniaStatusMessage = "Loading records...";
+
+        if (EnvimaniaFinishedRecordsRequests.Count == 0)
+        {
+            EnvimaniaStatusMessage = "Loading records...";
+        }
+
         EnvimaniaRecordsUpdatedAt = Now;
 
         return true;
@@ -713,7 +719,7 @@ public class Envimix : UniverseModeBase
             foreach (var filter in recordsToRequestAgain)
             {
                 EnvimaniaFinishedRecordsRequests.Remove(filter);
-                RequestEnvimaniaRecords(filter.Car, filter.Gravity, filter.IndependentLaps);
+                RequestEnvimaniaRecords(filter.Car, filter.Gravity, filter.Laps);
             }
         }
 
@@ -797,7 +803,7 @@ public class Envimix : UniverseModeBase
         }
 
         // Handle records driven - HTTP request every second containing 1 or more new records
-        if ((EnvimaniaRecordsRequest is null || EnvimaniaRecordsRequest.IsCompleted) && (EnvimaniaRecordsRequestsLastCheck == -1 || Now - EnvimaniaRecordsRequestsLastCheck >= 1000))
+        if ((EnvimaniaRecordsRequest is null || EnvimaniaRecordsRequest.IsCompleted) && (EnvimaniaSessionRecordRequests.Length > 0 && Now - EnvimaniaRecordsRequestsLastCheck >= 1000))
         {
             EnvimaniaRecordsRequestsLastCheck = Now;
 
@@ -833,6 +839,8 @@ public class Envimix : UniverseModeBase
                 {
                     bulkRequest.Requests = EnvimaniaSessionRecordRequests;
                 }
+
+                Log("BRO", bulkRequest.ToString());
 
                 EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/records", bulkRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
 
@@ -878,7 +886,7 @@ public class Envimix : UniverseModeBase
                 {
                     EnvimaniaStatusMessage = "Records failed to load (JSON issue). Reported in server logs.";
 
-                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, IL: {filter.IndependentLaps}, Type: Time).");
+                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, L: {filter.Laps}, Type: Time).");
                     Log(nameof(Envimix), recsRequest.Result);
                 }
             }
@@ -967,7 +975,7 @@ public class Envimix : UniverseModeBase
             {
                 Car = car.Get(),
                 Gravity = gravity,
-                IndependentLaps = IndependantLaps,
+                Laps = GetLaps(),
                 Type = "Time" // TODO: Add support for other types
             };
 
@@ -1004,7 +1012,7 @@ public class Envimix : UniverseModeBase
                     User = CreateUserInfo(e.Player.User),
                     Car = car.Get(),
                     Gravity = gravity,
-                    IndependentLaps = IndependantLaps,
+                    Laps = GetLaps(),
                     Record = tempRace.Get()
                 };
 
@@ -1352,7 +1360,7 @@ public class Envimix : UniverseModeBase
 
         if (spawned)
         {
-            Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
+            Log(nameof(Envimix), $"{player.User.Name} spawned");
         }
 
         if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
@@ -1671,7 +1679,7 @@ public class Envimix : UniverseModeBase
 
             if (car.Get() == "")
             {
-                Log(nameof(EnvimixTeamAttack), $"NOTE: {player.User.Name} has Net_Car set to empty string. Player was not pre-spawned.");
+                Log(nameof(Envimix), $"NOTE: {player.User.Name} has Net_Car set to empty string. Player was not pre-spawned.");
                 continue;
             }
 
@@ -1679,7 +1687,7 @@ public class Envimix : UniverseModeBase
 
             if (spawned)
             {
-                Log(nameof(EnvimixTeamAttack), $"{player.User.Name} spawned");
+                Log(nameof(Envimix), $"{player.User.Name} spawned");
             }
         }
     }

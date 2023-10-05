@@ -321,6 +321,21 @@ public class UniverseModeBase : CTmMode, IContext
         }
     }
 
+    public int GetLaps()
+    {
+        if (!MapIsLapRace)
+        {
+            return 1;
+        }
+
+        if (NbLaps == -1)
+        {
+            return Map.TMObjective_NbLaps;
+        }
+
+        return NbLaps;
+    }
+
     public void Main()
     {
         // nothing

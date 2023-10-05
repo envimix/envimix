@@ -52,7 +52,7 @@ public class Envimania : CTmMlScriptIngame, IContext
     {
         public string Car;
         public int Gravity;
-        public bool IndependentLaps;
+        public int Laps;
         public string Type;
     }
 
@@ -195,13 +195,28 @@ public class Envimania : CTmMlScriptIngame, IContext
         LabelYourRecordNickname.SetText(GetPlayer().User.Name);
     }
 
+    public int GetLaps()
+    {
+        if (!MapIsLapRace)
+        {
+            return 1;
+        }
+
+        if (NbLaps == -1)
+        {
+            return Map.TMObjective_NbLaps;
+        }
+
+        return NbLaps;
+    }
+
     private SEnvimaniaRecordsFilter GetFilter()
     {
         SEnvimaniaRecordsFilter filter = new()
         {
             Car = GetCar(),
             Gravity = 10, // TODO: Get gravity
-            IndependentLaps = IndependantLaps,
+            Laps = GetLaps(),
             Type = "Time" // TODO: Get type
         };
 

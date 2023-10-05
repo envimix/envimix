@@ -184,8 +184,8 @@
 					<frame pos="5 0" id="FrameGravity">
 						<quad z-index="-2" size="50 20" style="Bgs1" substyle="BgCardList" halign="right" valign="center"/>
 						<quad z-index="-1" size="45 20" style="Bgs1" substyle="BgCardList" halign="right" valign="center" pos="-5 0" opacity=".25"/>
-						<quad id="QuadGravityButton" z-index="-1" size="5 20" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" halign="right" valign="center" scriptevents="1" opacity=".75"/>
-						<label pos="-2.25 0" z-index="0" size="20 5" text="GRAVITY" textfont="RajdhaniMono" halign="center" rot="90" textsize="1.5" valign="center"/>
+						<quad id="QuadGravityButton" z-index="0" size="5 20" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" halign="right" valign="center" scriptevents="1" opacity=".75"/>
+						<label pos="-2.25 0" z-index="1" size="20 5" text="GRAVITY" textfont="RajdhaniMono" halign="center" rot="90" textsize="1.5" valign="center"/>
 						<label pos="-42.5 -5" z-index="0" size="10 10" text="0.1" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
 						<label pos="-25 -5" z-index="0" size="10 10" text="1.0" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
 						<label pos="-12.5 -5" z-index="0" size="10 10" text="2.0" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
