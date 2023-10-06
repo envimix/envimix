@@ -130,7 +130,7 @@ public class Envimix : UniverseModeBase
     [Setting(As = "* Skins.json file", ReloadOnChange = true)]
     public string SkinsFile = "";
 
-    [Setting(As = "Envimania Web API")]
+    [Setting(As = "Envimix Web API")]
     public string EnvimixWebAPI = "http://localhost:5198";
 
     [Setting(As = "Use skillpoints")]
@@ -339,7 +339,7 @@ public class Envimix : UniverseModeBase
         CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
-        CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);
+        //CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);
         //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
         var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";
