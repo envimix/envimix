@@ -18,11 +18,20 @@ public class Map : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameLabelCar;
     [ManialinkControl] public required CMlLabel LabelCar;
     [ManialinkControl] public required CMlLabel LabelCar2;
+    [ManialinkControl] public required CMlQuad QuadMapName;
 
     public string PreviousMapName = "";
     public string PreviousMapAuthor = "";
     public string PreviousCar = "";
     public bool PreviousIsVisible;
+
+    public Map()
+    {
+        QuadMapName.MouseClick += () =>
+        {
+            ShowCurChallengeCard();
+        };
+    }
 
     private CTmMlPlayer GetPlayer()
     {
