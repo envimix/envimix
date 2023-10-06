@@ -134,6 +134,7 @@ public class Menu : CTmMlScriptIngame, IContext
         QuadButtonSkinPlay.MouseClick += QUAD_BUTTON_SKIN_PLAY;
         QuadButtonSkinBack.MouseClick += QUAD_BUTTON_SKIN_BACK;
         QuadButtonSettingsBack.MouseClick += QUAD_BUTTON_SETTINGS_BACK;
+        QuadButtonModeHelp.MouseClick += ShowCustomModeHelp;
 
         MenuNavigation += Menu_MenuNavigation;
 
@@ -600,9 +601,14 @@ public class Menu : CTmMlScriptIngame, IContext
 	{
 		return (GetPlayer().RaceStartTime > 0 && GameTime - GetPlayer().RaceStartTime >= 0)
 			|| UI.UISequence == CUIConfig.EUISequence.Intro || IsSpectator;
-		//return (InputPlayer.RaceStartTime > 0 && GameTime - InputPlayer.RaceStartTime >= 0)
-		//	|| (Net_CutOffTimeLimit == -1 && InputPlayer.RaceStartTime == 0);  - issues with disabled default car and no time limit
-	}
+        //return (InputPlayer.RaceStartTime > 0 && GameTime - InputPlayer.RaceStartTime >= 0)
+        //	|| (Net_CutOffTimeLimit == -1 && InputPlayer.RaceStartTime == 0);  - issues with disabled default car and no time limit
+    }
+
+    private void ShowCustomModeHelp()
+    {
+        ShowModeHelp();
+    }
 
     private void Menu_MenuNavigation(CMlScriptEvent.EMenuNavAction action)
     {
@@ -687,7 +693,7 @@ public class Menu : CTmMlScriptIngame, IContext
                     }
                     else if (NavFocusedControl == QuadButtonModeHelp)
                     {
-
+                        ShowCustomModeHelp();
                     }
                     else if (NavFocusedControl == QuadButtonServerSettings)
                     {

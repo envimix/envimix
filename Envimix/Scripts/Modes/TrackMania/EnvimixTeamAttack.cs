@@ -16,6 +16,7 @@ public class EnvimixTeamAttack : Envimix
         CreateServersideLayers();
 
         IndependantLaps = true;
+        ModeStatusMessage = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible and with the most amount of cars possible by going through all of the checkpoints.";
 
         UseClans = true;
         Teams[0].Name = "Team Red";
