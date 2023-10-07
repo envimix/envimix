@@ -156,7 +156,7 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             if (!ChangingGravity)
             {
-                AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.75\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.85\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         };
     }
@@ -1455,7 +1455,7 @@ public class Menu : CTmMlScriptIngame, IContext
             else
             {
                 ChangingGravity = false;
-                AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.75\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.85\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         }
 

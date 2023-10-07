@@ -190,10 +190,11 @@
 						<label pos="-12.5 -5" z-index="0" size="10 10" text="1.0" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
 						<quad pos="-46.5 3" z-index="0" size="38 6" style="Bgs1" substyle="BgCardList" opacity=".5" valign="center"/>
 						<frame pos="30 0" id="FrameGravityForcedValue" z-index="1">
+							<label pos="-42.5 3" z-index="1" size="6 6" text="🔒" halign="center" valign="center2" textsize="2" opacity=".75"/>
 							<quad pos="-42.5 3" size="8 6" style="Bgs1" substyle="BgWindow4" opacity=".25" valign="center" halign="center"/>
 						</frame>
 						<frame pos="30 0" id="FrameGravitySlider" z-index="2">
-							<quad id="QuadGravityValue" pos="-42.5 3" size="8 6" style="Bgs1" substyle="BgWindow4" opacity=".75" valign="center" halign="center" scriptevents="1"/>
+							<quad id="QuadGravityValue" pos="-42.5 3" size="8 6" style="Bgs1" substyle="BgWindow4" opacity=".85" valign="center" halign="center" scriptevents="1"/>
 							<label id="LabelGravityValue" pos="-42.5 2.8" z-index="1" size="10 10" text="1.0" halign="center" textsize="1" textfont="RajdhaniMono" valign="center2" textcolor="222" opacity=".75"/>
 						</frame>
 					</frame>
