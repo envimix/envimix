@@ -187,12 +187,11 @@
 						<quad id="QuadGravityButton" z-index="0" size="5 20" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" halign="right" valign="center" scriptevents="1" opacity=".75"/>
 						<label pos="-2.25 0" z-index="1" size="20 5" text="GRAVITY" textfont="RajdhaniMono" halign="center" rot="90" textsize="1.5" valign="center"/>
 						<label pos="-42.5 -5" z-index="0" size="10 10" text="0.1" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
-						<label pos="-25 -5" z-index="0" size="10 10" text="1.0" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
-						<label pos="-12.5 -5" z-index="0" size="10 10" text="2.0" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
+						<label pos="-12.5 -5" z-index="0" size="10 10" text="1.0" halign="center" textsize="3" textfont="RajdhaniMono" valign="center2"/>
 						<quad pos="-46.5 3" z-index="0" size="38 6" style="Bgs1" substyle="BgCardList" opacity=".5" valign="center"/>
-						<frame pos="0 0">
-							<quad pos="-42.5 3" z-index="1" size="8 6" style="Bgs1" substyle="BgWindow4" opacity=".75" valign="center" halign="center"/>
-							<label pos="-42.5 2.8" z-index="2" size="10 10" text="0.1" halign="center" textsize="1" textfont="RajdhaniMono" valign="center2" textcolor="222" opacity=".75"/>
+						<frame id="FrameGravitySlider" z-index="1">
+							<quad id="QuadGravityValue" pos="-42.5 3" size="8 6" style="Bgs1" substyle="BgWindow4" opacity=".75" valign="center" halign="center" scriptevents="1"/>
+							<label id="LabelGravityValue" pos="-42.5 2.8" z-index="1" size="10 10" text="0.1" halign="center" textsize="1" textfont="RajdhaniMono" valign="center2" textcolor="222" opacity=".75"/>
 						</frame>
 					</frame>
 				</frame>

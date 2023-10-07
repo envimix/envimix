@@ -840,8 +840,6 @@ public class Envimix : UniverseModeBase
                     bulkRequest.Requests = EnvimaniaSessionRecordRequests;
                 }
 
-                Log("BRO", bulkRequest.ToString());
-
                 EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/records", bulkRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
 
                 // if more than 20 records, remove just the partial requests
@@ -966,8 +964,8 @@ public class Envimix : UniverseModeBase
         // Runs only in multiplayer with Envimania
         if (EnvimaniaSessionToken is not "" && firstFinishOrImprovement)
         {
-            // Server does not support gravity yet (10 is equivalent 1.0)
-            var gravity = 10;
+            // Server does not support gravity yet (0 is equivalent 1.0)
+            var gravity = 0;
 
             // "Client-sided" leaderboard before the server responds for smoother experience
 
@@ -1238,6 +1236,17 @@ public class Envimix : UniverseModeBase
 
         var car = Netwrite<string>.For(player);
         car.Set(carName);
+
+        // Gravity
+        var gravity = Netwrite<int>.For(player);
+
+        if (IsSolo())
+        {
+            var clientGravity = Netread<int>.For(UIManager.GetUI(player));
+            gravity.Set(MathLib.Clamp(clientGravity.Get(), -9, 0));
+        }
+
+        player.GravityCoef = (gravity.Get() + 10) / 10f;
 
         var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(player.Score);
 

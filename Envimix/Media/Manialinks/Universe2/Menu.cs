@@ -79,6 +79,9 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameButtonAdvancedOptions;
     [ManialinkControl] public required CMlFrame FrameGravity;
     [ManialinkControl] public required CMlQuad QuadGravityButton;
+    [ManialinkControl] public required CMlQuad QuadGravityValue;
+    [ManialinkControl] public required CMlLabel LabelGravityValue;
+    [ManialinkControl] public required CMlFrame FrameGravitySlider;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -103,6 +106,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
+    [Netwrite(NetFor.UI)] public int ClientGravity { get; set; }
     [Netread] public bool EnableDefaultCar { get; set; }
     [Netread] public string MapPlayerModelName { get; set; }
     [Netread] public int CutOffTimeLimit { get; set; }
@@ -139,6 +143,20 @@ public class Menu : CTmMlScriptIngame, IContext
         MenuNavigation += Menu_MenuNavigation;
 
         QuadGravityButton.MouseClick += QuadGravityButton_MouseClick;
+        QuadGravityValue.MouseClick += QuadGravityValue_MouseClick;
+
+        QuadGravityValue.MouseOver += () =>
+        {
+            AnimMgr.Add(QuadGravityValue, "<quad opacity=\"1\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadGravityValue.MouseOut += () =>
+        {
+            if (!ChangingGravity)
+            {
+                AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.75\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+        };
     }
 
     CTmMlPlayer GetPlayer()
@@ -163,18 +181,32 @@ public class Menu : CTmMlScriptIngame, IContext
         return CurrentServerLogin is "";
     }
 
+    private void CloseGravityMenu()
+    {
+        GravityOpen = false;
+        AnimMgr.Add(FrameGravity, "<frame pos=\"5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+    }
+
     private void QuadGravityButton_MouseClick()
     {
         if (GravityOpen)
         {
-            AnimMgr.Add(FrameGravity, "<frame pos=\"5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+            CloseGravityMenu();
         }
         else
         {
+            GravityOpen = true;
             AnimMgr.Add(FrameGravity, "<frame pos=\"49.5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         }
+    }
 
-        GravityOpen = !GravityOpen;
+    public bool ChangingGravity = false;
+    public float ChangingGravityX;
+
+    private void QuadGravityValue_MouseClick()
+    {
+        ChangingGravity = true;
+        ChangingGravityX = MouseX - (float)FrameGravitySlider.RelativePosition_V3.X;
     }
 
     private void UpdateVehicles()
@@ -552,6 +584,7 @@ public class Menu : CTmMlScriptIngame, IContext
         AnimMgr.Add(FrameMenu, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameAdvancedSettings, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         MenuKind = "Settings";
+        CloseGravityMenu();
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
@@ -567,6 +600,7 @@ public class Menu : CTmMlScriptIngame, IContext
         AnimMgr.Add(FrameMenu, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameSkins, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         MenuKind = "Skin";
+        CloseGravityMenu();
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
@@ -1394,5 +1428,26 @@ public class Menu : CTmMlScriptIngame, IContext
         }
 
         PreviousMenuKind = MenuKind;
+
+        if (ChangingGravity)
+        {
+            if (MouseLeftButton)
+            {
+                var visualValue = MathLib.FloorInteger(MathLib.Clamp(MouseX - ChangingGravityX, 0, 30) * (9 / 30f)) * (30f / 9);
+                var actualValue = MathLib.NearestInteger(visualValue * (9 / 30f)) - 9;
+                var actualFloatValue = (actualValue + 10) / 10f;
+
+                ClientGravity = actualValue;
+
+                FrameGravitySlider.RelativePosition_V3.X = visualValue;
+                QuadGravityValue.Opacity = 1;
+                LabelGravityValue.Value = TextLib.FormatReal(actualFloatValue, 1, _HideZeroes: false, _HideDot: false);
+            }
+            else
+            {
+                ChangingGravity = false;
+                AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.75\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+        }
     }
 }
