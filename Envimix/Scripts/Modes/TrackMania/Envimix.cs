@@ -62,6 +62,7 @@ public class Envimix : UniverseModeBase
         public float Distance;
         public float Speed;
         public bool Verified;
+        public bool Projected;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -95,7 +96,7 @@ public class Envimix : UniverseModeBase
     public bool EnableTM2Cars = true;
 
     [Setting(As = "Enable TrafficCar", ReloadOnChange = true)]
-    public bool EnableTrafficCar = true;
+    public bool EnableTrafficCar = false;
 
     [Setting(As = "Enable United cars", ReloadOnChange = true)]
     public bool EnableUnitedCars = false;

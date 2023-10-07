@@ -46,6 +46,7 @@ public class Envimania : CTmMlScriptIngame, IContext
         public float Distance;
         public float Speed;
         public bool Verified;
+        public bool Projected;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -307,9 +308,19 @@ public class Envimania : CTmMlScriptIngame, IContext
             labelTime.SetText(TimeToTextWithMilli(record.Time));
 
             var opacity = 0.5f;
+            var projectedOpacity = 1f;
 
             if (record.Verified)
             {
+                if (record.Projected)
+                {
+                    projectedOpacity = 0.8f;
+                }
+                else
+                {
+                    projectedOpacity = 1;
+                }
+
                 opacity = 1;
             }
 
@@ -328,9 +339,9 @@ public class Envimania : CTmMlScriptIngame, IContext
                 labelTime.Opacity = 0;
             }
 
-            AnimMgr.Add(labelRank, $"<label opacity=\"{opacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(labelRank, $"<label opacity=\"{projectedOpacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
             AnimMgr.Add(labelNickname, $"<label opacity=\"{opacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-            AnimMgr.Add(labelTime, $"<label opacity=\"{opacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(labelTime, $"<label opacity=\"{projectedOpacity}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
 
             prevRecord = record;
         }
