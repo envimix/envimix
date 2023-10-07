@@ -82,6 +82,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadGravityValue;
     [ManialinkControl] public required CMlLabel LabelGravityValue;
     [ManialinkControl] public required CMlFrame FrameGravitySlider;
+    [ManialinkControl] public required CMlFrame FrameGravityForcedValue;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -103,6 +104,7 @@ public class Menu : CTmMlScriptIngame, IContext
 	public int MenuOpenTime = -1;
 	public bool PrevUseForcedClans;
     public bool GravityOpen;
+    public int PrevGravityValue = 1;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -1433,11 +1435,18 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             if (MouseLeftButton)
             {
-                var visualValue = MathLib.FloorInteger(MathLib.Clamp(MouseX - ChangingGravityX, 0, 30) * (9 / 30f)) * (30f / 9);
+                var visualValue = MathLib.NearestInteger(MathLib.Clamp(MouseX - ChangingGravityX, 0, 30) * (9 / 30f)) * (30f / 9);
                 var actualValue = MathLib.NearestInteger(visualValue * (9 / 30f)) - 9;
                 var actualFloatValue = (actualValue + 10) / 10f;
 
                 ClientGravity = actualValue;
+
+                if (actualValue != PrevGravityValue)
+                {
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+                    SendCustomEvent("Gravity", new[] { actualValue.ToString() });
+                    PrevGravityValue = actualValue;
+                }
 
                 FrameGravitySlider.RelativePosition_V3.X = visualValue;
                 QuadGravityValue.Opacity = 1;
@@ -1449,5 +1458,9 @@ public class Menu : CTmMlScriptIngame, IContext
                 AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.75\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         }
+
+        var gravity = Netread<int>.For(GetPlayer());
+
+        FrameGravityForcedValue.RelativePosition_V3.X = (gravity.Get() + 9) * (30f / 9);
     }
 }

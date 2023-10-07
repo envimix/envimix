@@ -30,6 +30,7 @@ public class EnvimixSolo : Envimix
             case CUIConfigEvent.EType.OnLayerCustomEvent:
                 ProcessUpdateSkinEvent(e);
                 ProcessUpdateCarEvent(e);
+                // ProcessUpdateGravityEvent(e); unexpected behavior due to GravityCoef being applied once after spawning
                 break;
         }
     }

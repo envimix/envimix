@@ -1724,4 +1724,26 @@ public class Envimix : UniverseModeBase
                 break;
         }
     }
+
+    public void ProcessUpdateGravityEvent(CUIConfigEvent e)
+    {
+        switch (e.CustomEventType)
+        {
+            case "Gravity":
+                Log(nameof(Envimix) ,"Received Gravity");
+                if (e.CustomEventData.Count > 0 && IsSolo())
+                {
+                    var val = TextLib.ToInteger(e.CustomEventData[0]);
+                    var player = GetPlayer(e.UI);
+                    Log("ok", player.RaceStartTime.ToString());
+                    var gravity = Netwrite<int>.For(player);
+
+                    if (Now - player.RaceStartTime <= 0 && val >= -9 && val <= 0)
+                    {
+                        gravity.Set(val);
+                    }
+                }
+                break;
+        }
+    }
 }
