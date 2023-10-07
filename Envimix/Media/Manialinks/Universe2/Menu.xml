@@ -6,6 +6,15 @@
 		<label pos="-20 -7.75" z-index="1" size="55 10" text="Default" valign="center2" textfont="RajdhaniMono" textsize="4" textprefix="$t" id="LabelName"/>
 		<quad z-index="0" size="76 14.5" style="Bgs1" substyle="BgCardList" halign="center" pos="-1.5 0" opacity=".5" modulatecolor="258"/>
 	</framemodel>
+	<framemodel id="FramemodelRecord">
+		<quad pos="-1 0" z-index="-2" size="73 5.4" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
+		<quad pos="-1 0" z-index="-1" size="73 5.2" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
+		<label size="47.5 5" text="01" valign="center2" pos="-36 -0.3" textsize="1.5" textfont="RajdhaniMono" id="LabelRank"/>
+		<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-31 -0.3" textsize="1.8" textfont="Oswald" id="LABEL_NICKNAME"/>
+		<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="1.8" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
+		<label pos="15 -0.2" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="center2" textemboss="1" hidden="0"/>
+		<quad pos="0 0" z-index="0" size="5.5 5.5" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="0"/>
+	</framemodel>
 	<frame z-index="10">
 		<quad pos="0 0" z-index="-2" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" id="QuadBackground"/>
 		<frame id="FrameMenu">
@@ -101,67 +110,21 @@
 						<quad pos="0 5" z-index="-1" size="79 67" halign="center" style="Bgs1" substyle="BgCardList" scriptevents="1" opacity=".5"/>
 						<quad pos="0 -30" z-index="0" size="15 15" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" id="QUAD_LOADING" hidden="1"/>
 						<frame pos="35.5 -5">
-							<quad z-index="0" size="2 56" style="Bgs1" substyle="BgCardList" opacity=".5" scriptevents="1" id="QUAD_SCROLLBAR_BACKGROUND"/>
+							<quad z-index="0" size="2 55.25" style="Bgs1" substyle="BgCardList" opacity=".5" scriptevents="1" id="QUAD_SCROLLBAR_BACKGROUND"/>
 							<quad z-index="1" size="1 20" style="Bgs1" substyle="BgWindow4" opacity="1" halign="center" pos="1 0" scriptevents="1" id="QUAD_SCROLLBAR" hidden="1"/>
 						</frame>
-						<frame pos="0 -9" id="FRAME_OUTER_GHOSTS" clip="1" clipsizen="78 56" clipposn="0 -24">
-							<frame id="FRAME_GHOSTS">
-								<frame hidden="0">
-									<quad pos="-1 0" z-index="-2" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-									<quad pos="-1 0" z-index="-1" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
-									<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-35 -0.3" textfont="Oswald" id="LABEL_NICKNAME"/>
-									<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="3" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-									<label pos="34 -3" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="bottom" textemboss="1" hidden="1"/>
-									<quad pos="31 0" z-index="0" size="8 8" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="1"/>
-								</frame>
-								<frame pos="0 -8" hidden="0">
-									<quad pos="-1 0" z-index="-2" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-									<quad pos="-1 0" z-index="-1" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
-									<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-35 -0.3" textfont="Oswald" id="LABEL_NICKNAME"/>
-									<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="3" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-									<label pos="34 -3" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="bottom" textemboss="1" hidden="1"/>
-									<quad pos="31 0" z-index="0" size="8 8" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="1"/>
-								</frame>
-								<frame pos="0 -16" hidden="0">
-									<quad pos="-1 0" z-index="-2" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-									<quad pos="-1 0" z-index="-1" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
-									<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-35 -0.3" textfont="Oswald" id="LABEL_NICKNAME"/>
-									<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="3" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-									<label pos="34 -3" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="bottom" textemboss="1" hidden="1"/>
-									<quad pos="31 0" z-index="0" size="8 8" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="1"/>
-								</frame>
-								<frame pos="0 -24" hidden="0">
-									<quad pos="-1 0" z-index="-2" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-									<quad pos="-1 0" z-index="-1" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
-									<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-35 -0.3" textfont="Oswald" id="LABEL_NICKNAME"/>
-									<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="3" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-									<label pos="34 -3" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="bottom" textemboss="1" hidden="1"/>
-									<quad pos="31 0" z-index="0" size="8 8" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="1"/>
-								</frame>
-								<frame pos="0 -32" hidden="0">
-									<quad pos="-1 0" z-index="-2" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-									<quad pos="-1 0" z-index="-1" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
-									<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-35 -0.3" textfont="Oswald" id="LABEL_NICKNAME"/>
-									<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="3" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-									<label pos="34 -3" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="bottom" textemboss="1" hidden="1"/>
-									<quad pos="31 0" z-index="0" size="8 8" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="1"/>
-								</frame>
-								<frame pos="0 -40" hidden="0">
-									<quad pos="-1 0" z-index="-2" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-									<quad pos="-1 0" z-index="-1" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
-									<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-35 -0.3" textfont="Oswald" id="LABEL_NICKNAME"/>
-									<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="3" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-									<label pos="34 -3" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="bottom" textemboss="1" hidden="1"/>
-									<quad pos="31 0" z-index="0" size="8 8" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="1"/>
-								</frame>
-								<frame pos="0 -48" hidden="0">
-									<quad pos="-1 0" z-index="-2" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-									<quad pos="-1 0" z-index="-1" size="73 8" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
-									<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-35 -0.3" textfont="Oswald" id="LABEL_NICKNAME"/>
-									<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="3" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-									<label pos="34 -3" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="bottom" textemboss="1" hidden="1"/>
-									<quad pos="31 0" z-index="0" size="8 8" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="1"/>
-								</frame>
+						<frame pos="0 -8" id="FrameOuterGhosts" clip="1" clipsizen="78 56" clipposn="0 -24">
+							<frame id="FrameGhosts">
+								<frameinstance modelid="FramemodelRecord"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -5.5"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -11"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -16.5"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -22"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -27.5"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -33"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -38.5"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -44"/>
+								<frameinstance modelid="FramemodelRecord" pos="0 -49.5"/>
 							</frame>
 						</frame>
 					</frame>
