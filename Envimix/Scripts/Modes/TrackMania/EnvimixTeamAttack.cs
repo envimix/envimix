@@ -328,7 +328,7 @@ public class EnvimixTeamAttack : Envimix
 
                             if (spawned || isMenuEscape)
                             {
-                                RequestEnvimaniaRecords(carName, MathLib.NearestInteger(player.GravityCoef * 10), GetLaps());
+                                RequestEnvimaniaRecords(carName, MathLib.NearestInteger(player.GravityCoef * 10) - 10, GetLaps());
                             }
                         }
                     }

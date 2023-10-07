@@ -212,10 +212,12 @@ public class Envimania : CTmMlScriptIngame, IContext
 
     private SEnvimaniaRecordsFilter GetFilter()
     {
+        var gravity = Netread<int>.For(GetPlayer());
+
         SEnvimaniaRecordsFilter filter = new()
         {
             Car = GetCar(),
-            Gravity = 10, // TODO: Get gravity
+            Gravity = gravity.Get(),
             Laps = GetLaps(),
             Type = "Time" // TODO: Get type
         };
