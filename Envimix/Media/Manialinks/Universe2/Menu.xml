@@ -8,12 +8,12 @@
 	</framemodel>
 	<framemodel id="FramemodelRecord">
 		<quad pos="-1 0" z-index="-2" size="73 5.4" halign="center" valign="center" style="Bgs1" substyle="BgCardList" opacity=".5"/>
-		<quad pos="-1 0" z-index="-1" size="73 5.2" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QUAD_GHOST"/>
+		<quad pos="-1 0" z-index="-1" size="73 5.2" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity=".5" colorize="036" scriptevents="1" id="QuadGhost"/>
 		<label size="47.5 5" text="01" valign="center2" pos="-36 -0.3" textsize="1.5" textfont="RajdhaniMono" id="LabelRank"/>
-		<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-31 -0.3" textsize="1.8" textfont="Oswald" id="LABEL_NICKNAME"/>
-		<label pos="33 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="1.8" textfont="OswaldMono" halign="right" id="LABEL_TIME" valign="center2"/>
-		<label pos="15 -0.2" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LABEL_AUTOSAVE" valign="center2" textemboss="1" hidden="0"/>
-		<quad pos="0 0" z-index="0" size="5.5 5.5" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QUAD_SAVEGHOST" hidden="0"/>
+		<label size="47.5 5" text="$o$i$nTESTBOI" valign="center2" pos="-31 -0.3" textsize="1.8" textfont="Oswald" id="LabelNickname"/>
+		<label pos="12 -0.2" z-index="1" size="17.5 5" text="$ff0AUTOSAVE" textsize="1" textfont="OswaldMono" halign="right" id="LabelAutosave" valign="center2" textemboss="1" hidden="0"/>
+		<label pos="29 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="1.8" textfont="OswaldMono" halign="right" id="LabelTime" valign="center2"/>
+		<quad pos="32.5 0" z-index="0" size="5.5 5.5" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" halign="center" valign="center" id="QuadSaveGhost" hidden="0"/>
 	</framemodel>
 	<frame z-index="10">
 		<quad pos="0 0" z-index="-2" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" id="QuadBackground"/>
@@ -103,12 +103,12 @@
 				<frame id="FrameSingleplayer" pos="0 -5" z-index="1" hidden="1">
 					<frame pos="0 0">
 						<frame clip="1" clipsizen="55 6">
-							<label size="200 5" text="Local" halign="center" valign="center2" style="TextButtonBig" textsize="2.5" translate="1" id="LABEL_GHOSTSECTION"/>
+							<label size="200 5" text="Local" halign="center" valign="center2" style="TextButtonBig" textsize="2.5" translate="1" id="LabelGhostSelection" scriptevents="1"/>
 						</frame>
-						<quad pos="-32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" id="QUAD_GHOSTSECTION_PREVIOUS"/>
-						<quad pos="32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" rot="180" id="QUAD_GHOSTSECTION_NEXT"/>
+						<quad pos="-32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" id="QuadGhostSelectionPrev"/>
+						<quad pos="32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" rot="180" id="QuadGhostSelectionNext"/>
 						<quad pos="0 5" z-index="-1" size="79 67" halign="center" style="Bgs1" substyle="BgCardList" scriptevents="1" opacity=".5"/>
-						<quad pos="0 -30" z-index="0" size="15 15" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" id="QUAD_LOADING" hidden="1"/>
+						<quad pos="0 -30" z-index="0" size="15 15" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" id="QuadLoading" hidden="1"/>
 						<frame pos="35.5 -5">
 							<quad z-index="0" size="2 55.25" style="Bgs1" substyle="BgCardList" opacity=".5" scriptevents="1" id="QUAD_SCROLLBAR_BACKGROUND"/>
 							<quad z-index="1" size="1 20" style="Bgs1" substyle="BgWindow4" opacity="1" halign="center" pos="1 0" scriptevents="1" id="QUAD_SCROLLBAR" hidden="1"/>

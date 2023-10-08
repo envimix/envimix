@@ -83,6 +83,10 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelGravityValue;
     [ManialinkControl] public required CMlFrame FrameGravitySlider;
     [ManialinkControl] public required CMlFrame FrameGravityForcedValue;
+    [ManialinkControl] public required CMlFrame FrameGhosts;
+    [ManialinkControl] public required CMlQuad QuadGhostSelectionPrev;
+    [ManialinkControl] public required CMlQuad QuadGhostSelectionNext;
+    [ManialinkControl] public required CMlLabel LabelGhostSelection;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -105,6 +109,15 @@ public class Menu : CTmMlScriptIngame, IContext
 	public bool PrevUseForcedClans;
     public bool GravityOpen;
     public int PrevGravityValue = 1;
+    public CTaskResult_ReplayList? LocalReplaysTask;
+    public IList<CReplayInfo> LocalReplays;
+    public Dictionary<Ident, string> LocalGhostsTaskFiles;
+    public IList<CTaskResult_GhostList> LocalGhostsTasks;
+    public IList<CGhost> LocalGhosts;
+    public Dictionary<CGhost, string> LocalGhostFiles;
+    public IList<string> Zones;
+    public int CurrentZoneIndex = -1;
+    public int PreviousZoneIndex = -1;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -159,6 +172,36 @@ public class Menu : CTmMlScriptIngame, IContext
                 AnimMgr.Add(QuadGravityValue, "<quad opacity=\"0.85\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         };
+
+        QuadGhostSelectionPrev.MouseClick += () =>
+        {
+            if (CurrentZoneIndex > -1)
+            {
+                CurrentZoneIndex -= 1;
+            }
+            else
+            {
+                CurrentZoneIndex = Zones.Count - 1;
+            }
+
+            UpdateRecords();
+        };
+
+        QuadGhostSelectionNext.MouseClick += () =>
+        {
+            if (CurrentZoneIndex < Zones.Count - 1)
+            {
+                CurrentZoneIndex += 1;
+            }
+            else
+            {
+                CurrentZoneIndex = -1;
+            }
+
+            UpdateRecords();
+        };
+
+        LabelGhostSelection.MouseClick += RefreshRecords;
     }
 
     CTmMlPlayer GetPlayer()
@@ -900,6 +943,67 @@ public class Menu : CTmMlScriptIngame, IContext
         }
     }
 
+    private void UpdateLocalGhosts()
+    {
+        for (var i = 0; i < FrameGhosts.Controls.Count; i++)
+        {
+            var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
+
+            if (i >= LocalGhosts.Count)
+            {
+                frame.Hide();
+                continue;
+            }
+
+            var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
+
+            labelNickname.SetText(LocalGhosts[i].Nickname);
+
+            if (LocalGhosts[i].Result.Time == -1)
+            {
+                labelTime.SetText("-:--:---");
+            }
+            else
+            {
+                labelTime.SetText(TimeToTextWithMilli(LocalGhosts[i].Result.Time));
+            }
+
+            frame.Show();
+
+            DataFileMgr.TaskResult_Release(LocalGhosts[i].Id);
+        }
+    }
+
+    private void UpdateRecords()
+    {
+        if (CurrentZoneIndex == -1)
+        {
+            LabelGhostSelection.SetText("Local");
+            UpdateLocalGhosts();
+        }
+        else
+        {
+            LabelGhostSelection.SetText(Zones[CurrentZoneIndex]);
+
+            for (var i = 0; i < FrameGhosts.Controls.Count; i++)
+            {
+                var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
+                frame.Hide();
+            }
+        }
+    }
+
+    public void RefreshRecords()
+    {
+        if (CurrentZoneIndex == -1)
+        {
+            Log("Refreshing replays on disk...");
+            DataFileMgr.Replay_RefreshFromDisk();
+            LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
+        }
+    }
+
     public void Main()
     {
         Page.GetClassChildren("LOADING", Page.MainFrame, Recursive: true);
@@ -1001,6 +1105,13 @@ public class Menu : CTmMlScriptIngame, IContext
 	    UpdateVehicles();
 
         PrevUseForcedClans = UseForcedClans;
+
+        if (IsSolo())
+        {
+            LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
+        }
+
+        Zones = TextLib.Split("|", LocalUser.ZonePath);
     }
 
     public void Loop()
@@ -1149,6 +1260,8 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             SetSlidingText(FrameLabelCar, car.Get());
             LabelSkinCar.Value = car.Get();
+            UpdateRecords();
+
             PreviousCar = car.Get();
         }
 
@@ -1462,5 +1575,72 @@ public class Menu : CTmMlScriptIngame, IContext
         var gravity = Netread<int>.For(GetPlayer());
 
         FrameGravityForcedValue.RelativePosition_V3.X = (gravity.Get() + 9) * (30f / 9);
+
+        if (LocalReplaysTask is not null && !LocalReplaysTask.IsProcessing)
+        {
+            LocalReplays.Clear();
+            LocalGhosts.Clear();
+
+            if (LocalReplaysTask.HasSucceeded)
+            {
+                foreach (var replayInfo in LocalReplaysTask.ReplayInfos)
+                {
+                    if (Map.MapInfo.MapUid == "" || replayInfo.MapUid != Map.MapInfo.MapUid)
+                    {
+                        continue;
+                    }
+
+                    /*declare Continue = False;
+                    foreach (Ghost, LoadedGhosts)
+                    if (Replay.FileName == Ghost.File) Continue = True;
+                    if (Continue) continue;*/
+
+                    var task = DataFileMgr.Replay_Load(replayInfo.FileName);
+                    LocalGhostsTaskFiles[task.Id] = replayInfo.FileName;
+                    LocalGhostsTasks.Add(task);
+                    LocalReplays.Add(replayInfo);
+                }
+            }
+
+            LocalReplaysTask = null;
+        }
+
+        ImmutableArray<CTaskResult_GhostList> completedGhostTasks = new();
+
+        foreach (var ghostTask in LocalGhostsTasks)
+        {
+            if (ghostTask.IsProcessing)
+            {
+                continue;
+            }
+
+            if (ghostTask.HasSucceeded && ghostTask.Ghosts.Count > 0)
+            {
+                foreach (var ghost in ghostTask.Ghosts)
+                {
+                    LocalGhosts.Add(ghost);
+                    LocalGhostFiles[ghost] = LocalGhostsTaskFiles[ghostTask.Id];
+                }
+            }
+
+            completedGhostTasks.Add(ghostTask);
+
+            LocalGhostsTaskFiles.Remove(ghostTask.Id);
+
+            if (CurrentZoneIndex == -1)
+            {
+                UpdateLocalGhosts();
+            }
+        }
+
+        foreach (var ghostTask in completedGhostTasks)
+        {
+            LocalGhostsTasks.Remove(ghostTask);
+        }
+
+        if (completedGhostTasks.Length > 0)
+        {
+            completedGhostTasks.Clear();
+        }
     }
 }
