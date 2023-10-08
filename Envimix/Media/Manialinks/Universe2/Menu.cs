@@ -45,6 +45,7 @@ public class Menu : CTmMlScriptIngame, IContext
         public float Speed;
         public bool Verified;
         public bool Projected;
+        public string GhostUrl;
     }
 
     public struct SEnvimaniaRecordsResponse
@@ -551,6 +552,31 @@ public class Menu : CTmMlScriptIngame, IContext
                 UpdateSkins();
                 SendCustomEvent("Skin", new[] { CName, UserSkins[CName] });
                 break;
+            case "QuadGhost":
+                var file = control.Parent.DataAttributeGet("file");
+
+                if (file is "")
+                {
+                    file = control.Parent.DataAttributeGet("url");
+                }
+
+                (control as CMlQuad)!.StyleSelected = false;
+
+                if (file is not "")
+                {
+                    if (SelectedGhosts.ContainsKey(file))
+                    {
+                        SelectedGhosts.Remove(file);
+                    }
+                    else
+                    {
+                        SelectedGhosts[file] = true;
+                    }
+
+                    (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(file);
+                }
+                
+                break;
         }
 
         if (control == QuadJoinRed)
@@ -1054,11 +1080,16 @@ public class Menu : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            frame.DataAttributeSet("file", LocalGhostFiles[LocalGhosts[i]]);
+            var ghostFile = LocalGhostFiles[LocalGhosts[i]];
+
+            frame.DataAttributeSet("file", ghostFile);
+            frame.DataAttributeSet("url", "");
 
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
+            var labelAutosave = (frame.GetFirstChild("LabelAutosave") as CMlLabel)!;
+            var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
 
             labelRank.Hide();
             labelNickname.SetText(LocalGhosts[i].Nickname);
@@ -1072,6 +1103,10 @@ public class Menu : CTmMlScriptIngame, IContext
                 labelTime.SetText(TimeToTextWithMilli(LocalGhosts[i].Result.Time));
             }
 
+            labelAutosave.Visible = TextLib.StartsWith("autosave", LocalGhostFiles[LocalGhosts[i]], false, false);
+
+            quadGhost.StyleSelected = SelectedGhosts.ContainsKey(ghostFile);
+
             frame.Show();
 
             DataFileMgr.TaskResult_Release(LocalGhosts[i].Id);
@@ -1080,6 +1115,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
     public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> EnvimaniaRecordsRequests;
     public required Dictionary<SEnvimaniaRecordsFilter, Dictionary<string, SEnvimaniaRecordsResponse>> EnvimaniaFinishedRecordsRequests;
+    public required Dictionary<string, bool> SelectedGhosts;
 
     private string GetFullZone()
     {
@@ -1102,8 +1138,6 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         var car = Netread<string>.For(GetPlayer());
         var gravity = Netread<int>.For(GetPlayer());
-
-        
 
         SEnvimaniaRecordsFilter filter = new()
         {
@@ -1163,16 +1197,25 @@ public class Menu : CTmMlScriptIngame, IContext
                 continue;
             }
 
+            var ghostUrl = response.Records[i].GhostUrl;
+
+            frame.DataAttributeSet("file", "");
+            frame.DataAttributeSet("url", ghostUrl);
             frame.Show();
 
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
+            var labelAutosave = (frame.GetFirstChild("LabelAutosave") as CMlLabel)!;
+            var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
 
             labelRank.Show();
             labelRank.SetText(TextLib.FormatInteger(i + 1, 2));
             labelNickname.SetText(response.Records[i].User.Nickname);
             labelTime.SetText(TimeToTextWithMilli(response.Records[i].Time));
+            labelAutosave.Hide();
+
+            quadGhost.StyleSelected = SelectedGhosts.ContainsKey(ghostUrl);
         }
     }
 

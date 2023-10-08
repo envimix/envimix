@@ -47,6 +47,7 @@ public class Envimania : CTmMlScriptIngame, IContext
         public float Speed;
         public bool Verified;
         public bool Projected;
+        public string GhostUrl;
     }
 
     public struct SEnvimaniaRecordsFilter
