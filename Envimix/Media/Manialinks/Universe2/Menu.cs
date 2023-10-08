@@ -1934,12 +1934,17 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 if (response.FromJson(recsRequest.Result))
                 {
-                    if (!EnvimaniaFinishedRecordsRequests.ContainsKey(filter))
+                    if (EnvimaniaFinishedRecordsRequests.ContainsKey(filter))
                     {
-                        EnvimaniaFinishedRecordsRequests[filter] = new();
+                        EnvimaniaFinishedRecordsRequests[filter][response.Zone] = response;
                     }
-
-                    EnvimaniaFinishedRecordsRequests[filter][response.Zone] = response;
+                    else
+                    {
+                        EnvimaniaFinishedRecordsRequests[filter] = new()
+                        {
+                            { response.Zone, response }
+                        };
+                    }
 
                     Log($"Records received ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, L: {filter.Laps}, Type: Time, Zone: {response.Zone}).");
                 }
