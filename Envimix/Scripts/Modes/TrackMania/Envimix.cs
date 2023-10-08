@@ -76,6 +76,7 @@ public class Envimix : UniverseModeBase
     public struct SEnvimaniaRecordsResponse
     {
         public SEnvimaniaRecordsFilter Filter;
+        public string Zone;
         public ImmutableArray<SEnvimaniaRecord> Records;
     }
 
@@ -489,7 +490,7 @@ public class Envimix : UniverseModeBase
 
     public bool RequestEnvimaniaSession()
     {
-        if (EnvimixWebAPI is "")
+        if (EnvimixWebAPI is "" || ServerAdmin is null)
         {
             return false;
         }
@@ -503,6 +504,7 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionTokenReceived = -1;
         EnvimaniaStatusReceived = -1;
         EnvimaniaRecordsRequestsLastCheck = -1;
+
         ServerAdmin.Authentication_GetToken(null, "Envimix");
 
         return true;
@@ -581,7 +583,7 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
 
-        EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&independentLaps={IndependantLaps}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&laps={GetLaps()}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
 
         if (EnvimaniaFinishedRecordsRequests.Count == 0)
         {
@@ -595,7 +597,7 @@ public class Envimix : UniverseModeBase
 
     public void CheckEnvimaniaSession()
     {
-        if (EnvimixWebAPI is "")
+        if (EnvimixWebAPI is "" || ServerAdmin is null)
         {
             return;
         }
@@ -611,6 +613,7 @@ public class Envimix : UniverseModeBase
             DirectlyRequestEnvimaniaSession();
         }
 
+        // EnvimaniaSessionRequestTimeout is not -1 by default, it is protected by the first if statement
         if (EnvimaniaSessionRequestTimeout != -1 && Now - EnvimaniaSessionRequestTimeout >= 10000)
         {
             // Request a new ManiaPlanet token after 30 minutes of failure
@@ -877,6 +880,7 @@ public class Envimix : UniverseModeBase
                 {
                     var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
                     envimaniaRecords.Get()[filter] = response;
+
                     EnvimaniaStatusMessage = "";
                     EnvimaniaRecordsUpdatedAt = Now;
                     EnvimaniaFinishedRecordsRequests[filter] = true;
@@ -885,13 +889,13 @@ public class Envimix : UniverseModeBase
                 {
                     EnvimaniaStatusMessage = "Records failed to load (JSON issue). Reported in server logs.";
 
-                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, L: {filter.Laps}, Type: Time).");
+                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, L: {filter.Laps}, Type: Time, Zone: [unknown]).");
                     Log(nameof(Envimix), recsRequest.Result);
                 }
             }
             else
             {
-                Log(nameof(Envimix), $"Records retrieval failed ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, Type: Time).");
+                Log(nameof(Envimix), $"Records retrieval failed ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, Type: Time, Zone: [unknown]).");
             }
 
             recsRequestsToRemove.Add(filter);

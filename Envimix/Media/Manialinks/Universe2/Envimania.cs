@@ -60,6 +60,7 @@ public class Envimania : CTmMlScriptIngame, IContext
     public struct SEnvimaniaRecordsResponse
     {
         public SEnvimaniaRecordsFilter Filter;
+        public string Zone;
         public ImmutableArray<SEnvimaniaRecord> Records;
     }
 

@@ -13,7 +13,48 @@ public class Menu : CTmMlScriptIngame, IContext
 		public string Icon;
 	}
 
-	[ManialinkControl] public required CMlFrame FrameInnerVehicles;
+    public struct SEnvimaniaRecordsFilter
+    {
+        public string Car;
+        public int Gravity;
+        public int Laps;
+        public string Type;
+    }
+
+    public struct SUserInfo
+    {
+        public string Login;
+        public string Nickname;
+        public string Zone;
+        public string AvatarUrl;
+        public string Language;
+        public string Description;
+        public Vec3 Color;
+        public string SteamUserId;
+        public int FameStars;
+        public float LadderPoints;
+    }
+
+    public struct SEnvimaniaRecord
+    {
+        public SUserInfo User;
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+        public bool Verified;
+        public bool Projected;
+    }
+
+    public struct SEnvimaniaRecordsResponse
+    {
+        public SEnvimaniaRecordsFilter Filter;
+        public string Zone;
+        public ImmutableArray<SEnvimaniaRecord> Records;
+    }
+
+    [ManialinkControl] public required CMlFrame FrameInnerVehicles;
 	[ManialinkControl] public required CMlFrame FrameSkinList;
     [ManialinkControl] public required CMlQuad QuadButtonSpectator;
     [ManialinkControl] public required CMlFrame FrameMenu;
@@ -87,6 +128,8 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadGhostSelectionPrev;
     [ManialinkControl] public required CMlQuad QuadGhostSelectionNext;
     [ManialinkControl] public required CMlLabel LabelGhostSelection;
+    [ManialinkControl] public required CMlFrame FrameTooltip;
+    [ManialinkControl] public required CMlQuad QuadLoading;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -128,10 +171,12 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public ImmutableArray<string> DisplayedCars { get; set; }
     [Netread] public Dictionary<string, string> ItemCars { get; set; }
     [Netread] public Dictionary<string, Dictionary<string, SSkin>> Skins { get; set; }
+    [Netread] public string EnvimixWebAPI { get; set; }
 
     public Menu()
     {
         MouseOver += Menu_MouseOver;
+        MouseOut += Menu_MouseOut;
         MouseClick += Menu_MouseClick;
 
         QuadButtonContinue.MouseOver += Focus2;
@@ -184,7 +229,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 CurrentZoneIndex = Zones.Count - 1;
             }
 
-            UpdateRecords();
+            RequestAndUpdateRecords();
         };
 
         QuadGhostSelectionNext.MouseClick += () =>
@@ -198,7 +243,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 CurrentZoneIndex = -1;
             }
 
-            UpdateRecords();
+            RequestAndUpdateRecords();
         };
 
         LabelGhostSelection.MouseClick += RefreshRecords;
@@ -252,6 +297,21 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         ChangingGravity = true;
         ChangingGravityX = MouseX - (float)FrameGravitySlider.RelativePosition_V3.X;
+    }
+
+    private int GetLaps()
+    {
+        if (!MapIsLapRace)
+        {
+            return 1;
+        }
+
+        if (NbLaps == -1)
+        {
+            return Map.TMObjective_NbLaps;
+        }
+
+        return NbLaps;
     }
 
     private void UpdateVehicles()
@@ -509,8 +569,40 @@ public class Menu : CTmMlScriptIngame, IContext
         }
     }
 
+    private void UpdateTooltip(string text)
+    {
+        var labelText = (FrameTooltip.GetFirstChild("LabelText") as CMlLabel)!;
+        var quadTooltip = (FrameTooltip.GetFirstChild("QuadTooltip") as CMlQuad)!;
+
+        labelText.Size.X = labelText.ComputeWidth(text);
+        quadTooltip.Size.X = labelText.ComputeWidth(text) + 4;
+        labelText.SetText(text);
+
+        FrameTooltip.Show();
+    }
+
     private void Menu_MouseOver(CMlControl control, string controlId)
     {
+        if (controlId == "QuadGhost")
+        {
+            var file = control.Parent.DataAttributeGet("file");
+
+            if (file is "")
+            {
+                FrameTooltip.Hide();
+                return;
+            }
+
+            IList<string> folders = TextLib.Split("\\", file);
+            var name = folders[folders.Count - 1];
+
+            var car = "Car";
+            name = TextLib.Replace(name, car, $"$ff0{car}$z");
+
+            UpdateTooltip(name);
+            return;
+        }
+
         if (control.DataAttributeGet("nav") != "True")
         {
             return;
@@ -522,6 +614,11 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             NavFocusedControl = quad;
         }
+    }
+
+    private void Menu_MouseOut(CMlControl control, string controlId)
+    {
+        FrameTooltip.Hide();
     }
 
     private void Focus2()
@@ -945,6 +1042,8 @@ public class Menu : CTmMlScriptIngame, IContext
 
     private void UpdateLocalGhosts()
     {
+        QuadLoading.Hide();
+
         for (var i = 0; i < FrameGhosts.Controls.Count; i++)
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
@@ -955,9 +1054,13 @@ public class Menu : CTmMlScriptIngame, IContext
                 continue;
             }
 
+            frame.DataAttributeSet("file", LocalGhostFiles[LocalGhosts[i]]);
+
+            var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
 
+            labelRank.Hide();
             labelNickname.SetText(LocalGhosts[i].Nickname);
 
             if (LocalGhosts[i].Result.Time == -1)
@@ -975,23 +1078,129 @@ public class Menu : CTmMlScriptIngame, IContext
         }
     }
 
+    public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> EnvimaniaRecordsRequests;
+    public required Dictionary<SEnvimaniaRecordsFilter, Dictionary<string, SEnvimaniaRecordsResponse>> EnvimaniaFinishedRecordsRequests;
+
+    private string GetFullZone()
+    {
+        var zone = Zones[0];
+
+        for (var i = 0; i < Zones.Count - 1; i++)
+        {
+            if (i == CurrentZoneIndex)
+            {
+                break;
+            }
+
+            zone = $"{zone}|{Zones[i + 1]}";
+        }
+
+        return zone;
+    }
+
+    private SEnvimaniaRecordsFilter GetFilter()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var gravity = Netread<int>.For(GetPlayer());
+
+        
+
+        SEnvimaniaRecordsFilter filter = new()
+        {
+            Car = car.Get(),
+            Gravity = gravity.Get(),
+            Laps = GetLaps(),
+            Type = "Time" // TODO: Add support for other types
+        };
+
+        return filter;
+    }
+
     private void UpdateRecords()
     {
         if (CurrentZoneIndex == -1)
         {
             LabelGhostSelection.SetText("Local");
             UpdateLocalGhosts();
+            return;
         }
-        else
-        {
-            LabelGhostSelection.SetText(Zones[CurrentZoneIndex]);
 
-            for (var i = 0; i < FrameGhosts.Controls.Count; i++)
+        LabelGhostSelection.SetText(Zones[CurrentZoneIndex]);
+
+        var filter = GetFilter();
+        var zone = GetFullZone();
+
+        if (!EnvimaniaFinishedRecordsRequests.ContainsKey(filter) || !EnvimaniaFinishedRecordsRequests[filter].ContainsKey(zone))
+        {
+            foreach (var control in FrameGhosts.Controls)
             {
-                var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
-                frame.Hide();
+                control.Hide();
             }
+
+            if (EnvimaniaRecordsRequests.ContainsKey(filter))
+            {
+                QuadLoading.Show();
+            }
+            else
+            {
+                QuadLoading.Hide();
+            }
+
+            return;
         }
+
+        QuadLoading.Hide();
+
+        var response = EnvimaniaFinishedRecordsRequests[filter][zone];
+        
+        for (var i = 0; i < FrameGhosts.Controls.Count; i++)
+        {
+            var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
+
+            if (i >= response.Records.Length)
+            {
+                frame.Hide();
+                continue;
+            }
+
+            frame.Show();
+
+            var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
+            var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
+
+            labelRank.Show();
+            labelRank.SetText(TextLib.FormatInteger(i + 1, 2));
+            labelNickname.SetText(response.Records[i].User.Nickname);
+            labelTime.SetText(TimeToTextWithMilli(response.Records[i].Time));
+        }
+    }
+
+    private bool RequestCurrentZoneRecords(bool refresh)
+    {
+        if (CurrentZoneIndex < 0)
+        {
+            Log("Zone index is considered local records but online records were requested. Skipped.");
+            return false;
+        }
+
+        var filter = GetFilter();
+        var zone = GetFullZone();
+
+        if ((!refresh && EnvimaniaFinishedRecordsRequests.ContainsKey(filter) && EnvimaniaFinishedRecordsRequests[filter].ContainsKey(zone)) || EnvimaniaRecordsRequests.ContainsKey(filter))
+        {
+            return false;
+        }
+
+        Log($"Requesting Envimania records... ({filter.Car}, G: {filter.Gravity}, Type: Time, Zone: {GetFullZone()})");
+
+        EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{Map.MapInfo.MapUid}/{filter.Car}?gravity={filter.Gravity}&laps={filter.Laps}&zone={zone}", UseCache: false);
+
+        QuadLoading.Show();
+
+        UpdateRecords();
+
+        return true;
     }
 
     public void RefreshRecords()
@@ -1001,7 +1210,24 @@ public class Menu : CTmMlScriptIngame, IContext
             Log("Refreshing replays on disk...");
             DataFileMgr.Replay_RefreshFromDisk();
             LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
+            return;
         }
+
+        if (CurrentZoneIndex < Zones.Count)
+        {
+            RequestCurrentZoneRecords(refresh: true);
+            return;
+        }
+    }
+
+    private void RequestAndUpdateRecords()
+    {
+        if (CurrentZoneIndex > -1)
+        {
+            RequestCurrentZoneRecords(refresh: false);
+        }
+
+        UpdateRecords();
     }
 
     public void Main()
@@ -1260,7 +1486,7 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             SetSlidingText(FrameLabelCar, car.Get());
             LabelSkinCar.Value = car.Get();
-            UpdateRecords();
+            RequestAndUpdateRecords();
 
             PreviousCar = car.Get();
         }
@@ -1641,6 +1867,60 @@ public class Menu : CTmMlScriptIngame, IContext
         if (completedGhostTasks.Length > 0)
         {
             completedGhostTasks.Clear();
+        }
+
+        if (FrameTooltip.Visible)
+        {
+            FrameTooltip.RelativePosition_V3 = new Vec2(MouseX, MouseY);
+        }
+
+        QuadLoading.RelativeRotation += Period / 5f;
+
+        ImmutableArray<SEnvimaniaRecordsFilter> recsRequestsToRemove = new();
+
+        foreach (var (filter, recsRequest) in EnvimaniaRecordsRequests)
+        {
+            if (recsRequest is null || !recsRequest.IsCompleted)
+            {
+                continue;
+            }
+
+            if (recsRequest.StatusCode == 200)
+            {
+                SEnvimaniaRecordsResponse response = new();
+
+                if (response.FromJson(recsRequest.Result))
+                {
+                    if (!EnvimaniaFinishedRecordsRequests.ContainsKey(filter))
+                    {
+                        EnvimaniaFinishedRecordsRequests[filter] = new();
+                    }
+
+                    EnvimaniaFinishedRecordsRequests[filter][response.Zone] = response;
+
+                    Log($"Records received ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, L: {filter.Laps}, Type: Time, Zone: {response.Zone}).");
+                }
+                else
+                {
+                    Log($"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, L: {filter.Laps}, Type: Time, Zone: [unknown]).");
+                    Log(recsRequest.Result);
+                }
+            }
+            else
+            {
+                Log($"Records retrieval failed ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, Type: Time, Zone: [unknown]).");
+            }
+
+            recsRequestsToRemove.Add(filter);
+        }
+
+        foreach (var filter in recsRequestsToRemove)
+        {
+            var request = EnvimaniaRecordsRequests[filter];
+            EnvimaniaRecordsRequests.Remove(filter);
+            Http.Destroy(request);
+
+            UpdateRecords();
         }
     }
 }
