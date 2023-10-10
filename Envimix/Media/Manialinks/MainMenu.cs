@@ -1,6 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
-namespace Envimix.Media.Manialinks;
+﻿namespace Envimix.Media.Manialinks;
 
 public class MainMenu : CManiaAppTitleLayer, IContext
 {
