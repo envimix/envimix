@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-	<frame pos="-130 60">
-		<quad z-index="-2" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
-		<quad id="QuadStart" z-index="-1" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
-		<quad id="QuadStartIcon" z-index="0" size="12 12" halign="center" valign="center" bgcolor="FFFA" />
-		<label z-index="0" size="20 5" text="Start" halign="center" valign="center2" />
-	</frame>
-	<frame pos="-130 39">
-		<quad z-index="-2" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
-		<quad z-index="-1" size="12 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
-		<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="-8 0" />
-		<label z-index="0" size="5 5" text="⏴" halign="center" valign="center2" pos="-7.5 0" />
-		<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="8 0" />
-		<label z-index="0" size="5 5" text="⏵" halign="center" valign="center2" pos="7.75 0" />
-		<quad z-index="0" size="12 12" halign="center" valign="center" bgcolor="FFFA" />
-	</frame>
-	<frame pos="-130 18">
-		<quad z-index="-2" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
-		<quad z-index="-1" size="12 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
-		<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="-8 0" />
-		<label z-index="0" size="5 5" text="⏴" halign="center" valign="center2" pos="-7.5 0" />
-		<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="8 0" />
-		<label z-index="0" size="5 5" text="⏵" halign="center" valign="center2" pos="7.75 0" />
-		<quad z-index="0" size="12 12" halign="center" valign="center" bgcolor="FFFA" />
-	</frame>
-	<frame pos="-130 -60">
-		<quad z-index="-1" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
-		<quad id="QuadTest" z-index="0" size="15 15" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Drive" scriptevents="1" />
+	<frame id="FrameExplore">
+		<frame pos="-130 60">
+			<quad z-index="-2" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
+			<quad id="QuadStart" z-index="-1" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
+			<quad id="QuadStartIcon" z-index="0" size="12 12" halign="center" valign="center" />
+			<label id="LabelStart" z-index="0" pos="0 0.3" size="20 5" text="Start" halign="center" valign="center" textfont="RajdhaniMono" />
+		</frame>
+		<frame pos="-130 39">
+			<quad z-index="-2" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
+			<quad z-index="-1" size="12 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
+			<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="-8 0" />
+			<label z-index="0" size="5 5" text="⏴" halign="center" valign="center2" pos="-7.5 0" />
+			<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="8 0" />
+			<label z-index="0" size="5 5" text="⏵" halign="center" valign="center2" pos="7.75 0" />
+			<quad id="QuadCpIcon" z-index="0" size="11 11" halign="center" valign="center" />
+			<label id="LabelCp" z-index="1" pos="0 0.3" size="20 5" text="CP" halign="center" valign="center" textfont="RajdhaniMono" textsize="4" />
+		</frame>
+		<frame pos="-130 18">
+			<quad z-index="-2" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
+			<quad z-index="-1" size="12 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
+			<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="-8 0" />
+			<label z-index="0" size="5 5" text="⏴" halign="center" valign="center2" pos="-7.5 0" />
+			<quad z-index="-1" size="4 20" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" pos="8 0" />
+			<label z-index="0" size="5 5" text="⏵" halign="center" valign="center2" pos="7.75 0" />
+			<quad id="QuadFinishIcon" z-index="0" size="11 11" halign="center" valign="center" />
+			<label id="LabelFinish" z-index="1" pos="0 0.3" size="20 5" text="Finish" halign="center" valign="center" textfont="RajdhaniMono" textsize="2" />
+		</frame>
+		<frame pos="-130 -60">
+			<quad z-index="-1" size="20 20" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
+			<quad id="QuadTest" z-index="0" size="15 15" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Drive" scriptevents="1" />
+		</frame>
 	</frame>
 	<frame pos="115 0">
 		<quad z-index="-2" size="60 10" halign="center" valign="center" style="Bgs1" substyle="BgCardList" />
-		<quad z-index="-1" size="60 10" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
-		<label pos="0 -0.3" z-index="0" size="60 10" text="Switch to normal editor" halign="center" valign="center2" textfont="RajdhaniMono" />
+		<quad id="QuadSwitchEditor" z-index="-1" size="60 10" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
+		<label id="LabelSwitchEditor" pos="0 -0.3" z-index="0" size="60 10" text="Switch to normal editor" halign="center" valign="center2" textfont="RajdhaniMono" />
 	</frame>
 </manialink>
