@@ -1621,12 +1621,14 @@ public class Menu : CTmMlScriptIngame, IContext
             }
         }
 
-        if (FrameVehicles.ScrollOffset.Y != PreviousScrollOffset)
+        var vehiclesScrollOffsetY = MathLib.NearestInteger((float)FrameVehicles.ScrollOffset.Y / 20) * 20f;
+
+        if (vehiclesScrollOffsetY != PreviousScrollOffset)
         {
-            var difference = (float)(FrameVehicles.ScrollOffset.Y - PreviousScrollOffset);
+            var difference = (float)(vehiclesScrollOffsetY - PreviousScrollOffset);
             var indexChange = MathLib.NearestInteger((float)difference / 20);
             VehicleIndex += indexChange;
-            PreviousScrollOffset = (float)FrameVehicles.ScrollOffset.Y;
+            PreviousScrollOffset = (float)vehiclesScrollOffsetY;
         }
 
         if (Skins.ContainsKey(DisplayedCars[VehicleIndex]))
@@ -1672,17 +1674,17 @@ public class Menu : CTmMlScriptIngame, IContext
 
         QuadBackground.Visible = IsCarLocked();
         LabelLock.Visible = IsCarLocked();
-
+        
         if (IsCarLocked() && DisplayedCars.Contains(car.Get()))
         {
             FrameArrow.RelativePosition_V3.Y = FrameVehicles.ScrollAnimOffset.Y + DisplayedCars.IndexOf(car.Get()) * -20f;
         }
         else
         {
-            FrameArrow.RelativePosition_V3.Y = FrameVehicles.ScrollAnimOffset.Y - FrameVehicles.ScrollOffset.Y;
+            FrameArrow.RelativePosition_V3.Y = FrameVehicles.ScrollAnimOffset.Y - vehiclesScrollOffsetY;
         }
 
-        FrameGhostArrow.RelativePosition_V3.Y = FrameVehicles.ScrollAnimOffset.Y - FrameVehicles.ScrollOffset.Y;
+        FrameGhostArrow.RelativePosition_V3.Y = FrameVehicles.ScrollAnimOffset.Y - vehiclesScrollOffsetY;
 
         /*if (QuadEnvimix.DownloadInProgress)
         {
