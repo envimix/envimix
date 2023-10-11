@@ -1159,7 +1159,7 @@ public class Menu : CTmMlScriptIngame, IContext
             return;
         }
 
-        LabelGhostSelection.SetText(Zones[CurrentZoneIndex]);
+        LabelGhostSelection.SetText("|Zone|" + Zones[CurrentZoneIndex]);
 
         var filter = GetFilter();
         var zone = GetFullZone();
@@ -1628,7 +1628,7 @@ public class Menu : CTmMlScriptIngame, IContext
             var difference = (float)(vehiclesScrollOffsetY - PreviousScrollOffset);
             var indexChange = MathLib.NearestInteger((float)difference / 20);
             VehicleIndex += indexChange;
-            PreviousScrollOffset = (float)vehiclesScrollOffsetY;
+            PreviousScrollOffset = vehiclesScrollOffsetY;
         }
 
         if (Skins.ContainsKey(DisplayedCars[VehicleIndex]))
