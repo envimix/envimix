@@ -6,7 +6,26 @@ public class MainMenu : CManiaAppTitle, IContext
 {
     public void Main()
     {        
-        ImmutableArray<string> allowedLogins = new() { "bigbang1112", "linuxcat", "pekatour", "adamkooo", "poutrel" };
+        ImmutableArray<string> allowedLogins = new()
+        {
+            "bigbang1112",
+            "linuxcat",
+            "pekatour",
+            "adamkooo",
+            "poutrel",
+            "riolu",
+            "eyohna",
+            "dragontm",
+            "mystixor",
+            "spookykoala2113",
+            "ajsasflaym",
+            "arkes910",
+            "ydoowoody",
+            "hot_wheeler",
+            "totokill13",
+            "tushy444trackmaniagamer",
+            "naruto42"
+        };
 
         if (!allowedLogins.Contains(LocalUser.Login))
         {
