@@ -280,6 +280,8 @@ public class Menu : CTmMlScriptIngame, IContext
 
     private void QuadGravityButton_MouseClick()
     {
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+
         if (GravityOpen)
         {
             CloseGravityMenu();
