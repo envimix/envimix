@@ -14,6 +14,10 @@ public class EnvimixSolo : Envimix
     public override void OnServerInit()
     {
         ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixSingleplayerClient.Script.txt";
+
+        UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
+        UIManager.UIAll.SmallScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
+        UIManager.UIAll.ScoreTableOnlyManialink = true;
     }
 
     public override void OnMapLoad()
