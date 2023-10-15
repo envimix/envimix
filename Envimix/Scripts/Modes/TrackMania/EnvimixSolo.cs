@@ -1,7 +1,16 @@
-﻿namespace Envimix.Scripts.Modes.TrackMania;
+﻿using System.Collections.Immutable;
+
+namespace Envimix.Scripts.Modes.TrackMania;
 
 public class EnvimixSolo : Envimix
 {
+    public struct SGhostMetadata
+    {
+        public string FileName;
+        public string Nickname;
+        public int Time;
+    }
+
     [Setting] public new bool EnableStadiumEnvimix = true;
     [Setting] public new bool EnableUnitedCars = true;
     [Setting] public new bool EnableTrafficCar = false; // TODO: Fix
@@ -10,6 +19,15 @@ public class EnvimixSolo : Envimix
     [Setting] public new bool AlwaysUseVehicleItems = true;
     [Setting] public new string EnvimixWebAPI = "http://localhost:5198";
     [Setting] public new string SkinsFile = "Skins_Turbo.json";
+
+    public Dictionary<Ident, string> LocalGhostsTaskFiles;
+    public IList<CTaskResult_GhostList> LocalGhostsTasks;
+    public IList<CGhost> LocalGhosts;
+    public Dictionary<CGhost, string> LocalGhostFiles;
+
+    [Netwrite] public IList<SGhostMetadata> LocalGhostMetadata { get; set; }
+    [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
+    [Netwrite] public bool CanListenToUIEvents { get; set; }
 
     public override void OnServerInit()
     {
@@ -24,6 +42,8 @@ public class EnvimixSolo : Envimix
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load
 
+        CanListenToUIEvents = true;
+
         PrespawnEnvimixPlayers();
     }
 
@@ -34,6 +54,7 @@ public class EnvimixSolo : Envimix
             case CUIConfigEvent.EType.OnLayerCustomEvent:
                 ProcessUpdateSkinEvent(e);
                 ProcessUpdateCarEvent(e);
+                ProcessReplayEvent(e);
                 // ProcessUpdateGravityEvent(e); unexpected behavior due to GravityCoef being applied once after spawning
                 break;
         }
@@ -50,6 +71,8 @@ public class EnvimixSolo : Envimix
         {
             TrySpawnEnvimixPlayer(player, frozen: false);
         }
+
+        CheckForLocalGhosts();
     }
 
     private void ProcessUpdateCarEvent(CUIConfigEvent e)
@@ -77,6 +100,69 @@ public class EnvimixSolo : Envimix
                     }
                 }
                 break;
+        }
+    }
+
+    private void ProcessReplayEvent(CUIConfigEvent e)
+    {
+        switch (e.CustomEventType)
+        {
+            case "ResetReplays":
+                LocalGhostMetadata.Clear();
+                break;
+            case "Replay":
+                var fileName = e.CustomEventData[0];
+                var task = DataFileMgr.Replay_Load(fileName);
+                LocalGhostsTaskFiles[task.Id] = fileName;
+                LocalGhostsTasks.Add(task);
+                break;
+        }
+    }
+
+    private void CheckForLocalGhosts()
+    {
+        ImmutableArray<CTaskResult_GhostList> completedGhostTasks = new();
+
+        foreach (var ghostTask in LocalGhostsTasks)
+        {
+            if (ghostTask.IsProcessing)
+            {
+                continue;
+            }
+
+            if (ghostTask.HasSucceeded && ghostTask.Ghosts.Count > 0)
+            {
+                foreach (var ghost in ghostTask.Ghosts)
+                {
+                    LocalGhosts.Add(ghost);
+                    LocalGhostFiles[ghost] = LocalGhostsTaskFiles[ghostTask.Id];
+
+                    SGhostMetadata metadata = new()
+                    {
+                        FileName = LocalGhostsTaskFiles[ghostTask.Id],
+                        Nickname = ghost.Nickname,
+                        Time = ghost.Result.Time
+                    };
+
+                    LocalGhostMetadata.Add(metadata);
+                }
+            }
+
+            completedGhostTasks.Add(ghostTask);
+
+            LocalGhostsTaskFiles.Remove(ghostTask.Id);
+
+            LocalGhostMetadataUpdatedAt = Now;
+        }
+
+        foreach (var ghostTask in completedGhostTasks)
+        {
+            LocalGhostsTasks.Remove(ghostTask);
+        }
+
+        if (completedGhostTasks.Length > 0)
+        {
+            completedGhostTasks.Clear();
         }
     }
 }

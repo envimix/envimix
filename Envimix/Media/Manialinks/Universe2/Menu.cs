@@ -55,6 +55,13 @@ public class Menu : CTmMlScriptIngame, IContext
         public ImmutableArray<SEnvimaniaRecord> Records;
     }
 
+    public struct SGhostMetadata
+    {
+        public string FileName;
+        public string Nickname;
+        public int Time;
+    }
+
     [ManialinkControl] public required CMlFrame FrameInnerVehicles;
 	[ManialinkControl] public required CMlFrame FrameSkinList;
     [ManialinkControl] public required CMlQuad QuadButtonSpectator;
@@ -131,6 +138,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelGhostSelection;
     [ManialinkControl] public required CMlFrame FrameTooltip;
     [ManialinkControl] public required CMlQuad QuadLoading;
+    [ManialinkControl] public required CMlLabel LabelLoadingResult;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -153,19 +161,17 @@ public class Menu : CTmMlScriptIngame, IContext
 	public bool PrevUseForcedClans;
     public bool GravityOpen;
     public int PrevGravityValue = 1;
-    public CTaskResult_ReplayList? LocalReplaysTask;
     public IList<CReplayInfo> LocalReplays;
-    public Dictionary<Ident, string> LocalGhostsTaskFiles;
-    public IList<CTaskResult_GhostList> LocalGhostsTasks;
-    public IList<CGhost> LocalGhosts;
-    public Dictionary<CGhost, string> LocalGhostFiles;
+    public CTaskResult_ReplayList? LocalReplaysTask;
     public IList<string> Zones;
     public int CurrentZoneIndex = -1;
     public int PreviousZoneIndex = -1;
+    public int PrevLocalGhostMetadataUpdatedAt = -1;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
     [Netwrite(NetFor.UI)] public int ClientGravity { get; set; }
+    [Netwrite(NetFor.UI)] public IList<string> LocalReplayFiles { get; set; }
     [Netread] public bool EnableDefaultCar { get; set; }
     [Netread] public string MapPlayerModelName { get; set; }
     [Netread] public int CutOffTimeLimit { get; set; }
@@ -173,6 +179,9 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public Dictionary<string, string> ItemCars { get; set; }
     [Netread] public Dictionary<string, Dictionary<string, SSkin>> Skins { get; set; }
     [Netread] public string EnvimixWebAPI { get; set; }
+    [Netread] public IList<SGhostMetadata> LocalGhostMetadata { get; }
+    [Netread] public int LocalGhostMetadataUpdatedAt { get; }
+    [Netread] public bool CanListenToUIEvents { get; }
 
     public Menu()
     {
@@ -624,8 +633,8 @@ public class Menu : CTmMlScriptIngame, IContext
             IList<string> folders = TextLib.Split("\\", file);
             var name = folders[folders.Count - 1];
 
-            var car = "Car";
-            name = TextLib.Replace(name, car, $"$ff0{car}$z");
+            var car = Netread<string>.For(GetPlayer());
+            name = TextLib.Replace(name, car.Get(), $"$ff0{car.Get()}$z");
 
             UpdateTooltip(name);
             return;
@@ -1072,19 +1081,28 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         QuadLoading.Hide();
 
+        if (LocalGhostMetadata.Count == 0)
+        {
+            LabelLoadingResult.SetText("No ghosts found");
+        }
+        else
+        {
+            LabelLoadingResult.SetText("");
+        }
+
         for (var i = 0; i < FrameGhosts.Controls.Count; i++)
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
 
-            if (i >= LocalGhosts.Count)
+            if (i >= LocalGhostMetadata.Count)
             {
                 frame.Hide();
                 continue;
             }
 
-            var ghostFile = LocalGhostFiles[LocalGhosts[i]];
+            var metadata = LocalGhostMetadata[i];
 
-            frame.DataAttributeSet("file", ghostFile);
+            frame.DataAttributeSet("file", metadata.FileName);
             frame.DataAttributeSet("url", "");
 
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
@@ -1094,24 +1112,22 @@ public class Menu : CTmMlScriptIngame, IContext
             var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
 
             labelRank.Hide();
-            labelNickname.SetText(LocalGhosts[i].Nickname);
+            labelNickname.SetText(metadata.Nickname);
 
-            if (LocalGhosts[i].Result.Time == -1)
+            if (metadata.Time == -1)
             {
                 labelTime.SetText("-:--:---");
             }
             else
             {
-                labelTime.SetText(TimeToTextWithMilli(LocalGhosts[i].Result.Time));
+                labelTime.SetText(TimeToTextWithMilli(metadata.Time));
             }
 
-            labelAutosave.Visible = TextLib.StartsWith("autosave", LocalGhostFiles[LocalGhosts[i]], false, false);
+            labelAutosave.Visible = TextLib.StartsWith("autosave", metadata.FileName, false, false);
 
-            quadGhost.StyleSelected = SelectedGhosts.ContainsKey(ghostFile);
+            quadGhost.StyleSelected = SelectedGhosts.ContainsKey(metadata.FileName);
 
             frame.Show();
-
-            DataFileMgr.TaskResult_Release(LocalGhosts[i].Id);
         }
     }
 
@@ -1176,10 +1192,12 @@ public class Menu : CTmMlScriptIngame, IContext
             if (EnvimaniaRecordsRequests.ContainsKey(filter))
             {
                 QuadLoading.Show();
+                LabelLoadingResult.SetText("");
             }
             else
             {
                 QuadLoading.Hide();
+                LabelLoadingResult.SetText("No records found");
             }
 
             return;
@@ -1377,12 +1395,13 @@ public class Menu : CTmMlScriptIngame, IContext
 
         PrevUseForcedClans = UseForcedClans;
 
+        Zones = TextLib.Split("|", LocalUser.ZonePath);
+
         if (IsSolo())
         {
+            Wait(() => CanListenToUIEvents);
             LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
         }
-
-        Zones = TextLib.Split("|", LocalUser.ZonePath);
     }
 
     public void Loop()
@@ -1852,7 +1871,7 @@ public class Menu : CTmMlScriptIngame, IContext
         if (LocalReplaysTask is not null && !LocalReplaysTask.IsProcessing)
         {
             LocalReplays.Clear();
-            LocalGhosts.Clear();
+            SendCustomEvent("ResetReplays", new[] { "True" });
 
             if (LocalReplaysTask.HasSucceeded)
             {
@@ -1868,52 +1887,13 @@ public class Menu : CTmMlScriptIngame, IContext
                     if (Replay.FileName == Ghost.File) Continue = True;
                     if (Continue) continue;*/
 
-                    var task = DataFileMgr.Replay_Load(replayInfo.FileName);
-                    LocalGhostsTaskFiles[task.Id] = replayInfo.FileName;
-                    LocalGhostsTasks.Add(task);
                     LocalReplays.Add(replayInfo);
+                    LocalReplayFiles.Add(replayInfo.FileName);
+                    SendCustomEvent("Replay", new[] { replayInfo.FileName });
                 }
             }
 
             LocalReplaysTask = null;
-        }
-
-        ImmutableArray<CTaskResult_GhostList> completedGhostTasks = new();
-
-        foreach (var ghostTask in LocalGhostsTasks)
-        {
-            if (ghostTask.IsProcessing)
-            {
-                continue;
-            }
-
-            if (ghostTask.HasSucceeded && ghostTask.Ghosts.Count > 0)
-            {
-                foreach (var ghost in ghostTask.Ghosts)
-                {
-                    LocalGhosts.Add(ghost);
-                    LocalGhostFiles[ghost] = LocalGhostsTaskFiles[ghostTask.Id];
-                }
-            }
-
-            completedGhostTasks.Add(ghostTask);
-
-            LocalGhostsTaskFiles.Remove(ghostTask.Id);
-
-            if (CurrentZoneIndex == -1)
-            {
-                UpdateLocalGhosts();
-            }
-        }
-
-        foreach (var ghostTask in completedGhostTasks)
-        {
-            LocalGhostsTasks.Remove(ghostTask);
-        }
-
-        if (completedGhostTasks.Length > 0)
-        {
-            completedGhostTasks.Clear();
         }
 
         if (FrameTooltip.Visible)
@@ -1973,6 +1953,16 @@ public class Menu : CTmMlScriptIngame, IContext
             Http.Destroy(request);
 
             UpdateRecords();
+        }
+
+        if (PrevLocalGhostMetadataUpdatedAt == -1 || LocalGhostMetadataUpdatedAt != PrevLocalGhostMetadataUpdatedAt)
+        {
+            if (CurrentZoneIndex == -1)
+            {
+                UpdateLocalGhosts();
+            }
+
+            PrevLocalGhostMetadataUpdatedAt = LocalGhostMetadataUpdatedAt;
         }
     }
 }

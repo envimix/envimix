@@ -108,7 +108,8 @@
 						<quad pos="-32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" id="QuadGhostSelectionPrev"/>
 						<quad pos="32.5 0" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1" rot="180" id="QuadGhostSelectionNext"/>
 						<quad pos="0 5" z-index="-1" size="79 67" halign="center" style="Bgs1" substyle="BgCardList" scriptevents="1" opacity=".5"/>
-						<quad pos="0 -30" z-index="0" size="15 15" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" id="QuadLoading" hidden="1"/>
+						<quad id="QuadLoading" pos="0 -30" z-index="0" size="15 15" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" hidden="1"/>
+						<label id="LabelLoadingResult" text="hello" pos="0 -29.75" z-index="0" size="65 50" halign="center" valign="center" textfont="RajdhaniMono" textsize="2"/>
 						<frame pos="35.5 -5">
 							<quad z-index="0" size="2 55.25" style="Bgs1" substyle="BgCardList" opacity=".5" scriptevents="1" id="QUAD_SCROLLBAR_BACKGROUND"/>
 							<quad z-index="1" size="1 20" style="Bgs1" substyle="BgWindow4" opacity="1" halign="center" pos="1 0" scriptevents="1" id="QUAD_SCROLLBAR" hidden="1"/>
