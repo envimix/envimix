@@ -220,6 +220,8 @@ public class Map : CTmMlScriptIngame, IContext
             return;
         }
 
+        Map.MapName = $"{Map.MapInfo.Name}.{car.Get()}";
+
         foreach (var control in FrameCarBg.Controls)
         {
             if (control is CMlQuad quad)
