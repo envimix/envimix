@@ -204,32 +204,32 @@
 				<quad z-index="0" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 			</frame>
 			<label pos="-110 70" z-index="0" size="70 10" text="Advanced options" textsize="8" textfont="Oswald" valign="center2" textemboss="1" translate="1" halign="center"/>
-			<frame pos="-110 62">
+			<frame pos="-110 62" hidden="1">
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Enable animations" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
-			<frame pos="-110 52">
+			<frame pos="-110 52" hidden="1">
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Animate scoreboard" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
-			<frame pos="-110 42">
+			<frame pos="-110 42" hidden="1">
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Blur scoreboard" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
-			<frame pos="-110 32">
+			<frame pos="-110 32" hidden="1">
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Swap panels" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
-			<frame pos="-110 22">
+			<frame pos="-110 22" hidden="1">
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Colorblind mode" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
-			<frame pos="-110 12">
+			<frame pos="-110 12" hidden="1">
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Use old UI" valign="center2" textfont="RajdhaniMono" translate="1"/>
