@@ -58,6 +58,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public struct SGhostMetadata
     {
         public string FileName;
+        public int Index;
         public string Nickname;
         public int Time;
     }
@@ -167,6 +168,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public int CurrentZoneIndex = -1;
     public int PreviousZoneIndex = -1;
     public int PrevLocalGhostMetadataUpdatedAt = -1;
+    public required Dictionary<string, bool> SelectedGhosts;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -565,6 +567,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 break;
             case "QuadGhost":
                 var file = control.Parent.DataAttributeGet("file");
+                var gindex = control.Parent.DataAttributeGet("gindex");
 
                 if (file is "")
                 {
@@ -578,10 +581,12 @@ public class Menu : CTmMlScriptIngame, IContext
                     if (SelectedGhosts.ContainsKey(file))
                     {
                         SelectedGhosts.Remove(file);
+                        SendCustomEvent("RemoveGhost", new[] { file, gindex });
                     }
                     else
                     {
                         SelectedGhosts[file] = true;
+                        SendCustomEvent("AddGhost", new[] { file, gindex });
                     }
 
                     (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(file);
@@ -1104,6 +1109,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
             frame.DataAttributeSet("file", metadata.FileName);
             frame.DataAttributeSet("url", "");
+            frame.DataAttributeSet("gindex", metadata.Index.ToString());
 
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
@@ -1133,7 +1139,6 @@ public class Menu : CTmMlScriptIngame, IContext
 
     public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> EnvimaniaRecordsRequests;
     public required Dictionary<SEnvimaniaRecordsFilter, Dictionary<string, SEnvimaniaRecordsResponse>> EnvimaniaFinishedRecordsRequests;
-    public required Dictionary<string, bool> SelectedGhosts;
 
     private string GetFullZone()
     {
@@ -1221,6 +1226,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
             frame.DataAttributeSet("file", "");
             frame.DataAttributeSet("url", ghostUrl);
+            frame.DataAttributeSet("gindex", "0");
             frame.Show();
 
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;

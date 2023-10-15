@@ -7,6 +7,7 @@ public class EnvimixSolo : Envimix
     public struct SGhostMetadata
     {
         public string FileName;
+        public int Index;
         public string Nickname;
         public int Time;
     }
@@ -22,8 +23,8 @@ public class EnvimixSolo : Envimix
 
     public Dictionary<Ident, string> LocalGhostsTaskFiles;
     public IList<CTaskResult_GhostList> LocalGhostsTasks;
-    public IList<CGhost> LocalGhosts;
-    public Dictionary<CGhost, string> LocalGhostFiles;
+    public Dictionary<string, IList<CGhost>> LocalGhosts;
+    public Dictionary<CGhost, Ident> SpawnedGhosts;
 
     [Netwrite] public IList<SGhostMetadata> LocalGhostMetadata { get; set; }
     [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
@@ -116,6 +117,33 @@ public class EnvimixSolo : Envimix
                 LocalGhostsTaskFiles[task.Id] = fileName;
                 LocalGhostsTasks.Add(task);
                 break;
+            case "AddGhost":
+                var replayFileNameAdd = e.CustomEventData[0];
+                var ghostIndexAdd = e.CustomEventData[1];
+                var ghostToAdd = LocalGhosts[replayFileNameAdd][TextLib.ToInteger(ghostIndexAdd)];
+                SpawnedGhosts[ghostToAdd] = RaceGhost_Add(ghostToAdd, DisplayAsPlayerBest: false);
+
+                Log(nameof(EnvimixSolo), $"Ghost '{replayFileNameAdd}' (#{ghostIndexAdd}) added.");
+
+                break;
+            case "RemoveGhost":
+                var replayFileNameRemove = e.CustomEventData[0];
+                var ghostIndexRemove = e.CustomEventData[1];
+                var ghostToRemove = LocalGhosts[replayFileNameRemove][TextLib.ToInteger(ghostIndexRemove)];
+
+                if (SpawnedGhosts.ContainsKey(ghostToRemove))
+                {
+                    RaceGhost_Remove(SpawnedGhosts[ghostToRemove]);
+                    SpawnedGhosts.Remove(ghostToRemove);
+
+                    Log(nameof(EnvimixSolo), $"Ghost '{replayFileNameRemove}' (#{ghostIndexRemove}) removed.");
+                }
+                else
+                {
+                    Log(nameof(EnvimixSolo), $"Ghost '{replayFileNameRemove}' (#{ghostIndexRemove}) is missing but shouldn't be.");
+                }
+
+                break;
         }
     }
 
@@ -132,20 +160,26 @@ public class EnvimixSolo : Envimix
 
             if (ghostTask.HasSucceeded && ghostTask.Ghosts.Count > 0)
             {
-                foreach (var ghost in ghostTask.Ghosts)
+                ImmutableArray<CGhost> ghosts = new();
+
+                for (int i = 0; i < ghostTask.Ghosts.Count; i++)
                 {
-                    LocalGhosts.Add(ghost);
-                    LocalGhostFiles[ghost] = LocalGhostsTaskFiles[ghostTask.Id];
+                    var ghost = ghostTask.Ghosts[i];
+
+                    ghosts.Add(ghost);
 
                     SGhostMetadata metadata = new()
                     {
                         FileName = LocalGhostsTaskFiles[ghostTask.Id],
+                        Index = i,
                         Nickname = ghost.Nickname,
                         Time = ghost.Result.Time
                     };
 
                     LocalGhostMetadata.Add(metadata);
                 }
+
+                LocalGhosts[LocalGhostsTaskFiles[ghostTask.Id]] = ghosts;
             }
 
             completedGhostTasks.Add(ghostTask);
