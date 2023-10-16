@@ -134,7 +134,7 @@ public class Envimix : UniverseModeBase
     public string SkinsFile = "";
 
     [Setting(As = "Envimix Web API")]
-    public string EnvimixWebAPI = "http://localhost:5198";
+    public string EnvimixWebAPI = "";
 
     [Setting(As = "Use skillpoints")]
     public bool UseSkillpoints = false;
