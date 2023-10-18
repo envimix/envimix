@@ -1187,6 +1187,8 @@ public class Menu : CTmMlScriptIngame, IContext
         var filter = GetFilter();
         var zone = GetFullZone();
 
+        LabelLoadingResult.SetText("");
+
         if (!EnvimaniaFinishedRecordsRequests.ContainsKey(filter) || !EnvimaniaFinishedRecordsRequests[filter].ContainsKey(zone))
         {
             foreach (var control in FrameGhosts.Controls)
@@ -1197,7 +1199,6 @@ public class Menu : CTmMlScriptIngame, IContext
             if (EnvimaniaRecordsRequests.ContainsKey(filter))
             {
                 QuadLoading.Show();
-                LabelLoadingResult.SetText("");
             }
             else
             {
