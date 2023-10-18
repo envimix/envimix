@@ -14,8 +14,8 @@ public class EnvimixSolo : Envimix
 
     [Setting] public new bool EnableStadiumEnvimix = true;
     [Setting] public new bool EnableUnitedCars = true;
-    [Setting] public new bool EnableTrafficCar = false; // TODO: Fix
-    [Setting] public new bool EnableTrafficCarInStadium = false; // TODO: Fix
+    [Setting] public new bool EnableTrafficCar = true;
+    [Setting] public new bool EnableTrafficCarInStadium = true;
     [Setting] public new bool UseUnitedModels = true;
     [Setting] public new bool AlwaysUseVehicleItems = true;
     [Setting] public new string EnvimixWebAPI = "https://envimix.bigbang1112.cz/api";
@@ -86,9 +86,9 @@ public class EnvimixSolo : Envimix
                     var carName = e.CustomEventData[0];
                     var player = GetPlayer(e.UI);
                     SetValidClientCar(player, carName);
-
+                    
                     var car = Netwrite<string>.For(player);
-
+                    
                     if (e.CustomEventData.Count > 1)
                     {
                         var respawn = true; // always respawn on Car event

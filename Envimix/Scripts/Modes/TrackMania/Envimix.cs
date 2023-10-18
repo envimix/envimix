@@ -1344,18 +1344,29 @@ public class Envimix : UniverseModeBase
         SpawnAllEnvimixPlayers(false);
     }
 
+    public bool IsValidCar(string carName)
+    {
+        if (!DisplayedCars.Contains(carName))
+        {
+            return false;
+        }
+
+        if (Map.CollectionName == "Stadium" && !EnableTrafficCarInStadium && carName == "TrafficCar")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public void SetValidClientCar(CTmPlayer player, string clientCar)
     {
         var car = Netwrite<string>.For(player);
 
         // Validation of available cars, invalid car currently ignores changing anything but passes the spawn attempt
-        if (DisplayedCars.Contains(clientCar))
+        if (IsValidCar(clientCar))
         {
-            // Disallow spawning TrafficCar in Stadium when it's disabled
-            if (Map.CollectionName != "Stadium" || (!EnableTrafficCarInStadium && clientCar != "TrafficCar"))
-            {
-                car.Set(clientCar);
-            }
+            car.Set(clientCar);
         }
     }
 
