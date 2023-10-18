@@ -25,7 +25,8 @@ public class MainMenu : CManiaAppTitle, IContext
             "totokill13",
             "tushy444trackmaniagamer",
             "naruto42",
-            "burpman176"
+            "burpman176",
+            "marosis99"
         };
 
         if (!allowedLogins.Contains(LocalUser.Login))
