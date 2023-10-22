@@ -11,11 +11,14 @@ public class EnvimixTeamAttack : Envimix
     [Setting(As = "Custom countdown")]
     public int CustomCountdown = -1;
 
+    [Netwrite] public string ModeHelp { get; set; }
+
     public override void OnServerInit()
     {
         CreateServersideLayers();
         IndependantLaps = true;
-        ModeStatusMessage = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible.";
+        ModeHelp = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible."; ;
+        ModeStatusMessage = ModeHelp;
 
         UseClans = true;
         Teams[0].Name = "Team Red";
