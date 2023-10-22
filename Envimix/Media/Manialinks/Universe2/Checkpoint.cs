@@ -10,6 +10,8 @@ public class Checkpoint : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelLapTime;
     [ManialinkControl] public required CMlFrame FrameDifferences;
 
+    [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
+
     public int CheckpointShowTime = -1;
 
     public Checkpoint()

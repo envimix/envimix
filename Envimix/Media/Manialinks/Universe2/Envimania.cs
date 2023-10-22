@@ -126,7 +126,7 @@ public class Envimania : CTmMlScriptIngame, IContext
         PreviousEnvimaniaStatusMessage = EnvimaniaStatusMessage;
 
         LabelYourRecordNickname = (FrameYourRecord.GetFirstChild("LabelNickname") as CMlLabel)!;
-        (FrameYourRecord.GetFirstChild("LabelRank") as CMlLabel)!.SetText("00");
+        (FrameYourRecord.GetFirstChild("LabelRank") as CMlLabel)!.SetText("--");
     }
 
     public void Loop()

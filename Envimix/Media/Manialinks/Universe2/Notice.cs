@@ -7,11 +7,13 @@ public class Notice : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameNotice;
     [ManialinkControl] public required CMlLabel LabelNotice;
 
+    [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
+
     [Netread(NetFor.UI)] public required string NoticeMessage { get; init; }
 
     bool IsVisible()
     {
-        return true;
+        return !ScoreTableIsVisible;
     }
 
     public void Main()

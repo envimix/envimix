@@ -2,81 +2,86 @@
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
 	<framemodel id="FramemodelScore">
 		<quad pos="1 0" z-index="0" size="1.5 5" bgcolor="F00" valign="center" opacity=".7"/>
-		<label pos="7 -0.3" z-index="0" size="7 5" text="01" valign="center2" textfont="RajdhaniMono" halign="center"/>
-		<quad pos="14 0" z-index="0" size="5.5 5.5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
-		<quad pos="14 -0.4" z-index="1" size="3.5 3.5" valign="center" halign="center" image="file://ZoneFlags/Path/World|Europe|Czech Republic"/>
-		<label pos="18 -0.4" z-index="0" size="27 5" text="RANDOM NAME" valign="center2" textfont="Oswald"/>
-		<label pos="60 -0.3" z-index="0" size="17 5" text="10 000" valign="center2" textfont="RajdhaniMono" halign="right"/>
+		<label pos="7 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center"/>
+		<quad pos="14 0" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
+		<quad pos="14 -0.4" z-index="1" size="3.25 3.25" valign="center" halign="center" image="file://ZoneFlags/Path/World|Europe|Czech Republic"/>
+		<label id="LabelPlayerName" pos="18 -0.4" z-index="0" size="27 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2.5"/>
+		<label pos="60 -0.3" z-index="0" size="17 5" text="0" valign="center2" textfont="RajdhaniMono" halign="right"/>
 		<frame pos="66 -0.1">
-			<label pos="0 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="6 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="12 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="18 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="24 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="30 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="36 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="42 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="48 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="54 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
-			<label pos="60 0" z-index="0" size="20 5" text="01" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="0 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="6 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="12 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="18 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="24 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="30 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="36 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="42 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="48 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
+			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
 		</frame>
-		<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="137"/>
+		<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="137 0"/>
 	</framemodel>
-	<frame pos="-100">
-		<quad pos="0 0" z-index="-1" size="145 80" style="Bgs1" substyle="BgCardList" valign="center"/>
-		<frame pos="0 34.5" z-index="0">
-			<label pos="7 0" z-index="0" size="7 5" text="R" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
-			<label pos="14 0" z-index="0" size="7 5" text="Z" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
-			<label pos="18 0" z-index="0" size="20 5" text="Player" valign="center" textfont="RajdhaniMono" textsize="2"/>
-			<label pos="60 0" z-index="0" size="20 5" text="Score" valign="center" textfont="RajdhaniMono" textsize="2" halign="right"/>
-			<frame pos="66 0">
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="6"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/ValleyCar.png" pos="12"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/LagoonCar.png" pos="18"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/TrafficCar.png" pos="24"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/DesertCar.png" pos="30"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="36"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="42"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/IslandCar.png" pos="48"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/BayCar.png" pos="54"/>
-				<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CoastCar.png" pos="60"/>
+	<frame z-index="1000">
+		<frame pos="-100 0">
+			<quad z-index="-1" size="145 80" style="Bgs1" substyle="BgCardList" valign="center"/>
+			<frame pos="0 34.5" z-index="0">
+				<label pos="7 0" z-index="0" size="7 5" text="R" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
+				<label pos="14 0" z-index="0" size="7 5" text="Z" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
+				<label pos="18 0" z-index="0" size="20 5" text="Player" valign="center" textfont="RajdhaniMono" textsize="2"/>
+				<label pos="60 0" z-index="0" size="20 5" text="Score" valign="center" textfont="RajdhaniMono" textsize="2" halign="right"/>
+				<frame pos="66 0">
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="6 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/ValleyCar.png" pos="12 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/LagoonCar.png" pos="18 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/TrafficCar.png" pos="24 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/DesertCar.png" pos="30 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="36 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="42 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/IslandCar.png" pos="48 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/BayCar.png" pos="54 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CoastCar.png" pos="60 0"/>
+				</frame>
+				<label pos="137 2.5" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
+				<label pos="137 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
 			</frame>
-			<label pos="137 2.5" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
-			<label pos="137 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
+			<frame pos="0 28" z-index="1" id="FrameGlobalScores">
+				<frameinstance modelid="FramemodelScore"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -6"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -12"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -18"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -24"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -30"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -36"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -42"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -48"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -54"/>
+				<frameinstance modelid="FramemodelScore" pos="0 -62" id="FrameYourScore"/>
+			</frame>
+			<frame pos="0 -34" z-index="1">
+				<frameinstance modelid="FramemodelScore" id="FrameYourScore"/>
+			</frame>
 		</frame>
-		<frame pos="0 28" z-index="1">
-			<frameinstance modelid="FramemodelScore"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -6"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -12"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -18"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -24"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -30"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -36"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -42"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -48"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -54"/>
-			<frameinstance modelid="FramemodelScore" pos="0 -62" id="FrameYourScore"/>
-		</frame>
-	</frame>
-	<frame pos="73 0">
-		<quad z-index="-1" size="54 80" style="Bgs1" substyle="BgCardList" valign="center" halign="center" pos="0 0"/>
-		<label pos="0 37" z-index="0" size="45 6" text="$i$n$oRANDOM NAME" halign="center" textsize="3" textfont="RajdhaniMono"/>
-		<frame pos="0 25" z-index="0">
-			<quad size="52 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
-			<label z-index="1" size="50 10" text="0.0" halign="center" valign="center2" textsize="5" textfont="RajdhaniMono" pos="0 -0.5" opacity=".9" textcolor="CB6" id="LABEL_LADDERPOINTS"/>
-			<quad pos="-22 -3.2" z-index="1" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="LadderPoints"/>
-		</frame>
-		<frame pos="0 16.5" z-index="0">
-			<quad z-index="1" pos="0 -1" size="52 8" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
-			<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="-22.75 0" id="QUAD_ECHELON_CURRENT" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
-			<label z-index="4" pos="-22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LABEL_ECHELON_CURRENT" opacity="1"/>
-			<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="22.75 0" id="QUAD_ECHELON_NEXT" image="file://Media/Manialinks/Common/Echelons/echelon4.dds"/>
-			<label z-index="4" pos="22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LABEL_ECHELON_NEXT" opacity="1"/>
-			<label z-index="3" size="40 5" text="Not ranked" halign="center" valign="center2" textsize="1" textfont="RajdhaniMono" pos="0 -0.2" id="LABEL_LADDERZONE" translate="1"/>
+		<frame pos="73 0">
+			<quad z-index="-1" size="54 80" style="Bgs1" substyle="BgCardList" valign="center" halign="center"/>
+			<label id="LabelYourName" pos="0 37" z-index="0" size="45 6" text="$aaa[unknown]" halign="center" textsize="3" textfont="RajdhaniMono"/>
+			<frame pos="0 25" z-index="0">
+				<quad size="52 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
+				<label z-index="1" size="50 10" text="0.0" halign="center" valign="center2" textsize="5" textfont="RajdhaniMono" pos="0 -0.5" opacity=".9" textcolor="CB6" id="LABEL_LADDERPOINTS"/>
+				<quad pos="-22 -3.2" z-index="1" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="LadderPoints"/>
+			</frame>
+			<frame pos="0 16.5" z-index="0">
+				<quad z-index="1" pos="0 -1" size="52 8" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
+				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="-22.75 0" id="QUAD_ECHELON_CURRENT" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
+				<label z-index="4" pos="-22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LABEL_ECHELON_CURRENT" opacity="1"/>
+				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="22.75 0" id="QUAD_ECHELON_NEXT" image="file://Media/Manialinks/Common/Echelons/echelon4.dds"/>
+				<label z-index="4" pos="22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LABEL_ECHELON_NEXT" opacity="1"/>
+				<label z-index="3" size="40 5" text="Not ranked" halign="center" valign="center2" textsize="1" textfont="RajdhaniMono" pos="0 -0.2" id="LABEL_LADDERZONE" translate="1"/>
 
-			<quad z-index="2" size="50 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1"/>
-			<quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QUAD_ECHELON_PERCENT" colorize="CB6"/>
+				<quad z-index="2" size="50 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1"/>
+				<quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QUAD_ECHELON_PERCENT" colorize="CB6"/>
+			</frame>
 		</frame>
 	</frame>
 </manialink>
