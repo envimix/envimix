@@ -1679,6 +1679,7 @@ public class Menu : CTmMlScriptIngame, IContext
         else
         {
             FrameSkinList.Parent.ScrollMax.Y = 0;
+            QuadSkinScrollbar.Visible = false;
         }
 
         if (FrameSkinList.Parent.ScrollOffset != PreviousSkinScrollOffset)
