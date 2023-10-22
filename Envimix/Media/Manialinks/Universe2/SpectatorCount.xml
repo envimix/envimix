@@ -1,10 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-	<frame pos="92.5 -88" id="FrameSpectatorCount" scale="0.85">
+	<frame pos="75 -88" id="FrameSpectatorCount" scale="0.85" z-index="2">
 		<frame pos="0 5">
 			<quad z-index="-1" size="22.5 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 			<label pos="-4.5 0.2" z-index="0" size="10 10" text="" halign="center" valign="center" textsize="3"/>
-			<label pos="4 0.5" z-index="0" size="10 10" text="0" halign="center" valign="center" textsize="4" textfont="RajdhaniMono"/>
+			<label id="LabelSpectatorCount" pos="4 0.5" z-index="0" size="10 10" text="0" halign="center" valign="center" textsize="4" textfont="RajdhaniMono" scriptevents="1" style="TextCardRaceRank"/>
+		</frame>
+		<frame pos="4 0" clip="1" clipposn="0 110.5" clipsizen="35 200">
+			<frame pos="0 10.5" id="FrameSpectatorList" hidden="1">
+				<quad id="QuadSpectatorList" z-index="0" size="30.5 44" halign="center" valign="bottom" style="Bgs1" substyle="BgCardList"/>
+				<label id="LabelSpectatorList" pos="0 2" z-index="1" size="26 40" text="$ff0LM$f00AO" valign="bottom" textsize="2" halign="center" textfont="Oswald"/>
+			</frame>
 		</frame>
 	</frame>
 </manialink>

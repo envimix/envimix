@@ -162,7 +162,7 @@ public class Envimix : UniverseModeBase
 
         UIManager.UIAll.OverlayHide321Go = true;
         UIManager.UIAll.OverlayHideChrono = true;
-        UIManager.UIAll.OverlayHideBackground = true;
+        UIManager.UIAll.OverlayHideBackground = false;
         UIManager.UIAll.OverlayHideCheckPointTime = true;
         UIManager.UIAll.OverlayHideChat = false;
         UIManager.UIAll.OverlayChatOffset = new Vec2(0, 0.15);
@@ -175,6 +175,7 @@ public class Envimix : UniverseModeBase
         UIManager.UIAll.OverlayHidePersonnalBestAndRank = true;
         UIManager.UIAll.OverlayHideCheckPointList = true;
         UIManager.UIAll.OverlayHideEndMapLadderRecap = true;
+        UIManager.UIAll.OverlayHideSpectatorInfos = true;
 
         //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
 
@@ -342,7 +343,8 @@ public class Envimix : UniverseModeBase
         CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
-        //CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);
+        CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);
+        CreateLayer("SpectatorInfo", CUILayer.EUILayerType.Normal);
         //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
         var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";

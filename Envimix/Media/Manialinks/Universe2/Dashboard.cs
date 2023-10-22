@@ -195,7 +195,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
 
     bool IsVisible()
     {
-        return !IsInGameMenuDisplayed && !IsSpectator;
+        return !IsInGameMenuDisplayed;
     }
 
     public void Main()

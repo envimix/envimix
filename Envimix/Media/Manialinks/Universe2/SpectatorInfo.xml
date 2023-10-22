@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+	<frame pos="85 -88" id="FrameSpectatorInfo" scale="0.85" z-index="2">
+		<frame pos="0 5">
+			<quad z-index="-1" size="67 10" valign="center" halign="left" style="Bgs1" substyle="BgCardList"/>
+			<quad id="QuadSpectatorAvatar" pos="5 0" z-index="0" size="7.5 7.5" bgcolor="FFFA" halign="center" valign="center"/>
+			<label id="LabelSpectatorName" pos="11 0.4" z-index="0" size="44.5 8" text="$888[unknown]" valign="center" textsize="3" textfont="RajdhaniMono"/>
+			<label pos="62 0.3" z-index="0" size="8 8" text="" valign="center" textsize="4" textfont="RajdhaniMono" halign="center"/>
+		</frame>
+	</frame>
+</manialink>

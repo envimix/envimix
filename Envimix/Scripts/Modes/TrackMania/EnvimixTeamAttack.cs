@@ -14,7 +14,6 @@ public class EnvimixTeamAttack : Envimix
     public override void OnServerInit()
     {
         CreateServersideLayers();
-
         IndependantLaps = true;
         ModeStatusMessage = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible.";
 
@@ -134,6 +133,8 @@ public class EnvimixTeamAttack : Envimix
             }
 
             CheckEnvimaniaSession();
+            UpdateSpectatorLists();
+
             Yield();
         }
 

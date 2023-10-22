@@ -160,7 +160,12 @@ public class UniverseModeBase : CTmMode, IContext
     public virtual void OnUIEvent(CUIConfigEvent e) { }
     public virtual void OnXmlRpcEvent(CXmlRpcEvent e) { }
     public virtual void OnHttpEvent(CHttpEvent e) { }
-    public virtual void OnLoop() { }
+
+    public virtual void OnLoop()
+    {
+        UpdateSpectatorLists();
+    }
+
     public virtual void OnWarmUpLoop() { }
     public virtual void OnWarmUpEnd() { }
     public virtual void OnWarmUpNext() { }
@@ -334,6 +339,65 @@ public class UniverseModeBase : CTmMode, IContext
         }
 
         return NbLaps;
+    }
+
+    private string GetSpectatorTargetFromLogin(string login)
+    {
+        var spectatorTarget = Netread<string>.For(UIManager.GetUI(GetPlayer(login)));
+        return spectatorTarget.Get();
+    }
+
+    public void UpdateSpectatorLists()
+    {
+        var spectatorLists = Netwrite<Dictionary<string, Dictionary<string, string>>>.For(Teams[0]);
+
+        foreach (var (spectatorTarget, unused) in spectatorLists.Get())
+        {
+            if (GetPlayer(spectatorTarget) is null)
+            {
+                spectatorLists.Get().Remove(spectatorTarget);
+            }
+        }
+
+        foreach (var player in AllPlayers)
+        {
+            if (UIManager.GetUI(player) is null)
+            {
+                continue;
+            }
+
+            var spectatorTarget = Netread<string>.For(UIManager.GetUI(player));
+
+            // Remove spectators that are no longer spectating this player
+            foreach (var (spectator, unused) in spectatorLists.Get())
+            {
+                if (spectator == player.User.Login)
+                {
+                    continue;
+                }
+
+                if (spectatorLists.Get()[spectator].ContainsKey(player.User.Login))
+                {
+                    spectatorLists.Get()[spectator].Remove(player.User.Login);
+                }
+
+                if (spectatorLists.Get()[spectator].Count == 0)
+                {
+                    spectatorLists.Get().Remove(spectator);
+                }
+            }
+
+            // Add spectators that are spectating this player
+            if (spectatorTarget.Get() != "" && player.User.Login != spectatorTarget.Get())
+            {
+                if (!spectatorLists.Get().ContainsKey(spectatorTarget.Get()))
+                {
+                    spectatorLists.Get()[spectatorTarget.Get()] = new();
+                }
+
+                spectatorLists.Get()[spectatorTarget.Get()][player.User.Login] = player.User.Name;
+            }
+        }
     }
 
     public void Main()
