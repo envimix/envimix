@@ -32,6 +32,24 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         return $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
     }
 
+    static int EchelonToInteger(CUser.EEchelon echelon)
+    {
+        switch (echelon)
+        {
+            case CUser.EEchelon.Bronze1: return 1;
+            case CUser.EEchelon.Bronze2: return 2;
+            case CUser.EEchelon.Bronze3: return 3;
+            case CUser.EEchelon.Silver1: return 4;
+            case CUser.EEchelon.Silver2: return 5;
+            case CUser.EEchelon.Silver3: return 6;
+            case CUser.EEchelon.Gold1: return 7;
+            case CUser.EEchelon.Gold2: return 8;
+            case CUser.EEchelon.Gold3: return 9;
+        }
+
+        return 0;
+    }
+
     private void UpdateScoreboard()
     {
         if (InputPlayer is not null)
@@ -51,6 +69,9 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
             var labelPlayerName = (frame.GetFirstChild("LabelPlayerName") as CMlLabel)!;
             labelPlayerName.SetText(Scores[i].User.Name);
+
+            var quadEchelon = (frame.GetFirstChild("QuadEchelon") as CMlQuad)!;
+            quadEchelon.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(Scores[i].User.Echelon)}.dds");
 
             //var score = Scores[i];
             frame.Visible = true;

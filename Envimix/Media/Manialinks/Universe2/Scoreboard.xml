@@ -3,7 +3,7 @@
 	<framemodel id="FramemodelScore">
 		<quad pos="1 0" z-index="0" size="1.5 5" bgcolor="F00" valign="center" opacity=".7"/>
 		<label pos="7 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center"/>
-		<quad pos="14 0" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
+		<quad id="QuadEchelon" pos="14 0" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
 		<quad pos="14 -0.4" z-index="1" size="3.25 3.25" valign="center" halign="center" image="file://ZoneFlags/Path/World|Europe|Czech Republic"/>
 		<label id="LabelPlayerName" pos="18 -0.4" z-index="0" size="27 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2.5"/>
 		<label pos="60 -0.3" z-index="0" size="17 5" text="0" valign="center2" textfont="RajdhaniMono" halign="right"/>
