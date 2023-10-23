@@ -13,6 +13,9 @@ public class EnvimixTeamAttack : Envimix
     [Setting(As = "Custom countdown")]
     public int CustomCountdown = -1;
 
+    [Setting(As = "Auto-respawn time")]
+    public int AutoRespawnTime = 6;
+
     public required Dictionary<string, int> AutoRespawn;
 
     [Netwrite] public string ModeHelp { get; set; }
@@ -253,7 +256,13 @@ public class EnvimixTeamAttack : Envimix
 
         foreach (var (playerToAutoRespawn, whenFinished) in AutoRespawn)
         {
-            if (Now > whenFinished + 6000)
+            if (AutoRespawnTime < 0)
+            {
+                autoRespawnToClean.Add(playerToAutoRespawn);
+                continue;
+            }
+
+            if (Now > whenFinished + AutoRespawnTime * 1000)
             {
                 if (GetPlayer(playerToAutoRespawn) is not null)
                 {
@@ -278,9 +287,15 @@ public class EnvimixTeamAttack : Envimix
                 PrepareJoinedPlayer(e.Player);
                 break;
             case CTmModeEvent.EType.WayPoint:
-                if (e.IsEndRace)
+                if (e.IsEndRace && AutoRespawnTime > -1)
                 {
                     AutoRespawn[e.Player.User.Login] = Now;
+                }
+                break;
+            case CTmModeEvent.EType.GiveUp:
+                if (AutoRespawn.ContainsKey(e.Player.User.Login))
+                {
+                    AutoRespawn.Remove(e.Player.User.Login);
                 }
                 break;
         }
