@@ -3,7 +3,12 @@
 public class Scoreboard : CTmMlScriptIngame, IContext
 {
     [ManialinkControl] public required CMlFrame FrameGlobalScores;
+    [ManialinkControl] public required CMlFrame FrameYourScore;
     [ManialinkControl] public required CMlLabel LabelYourName;
+
+    public required Dictionary<string, int> PlayerPoints { get; set; }
+    public required Dictionary<string, int> PlayerTeams { get; set; }
+    public required Dictionary<string, CUser.EEchelon> PlayerEchelons { get; set; }
 
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
@@ -50,11 +55,39 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         return 0;
     }
 
+    private void UpdatePlayer(CMlFrame frame, CTmScore score)
+    {
+        var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
+        quadTeam.BgColor = Teams[score.TeamNum - 1].ColorPrimary;
+
+        var quadEchelon = (frame.GetFirstChild("QuadEchelon") as CMlQuad)!;
+        quadEchelon.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(score.User.Echelon)}.dds");
+
+        var quadZone = (frame.GetFirstChild("QuadZone") as CMlQuad)!;
+        quadZone.ChangeImageUrl($"file://ZoneFlags/Path/{score.User.ZonePath}");
+
+        if (score.User.Echelon == CUser.EEchelon.None)
+        {
+            quadZone.RelativePosition_V3.Y = 0;
+        }
+        else
+        {
+            quadZone.RelativePosition_V3.Y = -0.4;
+        }
+
+        var labelPlayerName = (frame.GetFirstChild("LabelPlayerName") as CMlLabel)!;
+        labelPlayerName.SetText(score.User.Name);
+
+        var labelScore = (frame.GetFirstChild("LabelScore") as CMlLabel)!;
+        labelScore.SetText(score.Points.ToString());
+    }
+
     private void UpdateScoreboard()
     {
         if (InputPlayer is not null)
         {
             LabelYourName.SetText(InputPlayer.User.Name);
+            UpdatePlayer(FrameYourScore, InputPlayer.Score);
         }
 
         for (int i = 0; i < FrameGlobalScores.Controls.Count; i++)
@@ -67,13 +100,8 @@ public class Scoreboard : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            var labelPlayerName = (frame.GetFirstChild("LabelPlayerName") as CMlLabel)!;
-            labelPlayerName.SetText(Scores[i].User.Name);
+            UpdatePlayer(frame, Scores[i]);
 
-            var quadEchelon = (frame.GetFirstChild("QuadEchelon") as CMlQuad)!;
-            quadEchelon.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(Scores[i].User.Echelon)}.dds");
-
-            //var score = Scores[i];
             frame.Visible = true;
         }
     }
@@ -116,8 +144,54 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         UpdateScoreboard();
     }
 
+    private bool DetectChange()
+    {
+        foreach (var score in Scores)
+        {
+            if (!PlayerPoints.ContainsKey(score.User.Login))
+            {
+                PlayerPoints[score.User.Login] = score.Points;
+                return true;
+            }
+            else if (PlayerPoints[score.User.Login] != score.Points)
+            {
+                PlayerPoints[score.User.Login] = score.Points;
+                return true;
+            }
+
+            if (!PlayerTeams.ContainsKey(score.User.Login))
+            {
+                PlayerTeams[score.User.Login] = score.TeamNum;
+                return true;
+            }
+            else if (PlayerTeams[score.User.Login] != score.TeamNum)
+            {
+                PlayerTeams[score.User.Login] = score.TeamNum;
+                return true;
+            }
+
+            if (!PlayerEchelons.ContainsKey(score.User.Login))
+            {
+                PlayerEchelons[score.User.Login] = score.User.Echelon;
+                return true;
+            }
+            else if (PlayerEchelons[score.User.Login] != score.User.Echelon)
+            {
+                PlayerEchelons[score.User.Login] = score.User.Echelon;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void Loop()
     {
         ScoreTableIsVisible = PageIsVisible;
+
+        if (DetectChange())
+        {
+            UpdateScoreboard();
+        }
     }
 }

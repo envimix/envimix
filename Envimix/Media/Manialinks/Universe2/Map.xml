@@ -4,7 +4,7 @@
 		<frame id="FrameMapName" pos="-40 -7.5">
 			<frame id="FrameMapNameBg" pos="40 0" data-size="80">
 				<quad z-index="0" size="80 15" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
-				<quad id="QuadMapName" z-index="2" size="79.5 14.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" pos="-0.25 0"/>
+				<quad id="QuadMapName" z-index="2" size="79.5 14.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
 			</frame>
 			<frame id="FrameLabelMapName" pos="37.5 7" clip="1" clipposn="-38 -7.5" clipsizen="74.5 13" z-index="3">
 				<label id="LabelMapName" z-index="0" size="90 12" textsize="12" textfont="Oswald" halign="right" pos="0 -1.25"/>
