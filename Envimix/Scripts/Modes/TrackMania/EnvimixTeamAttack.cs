@@ -1,4 +1,6 @@
-﻿namespace Envimix.Scripts.Modes.TrackMania;
+﻿using System.Collections.Immutable;
+
+namespace Envimix.Scripts.Modes.TrackMania;
 
 public class EnvimixTeamAttack : Envimix
 {
@@ -10,6 +12,8 @@ public class EnvimixTeamAttack : Envimix
 
     [Setting(As = "Custom countdown")]
     public int CustomCountdown = -1;
+
+    public required Dictionary<string, int> AutoRespawn;
 
     [Netwrite] public string ModeHelp { get; set; }
 
@@ -243,12 +247,41 @@ public class EnvimixTeamAttack : Envimix
         }
     }
 
+    public void CheckForAutoRespawn()
+    {
+        ImmutableArray<string> autoRespawnToClean = new();
+
+        foreach (var (playerToAutoRespawn, whenFinished) in AutoRespawn)
+        {
+            if (Now > whenFinished + 6000)
+            {
+                if (GetPlayer(playerToAutoRespawn) is not null)
+                {
+                    TrySpawnEnvimixTeamAttackPlayer(GetPlayer(playerToAutoRespawn), frozen: false);
+                }
+
+                autoRespawnToClean.Add(playerToAutoRespawn);
+            }
+        }
+
+        foreach (var playerToAutoRespawn in autoRespawnToClean)
+        {
+            AutoRespawn.Remove(playerToAutoRespawn);
+        }
+    }
+
     public override void OnEvent(CTmModeEvent e)
     {
         switch (e.Type)
         {
             case CTmModeEvent.EType.OnPlayerAdded:
                 PrepareJoinedPlayer(e.Player);
+                break;
+            case CTmModeEvent.EType.WayPoint:
+                if (e.IsEndRace)
+                {
+                    AutoRespawn[e.Player.User.Login] = Now;
+                }
                 break;
         }
     }
@@ -272,10 +305,14 @@ public class EnvimixTeamAttack : Envimix
         {
             MatchEndRequested = true;
         }
+
+        CheckForAutoRespawn();
     }
 
     public override void OnGameEnd()
     {
+        AutoRespawn.Clear();
+
         Ladder_ComputeRank(CTmMode.ETmScoreSortOrder.TotalPoints);
 
         foreach (var score in Scores)
