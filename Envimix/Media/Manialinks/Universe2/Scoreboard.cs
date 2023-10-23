@@ -87,7 +87,11 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         if (InputPlayer is not null)
         {
             LabelYourName.SetText(InputPlayer.User.Name);
-            UpdatePlayer(FrameYourScore, InputPlayer.Score);
+
+            if (InputPlayer.Score is not null)
+            {
+                UpdatePlayer(FrameYourScore, InputPlayer.Score);
+            }
         }
 
         for (int i = 0; i < FrameGlobalScores.Controls.Count; i++)
