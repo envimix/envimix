@@ -43,6 +43,8 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
     public void Main()
     {
+        ClientUI.OverlayHide321Go = true;
+
         Log("Creating manialinks...");
         
         CreateLayer("321Go", CUILayer.EUILayerType.Normal);
