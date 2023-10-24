@@ -22,6 +22,8 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnServerInit()
     {
+        ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
+
         CreateServersideLayers();
         IndependantLaps = true;
         ModeHelp = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible."; ;

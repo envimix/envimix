@@ -69,9 +69,11 @@ public class _321Go : CTmMlScriptIngame, IContext
             {
                 case < 0:
                     Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 1, 1);
+                    SendCustomEvent("Countdown", new[] { "" });
                     break;
                 case 0:
                     Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 0, 1);
+                    SendCustomEvent("Countdown", new[] { "Start" });
                     break;
             }
         }
