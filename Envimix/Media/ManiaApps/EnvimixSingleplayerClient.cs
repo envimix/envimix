@@ -21,6 +21,21 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                     }
 
                     SendCustomEvent(e.CustomEventType, data.ToArray());
+
+                    if (Layers.ContainsKey("321Go") && e.CustomEventLayer == Layers["321Go"])
+                    {
+                        if (e.CustomEventType == "Countdown" && e.CustomEventData.Count == 1)
+                        {
+                            if (e.CustomEventData[0] == "Start")
+                            {
+                                Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 0, 1);
+                            }
+                            else
+                            {
+                                Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 1, 1);
+                            }
+                        }
+                    }
                     break;
             }
         };
