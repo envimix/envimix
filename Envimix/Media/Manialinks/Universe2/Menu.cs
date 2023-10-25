@@ -1411,6 +1411,15 @@ public class Menu : CTmMlScriptIngame, IContext
             Wait(() => CanListenToUIEvents);
             LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
         }
+
+        for (var i = 0; i < FrameInnerVehicles.Controls.Count; i++)
+        {
+            var frame = (FrameInnerVehicles.Controls[i] as CMlFrame)!;
+            var quad = (frame.GetFirstChild("QuadFlash") as CMlQuad)!;
+
+            AnimMgr.Add(quad, "<quad opacity=\"0.1\"/>", Now + 1000 + 300 * i, 300, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.AddChain(quad, "<quad opacity=\"0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
     }
 
     public void Loop()
