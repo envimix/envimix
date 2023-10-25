@@ -5,10 +5,13 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameGlobalScores;
     [ManialinkControl] public required CMlFrame FrameYourScore;
     [ManialinkControl] public required CMlLabel LabelYourName;
+    [ManialinkControl] public required CMlLabel LabelLadderPoints;
 
-    public required Dictionary<string, int> PlayerPoints { get; set; }
-    public required Dictionary<string, int> PlayerTeams { get; set; }
-    public required Dictionary<string, CUser.EEchelon> PlayerEchelons { get; set; }
+    public float CurrentLadderPoints;
+    public required Dictionary<string, int> PlayerPoints;
+    public required Dictionary<string, int> PlayerTeams;
+    public required Dictionary<string, CUser.EEchelon> PlayerEchelons;
+    public required Dictionary<string, string> PlayerCars;
 
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
@@ -80,6 +83,18 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
         var labelScore = (frame.GetFirstChild("LabelScore") as CMlLabel)!;
         labelScore.SetText(score.Points.ToString());
+
+        var quadCurrentCar = (frame.GetFirstChild("QuadCurrentCar") as CMlQuad)!;
+        
+        if (PlayerCars.ContainsKey(score.User.Login))
+        {
+            var currentCarUrl = $"file://Media/Images/Cars/{PlayerCars[score.User.Login]}.png";
+
+            if (quadCurrentCar.ImageUrl != currentCarUrl)
+            {
+                quadCurrentCar.ChangeImageUrl(currentCarUrl);
+            }
+        }
     }
 
     private void UpdateScoreboard()
@@ -87,6 +102,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         if (InputPlayer is not null)
         {
             LabelYourName.SetText(InputPlayer.User.Name);
+            LabelLadderPoints.SetText(TextLib.FormatReal(InputPlayer.User.LadderPoints, 1, _HideZeroes: false, _HideDot: false));
 
             if (InputPlayer.Score is not null)
             {
@@ -143,6 +159,8 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
     public void Main()
     {
+        CurrentLadderPoints = -2;
+
         Wait(() => GetPlayer() is not null);
 
         UpdateScoreboard();
@@ -150,38 +168,40 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
     private bool DetectChange()
     {
+        if (InputPlayer is not null && InputPlayer.User.LadderPoints != CurrentLadderPoints)
+        {
+            CurrentLadderPoints = InputPlayer.User.LadderPoints;
+            return true;
+        }
+
         foreach (var score in Scores)
         {
-            if (!PlayerPoints.ContainsKey(score.User.Login))
-            {
-                PlayerPoints[score.User.Login] = score.Points;
-                return true;
-            }
-            else if (PlayerPoints[score.User.Login] != score.Points)
+            if (!PlayerPoints.ContainsKey(score.User.Login) || PlayerPoints[score.User.Login] != score.Points)
             {
                 PlayerPoints[score.User.Login] = score.Points;
                 return true;
             }
 
-            if (!PlayerTeams.ContainsKey(score.User.Login))
-            {
-                PlayerTeams[score.User.Login] = score.TeamNum;
-                return true;
-            }
-            else if (PlayerTeams[score.User.Login] != score.TeamNum)
+            if (!PlayerTeams.ContainsKey(score.User.Login) || PlayerTeams[score.User.Login] != score.TeamNum)
             {
                 PlayerTeams[score.User.Login] = score.TeamNum;
                 return true;
             }
 
-            if (!PlayerEchelons.ContainsKey(score.User.Login))
+            if (!PlayerEchelons.ContainsKey(score.User.Login) || PlayerEchelons[score.User.Login] != score.User.Echelon)
             {
                 PlayerEchelons[score.User.Login] = score.User.Echelon;
                 return true;
             }
-            else if (PlayerEchelons[score.User.Login] != score.User.Echelon)
+        }
+
+        foreach (var player in Players)
+        {
+            var car = Netread<string>.For(player);
+
+            if (!PlayerCars.ContainsKey(player.User.Login) || PlayerCars[player.User.Login] != car.Get())
             {
-                PlayerEchelons[score.User.Login] = score.User.Echelon;
+                PlayerCars[player.User.Login] = car.Get();
                 return true;
             }
         }

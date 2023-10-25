@@ -20,7 +20,7 @@
 			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
 			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5"/>
 		</frame>
-		<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="137 0"/>
+		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="137 0"/>
 	</framemodel>
 	<frame z-index="1000">
 		<frame pos="-100 0">
@@ -67,7 +67,7 @@
 			<label id="LabelYourName" pos="0 37" z-index="0" size="45 6" text="$aaa[unknown]" halign="center" textsize="3" textfont="RajdhaniMono"/>
 			<frame pos="0 25" z-index="0">
 				<quad size="52 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
-				<label z-index="1" size="50 10" text="0.0" halign="center" valign="center2" textsize="5" textfont="RajdhaniMono" pos="0 -0.5" opacity=".9" textcolor="CB6" id="LABEL_LADDERPOINTS"/>
+				<label z-index="1" size="50 10" text="0.0" halign="center" valign="center2" textsize="5" textfont="RajdhaniMono" pos="0 -0.5" opacity=".9" textcolor="CB6" id="LabelLadderPoints"/>
 				<quad pos="-22 -3.2" z-index="1" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="LadderPoints"/>
 			</frame>
 			<frame pos="0 16.5" z-index="0">
