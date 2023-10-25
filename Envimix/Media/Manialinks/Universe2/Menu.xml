@@ -291,8 +291,7 @@
 		</frame>
 		<frame id="FrameQuicktip" hidden="1">
 			<quad z-index="0" size="80 8" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-			<quad z-index="1" size="80 8" valign="center" halign="center" style="Bgs1" substyle="BgGradV"/>
-			<label pos="0 0.3" z-index="2" size="75 4" halign="center" valign="center" text="YOU CAN USE SCROLLWHEEL TO SELECT A CAR" textfont="RajdhaniMono" textsize="1.5"/>
+			<label pos="0 0.3" z-index="2" size="75 4" halign="center" valign="center" text="You can use scrollwheel to select a car" textfont="RajdhaniMono" textsize="1.5"/>
 		</frame>
 		<frame id="FrameVehicleList">
 			<frame clip="1" clipposn="62 0" clipsizen="50 160">

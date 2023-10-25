@@ -6,6 +6,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameYourScore;
     [ManialinkControl] public required CMlLabel LabelYourName;
     [ManialinkControl] public required CMlLabel LabelLadderPoints;
+    [ManialinkControl] public required CMlLabel LabelLadderZone;
 
     public float CurrentLadderPoints;
     public required Dictionary<string, int> PlayerPoints;
@@ -99,16 +100,26 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
     private void UpdateScoreboard()
     {
+        LabelYourName.SetText(LocalUser.Name);
+        LabelLadderPoints.SetText(TextLib.FormatReal(LocalUser.LadderPoints, 1, _HideZeroes: false, _HideDot: false));
+        
+        if (LocalUser.LadderRank == -1)
+        {
+            LabelLadderZone.Value = "Not ranked";
+        }
+        else
+        {
+            LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{LocalUser.LadderRank}$aaa / {LocalUser.LadderTotal}";
+        }
+
         if (InputPlayer is not null)
         {
-            LabelYourName.SetText(InputPlayer.User.Name);
-            LabelLadderPoints.SetText(TextLib.FormatReal(InputPlayer.User.LadderPoints, 1, _HideZeroes: false, _HideDot: false));
-
             if (InputPlayer.Score is not null)
             {
                 UpdatePlayer(FrameYourScore, InputPlayer.Score);
             }
         }
+
 
         for (int i = 0; i < FrameGlobalScores.Controls.Count; i++)
         {
