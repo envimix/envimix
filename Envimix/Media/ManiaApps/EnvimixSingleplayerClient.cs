@@ -54,6 +54,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
         CreateLayer("Score", CUILayer.EUILayerType.Normal);
+        CreateLayer("Endscreen", CUILayer.EUILayerType.Normal);
         //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
         var displayedCars = Netread<IList<string>>.For(Playground.Teams[0]);
