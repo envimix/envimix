@@ -140,6 +140,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameTooltip;
     [ManialinkControl] public required CMlQuad QuadLoading;
     [ManialinkControl] public required CMlLabel LabelLoadingResult;
+    [ManialinkControl] public required CMlQuad QuadGhostRefresh;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -259,6 +260,7 @@ public class Menu : CTmMlScriptIngame, IContext
         };
 
         LabelGhostSelection.MouseClick += RefreshRecords;
+        QuadGhostRefresh.MouseClick += RefreshRecords;
     }
 
     CTmMlPlayer GetPlayer()
