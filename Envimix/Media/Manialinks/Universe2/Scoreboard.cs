@@ -1,7 +1,28 @@
-﻿namespace Envimix.Media.Manialinks.Universe2;
+﻿using System.Collections.Immutable;
+
+namespace Envimix.Media.Manialinks.Universe2;
 
 public class Scoreboard : CTmMlScriptIngame, IContext
 {
+    public struct SCheckpoint
+    {
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+    }
+
+    public struct SRecord
+    {
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+        public ImmutableArray<SCheckpoint> Checkpoints;
+    }
+
     [ManialinkControl] public required CMlFrame FrameGlobalScores;
     [ManialinkControl] public required CMlFrame FrameYourScore;
     [ManialinkControl] public required CMlLabel LabelYourName;
@@ -13,6 +34,8 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     public required Dictionary<string, int> PlayerTeams;
     public required Dictionary<string, CUser.EEchelon> PlayerEchelons;
     public required Dictionary<string, string> PlayerCars;
+    public required Dictionary<string, int> LastUpdated;
+    public required Dictionary<string, Dictionary<string, int>> Ranks;
 
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
@@ -85,6 +108,23 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         var labelScore = (frame.GetFirstChild("LabelScore") as CMlLabel)!;
         labelScore.SetText(score.Points.ToString());
 
+        var frameCarRanks = (frame.GetFirstChild("FrameCarRanks") as CMlFrame)!;
+
+        foreach (var control in frameCarRanks.Controls)
+        {
+            var label = (control as CMlLabel)!;
+            var car = label.DataAttributeGet("car");
+
+            if (Ranks.ContainsKey(car) && Ranks[car].ContainsKey(score.User.Login))
+            {
+                label.SetText(TextLib.FormatInteger(Ranks[car][score.User.Login], 2));
+            }
+            else
+            {
+                label.SetText("--");
+            }
+        }
+
         var quadCurrentCar = (frame.GetFirstChild("QuadCurrentCar") as CMlQuad)!;
         
         if (PlayerCars.ContainsKey(score.User.Login))
@@ -112,14 +152,54 @@ public class Scoreboard : CTmMlScriptIngame, IContext
             LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{LocalUser.LadderRank}$aaa / {LocalUser.LadderTotal}";
         }
 
+        Ranks = new();
+
         if (InputPlayer is not null)
         {
             if (InputPlayer.Score is not null)
             {
                 UpdatePlayer(FrameYourScore, InputPlayer.Score);
             }
-        }
 
+            var ranker = new Dictionary<string, Dictionary<string, int>>();
+
+            foreach (var score in Scores)
+            {
+                var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(score);
+
+                foreach (var (car, time) in envimixBestRace.Get())
+                {
+                    if (!ranker.ContainsKey(car))
+                    {
+                        ranker[car] = new();
+                    }
+
+                    ranker[car][score.User.Login] = envimixBestRace.Get()[car].Time;
+                }
+            }
+
+            foreach (var (car, times) in ranker)
+            {
+                Ranks[car] = new();
+
+                var offset = 0;
+                var prevTime = 0;
+                var index = 1;
+
+                foreach (var (login, time) in times.Sort())
+                {
+                    if (time == prevTime)
+                    {
+                        offset += 1;
+                    }
+
+                    Ranks[car][login] = index - offset;
+
+                    prevTime = time;
+                    index += 1;
+                }
+            }
+        }
 
         for (int i = 0; i < FrameGlobalScores.Controls.Count; i++)
         {
@@ -202,6 +282,14 @@ public class Scoreboard : CTmMlScriptIngame, IContext
             if (!PlayerEchelons.ContainsKey(score.User.Login) || PlayerEchelons[score.User.Login] != score.User.Echelon)
             {
                 PlayerEchelons[score.User.Login] = score.User.Echelon;
+                return true;
+            }
+
+            var envimixRecordUpdated = Netread<int>.For(score);
+
+            if (!LastUpdated.ContainsKey(score.User.Login) || LastUpdated[score.User.Login] != envimixRecordUpdated.Get())
+            {
+                LastUpdated[score.User.Login] = envimixRecordUpdated.Get();
                 return true;
             }
         }
