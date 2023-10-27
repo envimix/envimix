@@ -21,4 +21,5 @@
 	<label id="LabelEditor" pos="120 30" z-index="0" size="20 5" text="Editor" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
 	<label id="LabelProfile" pos="120 20" z-index="0" size="20 5" text="Profile" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
 	<quad pos="60 -45" z-index="0" size="80 35" style="TitleLogos" substyle="Title"/>
+	<label pos="-150 -77.5" z-index="0" size="300 5" id="LabelBuildVersion" textsize="2"/>
 </manialink>

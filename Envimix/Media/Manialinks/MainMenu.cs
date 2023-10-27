@@ -13,6 +13,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelInternet;
     [ManialinkControl] public required CMlLabel LabelEditor;
     [ManialinkControl] public required CMlLabel LabelProfile;
+    [ManialinkControl] public required CMlLabel LabelBuildVersion;
 
     public MainMenu()
     {
@@ -75,7 +76,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
     public void Main()
     {
-
+        LabelBuildVersion.SetText(LoadedTitle.TitleVersion);
     }
 
     public void Loop()
