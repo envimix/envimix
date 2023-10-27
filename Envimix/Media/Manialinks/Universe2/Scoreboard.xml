@@ -17,7 +17,7 @@
 			<label pos="36 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="RallyCar"/>
 			<label pos="42 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="SnowCar"/>
 			<label pos="48 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="IslandCar"/>
-			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="ByCar"/>
+			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
 			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
 		</frame>
 		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="137 0"/>
