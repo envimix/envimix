@@ -14,8 +14,8 @@
 			<label pos="18 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="LagoonCar"/>
 			<label pos="24 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="TrafficCar"/>
 			<label pos="30 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="DesertCar"/>
-			<label pos="36 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="RallyCar"/>
-			<label pos="42 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="SnowCar"/>
+			<label pos="36 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="SnowCar"/>
+			<label pos="42 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="RallyCar"/>
 			<label pos="48 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="IslandCar"/>
 			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
 			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
@@ -37,8 +37,8 @@
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/LagoonCar.png" pos="18 0"/>
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/TrafficCar.png" pos="24 0"/>
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/DesertCar.png" pos="30 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="36 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="42 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="36 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="42 0"/>
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/IslandCar.png" pos="48 0"/>
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/BayCar.png" pos="54 0"/>
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CoastCar.png" pos="60 0"/>
