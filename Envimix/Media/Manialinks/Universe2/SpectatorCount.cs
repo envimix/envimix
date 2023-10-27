@@ -90,15 +90,15 @@ public class SpectatorCount : CTmMlScriptIngame, IContext
                     if (first)
                     {
                         first = false;
-                        LabelSpectatorList.Value = nickname;
+                        LabelSpectatorList.Value = $"$<{nickname}$>";
                     }
                     else
                     {
-                        LabelSpectatorList.Value = $"{LabelSpectatorList.Value}\n{nickname}";
+                        LabelSpectatorList.Value = $"{LabelSpectatorList.Value}\n$<{nickname}$>";
                     }
                 }
 
-                QuadSpectatorList.Size.Y = LabelSpectatorCount.ComputeHeight(LabelSpectatorCount.Value) + 3;
+                QuadSpectatorList.Size.Y = CurrentSpectatorCount * 3f + 5;
             }
         }
         else
