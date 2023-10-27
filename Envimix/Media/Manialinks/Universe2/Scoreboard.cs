@@ -28,6 +28,11 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelYourName;
     [ManialinkControl] public required CMlLabel LabelLadderPoints;
     [ManialinkControl] public required CMlLabel LabelLadderZone;
+    [ManialinkControl] public required CMlQuad QuadEchelonPercent;
+    [ManialinkControl] public required CMlQuad QuadEchelonCurrent;
+    [ManialinkControl] public required CMlQuad QuadEchelonNext;
+    [ManialinkControl] public required CMlLabel LabelEchelonCurrent;
+    [ManialinkControl] public required CMlLabel LabelEchelonNext;
 
     public float CurrentLadderPoints;
     public required Dictionary<string, int> PlayerPoints;
@@ -153,6 +158,20 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         else
         {
             LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{LocalUser.LadderRank}$aaa / {LocalUser.LadderTotal}";
+        }
+
+        QuadEchelonPercent.Size.X = LocalUser.NextEchelonPercent / 100f * 72;
+        QuadEchelonCurrent.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(LocalUser.Echelon)}.dds");
+        LabelEchelonCurrent.Value = EchelonToInteger(LocalUser.Echelon).ToString();
+        if (EchelonToInteger(LocalUser.Echelon) + 1 < 10)
+        {
+            QuadEchelonNext.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(LocalUser.Echelon) + 1}.dds");
+            LabelEchelonNext.Value = (EchelonToInteger(LocalUser.Echelon) + 1).ToString();
+        }
+        else
+        {
+            QuadEchelonNext.ChangeImageUrl("");
+            LabelEchelonNext.Value = "";
         }
 
         Ranks = new();

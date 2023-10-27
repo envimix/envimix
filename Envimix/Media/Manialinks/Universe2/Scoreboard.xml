@@ -72,14 +72,14 @@
 			</frame>
 			<frame pos="0 16.5" z-index="0">
 				<quad z-index="1" pos="0 -1" size="52 8" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
-				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="-22.75 0" id="QUAD_ECHELON_CURRENT" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
-				<label z-index="4" pos="-22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LABEL_ECHELON_CURRENT" opacity="1"/>
-				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="22.75 0" id="QUAD_ECHELON_NEXT" image="file://Media/Manialinks/Common/Echelons/echelon4.dds"/>
-				<label z-index="4" pos="22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LABEL_ECHELON_NEXT" opacity="1"/>
+				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="-22.75 0" id="QuadEchelonCurrent" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
+				<label z-index="4" pos="-22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LabelEchelonCurrent" opacity="1"/>
+				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="22.75 0" id="QuadEchelonNext" image="file://Media/Manialinks/Common/Echelons/echelon4.dds"/>
+				<label z-index="4" pos="22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LabelEchelonNext" opacity="1"/>
 				<label z-index="3" size="40 5" text="Not ranked" halign="center" valign="center2" textsize="1" textfont="RajdhaniMono" pos="0 -0.2" id="LabelLadderZone" translate="1"/>
 
 				<quad z-index="2" size="50 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1"/>
-				<quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QUAD_ECHELON_PERCENT" colorize="CB6"/>
+				<quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QuadEchelonPercent" colorize="CB6"/>
 			</frame>
 		</frame>
 	</frame>
