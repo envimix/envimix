@@ -82,10 +82,13 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         return 0;
     }
 
-    private void UpdatePlayer(CMlFrame frame, CTmScore score)
+    private void UpdatePlayer(CMlFrame frame, CTmScore score, int rank)
     {
         var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
         quadTeam.BgColor = Teams[score.TeamNum - 1].ColorPrimary;
+
+        var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
+        labelRank.SetText(TextLib.FormatInteger(rank, 2));
 
         var quadEchelon = (frame.GetFirstChild("QuadEchelon") as CMlQuad)!;
         quadEchelon.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(score.User.Echelon)}.dds");
@@ -158,7 +161,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         {
             if (InputPlayer.Score is not null)
             {
-                UpdatePlayer(FrameYourScore, InputPlayer.Score);
+                UpdatePlayer(FrameYourScore, InputPlayer.Score, rank: 0);
             }
 
             var ranker = new Dictionary<string, Dictionary<string, int>>();
@@ -211,7 +214,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            UpdatePlayer(frame, Scores[i]);
+            UpdatePlayer(frame, Scores[i], rank: i + 1);
 
             frame.Visible = true;
         }
