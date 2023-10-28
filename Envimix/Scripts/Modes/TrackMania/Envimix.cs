@@ -1371,7 +1371,7 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
-    public void SetValidClientCar(CTmPlayer player, string clientCar)
+    public void SetValidClientCar(CPlayer player, string clientCar)
     {
         var car = Netwrite<string>.For(player);
 
@@ -1382,7 +1382,7 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    public void SetValidClientCar(CTmPlayer player)
+    public void SetValidClientCar(CPlayer player)
     {
         var clientCar = Netread<string>.For(UIManager.GetUI(player));
         SetValidClientCar(player, clientCar.Get());
@@ -1477,6 +1477,12 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    /// <summary>
+    /// I never knew why this method exists, but it will continue existing.
+    /// </summary>
+    /// <param name="referenceCondition"></param>
+    /// <param name="similarityCondition"></param>
+    /// <returns></returns>
     public static ImmutableArray<CTmResult> GetRecords(bool referenceCondition, bool similarityCondition)
     {
 	    return new();
@@ -1565,7 +1571,7 @@ public class Envimix : UniverseModeBase
 	    return records;
     }
 
-    public Dictionary<string, float> GetPlayerWRPB(CTmScore score)
+    public Dictionary<string, float> GetPlayerWRPB(CScore score)
     {
         Dictionary<string, float> wrPbs = new();
 
@@ -1594,7 +1600,7 @@ public class Envimix : UniverseModeBase
 	    return wrPbs;
     }
 
-    public Dictionary<string, int> GetPlayerActivityPoints(CTmScore score)
+    public Dictionary<string, int> GetPlayerActivityPoints(CScore score)
     {
 	    Dictionary<string, int> activityPoints = new();
 
@@ -1615,7 +1621,7 @@ public class Envimix : UniverseModeBase
 	    return activityPoints;
     }
 
-    public static Dictionary<string, int> GetPlayerSkillpoints(CTmScore score)
+    public static Dictionary<string, int> GetPlayerSkillpoints(CScore score)
     {
 	    return new();
     }
@@ -1676,7 +1682,7 @@ public class Envimix : UniverseModeBase
 	    Scores_Clear();
     }
 
-    public void PrepareJoinedPlayer(CTmPlayer player)
+    public void PrepareJoinedPlayer(CPlayer player)
     {
         var car = Netwrite<string>.For(player);
         car.Set(ItemCars.KeyOf(MapPlayerModelName));

@@ -1,6 +1,6 @@
 ﻿namespace Envimix.Media.Manialinks.Universe2;
 
-public class TimeLimit : CTmMlScriptIngame, IContext
+public class TimeLimit : CMlScriptIngame, IContext
 {
     public int Start;
     public bool PreviousIsVisible;
@@ -15,16 +15,6 @@ public class TimeLimit : CTmMlScriptIngame, IContext
     [Netread] public int CurrentWarmUpNb { get; }
     [Netread] public int CutOffTimeLimit { get; }
 
-    private CTmMlPlayer GetPlayer()
-    {
-        if (GUIPlayer is not null)
-        {
-            return GUIPlayer;
-        }
-
-        return InputPlayer;
-    }
-
     private bool IsVisible()
     {
         return !IsInGameMenuDisplayed;
@@ -37,8 +27,6 @@ public class TimeLimit : CTmMlScriptIngame, IContext
         FrameTimeLimit.Visible = IsVisible();
         PreviousIsVisible = IsVisible();
         PreviousCutOffTimeLimit = CutOffTimeLimit;
-
-        Wait(() => GetPlayer() is not null);
     }
 
     public void Loop()

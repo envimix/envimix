@@ -1,6 +1,6 @@
 ﻿namespace Envimix.Media.Manialinks.Universe2;
 
-public class Rating : CTmMlScriptIngame, IContext
+public class Rating : CMlScriptIngame, IContext
 {
     public bool PreviousVisible;
     public int VisibleTime = -1;
@@ -11,16 +11,6 @@ public class Rating : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelDifficulty;
     [ManialinkControl] public required CMlLabel LabelQuality;
 
-    CTmMlPlayer GetPlayer()
-    {
-        if (GUIPlayer is not null)
-        {
-            return GUIPlayer;
-        }
-
-        return InputPlayer;
-    }
-
     bool IsVisible()
     {
         return !IsInGameMenuDisplayed;
@@ -30,8 +20,6 @@ public class Rating : CTmMlScriptIngame, IContext
     {
         FrameRating.Visible = IsVisible();
         PreviousVisible = FrameRating.Visible;
-
-        Wait(() => GetPlayer() is not null);
     }
 
     public void Loop()

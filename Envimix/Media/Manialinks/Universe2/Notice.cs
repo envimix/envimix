@@ -1,6 +1,6 @@
 ﻿namespace Envimix.Media.Manialinks.Universe2;
 
-public class Notice : CTmMlScriptIngame, IContext
+public class Notice : CMlScriptIngame, IContext
 {
     public string PreviousMessage = "";
 

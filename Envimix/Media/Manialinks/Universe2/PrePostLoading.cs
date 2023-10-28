@@ -1,6 +1,6 @@
 ﻿namespace Envimix.Media.Manialinks.Universe2;
 
-public class PrePostLoading : CTmMlScriptIngame, IContext
+public class PrePostLoading : CMlScriptIngame, IContext
 {
     [ManialinkControl] public required CMlFrame FrameTop;
     [ManialinkControl] public required CMlFrame FrameBottom;
