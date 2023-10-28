@@ -25,7 +25,7 @@ public class MainMenu : CManiaAppTitle, IContext
             "totokill13",
             "tushy444trackmaniagamer",
             "naruto42",
-            "burpman176",
+            "burpman",
             "marosis99",
             "cobrask"
         };
