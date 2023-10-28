@@ -32,7 +32,7 @@
 					<label z-index="0" size="35 6" text="MAP BY:" textsize="0.5" textfont="Oswald" id="LabelMapAuthorText" halign="right"/>
 					<label z-index="0" size="35 4" text="$aaa[unknown]" textsize="1.5" textfont="Oswald" valign="top" id="LabelMapAuthor" pos="0 -2.5" halign="right"/>
 				</frame>
-				<frame pos="35 50" clip="1" clipposn="-17 -2.5" clipsizen="35 10" id="FrameLabelCar">
+				<frame pos="35 50" clip="1" clipposn="-17.5 -2.5" clipsizen="36 10" id="FrameLabelCar">
 					<label z-index="0" size="35 7" text="$aaa[unknown]" textsize="4" textfont="Oswald" valign="top" id="LabelCar" textprefix="$o" halign="right" textemboss="1"/>
 					<label z-index="0" size="35 7" text="$aaa[unknown]" textsize="4" textfont="Oswald" valign="top" id="LabelCar2" textprefix="$o" halign="right" textemboss="1"/>
 				</frame>
