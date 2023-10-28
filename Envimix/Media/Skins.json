@@ -154,10 +154,160 @@
 			"Icon": "Images/Skins/LagoonCar/Wave.dds"
 		}
 	},
-	"DesertCar": {},
-	"RallyCar": {},
-	"SnowCar": {},
-	"IslandCar": {},
-	"BayCar": {},
-	"CoastCar": {}
+	"DesertCar": {
+		"Blackdevil": {
+			"File": "AmericanCar/Blackdevil.zip",
+			"Icon": "Images/Skins/AmericanCar/Blackdevil.dds"
+		},
+		"Default": {
+			"File": "AmericanCar/Default.zip",
+			"Icon": "Images/Skins/AmericanCar/Default.dds"
+		},
+		"Funkyrace": {
+			"File": "AmericanCar/Funkyrace.zip",
+			"Icon": "Images/Skins/AmericanCar/Funkyrace.dds"
+		},
+		"Lagoonracer": {
+			"File": "AmericanCar/Lagoonracer.zip",
+			"Icon": "Images/Skins/AmericanCar/Lagoonracer.dds"
+		},
+		"Silvermania": {
+			"File": "AmericanCar/Silvermania.zip",
+			"Icon": "Images/Skins/AmericanCar/Silvermania.dds"
+		},
+		"Toggleindustry": {
+			"File": "AmericanCar/Toggleindustry.zip",
+			"Icon": "Images/Skins/AmericanCar/Toggleindustry.dds"
+		}
+	},
+	"RallyCar": {
+		"DarkVelvet": {
+			"File": "RallyCar/DarkVelvet.zip",
+			"Icon": "Images/Skins/RallyCar/DarkVelvet.dds"
+		},
+		"DeepSeaKing": {
+			"File": "RallyCar/DeepSeaKing.zip",
+			"Icon": "Images/Skins/RallyCar/DeepSeaKing.dds"
+		},
+		"MadCow": {
+			"File": "RallyCar/MadCow.zip",
+			"Icon": "Images/Skins/RallyCar/MadCow.dds"
+		},
+		"PurpleQueen": {
+			"File": "RallyCar/PurpleQueen.zip",
+			"Icon": "Images/Skins/RallyCar/PurpleQueen.dds"
+		},
+		"RoadManns": {
+			"File": "RallyCar/RoadManns.zip",
+			"Icon": "Images/Skins/RallyCar/RoadManns.dds"
+		},
+		"SilverBird": {
+			"File": "RallyCar/SilverBird.zip",
+			"Icon": "Images/Skins/RallyCar/SilverBird.dds"
+		}
+	},
+	"SnowCar": {
+		"Bubblecat": {
+			"File": "SnowCar/Bubblecat.zip",
+			"Icon": "Images/Skins/SnowCar/Bubblecat.dds"
+		},
+		"Cerisier": {
+			"File": "SnowCar/Cerisier.zip",
+			"Icon": "Images/Skins/SnowCar/Cerisier.dds"
+		},
+		"Dragon": {
+			"File": "SnowCar/Dragon.zip",
+			"Icon": "Images/Skins/SnowCar/Dragon.dds"
+		},
+		"Japon": {
+			"File": "SnowCar/Japon.zip",
+			"Icon": "Images/Skins/SnowCar/Japon.dds"
+		},
+		"Jungle": {
+			"File": "SnowCar/Jungle.zip",
+			"Icon": "Images/Skins/SnowCar/Jungle.dds"
+		},
+		"Panda": {
+			"File": "SnowCar/Panda.zip",
+			"Icon": "Images/Skins/SnowCar/Panda.dds"
+		}
+	},
+	"IslandCar": {
+		"Black": {
+			"File": "SportCar/U_Black.zip",
+			"Icon": "Images/Skins/SportCar/U_Black.dds"
+		},
+		"Blue": {
+			"File": "SportCar/U_Blue.zip",
+			"Icon": "Images/Skins/SportCar/U_Blue.dds"
+		},
+		"Green": {
+			"File": "SportCar/U_Green.zip",
+			"Icon": "Images/Skins/SportCar/U_Green.dds"
+		},
+		"Red": {
+			"File": "SportCar/U_Red.zip",
+			"Icon": "Images/Skins/SportCar/U_Red.dds"
+		},
+		"White": {
+			"File": "SportCar/U_White.zip",
+			"Icon": "Images/Skins/SportCar/U_White.dds"
+		},
+		"Yellow": {
+			"File": "SportCar/U_Yellow.zip",
+			"Icon": "Images/Skins/SportCar/U_Yellow.dds"
+		}
+	},
+	"BayCar": {
+		"Black": {
+			"File": "BayCar/U_Black.zip",
+			"Icon": "Images/Skins/BayCar/U_Black.dds"
+		},
+		"Blue": {
+			"File": "BayCar/U_Blue.zip",
+			"Icon": "Images/Skins/BayCar/U_Blue.dds"
+		},
+		"Green": {
+			"File": "BayCar/U_Green.zip",
+			"Icon": "Images/Skins/BayCar/U_Green.dds"
+		},
+		"Red": {
+			"File": "BayCar/U_Red.zip",
+			"Icon": "Images/Skins/BayCar/U_Red.dds"
+		},
+		"White": {
+			"File": "BayCar/U_White.zip",
+			"Icon": "Images/Skins/BayCar/U_White.dds"
+		},
+		"Yellow": {
+			"File": "BayCar/U_Yellow.zip",
+			"Icon": "Images/Skins/BayCar/U_Yellow.dds"
+		}
+	},
+	"CoastCar": {
+		"Black": {
+			"File": "CoastCar/U_Black.zip",
+			"Icon": "Images/Skins/CoastCar/U_Black.dds"
+		},
+		"Blue": {
+			"File": "CoastCar/U_Blue.zip",
+			"Icon": "Images/Skins/CoastCar/U_Blue.dds"
+		},
+		"Green": {
+			"File": "CoastCar/U_Green.zip",
+			"Icon": "Images/Skins/CoastCar/U_Green.dds"
+		},
+		"Red": {
+			"File": "CoastCar/U_Red.zip",
+			"Icon": "Images/Skins/CoastCar/U_Red.dds"
+		},
+		"White": {
+			"File": "CoastCar/U_White.zip",
+			"Icon": "Images/Skins/CoastCar/U_White.dds"
+		},
+		"Yellow": {
+			"File": "CoastCar/U_Yellow.zip",
+			"Icon": "Images/Skins/CoastCar/U_Yellow.dds"
+		}
+	}
 }
