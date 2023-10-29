@@ -610,14 +610,22 @@ public class Envimix : UniverseModeBase
         }
 
         // Session request creation
-        if (ManiaPlanetAuthenticationRequested && ServerAdmin.Authentication_GetTokenResponseReceived && ManiaPlanetAuthenticationToken != ServerAdmin.Authentication_Token)
+        if (ManiaPlanetAuthenticationRequested && ServerAdmin.Authentication_GetTokenResponseReceived)
         {
-            Log(nameof(Envimix), "ManiaPlanet authentication token received.");
+            if (ManiaPlanetAuthenticationToken != ServerAdmin.Authentication_Token)
+            {
+                Log(nameof(Envimix), "ManiaPlanet authentication token received.");
+
+                ManiaPlanetAuthenticationToken = ServerAdmin.Authentication_Token;
+
+                DirectlyRequestEnvimaniaSession();
+            }
+            else
+            {
+                Log(nameof(Envimix), $"ManiaPlanet authentication token not received (error {ServerAdmin.Authentication_ErrorCode}).");
+            }
 
             ManiaPlanetAuthenticationRequested = false;
-            ManiaPlanetAuthenticationToken = ServerAdmin.Authentication_Token;
-
-            DirectlyRequestEnvimaniaSession();
         }
 
         // EnvimaniaSessionRequestTimeout is not -1 by default, it is protected by the first if statement
