@@ -912,7 +912,7 @@ public class Envimix : UniverseModeBase
 
                     EnvimaniaStatusMessage = "";
                     EnvimaniaRecordsUpdatedAt = Now;
-                    EnvimaniaFinishedRecordsRequests[filter] = true;
+                    EnvimaniaFinishedRecordsRequests[filterKey] = filter;
                 }
                 else
                 {
