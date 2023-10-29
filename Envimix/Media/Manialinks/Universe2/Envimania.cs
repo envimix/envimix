@@ -75,7 +75,7 @@ public class Envimania : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameEnvimaniaStatus;
     [ManialinkControl] public required CMlLabel LabelEnvimaniaStatus;
 
-    [Netread] public required Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse> EnvimaniaRecords { get; init; }
+    [Netread] public required Dictionary<string, SEnvimaniaRecordsResponse> EnvimaniaRecords { get; init; }
     [Netread] public int EnvimaniaRecordsUpdatedAt { get; init; }
     [Netread] public required string EnvimaniaStatusMessage { get; init; }
 
@@ -112,6 +112,11 @@ public class Envimania : CTmMlScriptIngame, IContext
     {
         var car = Netread<string>.For(GetPlayer());
         return car.Get();
+    }
+
+    static string ConstructFilterKey(SEnvimaniaRecordsFilter filter)
+    {
+        return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
     }
 
     public void Main()
@@ -264,14 +269,15 @@ public class Envimania : CTmMlScriptIngame, IContext
         }
 
         var filter = GetFilter();
+        var filterKey = ConstructFilterKey(filter);
 
-        if (!EnvimaniaRecords.ContainsKey(filter))
+        if (!EnvimaniaRecords.ContainsKey(filterKey))
         {
             SetYouCouldBeHere();
             return;
         }
 
-        var recResponse = EnvimaniaRecords[filter];
+        var recResponse = EnvimaniaRecords[filterKey];
 
         if (recResponse.Records.Length == 0)
         {

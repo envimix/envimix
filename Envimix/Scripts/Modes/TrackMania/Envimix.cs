@@ -421,7 +421,7 @@ public class Envimix : UniverseModeBase
         Log(nameof(Envimix), $"Starting map {TextLib.StripFormatting(Map.MapInfo.Name)}...");
 
         // Reset Envimania records
-        var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+        var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
         envimaniaRecords.Get().Clear();
         EnvimaniaFinishedRecordsRequests.Clear();
 
@@ -463,7 +463,7 @@ public class Envimix : UniverseModeBase
         CheckEnvimaniaSession();
     }
 
-    public SUserInfo CreateUserInfo(CUser user)
+    public static SUserInfo CreateUserInfo(CUser user)
     {
         SUserInfo userInfo = new()
         {
@@ -600,6 +600,11 @@ public class Envimix : UniverseModeBase
         EnvimaniaRecordsUpdatedAt = Now;
 
         return true;
+    }
+
+    public static string ConstructFilterKey(SEnvimaniaRecordsFilter filter)
+    {
+        return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
     }
 
     public void CheckEnvimaniaSession()
@@ -792,8 +797,8 @@ public class Envimix : UniverseModeBase
                 {
                     foreach (var updatedRecords in response.UpdatedRecords)
                     {
-                        var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
-                        envimaniaRecords.Get()[updatedRecords.Filter] = updatedRecords;
+                        var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                        envimaniaRecords.Get()[ConstructFilterKey(updatedRecords.Filter)] = updatedRecords;
                         EnvimaniaFinishedRecordsRequests[updatedRecords.Filter] = true;
                         EnvimaniaRecordsUpdatedAt = Now;
                     }
@@ -893,8 +898,8 @@ public class Envimix : UniverseModeBase
 
                 if (response.FromJson(recsRequest.Result))
                 {
-                    var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
-                    envimaniaRecords.Get()[filter] = response;
+                    var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                    envimaniaRecords.Get()[ConstructFilterKey(filter)] = response;
 
                     EnvimaniaStatusMessage = "";
                     EnvimaniaRecordsUpdatedAt = Now;
@@ -1002,7 +1007,7 @@ public class Envimix : UniverseModeBase
                     Type = "Time" // TODO: Add support for other types
                 };
 
-                var envimaniaRecords = Netwrite<Dictionary<SEnvimaniaRecordsFilter, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
 
                 // Use struct with no records as "client-side" default
                 SEnvimaniaRecordsResponse recResponse = new()
@@ -1010,9 +1015,11 @@ public class Envimix : UniverseModeBase
                     Filter = filter
                 };
 
-                if (envimaniaRecords.Get().ContainsKey(filter))
+                var filterKey = ConstructFilterKey(filter);
+
+                if (envimaniaRecords.Get().ContainsKey(filterKey))
                 {
-                    recResponse = envimaniaRecords.Get()[filter];
+                    recResponse = envimaniaRecords.Get()[filterKey];
                 }
 
                 foreach (var r in recResponse.Records)
@@ -1096,7 +1103,7 @@ public class Envimix : UniverseModeBase
                         recResponse.Records = recs;
                     }
 
-                    envimaniaRecords.Get()[filter] = recResponse;
+                    envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
                 }
             }
