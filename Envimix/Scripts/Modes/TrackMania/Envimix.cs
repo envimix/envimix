@@ -557,6 +557,11 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
     }
 
+    public static string ConstructFilterKey(SEnvimaniaRecordsFilter filter)
+    {
+        return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
+    }
+
     public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
     public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
     public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaFinishedRecordsRequests;
@@ -604,11 +609,6 @@ public class Envimix : UniverseModeBase
         EnvimaniaRecordsUpdatedAt = Now;
 
         return true;
-    }
-
-    public static string ConstructFilterKey(SEnvimaniaRecordsFilter filter)
-    {
-        return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
     }
 
     public void CheckEnvimaniaSession()
