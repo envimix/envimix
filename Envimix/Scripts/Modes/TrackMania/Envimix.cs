@@ -557,8 +557,9 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
     }
 
-    public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> EnvimaniaRecordsRequests;
-    public required Dictionary<SEnvimaniaRecordsFilter, bool> EnvimaniaFinishedRecordsRequests;
+    public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
+    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
+    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaFinishedRecordsRequests;
     public int EnvimaniaRecordsRequestsLastCheck;
     public CHttpRequest? EnvimaniaRecordsRequest;
 
@@ -577,20 +578,23 @@ public class Envimix : UniverseModeBase
             Type = "Time" // TODO: Add support for other types
         };
 
+        var filterKey = ConstructFilterKey(filter);
+
         if (EnvimaniaSessionToken is "")
         {
-            EnvimaniaFinishedRecordsRequests[filter] = false;
+            EnvimaniaFinishedRecordsRequests[filterKey] = filter;
             return false;
         }
 
-        if (EnvimaniaFinishedRecordsRequests.ContainsKey(filter) || EnvimaniaRecordsRequests.ContainsKey(filter))
+        if (EnvimaniaFinishedRecordsRequests.ContainsKey(filterKey) || EnvimaniaRecordsRequests.ContainsKey(filterKey))
         {
             return false;
         }
 
         Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
 
-        EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&laps={GetLaps()}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaRecordsRequests[filterKey] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&laps={GetLaps()}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaUnfinishedRecordsRequests[filterKey] = filter;
 
         if (EnvimaniaFinishedRecordsRequests.Count == 0)
         {
@@ -730,19 +734,20 @@ public class Envimix : UniverseModeBase
                 EnvimaniaStatusRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/status", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
             }
 
-            ImmutableArray<SEnvimaniaRecordsFilter> recordsToRequestAgain = new();
+            ImmutableArray<string> recordsToRequestAgain = new();
 
-            foreach (var (filter, finished) in EnvimaniaFinishedRecordsRequests)
+            foreach (var (filterKey, finished) in EnvimaniaFinishedRecordsRequests)
             {
-                if (!finished)
+                if (EnvimaniaUnfinishedRecordsRequests.ContainsKey(filterKey))
                 {
-                    recordsToRequestAgain.Add(filter);
+                    recordsToRequestAgain.Add(filterKey);
                 }
             }
 
-            foreach (var filter in recordsToRequestAgain)
+            foreach (var filterKey in recordsToRequestAgain)
             {
-                EnvimaniaFinishedRecordsRequests.Remove(filter);
+                var filter = EnvimaniaUnfinishedRecordsRequests[filterKey];
+                EnvimaniaFinishedRecordsRequests.Remove(filterKey);
                 RequestEnvimaniaRecords(filter.Car, filter.Gravity, filter.Laps);
             }
         }
@@ -797,9 +802,10 @@ public class Envimix : UniverseModeBase
                 {
                     foreach (var updatedRecords in response.UpdatedRecords)
                     {
+                        var filterKey = ConstructFilterKey(updatedRecords.Filter);
                         var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
-                        envimaniaRecords.Get()[ConstructFilterKey(updatedRecords.Filter)] = updatedRecords;
-                        EnvimaniaFinishedRecordsRequests[updatedRecords.Filter] = true;
+                        envimaniaRecords.Get()[filterKey] = updatedRecords;
+                        EnvimaniaFinishedRecordsRequests[filterKey] = updatedRecords.Filter;
                         EnvimaniaRecordsUpdatedAt = Now;
                     }
 
@@ -881,14 +887,17 @@ public class Envimix : UniverseModeBase
             }
         }
 
-        ImmutableArray<SEnvimaniaRecordsFilter> recsRequestsToRemove = new();
+        ImmutableArray<string> recsRequestsToRemove = new();
 
-        foreach (var (filter, recsRequest) in EnvimaniaRecordsRequests)
+        foreach (var (filterKey, recsRequest) in EnvimaniaRecordsRequests)
         {
             if (recsRequest is null || !recsRequest.IsCompleted)
             {
                 continue;
             }
+
+            var filter = EnvimaniaUnfinishedRecordsRequests[filterKey];
+            EnvimaniaUnfinishedRecordsRequests.Remove(filterKey);
 
             if (recsRequest.StatusCode == 200)
             {
@@ -899,7 +908,7 @@ public class Envimix : UniverseModeBase
                 if (response.FromJson(recsRequest.Result))
                 {
                     var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
-                    envimaniaRecords.Get()[ConstructFilterKey(filter)] = response;
+                    envimaniaRecords.Get()[filterKey] = response;
 
                     EnvimaniaStatusMessage = "";
                     EnvimaniaRecordsUpdatedAt = Now;
@@ -918,13 +927,13 @@ public class Envimix : UniverseModeBase
                 Log(nameof(Envimix), $"Records retrieval failed ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, Type: Time, Zone: [unknown]).");
             }
 
-            recsRequestsToRemove.Add(filter);
+            recsRequestsToRemove.Add(filterKey);
         }
 
-        foreach (var filter in recsRequestsToRemove)
+        foreach (var filterKey in recsRequestsToRemove)
         {
-            var request = EnvimaniaRecordsRequests[filter];
-            EnvimaniaRecordsRequests.Remove(filter);
+            var request = EnvimaniaRecordsRequests[filterKey];
+            EnvimaniaRecordsRequests.Remove(filterKey);
             Http.Destroy(request);
         }
     }
