@@ -1139,8 +1139,9 @@ public class Menu : CTmMlScriptIngame, IContext
         }
     }
 
-    public required Dictionary<SEnvimaniaRecordsFilter, CHttpRequest> EnvimaniaRecordsRequests;
-    public required Dictionary<SEnvimaniaRecordsFilter, Dictionary<string, SEnvimaniaRecordsResponse>> EnvimaniaFinishedRecordsRequests;
+    public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
+    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
+    public required Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> EnvimaniaFinishedRecordsRequests;
 
     private string GetFullZone()
     {
@@ -1175,6 +1176,11 @@ public class Menu : CTmMlScriptIngame, IContext
         return filter;
     }
 
+    public static string ConstructFilterKey(SEnvimaniaRecordsFilter filter)
+    {
+        return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
+    }
+
     private void UpdateRecords()
     {
         if (CurrentZoneIndex == -1)
@@ -1187,18 +1193,19 @@ public class Menu : CTmMlScriptIngame, IContext
         LabelGhostSelection.SetText("|Zone|" + Zones[CurrentZoneIndex]);
 
         var filter = GetFilter();
+        var filterKey = ConstructFilterKey(filter);
         var zone = GetFullZone();
 
         LabelLoadingResult.SetText("");
 
-        if (!EnvimaniaFinishedRecordsRequests.ContainsKey(filter) || !EnvimaniaFinishedRecordsRequests[filter].ContainsKey(zone))
+        if (!EnvimaniaFinishedRecordsRequests.ContainsKey(filterKey) || !EnvimaniaFinishedRecordsRequests[filterKey].ContainsKey(zone))
         {
             foreach (var control in FrameGhosts.Controls)
             {
                 control.Hide();
             }
 
-            if (EnvimaniaRecordsRequests.ContainsKey(filter))
+            if (EnvimaniaRecordsRequests.ContainsKey(filterKey))
             {
                 QuadLoading.Show();
             }
@@ -1213,7 +1220,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
         QuadLoading.Hide();
 
-        var response = EnvimaniaFinishedRecordsRequests[filter][zone];
+        var response = EnvimaniaFinishedRecordsRequests[filterKey][zone];
         
         for (var i = 0; i < FrameGhosts.Controls.Count; i++)
         {
@@ -1257,16 +1264,18 @@ public class Menu : CTmMlScriptIngame, IContext
         }
 
         var filter = GetFilter();
+        var filterKey = ConstructFilterKey(filter);
         var zone = GetFullZone();
 
-        if ((!refresh && EnvimaniaFinishedRecordsRequests.ContainsKey(filter) && EnvimaniaFinishedRecordsRequests[filter].ContainsKey(zone)) || EnvimaniaRecordsRequests.ContainsKey(filter))
+        if ((!refresh && EnvimaniaFinishedRecordsRequests.ContainsKey(filterKey) && EnvimaniaFinishedRecordsRequests[filterKey].ContainsKey(zone)) || EnvimaniaRecordsRequests.ContainsKey(filterKey))
         {
             return false;
         }
 
         Log($"Requesting Envimania records... ({filter.Car}, G: {filter.Gravity}, Type: Time, Zone: {GetFullZone()})");
 
-        EnvimaniaRecordsRequests[filter] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{Map.MapInfo.MapUid}/{filter.Car}?gravity={filter.Gravity}&laps={filter.Laps}&zone={zone}", UseCache: false);
+        EnvimaniaRecordsRequests[filterKey] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{Map.MapInfo.MapUid}/{filter.Car}?gravity={filter.Gravity}&laps={filter.Laps}&zone={zone}", UseCache: false);
+        EnvimaniaUnfinishedRecordsRequests[filterKey] = filter;
 
         QuadLoading.Show();
 
@@ -1922,14 +1931,17 @@ public class Menu : CTmMlScriptIngame, IContext
 
         QuadLoading.RelativeRotation += Period / 5f;
 
-        ImmutableArray<SEnvimaniaRecordsFilter> recsRequestsToRemove = new();
+        ImmutableArray<string> recsRequestsToRemove = new();
 
-        foreach (var (filter, recsRequest) in EnvimaniaRecordsRequests)
+        foreach (var (filterKey, recsRequest) in EnvimaniaRecordsRequests)
         {
             if (recsRequest is null || !recsRequest.IsCompleted)
             {
                 continue;
             }
+
+            var filter = EnvimaniaUnfinishedRecordsRequests[filterKey];
+            EnvimaniaUnfinishedRecordsRequests.Remove(filterKey);
 
             if (recsRequest.StatusCode == 200)
             {
@@ -1937,13 +1949,13 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 if (response.FromJson(recsRequest.Result))
                 {
-                    if (EnvimaniaFinishedRecordsRequests.ContainsKey(filter))
+                    if (EnvimaniaFinishedRecordsRequests.ContainsKey(filterKey))
                     {
-                        EnvimaniaFinishedRecordsRequests[filter][response.Zone] = response;
+                        EnvimaniaFinishedRecordsRequests[filterKey][response.Zone] = response;
                     }
                     else
                     {
-                        EnvimaniaFinishedRecordsRequests[filter] = new()
+                        EnvimaniaFinishedRecordsRequests[filterKey] = new()
                         {
                             { response.Zone, response }
                         };
@@ -1962,13 +1974,13 @@ public class Menu : CTmMlScriptIngame, IContext
                 Log($"Records retrieval failed ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, Type: Time, Zone: [unknown]).");
             }
 
-            recsRequestsToRemove.Add(filter);
+            recsRequestsToRemove.Add(filterKey);
         }
 
-        foreach (var filter in recsRequestsToRemove)
+        foreach (var filterKey in recsRequestsToRemove)
         {
-            var request = EnvimaniaRecordsRequests[filter];
-            EnvimaniaRecordsRequests.Remove(filter);
+            var request = EnvimaniaRecordsRequests[filterKey];
+            EnvimaniaRecordsRequests.Remove(filterKey);
             Http.Destroy(request);
 
             UpdateRecords();
