@@ -176,6 +176,7 @@ public class Envimix : UniverseModeBase
         UIManager.UIAll.OverlayHideCheckPointList = true;
         UIManager.UIAll.OverlayHideEndMapLadderRecap = true;
         UIManager.UIAll.OverlayHideSpectatorInfos = true;
+        UIManager.UIAll.OverlayHideGauges = true;
         UIManager.UIAll.ScoreTableOnlyManialink = true;
 
         //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
