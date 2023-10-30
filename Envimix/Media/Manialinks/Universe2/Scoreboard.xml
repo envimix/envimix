@@ -20,7 +20,7 @@
 			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
 			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
 		</frame>
-		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="137 0"/>
+		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png" pos="137 0"/>
 	</framemodel>
 	<frame z-index="1000">
 		<frame pos="-100 0">
@@ -31,17 +31,17 @@
 				<label pos="18 0" z-index="0" size="20 5" text="Player" valign="center" textfont="RajdhaniMono" textsize="2"/>
 				<label pos="60 0" z-index="0" size="20 5" text="Score" valign="center" textfont="RajdhaniMono" textsize="2" halign="right"/>
 				<frame pos="66 0">
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="6 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/ValleyCar.png" pos="12 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/LagoonCar.png" pos="18 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/TrafficCar.png" pos="24 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/DesertCar.png" pos="30 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="36 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="42 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/IslandCar.png" pos="48 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/BayCar.png" pos="54 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CoastCar.png" pos="60 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/StadiumCar.png" pos="6 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/ValleyCar.png" pos="12 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/LagoonCar.png" pos="18 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/TrafficCar.png" pos="24 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/DesertCar.png" pos="30 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/SnowCar.png" pos="36 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/RallyCar.png" pos="42 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/IslandCar.png" pos="48 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/BayCar.png" pos="54 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CoastCar.png" pos="60 0"/>
 				</frame>
 				<label pos="137 2.5" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
 				<label pos="137 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>

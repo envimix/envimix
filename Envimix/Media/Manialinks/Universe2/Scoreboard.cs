@@ -137,7 +137,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         
         if (PlayerCars.ContainsKey(score.User.Login))
         {
-            var currentCarUrl = $"file://Media/Images/Cars/{PlayerCars[score.User.Login]}.png";
+            var currentCarUrl = $"https://envimix.bigbang1112.cz/img/cars/{PlayerCars[score.User.Login]}.png";
 
             if (quadCurrentCar.ImageUrl != currentCarUrl)
             {
