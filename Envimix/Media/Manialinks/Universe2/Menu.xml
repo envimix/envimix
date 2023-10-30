@@ -72,7 +72,7 @@
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Manage server" valign="center2" textfont="RajdhaniMono" translate="1" halign="left"/>
 				</frame>
 				<frame pos="0 -35" id="FrameMultiplayer">
-					<label pos="0 5" z-index="0" size="75 15" text="ENVIMIX" halign="center" valign="center2" textsize="8" textfont="Gotham/Gotham-Bold"/>
+					<quad pos="0 5" z-index="0" size="55.55 8" halign="center" valign="center" image="https://envimix.bigbang1112.cz/img/envimix.png"/>
 					<label pos="0 -3" z-index="0" size="70 5" text="$aaa[unknown server name]" textsize="3" textfont="Oswald" halign="center" id="LabelServerName" scriptevents="1" style="TextCardRaceRank"/>
 					<quad z-index="-1" size="30 20" style="Bgs1" substyle="BgCardList" halign="center" pos="-22.5 -9" opacity=".5"/>
 					<frame pos="-22.5 -10.5" clip="1" clipsizen="30 17.5" clipposn="0 -8.5">
