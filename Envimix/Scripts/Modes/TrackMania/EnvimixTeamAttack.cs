@@ -379,6 +379,8 @@ public class EnvimixTeamAttack : Envimix
 
                         if (respawn)
                         {
+                            AutoRespawn.Remove(player.User.Login);
+
                             var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
                             var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
 
