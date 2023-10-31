@@ -1415,6 +1415,11 @@ public class Envimix : UniverseModeBase
 
     public bool TrySpawnEnvimixPlayer(CTmPlayer player, int raceStartTime)
     {
+        if (player is null)
+        {
+            return false;
+        }
+
         SetValidClientCar(player);
 
         var car = Netwrite<string>.For(player);

@@ -266,10 +266,7 @@ public class EnvimixTeamAttack : Envimix
 
             if (Now > whenFinished + AutoRespawnTime * 1000)
             {
-                if (GetPlayer(playerToAutoRespawn) is not null)
-                {
-                    TrySpawnEnvimixTeamAttackPlayer(GetPlayer(playerToAutoRespawn), frozen: false);
-                }
+                TrySpawnEnvimixTeamAttackPlayer(GetPlayer(playerToAutoRespawn), frozen: false);
 
                 autoRespawnToClean.Add(playerToAutoRespawn);
             }
