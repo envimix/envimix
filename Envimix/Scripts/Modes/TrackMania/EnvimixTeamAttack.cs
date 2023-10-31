@@ -134,14 +134,14 @@ public class EnvimixTeamAttack : Envimix
                 switch (e.Type)
                 {
                     case CTmModeEvent.EType.OnPlayerAdded:
-                        PrepareJoinedPlayer(e.Player);
+                        PrespawnPlayer(e.Player);
                         break;
                 }
             }
-
+            
             foreach (var player in PlayersWaiting)
             {
-                TrySpawnEnvimixTeamAttackPlayer(player, frozen: true);
+                PrespawnPlayer(player);
             }
 
             CheckEnvimaniaSession();
@@ -286,7 +286,7 @@ public class EnvimixTeamAttack : Envimix
         switch (e.Type)
         {
             case CTmModeEvent.EType.OnPlayerAdded:
-                PrepareJoinedPlayer(e.Player);
+                PrespawnPlayer(e.Player);
                 break;
             case CTmModeEvent.EType.WayPoint:
                 if (e.IsEndRace && AutoRespawnTime > -1)

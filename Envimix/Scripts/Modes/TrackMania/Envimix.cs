@@ -1707,10 +1707,12 @@ public class Envimix : UniverseModeBase
 	    Scores_Clear();
     }
 
-    public void PrepareJoinedPlayer(CPlayer player)
+    public void PrespawnPlayer(CTmPlayer player)
     {
         var car = Netwrite<string>.For(player);
         car.Set(ItemCars.KeyOf(MapPlayerModelName));
+
+        SpawnEnvimixPlayer(player, car.Get(), frozen: true);
     }
 
     private void UpdateDefaultCarAvailability()
@@ -1742,22 +1744,7 @@ public class Envimix : UniverseModeBase
         // Pre-spawn all non-spec players with default car
         foreach (var player in PlayersWaiting)
         {
-            PrepareJoinedPlayer(player);
-
-            var car = Netwrite<string>.For(player);
-
-            if (car.Get() == "")
-            {
-                Log(nameof(Envimix), $"NOTE: {player.User.Name} has Net_Car set to empty string. Player was not pre-spawned.");
-                continue;
-            }
-
-            var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen: true);
-
-            if (spawned)
-            {
-                Log(nameof(Envimix), $"{player.User.Name} spawned");
-            }
+            PrespawnPlayer(player);
         }
     }
 

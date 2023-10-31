@@ -63,7 +63,7 @@ public class EnvimixSolo : Envimix
 
     public override void OnPlayerAdded(CTmModeEvent e)
     {
-        PrepareJoinedPlayer(e.Player);
+        PrespawnPlayer(e.Player);
     }
 
     public override void OnGameLoop()
