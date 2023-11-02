@@ -341,6 +341,11 @@ public class UniverseModeBase : CTmMode, IContext
         return NbLaps;
     }
 
+    public static string TimeToTextWithMilli(int time)
+    {
+        return $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
+    }
+
     private string GetSpectatorTargetFromLogin(string login)
     {
         var spectatorTarget = Netread<string>.For(UIManager.GetUI(GetPlayer(login)));

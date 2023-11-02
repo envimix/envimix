@@ -1115,6 +1115,8 @@ public class Envimix : UniverseModeBase
 
                     envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
+
+                    UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has set Xth Envimania record with $<$ff0{car.Get()}$>: $<{TimeToTextWithMilli(tempRace.Get().Time)}$>!");
                 }
             }
         }
