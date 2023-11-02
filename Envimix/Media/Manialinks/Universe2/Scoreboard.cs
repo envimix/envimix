@@ -33,6 +33,16 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadEchelonNext;
     [ManialinkControl] public required CMlLabel LabelEchelonCurrent;
     [ManialinkControl] public required CMlLabel LabelEchelonNext;
+    [ManialinkControl] public required CMlFrame FrameDifficulty;
+    [ManialinkControl] public required CMlFrame FrameQuality;
+    [ManialinkControl] public required CMlQuad QuadMyCar;
+    [ManialinkControl] public required CMlLabel LabelMyCar;
+
+    public required CMlLabel LabelDifficulty;
+    public required CMlQuad QuadDifficultyBlink;
+    public required CMlQuad QuadQualityBlink;
+
+    public required CMlLabel LabelQuality;
 
     public float CurrentLadderPoints;
     public required Dictionary<string, int> PlayerPoints;
@@ -174,6 +184,26 @@ public class Scoreboard : CTmMlScriptIngame, IContext
             LabelEchelonNext.Value = "";
         }
 
+        if (PlayerCars.ContainsKey(LocalUser.Login))
+        {
+            var currentCarUrl = $"https://envimix.bigbang1112.cz/img/cars/{PlayerCars[LocalUser.Login]}.png";
+
+            if (QuadMyCar.ImageUrl != currentCarUrl)
+            {
+                QuadMyCar.ChangeImageUrl(currentCarUrl);
+            }
+
+            LabelMyCar.Value = PlayerCars[LocalUser.Login];
+
+            QuadMyCar.Show();
+            LabelMyCar.Show();
+        }
+        else
+        {
+            QuadMyCar.Hide();
+            LabelMyCar.Hide();
+        }
+
         Ranks = new();
 
         if (InputPlayer is not null)
@@ -274,6 +304,13 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     {
         CurrentLadderPoints = -2;
 
+        LabelDifficulty = (FrameDifficulty.GetFirstChild("LabelRating") as CMlLabel)!;
+        LabelDifficulty.SetText("Difficulty");
+        QuadDifficultyBlink = (FrameDifficulty.GetFirstChild("QuadBlink") as CMlQuad)!;
+        LabelQuality = (FrameQuality.GetFirstChild("LabelRating") as CMlLabel)!;
+        LabelQuality.SetText("Quality");
+        QuadQualityBlink = (FrameQuality.GetFirstChild("QuadBlink") as CMlQuad)!;
+
         Wait(() => GetPlayer() is not null);
 
         UpdateScoreboard();
@@ -338,5 +375,8 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         {
             UpdateScoreboard();
         }
+
+        QuadDifficultyBlink.Opacity = (MathLib.Sin(Now / 100f) + 1) / 2f * .25f;
+        QuadQualityBlink.Opacity = (MathLib.Sin(Now / 100f + 180) + 1) / 2f * .25f;
     }
 }

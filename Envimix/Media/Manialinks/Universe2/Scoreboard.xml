@@ -27,14 +27,14 @@
 		<frame pos="0 2.5" z-index="1">
 			<quad z-index="-1" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.25"/>
 			<quad z-index="-1" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgCardList" scriptevents="1" id="QUAD_BOX"/>
-			<quad z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" id="QUAD_QUALITY_BLINK" opacity=".25"/>
+			<quad z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" id="QuadBlink" opacity=".25"/>
 			<label z-index="1" size="40 5" text="Click to rate" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3" id="LABEL_RATENAME"/>
 			<frame z-index="2" pos="-45 0" id="FRAME_DRAGGABLE" hidden="1">
 				<quad z-index="0" size="4 6" halign="center" valign="center" style="Bgs1" substyle="BgMetalBar"/>
 				<quad z-index="1" size="4 6" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".5" id="QUAD_DRAGGABLE"/>
 			</frame>
 		</frame>
-		<label pos="29.5 -4.75" z-index="0" size="40 5" textprefix="$o" text="Rating" textfont="Oswald" halign="right" textsize="1.5" valign="bottom"/>
+		<label id="LabelRating" pos="29.5 -4.75" z-index="0" size="40 5" textprefix="$o" text="Rating" textfont="Oswald" halign="right" textsize="1.5" valign="bottom" translate="1"/>
 		<gauge pos="-32 -3" z-index="0" size="45 8" valign="center" drawbg="0" ratio=".5" id="GaugeRating"/>
 	</framemodel>
 	<frame z-index="1000">
@@ -100,15 +100,15 @@
 				<quad z-index="2" size="50 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1"/>
 				<quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QuadEchelonPercent" colorize="CB6"/>
 			</frame>
-			<quad pos="0 -32.5" z-index="0" size="45 6.48" halign="center" valign="center" image="https://envimix.bigbang1112.cz/img/envimix.png"/>
+			<quad pos="0 -32.5" z-index="0" size="45 6.48" halign="center" valign="center" image="https://envimix.bigbang1112.cz/img/envimix.png" scale="0.75"/>
 		</frame>
-		<frame id="FRAME_RATING" pos="0 -47.5">
+		<frame pos="0 -47.5">
 			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
 			<quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png" pos="-92 0"/>
 			<label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4"/>
-			<quad pos="-32.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame"/>
-			<frameinstance pos="5 0"  modelid="FramemodelRating"/>
-			<frameinstance pos="67.5 0"  modelid="FramemodelRating"/>
+			<quad pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame"/>
+			<frameinstance pos="2.5 0" id="FrameDifficulty" modelid="FramemodelRating"/>
+			<frameinstance pos="67.5 0" id="FrameQuality" modelid="FramemodelRating"/>
 		</frame>
 	</frame>
 </manialink>

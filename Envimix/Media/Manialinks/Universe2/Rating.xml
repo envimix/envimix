@@ -4,13 +4,13 @@
 		<quad z-index="0" size="42.5 10" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
 		<quad id="QuadRating" z-index="2" size="42 9.5" valign="center" halign="right" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75" hidden="1"/>
 		<frame z-index="1" pos="-21.25 0" clip="1" clipsizen="41.5 10">
-			<quad pos="-25 0" z-index="0" size="10 10" valign="center" style="BgRaceScore2" substyle="Fame"/>
+			<quad pos="-25 0" z-index="0" size="10 10" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
 		</frame>
 		<frame z-index="3" pos="-26.25 0" clip="1" clipsizen="50 10">
 			<gauge pos="-15 2" z-index="0" size="27 7" valign="center" drawbg="0" id="GaugeDifficulty" />
-			<label pos="23.5 2" z-index="0" size="12.5 5" text="$oDifficulty" valign="center" textsize="1" textfont="Oswald" halign="right" id="LabelDifficulty" />
+			<label pos="23.5 2" z-index="0" size="12.5 5" textprefix="$o" text="Difficulty" valign="center" textsize="1" textfont="Oswald" halign="right" id="LabelDifficulty" translate="1" />
 			<gauge pos="-15 -2" z-index="0" size="27 7" valign="center" drawbg="0" id="GaugeQuality" />
-			<label pos="23.5 -1.7" z-index="0" size="12.5 5" text="$oQuality" valign="center" textsize="1" textfont="Oswald" halign="right" id="LabelQuality" />
+			<label pos="23.5 -1.7" z-index="0" size="12.5 5" textprefix="$o" text="Quality" valign="center" textsize="1" textfont="Oswald" halign="right" id="LabelQuality" translate="1" />
 		</frame>
 	</frame>
 </manialink>
