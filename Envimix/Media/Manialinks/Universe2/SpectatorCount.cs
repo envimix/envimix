@@ -98,7 +98,7 @@ public class SpectatorCount : CTmMlScriptIngame, IContext
                     }
                 }
 
-                QuadSpectatorList.Size.Y = CurrentSpectatorCount * 3f + 5;
+                QuadSpectatorList.Size.Y = CurrentSpectatorCount * 5f + 2.5f;
             }
         }
         else
