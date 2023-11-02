@@ -39,10 +39,10 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelMyCar;
 
     public required CMlLabel LabelDifficulty;
+    public required CMlLabel LabelQuality;
     public required CMlQuad QuadDifficultyBlink;
     public required CMlQuad QuadQualityBlink;
-
-    public required CMlLabel LabelQuality;
+    public required CMlFrame? Hold;
 
     public float CurrentLadderPoints;
     public required Dictionary<string, int> PlayerPoints;
@@ -52,11 +52,15 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     public required Dictionary<string, int> LastUpdated;
     public required Dictionary<string, Dictionary<string, int>> Ranks;
 
+    public float Difficulty;
+    public float Quality;
+
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
     public Scoreboard()
     {
         RaceEvent += Scoreboard_RaceEvent;
+        MouseClick += Scoreboard_MouseClick;
     }
 
     CTmMlPlayer GetPlayer()
@@ -300,8 +304,51 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         }
     }
 
+    private void Scoreboard_MouseClick(CMlControl control, string controlId)
+    {
+        if (controlId == "QuadBox" || controlId == "QuadDraggable")
+        {
+            CMlFrame frame;
+
+            if (controlId == "QuadBox")
+            {
+                frame = control.Parent.Parent;
+            }
+            else
+            {
+                frame = control.Parent.Parent.Parent;
+            }
+            
+            frame.GetFirstChild("LabelRateName").Hide();
+
+            if (frame.ControlId == "FrameDifficulty")
+            {
+                QuadDifficultyBlink.Hide();
+            }
+            else if (frame.ControlId == "FrameQuality")
+            {
+                QuadQualityBlink.Hide();
+            }
+        }
+
+        if (controlId == "QuadBox")
+        {
+            var frameDraggable = (control.Parent.Parent.GetFirstChild("FrameDraggable") as CMlFrame)!;
+            frameDraggable.Show();
+
+            Hold = frameDraggable;
+        }
+        else if (controlId == "QuadDraggable")
+        {
+            Hold = control.Parent;
+        }
+    }
+
     public void Main()
     {
+        Difficulty = -1;
+        Quality = -1;
+
         CurrentLadderPoints = -2;
 
         LabelDifficulty = (FrameDifficulty.GetFirstChild("LabelRating") as CMlLabel)!;
@@ -378,5 +425,38 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
         QuadDifficultyBlink.Opacity = (MathLib.Sin(Now / 100f) + 1) / 2f * .1f;
         QuadQualityBlink.Opacity = (MathLib.Sin(Now / 100f + 180) + 1) / 2f * .1f;
+
+        if (Hold is not null)
+        {
+            if (MouseLeftButton)
+            {
+                var frame = Hold.Parent.Parent;
+
+                var visualValue = MathLib.Clamp(MouseX - (float)frame.RelativePosition_V3.X, -28, 28);
+                var realValue = (visualValue + 28) / 56;
+
+                Hold.RelativePosition_V3.X = visualValue;
+
+                (Hold.GetFirstChild("QuadDraggable") as CMlQuad)!.StyleSelected = true;
+
+                if (frame.ControlId == "FrameDifficulty")
+                {
+                    Difficulty = realValue;
+                }
+                else if (frame.ControlId == "FrameQuality")
+                {
+                    Quality = realValue;
+                }
+
+                var gauge = (frame.GetFirstChild("GaugeRating") as CMlGauge)!;
+                gauge.SetRatio(realValue);
+            }
+            else
+            {
+                (Hold.GetFirstChild("QuadDraggable") as CMlQuad)!.StyleSelected = false;
+
+                Hold = null;
+            }
+        }
     }
 }

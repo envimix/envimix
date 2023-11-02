@@ -26,10 +26,10 @@
 	<framemodel id="FramemodelRating">
 		<frame pos="0 2.5" z-index="1">
 			<quad z-index="-2" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.25"/>
-			<quad z-index="-1" size="60 5" halign="center" valign="center" style="Bgs1InRace" substyle="BgCardList" scriptevents="1" id="QuadBox" opacity=".25"/>
-			<quad z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" id="QuadBlink" opacity=".1"/>
-			<label z-index="1" size="40 5" text="Click to rate" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3" id="LabelRateName"/>
-			<frame z-index="2" pos="-28 0" id="FrameDraggable" hidden="1">
+			<quad id="QuadBox" z-index="-1" size="60 5" halign="center" valign="center" style="Bgs1InRace" substyle="BgCardList" scriptevents="1" opacity=".25"/>
+			<quad id="QuadBlink" z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".1"/>
+			<label id="LabelRateName" z-index="1" size="40 5" text="Click to rate" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3"/>
+			<frame id="FrameDraggable" z-index="2" pos="-28 0" hidden="1">
 				<quad z-index="0" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgMetalBar"/>
 				<quad z-index="1" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".5" id="QuadDraggable"/>
 			</frame>
