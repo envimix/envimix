@@ -376,7 +376,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
             UpdateScoreboard();
         }
 
-        QuadDifficultyBlink.Opacity = (MathLib.Sin(Now / 100f) + 1) / 2f * .25f;
-        QuadQualityBlink.Opacity = (MathLib.Sin(Now / 100f + 180) + 1) / 2f * .25f;
+        QuadDifficultyBlink.Opacity = (MathLib.Sin(Now / 100f) + 1) / 2f * .1f;
+        QuadQualityBlink.Opacity = (MathLib.Sin(Now / 100f + 180) + 1) / 2f * .1f;
     }
 }
