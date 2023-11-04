@@ -107,7 +107,15 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         quadTeam.BgColor = Teams[score.TeamNum - 1].ColorPrimary;
 
         var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
+
+        if (rank == 0)
+        {
+            labelRank.SetText("--");
+        }
+        else
+        {
         labelRank.SetText(TextLib.FormatInteger(rank, 2));
+        }
 
         var quadEchelon = (frame.GetFirstChild("QuadEchelon") as CMlQuad)!;
         quadEchelon.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(score.User.Echelon)}.dds");
