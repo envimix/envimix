@@ -52,7 +52,8 @@ public class EnvimixTeamAttack : Envimix
         switch (e.Type)
         {
             case CUIConfigEvent.EType.OnLayerCustomEvent:
-                ProcessEnvimixEvents(e);
+                ProcessGeneralEnvimixEvents(e);
+                ProcessUpdateSkinEvent(e);
                 ProcessUpdateCarEvent(e, forceFreeze: false);
                 break;
         }
@@ -91,6 +92,14 @@ public class EnvimixTeamAttack : Envimix
         }
     }
 
+    public override void WhileMapIntro()
+    {
+        foreach (var e in UIManager.PendingEvents)
+        {
+            ProcessGeneralEnvimixEvents(e);
+        }
+    }
+
     public override void OnGameStart()
     {
         // Period to select a starting car once the map is fully loaded
@@ -115,7 +124,8 @@ public class EnvimixTeamAttack : Envimix
                 switch (e.Type)
                 {
                     case CUIConfigEvent.EType.OnLayerCustomEvent:
-                        ProcessEnvimixEvents(e);
+                        ProcessGeneralEnvimixEvents(e);
+                        ProcessUpdateSkinEvent(e);
                         ProcessUpdateCarEvent(e, forceFreeze: true);
         
                         switch (e.CustomEventType)

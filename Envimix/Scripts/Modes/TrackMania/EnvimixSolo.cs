@@ -53,7 +53,8 @@ public class EnvimixSolo : Envimix
         switch (e.Type)
         {
             case CUIConfigEvent.EType.OnLayerCustomEvent:
-                ProcessEnvimixEvents(e);
+                ProcessGeneralEnvimixEvents(e);
+                ProcessUpdateSkinEvent(e);
                 ProcessUpdateCarEvent(e);
                 ProcessReplayEvent(e);
                 // ProcessUpdateGravityEvent(e); unexpected behavior due to GravityCoef being applied once after spawning

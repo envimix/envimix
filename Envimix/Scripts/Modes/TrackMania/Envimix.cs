@@ -1824,27 +1824,10 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    public void ProcessEnvimixEvents(CUIConfigEvent e)
+    public void ProcessGeneralEnvimixEvents(CUIConfigEvent e)
     {
         switch (e.CustomEventType)
         {
-            case "Skin":
-                if (e.CustomEventData.Count > 0)
-                {
-                    var carName = e.CustomEventData[0];
-                    var player = GetPlayer(e.UI);
-                    var car = Netwrite<string>.For(player);
-
-                    if (DisplayedCars.Contains(carName) && car.Get() == carName)
-                    {
-                        if (e.CustomEventData.Count > 1)
-                        {
-                            var skin = e.CustomEventData[1];
-                            UpdateSkin(player, skin);
-                        }
-                    }
-                }
-                break;
             case "Rate":
                 if (e.CustomEventData.Count == 2)
                 {
@@ -1892,6 +1875,30 @@ public class Envimix : UniverseModeBase
                     };
 
                     UserRatingsToRequest[key] = ratingReq;
+                }
+                break;
+        }
+    }
+
+    public void ProcessUpdateSkinEvent(CUIConfigEvent e)
+    {
+        switch (e.CustomEventType)
+        {
+            case "Skin":
+                if (e.CustomEventData.Count > 0)
+                {
+                    var carName = e.CustomEventData[0];
+                    var player = GetPlayer(e.UI);
+                    var car = Netwrite<string>.For(player);
+
+                    if (DisplayedCars.Contains(carName) && car.Get() == carName)
+                    {
+                        if (e.CustomEventData.Count > 1)
+                        {
+                            var skin = e.CustomEventData[1];
+                            UpdateSkin(player, skin);
+                        }
+                    }
                 }
                 break;
         }
