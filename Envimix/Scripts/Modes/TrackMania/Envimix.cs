@@ -630,7 +630,7 @@ public class Envimix : UniverseModeBase
 
                 DirectlyRequestEnvimaniaSession();
             }
-            else
+            else if (ServerAdmin.Authentication_ErrorCode != 0)
             {
                 Log(nameof(Envimix), $"ManiaPlanet authentication token not received (error {ServerAdmin.Authentication_ErrorCode}).");
             }
