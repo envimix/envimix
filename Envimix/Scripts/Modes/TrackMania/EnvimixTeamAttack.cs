@@ -52,7 +52,7 @@ public class EnvimixTeamAttack : Envimix
         switch (e.Type)
         {
             case CUIConfigEvent.EType.OnLayerCustomEvent:
-                ProcessUpdateSkinEvent(e);
+                ProcessEnvimixEvents(e);
                 ProcessUpdateCarEvent(e, forceFreeze: false);
                 break;
         }
@@ -115,7 +115,7 @@ public class EnvimixTeamAttack : Envimix
                 switch (e.Type)
                 {
                     case CUIConfigEvent.EType.OnLayerCustomEvent:
-                        ProcessUpdateSkinEvent(e);
+                        ProcessEnvimixEvents(e);
                         ProcessUpdateCarEvent(e, forceFreeze: true);
         
                         switch (e.CustomEventType)
@@ -145,6 +145,7 @@ public class EnvimixTeamAttack : Envimix
             }
 
             CheckEnvimaniaSession();
+            CheckRatings();
             UpdateSpectatorLists();
 
             Yield();

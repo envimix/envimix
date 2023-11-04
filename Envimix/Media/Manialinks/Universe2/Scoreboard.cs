@@ -455,6 +455,17 @@ public class Scoreboard : CTmMlScriptIngame, IContext
             {
                 (Hold.GetFirstChild("QuadDraggable") as CMlQuad)!.StyleSelected = false;
 
+                var frame = Hold.Parent.Parent;
+
+                if (frame.ControlId == "FrameDifficulty")
+                {
+                    SendCustomEvent("Rate", new[] { "Difficulty", Difficulty.ToString() });
+                }
+                else if (frame.ControlId == "FrameQuality")
+                {
+                    SendCustomEvent("Rate", new[] { "Quality", Quality.ToString() });
+                }
+
                 Hold = null;
             }
         }

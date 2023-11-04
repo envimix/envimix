@@ -94,6 +94,20 @@ public class Envimix : UniverseModeBase
         public int Timestamp;
     }
 
+    public struct SRating
+    {
+        public float Difficulty;
+        public float Quality;
+    }
+
+    public struct SRatingServerRequest
+    {
+        public SUserInfo User;
+        public string Car;
+        public int Gravity;
+        public SRating Rating;
+    }
+
     [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
     public bool EnableTM2Cars = true;
 
@@ -155,6 +169,11 @@ public class Envimix : UniverseModeBase
     [Netwrite] public bool CarSelectionMode { get; set; }
     [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
     [Netwrite] public required string EnvimaniaStatusMessage { get; set; }
+
+    public required Dictionary<string, SRating> UserRatings;
+    public required Dictionary<string, SRatingServerRequest> UserRatingsToRequest;
+    public CHttpRequest? UserRatingRequest;
+    public required int UserRatingsUpdatedAt;
 
     public override void OnServerInit()
     {
@@ -452,16 +471,19 @@ public class Envimix : UniverseModeBase
         QueueMapIndex();
 
         CheckEnvimaniaSession();
+        CheckRatings();
     }
 
     public override void WhileMapIntro()
     {
         CheckEnvimaniaSession();
+        CheckRatings();
     }
 
     public override void OnLoop()
     {
         CheckEnvimaniaSession();
+        CheckRatings();
     }
 
     public static SUserInfo CreateUserInfo(CUser user)
@@ -1755,7 +1777,54 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    public void ProcessUpdateSkinEvent(CUIConfigEvent e)
+    private static string GetRatingKey(CTmPlayer player)
+    {
+        var car = Netwrite<string>.For(player);
+        var gravity = Netwrite<int>.For(player);
+
+        return $"{player.User.Login}_{car.Get()}_{gravity.Get()}";
+    }
+
+    public void CheckRatings()
+    {
+        if (EnvimaniaSessionToken is "")
+        {
+            return;
+        }
+
+        if (UserRatingsToRequest.Count > 0 && UserRatingsUpdatedAt + 1000 <= Now)
+        {
+            ImmutableArray<SRatingServerRequest> ratingReqs = new();
+
+            foreach (var (key, req) in UserRatingsToRequest)
+            {
+                ratingReqs.Add(req);
+            }
+
+            UserRatingRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/rate", ratingReqs.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+
+            UserRatingsToRequest.Clear();
+
+            UserRatingsUpdatedAt = Now;
+        }
+
+        if (UserRatingRequest is not null && UserRatingRequest.IsCompleted)
+        {
+            if (UserRatingRequest.StatusCode == 200)
+            {
+                Log(nameof(Envimix), "Rating submitted (200).");
+            }
+            else
+            {
+                Log(nameof(Envimix), $"Rating submission failed ({UserRatingRequest.StatusCode}).");
+            }
+
+            Http.Destroy(UserRatingRequest);
+            UserRatingRequest = null;
+        }
+    }
+
+    public void ProcessEnvimixEvents(CUIConfigEvent e)
     {
         switch (e.CustomEventType)
         {
@@ -1774,6 +1843,55 @@ public class Envimix : UniverseModeBase
                             UpdateSkin(player, skin);
                         }
                     }
+                }
+                break;
+            case "Rate":
+                if (e.CustomEventData.Count == 2)
+                {
+                    var type = e.CustomEventData[0];
+                    var value = TextLib.ToReal(e.CustomEventData[1]);
+                    var player = GetPlayer(e.UI);
+                    var car = Netwrite<string>.For(player);
+                    var gravity = Netwrite<int>.For(player);
+                    var key = GetRatingKey(player);
+
+                    // Validate
+                    value = MathLib.Clamp(value, 0, 1);
+
+                    SRating rating = new();
+
+                    if (UserRatings.ContainsKey(key))
+                    {
+                        rating = UserRatings[key];
+                    }
+                    else if (UserRatingsToRequest.ContainsKey(key))
+                    {
+                        rating = UserRatingsToRequest[key].Rating;
+                    }
+                    else
+                    {
+                        rating.Difficulty = -1;
+                        rating.Quality = -1;
+                    }
+
+                    if (type == "Difficulty")
+                    {
+                        rating.Difficulty = value;
+                    }
+                    else if (type == "Quality")
+                    {
+                        rating.Quality = value;
+                    }
+
+                    SRatingServerRequest ratingReq = new()
+                    {
+                        User = CreateUserInfo(player.User),
+                        Car = car.Get(),
+                        Gravity = gravity.Get(),
+                        Rating = rating
+                    };
+
+                    UserRatingsToRequest[key] = ratingReq;
                 }
                 break;
         }
