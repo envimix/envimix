@@ -25,10 +25,10 @@
 	</framemodel>
 	<framemodel id="FramemodelRating">
 		<frame pos="0 2.5" z-index="1">
-			<quad z-index="-2" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.25"/>
+			<quad id="QuadGlow" z-index="-2" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.1"/>
 			<quad id="QuadBox" z-index="-1" size="60 5" halign="center" valign="center" style="Bgs1InRace" substyle="BgCardList" scriptevents="1" opacity=".25"/>
-			<quad id="QuadBlink" z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".1"/>
-			<label id="LabelRateName" z-index="1" size="40 5" text="Click to rate" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3"/>
+			<quad id="QuadBlink" hidden="1" z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" opacity="0.1"/>
+			<label id="LabelRateName" z-index="1" size="40 5" text="Rating is currently disabled" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3"/>
 			<frame id="FrameDraggable" z-index="2" pos="-28 0" hidden="1">
 				<quad z-index="0" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgMetalBar"/>
 				<quad z-index="1" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".5" id="QuadDraggable"/>
@@ -38,6 +38,7 @@
 		<gauge pos="-32 -3" z-index="0" size="45 8" valign="center" drawbg="0" ratio="0" id="GaugeRating"/>
 	</framemodel>
 	<frame z-index="1000">
+		<quad pos="0 0" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
 		<frame id="FRAME_RATING" pos="0 47.5">
 			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
 			<label pos="0 -0.75" z-index="0" size="60 10" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="7"/>
@@ -106,7 +107,7 @@
 			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
 			<quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png" pos="-92 0"/>
 			<label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4"/>
-			<quad pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame"/>
+			<quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame"/>
 			<frameinstance pos="2.5 0" id="FrameDifficulty" modelid="FramemodelRating"/>
 			<frameinstance pos="67.5 0" id="FrameQuality" modelid="FramemodelRating"/>
 		</frame>

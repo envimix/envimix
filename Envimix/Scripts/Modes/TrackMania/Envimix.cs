@@ -27,16 +27,48 @@ public class Envimix : UniverseModeBase
         public float LadderPoints;
     }
 
+    public struct SMapInfo
+    {
+        public string Name;
+        public string Uid;
+    }
+
+    public struct SRating
+    {
+        public float Difficulty;
+        public float Quality;
+    }
+
+    public struct SRatingFilter
+    {
+        public string Car;
+        public int Gravity;
+        public string Type;
+    }
+
+    public struct SFilteredRating
+    {
+        public SRatingFilter Filter;
+        public SRating Rating;
+    }
+
+    public struct SRatingServerResponse
+    {
+        public ImmutableArray<SFilteredRating> Ratings;
+    }
+
     public struct SEnvimaniaSessionRequest
     {
-        public string MapUid;
+        public SMapInfo Map;
         public ImmutableArray<SUserInfo> Players;
+        public IList<string> Cars;
     }
 
     public struct SEnvimaniaSessionResponse
     {
         public string ServerLogin;
         public string Token;
+        public ImmutableArray<SFilteredRating> Ratings;
     }
 
     public struct SEnvimaniaSessionRecordRequest
@@ -92,12 +124,6 @@ public class Envimix : UniverseModeBase
         public string Nickname;
         public string Content;
         public int Timestamp;
-    }
-
-    public struct SRating
-    {
-        public float Difficulty;
-        public float Quality;
     }
 
     public struct SRatingServerRequest
@@ -169,6 +195,9 @@ public class Envimix : UniverseModeBase
     [Netwrite] public bool CarSelectionMode { get; set; }
     [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
     [Netwrite] public required string EnvimaniaStatusMessage { get; set; }
+    [Netwrite] public bool RatingEnabled { get; set; }
+    [Netwrite] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netwrite] public required int RatingsUpdatedAt { get; set; }
 
     public required Dictionary<string, SRating> UserRatings;
     public required Dictionary<string, SRatingServerRequest> UserRatingsToRequest;
@@ -185,6 +214,7 @@ public class Envimix : UniverseModeBase
         UIManager.UIAll.OverlayHideCheckPointTime = true;
         UIManager.UIAll.OverlayHideChat = false;
         UIManager.UIAll.OverlayChatOffset = new Vec2(0, 0.15);
+        UIManager.UIAll.OverlayChatLineCount = 8;
         UIManager.UIAll.OverlayChatHideAvatar = true;
         UIManager.UIAll.OverlayHideCountdown = true;
         UIManager.UIAll.OverlayHideSpeedAndDist = true;
@@ -258,7 +288,7 @@ public class Envimix : UniverseModeBase
                         Cars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
                     }
                 }
-
+                                            
                 itemCars[car] = itemName;
 
                 if (AlwaysUseVehicleItems || (EnableStadiumEnvimix && car != "StadiumCar") || (EnableTrafficCarInStadium && car == "TrafficCar"))
@@ -444,6 +474,8 @@ public class Envimix : UniverseModeBase
         var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
         envimaniaRecords.Get().Clear();
         EnvimaniaFinishedRecordsRequests.Clear();
+        Ratings.Clear();
+        RatingEnabled = false;
 
         var requested = RequestEnvimaniaSession();
 
@@ -503,6 +535,19 @@ public class Envimix : UniverseModeBase
         };
 
         return userInfo;
+    }
+
+    private static string ConstructUserRatingFilterKey(CTmPlayer player)
+    {
+        var car = Netwrite<string>.For(player);
+        var gravity = Netwrite<int>.For(player);
+
+        return $"{player.User.Login}_{car.Get()}_{gravity.Get()}";
+    }
+
+    public static string ConstructRatingFilterKey(SRatingFilter filter)
+    {
+        return $"{filter.Car}_{filter.Gravity}_{filter.Type}";
     }
 
     #region Envimania
@@ -569,10 +614,17 @@ public class Envimix : UniverseModeBase
             userInfos.Add(CreateUserInfo(player.User));
         }
 
+        SMapInfo mapInfo = new()
+        {
+            Name = Map.MapInfo.Name,
+            Uid = Map.MapInfo.MapUid
+        };
+
         SEnvimaniaSessionRequest sessionRequest = new()
         {
-            MapUid = Map.MapInfo.MapUid,
-            Players = userInfos
+            Map = mapInfo,
+            Players = userInfos,
+            Cars = DisplayedCars
         };
 
         Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
@@ -580,7 +632,7 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
     }
 
-    public static string ConstructFilterKey(SEnvimaniaRecordsFilter filter)
+    public static string ConstructRecordsFilterKey(SEnvimaniaRecordsFilter filter)
     {
         return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
     }
@@ -606,7 +658,7 @@ public class Envimix : UniverseModeBase
             Type = "Time" // TODO: Add support for other types
         };
 
-        var filterKey = ConstructFilterKey(filter);
+        var filterKey = ConstructRecordsFilterKey(filter);
 
         if (EnvimaniaSessionToken is "")
         {
@@ -711,6 +763,7 @@ public class Envimix : UniverseModeBase
             if (!sessionResponse.FromJson(EnvimaniaSessionRequest.Result))
             {
                 Log(nameof(Envimix), "Envimania session creation failed (JSON issue).");
+                Log(nameof(Envimix), EnvimaniaSessionRequest.Result);
             }
             else
             {
@@ -722,7 +775,17 @@ public class Envimix : UniverseModeBase
                 {
                     EnvimaniaSessionToken = sessionResponse.Token!;
 
-                    // TODO: Declare complex records struct dictionary for Teams[0] and read it from response
+                    Dictionary<string, SRating> ratings = new();
+
+                    foreach (var filteredRating in sessionResponse.Ratings)
+                    {
+                        ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
+                    }
+
+                    Ratings = ratings;
+                    RatingsUpdatedAt = Now;
+
+                    RatingEnabled = true;
                 }
             }
 
@@ -825,7 +888,7 @@ public class Envimix : UniverseModeBase
                 {
                     foreach (var updatedRecords in response.UpdatedRecords)
                     {
-                        var filterKey = ConstructFilterKey(updatedRecords.Filter);
+                        var filterKey = ConstructRecordsFilterKey(updatedRecords.Filter);
                         var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
                         envimaniaRecords.Get()[filterKey] = updatedRecords;
                         EnvimaniaFinishedRecordsRequests[filterKey] = updatedRecords.Filter;
@@ -1047,7 +1110,7 @@ public class Envimix : UniverseModeBase
                     Filter = filter
                 };
 
-                var filterKey = ConstructFilterKey(filter);
+                var filterKey = ConstructRecordsFilterKey(filter);
 
                 if (envimaniaRecords.Get().ContainsKey(filterKey))
                 {
@@ -1138,7 +1201,7 @@ public class Envimix : UniverseModeBase
                     envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
 
-                    UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has set Xth Envimania record with $<$ff0{car.Get()}$>: $<{TimeToTextWithMilli(tempRace.Get().Time)}$>!");
+                    UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has set Xth Envimania record with $<$ff8{car.Get()}$>: $<{TimeToTextWithMilli(tempRace.Get().Time)}$>!");
                 }
             }
         }
@@ -1257,10 +1320,10 @@ public class Envimix : UniverseModeBase
         }
         else
         {
-        foreach (var (car, model) in Cars)
-        {
-            allCars[car] = model;
-        }
+            foreach (var (car, model) in Cars)
+            {
+                allCars[car] = model;
+            }
 
             if (EnableTrafficCarInStadium && SpecialCars.ContainsKey("TrafficCar"))
             {
@@ -1792,14 +1855,6 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    private static string GetRatingKey(CTmPlayer player)
-    {
-        var car = Netwrite<string>.For(player);
-        var gravity = Netwrite<int>.For(player);
-
-        return $"{player.User.Login}_{car.Get()}_{gravity.Get()}";
-    }
-
     public void CheckRatings()
     {
         if (EnvimaniaSessionToken is "")
@@ -1814,6 +1869,38 @@ public class Envimix : UniverseModeBase
             foreach (var (key, req) in UserRatingsToRequest)
             {
                 ratingReqs.Add(req);
+
+                if (req.Rating.Difficulty != -1)
+                {
+                    var word = "";
+
+                    if (req.Rating.Difficulty < 0.1)
+                    {
+                        word = "$0f0very easy";
+                    }
+                    else if (req.Rating.Difficulty < 0.25)
+                    {
+                        word = "$5f0easy";
+                    }
+                    else if (req.Rating.Difficulty < 0.5)
+                    {
+                        word = "$ff0medium";
+                    }
+                    else if (req.Rating.Difficulty < 0.75)
+                    {
+                        word = "$f50hard";
+                    }
+                    else if (req.Rating.Difficulty < 0.98)
+                    {
+                        word = "$f00very hard";
+                    }
+                    else
+                    {
+                        word = "$222near impossible";
+                    }
+
+                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map with $<$ff8{req.Car}$> is $<{word}$> ({TextLib.FormatReal(req.Rating.Difficulty * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
+                }
             }
 
             UserRatingRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/rate", ratingReqs.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
@@ -1828,6 +1915,26 @@ public class Envimix : UniverseModeBase
             if (UserRatingRequest.StatusCode == 200)
             {
                 Log(nameof(Envimix), "Rating submitted (200).");
+
+                SRatingServerResponse response = new();
+
+                if (response.FromJson(UserRatingRequest.Result))
+                {
+                    Dictionary<string, SRating> ratings = new();
+
+                    foreach (var filteredRating in response.Ratings)
+                    {
+                        ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
+                    }
+
+                    Ratings = ratings;
+                    RatingsUpdatedAt = Now;
+                }
+                else
+                {
+                    Log(nameof(Envimix), $"Rating submission failed (JSON issue). Reported in server logs.");
+                    Log(nameof(Envimix), UserRatingRequest.Result);
+                }
             }
             else
             {
@@ -1849,9 +1956,7 @@ public class Envimix : UniverseModeBase
                     var type = e.CustomEventData[0];
                     var value = TextLib.ToReal(e.CustomEventData[1]);
                     var player = GetPlayer(e.UI);
-                    var car = Netwrite<string>.For(player);
-                    var gravity = Netwrite<int>.For(player);
-                    var key = GetRatingKey(player);
+                    var key = ConstructUserRatingFilterKey(player);
 
                     // Validate
                     value = MathLib.Clamp(value, 0, 1);
@@ -1880,6 +1985,9 @@ public class Envimix : UniverseModeBase
                     {
                         rating.Quality = value;
                     }
+
+                    var car = Netwrite<string>.For(player);
+                    var gravity = Netwrite<int>.For(player);
 
                     SRatingServerRequest ratingReq = new()
                     {

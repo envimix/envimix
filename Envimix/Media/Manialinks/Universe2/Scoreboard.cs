@@ -23,6 +23,12 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         public ImmutableArray<SCheckpoint> Checkpoints;
     }
 
+    public struct SRating
+    {
+        public float Difficulty;
+        public float Quality;
+    }
+
     [ManialinkControl] public required CMlFrame FrameGlobalScores;
     [ManialinkControl] public required CMlFrame FrameYourScore;
     [ManialinkControl] public required CMlLabel LabelYourName;
@@ -38,10 +44,13 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadMyCar;
     [ManialinkControl] public required CMlLabel LabelMyCar;
 
+    public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
     public required CMlLabel LabelQuality;
     public required CMlQuad QuadDifficultyBlink;
     public required CMlQuad QuadQualityBlink;
+    public required CMlQuad QuadDifficultyGlow;
+    public required CMlQuad QuadQualityGlow;
     public required CMlFrame? Hold;
 
     public float CurrentLadderPoints;
@@ -54,7 +63,13 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
     public float Difficulty;
     public float Quality;
+    public bool PrevRatingEnabled;
+    public int PrevRatingsUpdatedAt;
+    public string PrevCar;
 
+    [Netread] public bool RatingEnabled { get; }
+    [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netread] public required int RatingsUpdatedAt { get; set; }
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
     public Scoreboard()
@@ -81,6 +96,20 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     static string TimeToTextWithMilli(int time)
     {
         return $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
+    }
+
+    string GetCar()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        return car.Get();
+    }
+
+    string ConstructRatingFilterKey()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car.Get()}_{gravity.Get()}_Time";
     }
 
     static int EchelonToInteger(CUser.EEchelon echelon)
@@ -114,7 +143,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         }
         else
         {
-        labelRank.SetText(TextLib.FormatInteger(rank, 2));
+            labelRank.SetText(TextLib.FormatInteger(rank, 2));
         }
 
         var quadEchelon = (frame.GetFirstChild("QuadEchelon") as CMlQuad)!;
@@ -168,6 +197,38 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         }
     }
 
+    private void UpdateRatings()
+    {
+        var filterKey = ConstructRatingFilterKey();
+
+        if (!Ratings.ContainsKey(filterKey))
+        {
+            (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
+            (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
+            return;
+        }
+
+        var rating = Ratings[filterKey];
+
+        if (rating.Difficulty < 0)
+        {
+            (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
+        }
+        else
+        {
+            (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Difficulty;
+        }
+
+        if (rating.Quality < 0)
+        {
+            (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
+        }
+        else
+        {
+            (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Quality;
+        }
+    }
+
     private void UpdateScoreboard()
     {
         LabelYourName.SetText(LocalUser.Name);
@@ -185,6 +246,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         QuadEchelonPercent.Size.X = LocalUser.NextEchelonPercent / 100f * 72;
         QuadEchelonCurrent.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(LocalUser.Echelon)}.dds");
         LabelEchelonCurrent.Value = EchelonToInteger(LocalUser.Echelon).ToString();
+        
         if (EchelonToInteger(LocalUser.Echelon) + 1 < 10)
         {
             QuadEchelonNext.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(LocalUser.Echelon) + 1}.dds");
@@ -314,41 +376,44 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
     private void Scoreboard_MouseClick(CMlControl control, string controlId)
     {
-        if (controlId == "QuadBox" || controlId == "QuadDraggable")
+        if (RatingEnabled)
         {
-            CMlFrame frame;
+            if (controlId == "QuadBox" || controlId == "QuadDraggable")
+            {
+                CMlFrame frame;
+
+                if (controlId == "QuadBox")
+                {
+                    frame = control.Parent.Parent;
+                }
+                else
+                {
+                    frame = control.Parent.Parent.Parent;
+                }
+
+                frame.GetFirstChild("LabelRateName").Hide();
+
+                if (frame.ControlId == "FrameDifficulty")
+                {
+                    QuadDifficultyBlink.Hide();
+                }
+                else if (frame.ControlId == "FrameQuality")
+                {
+                    QuadQualityBlink.Hide();
+                }
+            }
 
             if (controlId == "QuadBox")
             {
-                frame = control.Parent.Parent;
-            }
-            else
-            {
-                frame = control.Parent.Parent.Parent;
-            }
-            
-            frame.GetFirstChild("LabelRateName").Hide();
+                var frameDraggable = (control.Parent.Parent.GetFirstChild("FrameDraggable") as CMlFrame)!;
+                frameDraggable.Show();
 
-            if (frame.ControlId == "FrameDifficulty")
-            {
-                QuadDifficultyBlink.Hide();
+                Hold = frameDraggable;
             }
-            else if (frame.ControlId == "FrameQuality")
+            else if (controlId == "QuadDraggable")
             {
-                QuadQualityBlink.Hide();
+                Hold = control.Parent;
             }
-        }
-
-        if (controlId == "QuadBox")
-        {
-            var frameDraggable = (control.Parent.Parent.GetFirstChild("FrameDraggable") as CMlFrame)!;
-            frameDraggable.Show();
-
-            Hold = frameDraggable;
-        }
-        else if (controlId == "QuadDraggable")
-        {
-            Hold = control.Parent;
         }
     }
 
@@ -362,9 +427,13 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         LabelDifficulty = (FrameDifficulty.GetFirstChild("LabelRating") as CMlLabel)!;
         LabelDifficulty.SetText("Difficulty");
         QuadDifficultyBlink = (FrameDifficulty.GetFirstChild("QuadBlink") as CMlQuad)!;
+        QuadDifficultyGlow = (FrameDifficulty.GetFirstChild("QuadGlow") as CMlQuad)!;
         LabelQuality = (FrameQuality.GetFirstChild("LabelRating") as CMlLabel)!;
         LabelQuality.SetText("Quality");
         QuadQualityBlink = (FrameQuality.GetFirstChild("QuadBlink") as CMlQuad)!;
+        QuadQualityGlow = (FrameDifficulty.GetFirstChild("QuadGlow") as CMlQuad)!;
+        RatingFrames.Add(FrameDifficulty);
+        RatingFrames.Add(FrameQuality);
 
         Wait(() => GetPlayer() is not null);
 
@@ -429,53 +498,110 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         if (DetectChange())
         {
             UpdateScoreboard();
-        }
+        }        
 
-        QuadDifficultyBlink.Opacity = (MathLib.Sin(Now / 100f) + 1) / 2f * .1f;
-        QuadQualityBlink.Opacity = (MathLib.Sin(Now / 100f + 180) + 1) / 2f * .1f;
-
-        if (Hold is not null)
+        if (RatingEnabled != PrevRatingEnabled)
         {
-            if (MouseLeftButton)
+            QuadDifficultyBlink.Visible = RatingEnabled;
+            QuadQualityBlink.Visible = RatingEnabled;
+
+            if (RatingEnabled)
             {
-                var frame = Hold.Parent.Parent;
-
-                var visualValue = MathLib.Clamp(MouseX - (float)frame.RelativePosition_V3.X, -28, 28);
-                var realValue = (visualValue + 28) / 56;
-
-                Hold.RelativePosition_V3.X = visualValue;
-
-                (Hold.GetFirstChild("QuadDraggable") as CMlQuad)!.StyleSelected = true;
-
-                if (frame.ControlId == "FrameDifficulty")
-                {
-                    Difficulty = realValue;
-                }
-                else if (frame.ControlId == "FrameQuality")
-                {
-                    Quality = realValue;
-                }
-
-                var gauge = (frame.GetFirstChild("GaugeRating") as CMlGauge)!;
-                gauge.SetRatio(realValue);
+                QuadDifficultyGlow.Opacity = 0.25f;
+                QuadQualityGlow.Opacity = 0.25f;
             }
             else
             {
-                (Hold.GetFirstChild("QuadDraggable") as CMlQuad)!.StyleSelected = false;
-
-                var frame = Hold.Parent.Parent;
-
-                if (frame.ControlId == "FrameDifficulty")
-                {
-                    SendCustomEvent("Rate", new[] { "Difficulty", Difficulty.ToString() });
-                }
-                else if (frame.ControlId == "FrameQuality")
-                {
-                    SendCustomEvent("Rate", new[] { "Quality", Quality.ToString() });
-                }
-
-                Hold = null;
+                QuadDifficultyGlow.Opacity = 0.1f;
+                QuadQualityGlow.Opacity = 0.1f;
             }
+
+            UpdateRatings();
+
+            foreach (var frame in RatingFrames)
+            {
+                if (RatingEnabled)
+                {
+                    (frame.GetFirstChild("LabelRateName") as CMlLabel)!.SetText("Click to rate");
+                }
+                else
+                {
+                    (frame.GetFirstChild("LabelRateName") as CMlLabel)!.SetText("Rating is currently disabled");
+                }
+            }
+
+            PrevRatingEnabled = RatingEnabled;
+        }
+
+        if (RatingEnabled)
+        {
+            if (QuadDifficultyBlink.Visible)
+            {
+                QuadDifficultyBlink.Opacity = (MathLib.Sin(Now / 100f) + 1) / 2f * .1f;
+            }
+
+            if (QuadQualityBlink.Visible)
+            {
+                QuadQualityBlink.Opacity = (MathLib.Sin(Now / 100f + 180) + 1) / 2f * .1f;
+            }
+
+            if (Hold is not null)
+            {
+                if (MouseLeftButton)
+                {
+                    var frame = Hold.Parent.Parent;
+
+                    var visualValue = MathLib.Clamp(MouseX - (float)frame.RelativePosition_V3.X, -28, 28);
+                    var realValue = (visualValue + 28) / 56;
+
+                    Hold.RelativePosition_V3.X = visualValue;
+
+                    (Hold.GetFirstChild("QuadDraggable") as CMlQuad)!.StyleSelected = true;
+
+                    if (frame.ControlId == "FrameDifficulty")
+                    {
+                        Difficulty = realValue;
+                    }
+                    else if (frame.ControlId == "FrameQuality")
+                    {
+                        Quality = realValue;
+                    }
+
+                    //var gauge = (frame.GetFirstChild("GaugeRating") as CMlGauge)!;
+                    //gauge.SetRatio(realValue);
+                }
+                else
+                {
+                    (Hold.GetFirstChild("QuadDraggable") as CMlQuad)!.StyleSelected = false;
+
+                    var frame = Hold.Parent.Parent;
+
+                    if (frame.ControlId == "FrameDifficulty")
+                    {
+                        SendCustomEvent("Rate", new[] { "Difficulty", Difficulty.ToString() });
+                    }
+                    else if (frame.ControlId == "FrameQuality")
+                    {
+                        SendCustomEvent("Rate", new[] { "Quality", Quality.ToString() });
+                    }
+
+                    Hold = null;
+                }
+            }
+        }
+
+        if (RatingsUpdatedAt != PrevRatingsUpdatedAt)
+        {
+            UpdateRatings();
+
+            PrevRatingsUpdatedAt = RatingsUpdatedAt;
+        }
+
+        if (GetCar() != PrevCar)
+        {
+            UpdateRatings();
+
+            PrevCar = GetCar();
         }
     }
 }
