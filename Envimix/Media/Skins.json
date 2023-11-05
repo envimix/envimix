@@ -154,6 +154,12 @@
 			"Icon": "Images/Skins/LagoonCar/Wave.dds"
 		}
 	},
+	"TrafficCar": {
+		"9thArrow": {
+			"File": "TrafficCar/9thArrow.zip",
+			"Icon": "Images/Skins/TrafficCar/9thArrow.dds"
+		}
+	},
 	"DesertCar": {
 		"Blackdevil": {
 			"File": "AmericanCar/Blackdevil.zip",
