@@ -1872,27 +1872,30 @@ public class Envimix : UniverseModeBase
             {
                 ratingReqs.Add(req);
 
-                if (req.Rating.Difficulty != -1)
+                var difficulty = req.Rating.Difficulty;
+                var quality = req.Rating.Quality;
+
+                if (difficulty != -1)
                 {
                     var word = "";
 
-                    if (req.Rating.Difficulty < 0.1)
+                    if (difficulty < 0.1)
                     {
                         word = "$0f0very easy";
                     }
-                    else if (req.Rating.Difficulty < 0.25)
+                    else if (difficulty < 0.25)
                     {
                         word = "$5f0easy";
                     }
-                    else if (req.Rating.Difficulty < 0.5)
+                    else if (difficulty < 0.5)
                     {
                         word = "$ff0medium";
                     }
-                    else if (req.Rating.Difficulty < 0.75)
+                    else if (difficulty < 0.75)
                     {
                         word = "$f50hard";
                     }
-                    else if (req.Rating.Difficulty < 0.98)
+                    else if (difficulty < 0.98)
                     {
                         word = "$f00very hard";
                     }
@@ -1901,7 +1904,39 @@ public class Envimix : UniverseModeBase
                         word = "$222near impossible";
                     }
 
-                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map with $<$ff8{req.Car}$> is $<{word}$> ({TextLib.FormatReal(req.Rating.Difficulty * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
+                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map with $<$ff8{req.Car}$> is $<{word}$> ({TextLib.FormatReal(difficulty * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
+                }
+
+                if (quality != -1)
+                {
+                    var word = "";
+
+                    if (quality < 0.1)
+                    {
+                        word = "$222horrible";
+                    }
+                    else if (quality < 0.25)
+                    {
+                        word = "$f00bad";
+                    }
+                    else if (quality < 0.5)
+                    {
+                        word = "$fa0average";
+                    }
+                    else if (quality < 0.75)
+                    {
+                        word = "$af0good";
+                    }
+                    else if (quality < 0.98)
+                    {
+                        word = "$5f0great";
+                    }
+                    else
+                    {
+                        word = "$0f0fantastic";
+                    }
+
+                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map with $<$ff8{req.Car}$> is $<{word}$> ({TextLib.FormatReal(quality * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
                 }
             }
 
