@@ -261,7 +261,7 @@ public class Envimix : UniverseModeBase
 
                 itemCars[car] = itemName;
 
-                if ((AlwaysUseVehicleItems || (EnableStadiumEnvimix && car != "StadiumCar")) && (EnableTrafficCarInStadium || car != "TrafficCar"))
+                if (AlwaysUseVehicleItems || (EnableStadiumEnvimix && car != "StadiumCar") || (EnableTrafficCarInStadium && car == "TrafficCar"))
                 {
                     itemName = $"{VehicleFolder}{TextLib.Replace(VehicleFileFormat, "%1", car)}";
                     SpecialCars[car] = new()
@@ -1248,9 +1248,24 @@ public class Envimix : UniverseModeBase
     {
         var allCars = new Dictionary<string, Dictionary<string, Ident>>();
 
+        if (AlwaysUseVehicleItems)
+        {
+            foreach (var (car, model) in SpecialCars)
+            {
+                allCars[car] = model;
+            }
+        }
+        else
+        {
         foreach (var (car, model) in Cars)
         {
             allCars[car] = model;
+        }
+
+            if (EnableTrafficCarInStadium && SpecialCars.ContainsKey("TrafficCar"))
+            {
+                allCars["TrafficCar"] = SpecialCars["TrafficCar"];
+            }
         }
 
         if (Map is not null && Map.CollectionName == "Stadium")
