@@ -1,9 +1,17 @@
 ﻿namespace Envimix.Media.Manialinks.Universe2;
 
-public class Rating : CMlScriptIngame, IContext
+public class Rating : CTmMlScriptIngame, IContext
 {
+    public struct SRating
+    {
+        public float Difficulty;
+        public float Quality;
+    }
+
     public bool PreviousVisible;
     public int VisibleTime = -1;
+    public string PreviousCar = "";
+    public int PrevRatingsUpdatedAt = -1;
 
     [ManialinkControl] public required CMlFrame FrameRating;
     [ManialinkControl] public required CMlGauge GaugeDifficulty;
@@ -11,15 +19,77 @@ public class Rating : CMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelDifficulty;
     [ManialinkControl] public required CMlLabel LabelQuality;
 
+    [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netread] public required int RatingsUpdatedAt { get; set; }
+
     bool IsVisible()
     {
         return !IsInGameMenuDisplayed;
+    }
+
+    CTmMlPlayer GetPlayer()
+    {
+        if (GUIPlayer is not null)
+        {
+            return GUIPlayer;
+        }
+
+        return InputPlayer;
+    }
+
+    string ConstructRatingFilterKey()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car.Get()}_{gravity.Get()}_Time";
+    }
+
+    string GetCar()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        return car.Get();
     }
 
     public void Main()
     {
         FrameRating.Visible = IsVisible();
         PreviousVisible = FrameRating.Visible;
+        
+        Wait(() => GetPlayer() is not null);
+    }
+
+    public void UpdateRatings()
+    {
+        var filterKey = ConstructRatingFilterKey();
+
+        if (Ratings.ContainsKey(filterKey))
+        {
+            var rating = Ratings[filterKey];
+
+            if (rating.Difficulty > 0)
+            {
+                GaugeDifficulty.Ratio = rating.Difficulty;
+            }
+            else
+            {
+                GaugeDifficulty.Ratio = 0;
+            }
+
+            if (rating.Quality > 0)
+            {
+                GaugeQuality.Ratio = rating.Quality;
+            }
+            else
+            {
+                GaugeQuality.Ratio = 0;
+            }
+        }
+        else
+        {
+            GaugeDifficulty.Ratio = 0;
+            GaugeQuality.Ratio = 0;
+        }
     }
 
     public void Loop()
@@ -50,6 +120,20 @@ public class Rating : CMlScriptIngame, IContext
             }
 
             PreviousVisible = FrameRating.Visible;
+        }
+
+        if (GetCar() != PreviousCar)
+        {
+            UpdateRatings();
+
+            PreviousCar = GetCar();
+        }
+
+        if (RatingsUpdatedAt != PrevRatingsUpdatedAt)
+        {
+            UpdateRatings();
+
+            PrevRatingsUpdatedAt = RatingsUpdatedAt;
         }
     }
 }
