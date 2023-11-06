@@ -67,22 +67,22 @@ public class Rating : CTmMlScriptIngame, IContext
         {
             var rating = Ratings[filterKey];
 
-            if (rating.Difficulty > 0)
-            {
-                GaugeDifficulty.Ratio = rating.Difficulty;
-            }
-            else
+            if (rating.Difficulty < 0)
             {
                 GaugeDifficulty.Ratio = 0;
             }
-
-            if (rating.Quality > 0)
+            else
             {
-                GaugeQuality.Ratio = rating.Quality;
+                GaugeDifficulty.Ratio = rating.Difficulty * .84f + .16f;
+            }
+
+            if (rating.Quality < 0)
+            {
+                GaugeQuality.Ratio = 0;
             }
             else
             {
-                GaugeQuality.Ratio = 0;
+                GaugeQuality.Ratio = rating.Quality * .84f + .16f;
             }
         }
         else

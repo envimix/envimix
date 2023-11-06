@@ -216,7 +216,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         }
         else
         {
-            (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Difficulty;
+            (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Difficulty * .9f + .1f;
         }
 
         if (rating.Quality < 0)
@@ -225,7 +225,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         }
         else
         {
-            (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Quality;
+            (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Quality * .9f + .1f;
         }
     }
 

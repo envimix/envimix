@@ -63,6 +63,12 @@ public class Menu : CTmMlScriptIngame, IContext
         public int Time;
     }
 
+    public struct SRating
+    {
+        public float Difficulty;
+        public float Quality;
+    }
+
     [ManialinkControl] public required CMlFrame FrameInnerVehicles;
 	[ManialinkControl] public required CMlFrame FrameSkinList;
     [ManialinkControl] public required CMlQuad QuadButtonSpectator;
@@ -170,6 +176,8 @@ public class Menu : CTmMlScriptIngame, IContext
     public int PreviousZoneIndex = -1;
     public int PrevLocalGhostMetadataUpdatedAt = -1;
     public required Dictionary<string, bool> SelectedGhosts;
+    public int PrevRatingsUpdatedAt;
+    public bool PrevRatingEnabled;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -185,6 +193,10 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public IList<SGhostMetadata> LocalGhostMetadata { get; }
     [Netread] public int LocalGhostMetadataUpdatedAt { get; }
     [Netread] public bool CanListenToUIEvents { get; }
+
+    [Netread] public bool RatingEnabled { get; }
+    [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netread] public required int RatingsUpdatedAt { get; set; }
 
     public Menu()
     {
@@ -283,6 +295,13 @@ public class Menu : CTmMlScriptIngame, IContext
     bool IsSolo()
     {
         return CurrentServerLogin is "";
+    }
+
+    string ConstructRatingFilterKey(string car)
+    {
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car}_{gravity.Get()}_Time";
     }
 
     private void CloseGravityMenu()
@@ -1994,6 +2013,62 @@ public class Menu : CTmMlScriptIngame, IContext
             }
 
             PrevLocalGhostMetadataUpdatedAt = LocalGhostMetadataUpdatedAt;
+        }
+
+        if (RatingEnabled != PrevRatingEnabled)
+        {
+            foreach (var control in FrameInnerVehicles.Controls)
+            {
+                var frame = (control as CMlFrame)!;
+
+                frame.GetFirstChild("GaugeDifficulty").Visible = RatingEnabled;
+                frame.GetFirstChild("GaugeQuality").Visible = RatingEnabled;
+            }
+
+            PrevRatingEnabled = RatingEnabled;
+        }
+
+        if (RatingsUpdatedAt != PrevRatingsUpdatedAt)
+        {
+            foreach (var control in FrameInnerVehicles.Controls)
+            {
+                var frame = (control as CMlFrame)!;
+                var gaugeDifficulty = (frame.GetFirstChild("GaugeDifficulty") as CMlGauge)!;
+                var gaugeQuality = (frame.GetFirstChild("GaugeQuality") as CMlGauge)!;
+
+                var carName = frame.DataAttributeGet("car");
+
+                var filterKey = ConstructRatingFilterKey(carName);
+
+                if (!Ratings.ContainsKey(filterKey))
+                {
+                    gaugeDifficulty.Ratio = 0;
+                    gaugeQuality.Ratio = 0;
+                    continue;
+                }
+
+                var rating = Ratings[filterKey];
+
+                if (rating.Difficulty < 0)
+                {
+                    gaugeDifficulty.Ratio = 0;
+                }
+                else
+                {
+                    gaugeDifficulty.Ratio = rating.Difficulty * .6f + .4f;
+                }
+
+                if (rating.Quality < 0)
+                {
+                    gaugeQuality.Ratio = 0;
+                }
+                else
+                {
+                    gaugeQuality.Ratio = rating.Quality * .6f + .4f;
+                }
+            }
+
+            PrevRatingsUpdatedAt = RatingsUpdatedAt;
         }
     }
 }
