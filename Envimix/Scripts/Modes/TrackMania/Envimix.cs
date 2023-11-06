@@ -1904,7 +1904,7 @@ public class Envimix : UniverseModeBase
                         word = "$222near impossible";
                     }
 
-                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map with $<$ff8{req.Car}$> is $<{word}$> ({TextLib.FormatReal(difficulty * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
+                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map is $<{word}$> with $<$ff8{req.Car}$> ({TextLib.FormatReal(difficulty * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
                 }
 
                 if (quality != -1)
@@ -1936,7 +1936,7 @@ public class Envimix : UniverseModeBase
                         word = "$0f0fantastic";
                     }
 
-                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map with $<$ff8{req.Car}$> is $<{word}$> ({TextLib.FormatReal(quality * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
+                    UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map is $<{word}$> with $<$ff8{req.Car}$> ({TextLib.FormatReal(quality * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
                 }
             }
 
