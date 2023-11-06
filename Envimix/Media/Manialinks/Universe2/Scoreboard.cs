@@ -212,20 +212,20 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
         if (rating.Difficulty < 0)
         {
-            (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
+            AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
         }
         else
         {
-            (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Difficulty * .9f + .1f;
+            AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Difficulty * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
         }
 
         if (rating.Quality < 0)
         {
-            (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
+            AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
         }
         else
         {
-            (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = rating.Quality * .9f + .1f;
+            AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Quality * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
         }
     }
 

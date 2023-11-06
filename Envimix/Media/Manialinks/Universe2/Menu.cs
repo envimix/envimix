@@ -2020,9 +2020,21 @@ public class Menu : CTmMlScriptIngame, IContext
             foreach (var control in FrameInnerVehicles.Controls)
             {
                 var frame = (control as CMlFrame)!;
+                var gaugeDifficulty = frame.GetFirstChild("GaugeDifficulty");
+                var gaugeQuality = frame.GetFirstChild("GaugeQuality");
 
-                frame.GetFirstChild("GaugeDifficulty").Visible = RatingEnabled;
-                frame.GetFirstChild("GaugeQuality").Visible = RatingEnabled;
+                if (RatingEnabled)
+                {
+                    gaugeDifficulty.Size.X = 0;
+                    gaugeQuality.Size.X = 0;
+                    AnimMgr.Add(gaugeDifficulty, "<gauge size=\"11 6.5\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    AnimMgr.Add(gaugeQuality, "<gauge size=\"11 6.5\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+                }
+                else
+                {
+                    gaugeDifficulty.Size.X = 0;
+                    gaugeQuality.Size.X = 0;
+                }
             }
 
             PrevRatingEnabled = RatingEnabled;
@@ -2051,20 +2063,20 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 if (rating.Difficulty < 0)
                 {
-                    gaugeDifficulty.Ratio = 0;
+                    AnimMgr.Add(gaugeDifficulty, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
                 else
                 {
-                    gaugeDifficulty.Ratio = rating.Difficulty * .6f + .4f;
+                    AnimMgr.Add(gaugeDifficulty, $"<gauge ratio=\"{rating.Difficulty * .6f + .4f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
 
                 if (rating.Quality < 0)
                 {
-                    gaugeQuality.Ratio = 0;
+                    AnimMgr.Add(gaugeQuality, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
                 else
                 {
-                    gaugeQuality.Ratio = rating.Quality * .6f + .4f;
+                    AnimMgr.Add(gaugeQuality, $"<gauge ratio=\"{rating.Quality * .6f + .4f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
             }
 

@@ -69,20 +69,22 @@ public class Rating : CTmMlScriptIngame, IContext
 
             if (rating.Difficulty < 0)
             {
+                AnimMgr.Add(GaugeDifficulty, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 GaugeDifficulty.Ratio = 0;
             }
             else
             {
-                GaugeDifficulty.Ratio = rating.Difficulty * .84f + .16f;
+                AnimMgr.Add(GaugeDifficulty, $"<gauge ratio=\"{rating.Difficulty * .84f + .16f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
             }
 
             if (rating.Quality < 0)
             {
+                AnimMgr.Add(GaugeQuality, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 GaugeQuality.Ratio = 0;
             }
             else
             {
-                GaugeQuality.Ratio = rating.Quality * .84f + .16f;
+                AnimMgr.Add(GaugeQuality, $"<gauge ratio=\"{rating.Quality * .84f + .16f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         }
         else

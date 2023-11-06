@@ -14,7 +14,7 @@ public class MultiplayerEvents : CTmMlScriptIngame, IContext
                 case CTmRaceClientEvent.EType.WayPoint:
                     if (e.IsEndRace)
                     {
-                        SendCustomEvent("Finish", new[] { e.RaceTime.ToString() });
+
                     }
                     else if (e.IsEndLap)
                     {
