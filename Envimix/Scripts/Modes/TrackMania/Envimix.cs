@@ -1957,7 +1957,7 @@ public class Envimix : UniverseModeBase
 
                 if (response.FromJson(UserRatingRequest.Result))
                 {
-                    Dictionary<string, SRating> ratings = new();
+                    var ratings = Ratings;
 
                     foreach (var filteredRating in response.Ratings)
                     {
