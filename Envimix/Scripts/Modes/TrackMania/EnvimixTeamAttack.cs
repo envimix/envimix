@@ -156,6 +156,7 @@ public class EnvimixTeamAttack : Envimix
 
             CheckEnvimaniaSession();
             CheckRatings();
+            CheckUserInfoRequests();
             UpdateSpectatorLists();
 
             Yield();

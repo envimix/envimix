@@ -98,6 +98,20 @@ public class Rating : CTmMlScriptIngame, IContext
     {
         FrameRating.Visible = IsVisible();
 
+        if (GetCar() != PreviousCar)
+        {
+            UpdateRatings();
+
+            PreviousCar = GetCar();
+        }
+
+        if (RatingsUpdatedAt != PrevRatingsUpdatedAt)
+        {
+            UpdateRatings();
+
+            PrevRatingsUpdatedAt = RatingsUpdatedAt;
+        }
+
         if (FrameRating.Visible != PreviousVisible)
         {
             if (FrameRating.Visible)
@@ -122,20 +136,6 @@ public class Rating : CTmMlScriptIngame, IContext
             }
 
             PreviousVisible = FrameRating.Visible;
-        }
-
-        if (GetCar() != PreviousCar)
-        {
-            UpdateRatings();
-
-            PreviousCar = GetCar();
-        }
-
-        if (RatingsUpdatedAt != PrevRatingsUpdatedAt)
-        {
-            UpdateRatings();
-
-            PrevRatingsUpdatedAt = RatingsUpdatedAt;
         }
     }
 }

@@ -86,6 +86,12 @@ public class Envimix : UniverseModeBase
         public ImmutableArray<SEnvimaniaSessionRecordRequest> Requests;
     }
 
+    public struct SEnvimaniaSessionUser
+    {
+        public string Login;
+        public IList<SFilteredRating> Ratings;
+    }
+
     public struct SEnvimaniaRecord
     {
         public SUserInfo User;
@@ -204,6 +210,10 @@ public class Envimix : UniverseModeBase
     public required Dictionary<string, SRatingServerRequest> UserRatingsToRequest;
     public CHttpRequest? UserRatingRequest;
     public required int UserRatingsUpdatedAt;
+
+    public Dictionary<string, SUserInfo> UserJoinAdditionalInfosToRequest;
+    public CHttpRequest? UserJoinAdditionalInfoRequest;
+    public required int UserJoinAdditionalInfosUpdatedAt;
 
     public override void OnServerInit()
     {
@@ -466,6 +476,9 @@ public class Envimix : UniverseModeBase
         {
             var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
             prepareLoading.Set(-1);
+
+            var myRatings = Netwrite<ImmutableArray<SFilteredRating>>.For(UIManager.GetUI(player));
+            myRatings.Set(new());
         }
     }
 
@@ -479,6 +492,8 @@ public class Envimix : UniverseModeBase
         EnvimaniaFinishedRecordsRequests.Clear();
         Ratings.Clear();
         RatingEnabled = false;
+
+        RatingsUpdatedAt = Now;
 
         var requested = RequestEnvimaniaSession();
 
@@ -507,18 +522,21 @@ public class Envimix : UniverseModeBase
 
         CheckEnvimaniaSession();
         CheckRatings();
+        CheckUserInfoRequests();
     }
 
     public override void WhileMapIntro()
     {
         CheckEnvimaniaSession();
         CheckRatings();
+        CheckUserInfoRequests();
     }
 
     public override void OnLoop()
     {
         CheckEnvimaniaSession();
         CheckRatings();
+        CheckUserInfoRequests();
     }
 
     public static SUserInfo CreateUserInfo(CUser user)
@@ -1234,6 +1252,13 @@ public class Envimix : UniverseModeBase
         };
 
         SendMessage(chatMsg);
+
+        if (EnvimaniaSessionToken is not "")
+        {
+            var userInfo = CreateUserInfo(e.Player.User);
+
+            UserJoinAdditionalInfosToRequest[userInfo.Login] = userInfo;
+        }
     }
 
     public override void OnPlayerRemoved(CTmModeEvent e)
@@ -1875,7 +1900,7 @@ public class Envimix : UniverseModeBase
             return;
         }
 
-        if (UserRatingsToRequest.Count > 0 && UserRatingsUpdatedAt + 1000 <= Now)
+        if (UserRatingRequest is null && UserRatingsToRequest.Count > 0 && UserRatingsUpdatedAt + 1000 <= Now)
         {
             ImmutableArray<SRatingServerRequest> ratingReqs = new();
 
@@ -2005,6 +2030,80 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    public void CheckUserInfoRequests()
+    {
+        if (EnvimaniaSessionToken is "")
+        {
+            return;
+        }
+
+        if (UserJoinAdditionalInfoRequest is null && UserJoinAdditionalInfosToRequest.Count > 0 && UserJoinAdditionalInfosUpdatedAt + 1000 <= Now)
+        {            
+            UserJoinAdditionalInfoRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/users", UserJoinAdditionalInfosToRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+
+            UserJoinAdditionalInfosToRequest.Clear();
+            UserJoinAdditionalInfosUpdatedAt = Now;
+        }
+
+        if (UserJoinAdditionalInfoRequest is not null && UserJoinAdditionalInfoRequest.IsCompleted)
+        {
+            if (UserJoinAdditionalInfoRequest.StatusCode == 200)
+            {
+                Log(nameof(Envimix), "User information submitted (200).");
+
+                ImmutableArray<SEnvimaniaSessionUser> users = new();
+
+                if (users.FromJson(UserJoinAdditionalInfoRequest.Result))
+                {
+                    foreach (var user in users)
+                    {
+                        if (GetPlayer(user.Login) is null)
+                        {
+                            continue;
+                        }
+
+                        var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(GetPlayer(user.Login)));
+
+                        foreach (var filteredRating in user.Ratings)
+                        {
+                            var hasMyRating = false;
+
+                            for (int i = 0; i < myRatings.Get().Count; i++)
+                            {
+                                var r = myRatings.Get()[i];
+
+                                if (r.Filter.Car == filteredRating.Filter.Car && r.Filter.Gravity == filteredRating.Filter.Gravity)
+                                {
+                                    r.Rating = filteredRating.Rating;
+                                    myRatings.Get()[i] = r;
+                                    hasMyRating = true;
+                                    break;
+                                }
+                            }
+
+                            if (!hasMyRating)
+                            {
+                                myRatings.Get().Add(filteredRating);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Log(nameof(Envimix), $"User information submission failed (JSON issue). Reported in server logs.");
+                    Log(nameof(Envimix), UserJoinAdditionalInfoRequest.Result);
+                }
+            }
+            else
+            {
+                Log(nameof(Envimix), $"User information submission failed ({UserJoinAdditionalInfoRequest.StatusCode}).");
+            }
+
+            Http.Destroy(UserJoinAdditionalInfoRequest);
+            UserJoinAdditionalInfoRequest = null;
+        }
+    }
+
     private bool TryRate(CPlayer player, string type, float value)
     {
         var key = ConstructUserRatingFilterKey(player);
@@ -2046,12 +2145,13 @@ public class Envimix : UniverseModeBase
 
             rating.Quality = val;
         }
-        //myRatings.Set(sessionResponse.UserRatings[player.User.Login]);
 
         var car = Netwrite<string>.For(player);
         var gravity = Netwrite<int>.For(player);
 
         var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(player));
+
+        var hasMyRating = false;
 
         for (int i = 0; i < myRatings.Get().Count; i++)
         {
@@ -2060,9 +2160,28 @@ public class Envimix : UniverseModeBase
             if (r.Filter.Car == car.Get() && r.Filter.Gravity == gravity.Get())
             {
                 r.Rating = rating;
+                myRatings.Get()[i] = r;
+                hasMyRating = true;
+                break;
             }
+        }
 
-            myRatings.Get()[i] = r;
+        if (!hasMyRating)
+        {
+            SRatingFilter filter = new()
+            {
+                Car = car.Get(),
+                Gravity = gravity.Get(),
+                Type = "Time" // TODO: Add support for other types
+            };
+
+            SFilteredRating filteredRating = new()
+            {
+                Filter = filter,
+                Rating = rating
+            };
+
+            myRatings.Get().Add(filteredRating);
         }
 
         SRatingServerRequest ratingReq = new()
