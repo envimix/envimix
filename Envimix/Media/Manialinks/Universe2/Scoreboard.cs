@@ -29,6 +29,19 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         public float Quality;
     }
 
+    public struct SRatingFilter
+    {
+        public string Car;
+        public int Gravity;
+        public string Type;
+    }
+
+    public struct SFilteredRating
+    {
+        public SRatingFilter Filter;
+        public SRating Rating;
+    }
+
     [ManialinkControl] public required CMlFrame FrameGlobalScores;
     [ManialinkControl] public required CMlFrame FrameYourScore;
     [ManialinkControl] public required CMlLabel LabelYourName;
@@ -70,6 +83,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
+    [Netread(NetFor.UI)] public required IList<SFilteredRating> MyRatings { get; set; }
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
     public Scoreboard()
@@ -104,12 +118,22 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         return car.Get();
     }
 
+    static string ConstructRatingFilterKey(string car, int gravity)
+    {
+        return $"{car}_{gravity}_Time";
+    }
+
+    static string ConstructRatingFilterKey(SRatingFilter filter)
+    {
+        return ConstructRatingFilterKey(filter.Car, filter.Gravity);
+    }
+
     string ConstructRatingFilterKey()
     {
         var car = Netread<string>.For(GetPlayer());
         var gravity = Netread<int>.For(GetPlayer());
 
-        return $"{car.Get()}_{gravity.Get()}_Time";
+        return ConstructRatingFilterKey(car.Get(), gravity.Get());
     }
 
     static int EchelonToInteger(CUser.EEchelon echelon)
@@ -343,6 +367,48 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         }
     }
 
+    private void ClearPersonalRating(CMlFrame frame)
+    {
+        frame.GetFirstChild("LabelRateName").Hide();
+
+        if (frame.ControlId == "FrameDifficulty")
+        {
+            QuadDifficultyBlink.Hide();
+        }
+        else if (frame.ControlId == "FrameQuality")
+        {
+            QuadQualityBlink.Hide();
+        }
+    }
+
+    private void SetPersonalRating(CMlFrame frame, float value)
+    {
+        var draggable = frame.GetFirstChild("FrameDraggable")!;
+
+        if (value < 0)
+        {
+            frame.GetFirstChild("LabelRateName").Show();
+
+            if (frame.ControlId == "FrameDifficulty")
+            {
+                QuadDifficultyBlink.Show();
+            }
+            else if (frame.ControlId == "FrameQuality")
+            {
+                QuadQualityBlink.Show();
+            }
+
+            draggable.Hide();
+        }
+        else
+        {
+            ClearPersonalRating(frame);
+
+            draggable.RelativePosition_V3.X = value * 56 - 28;
+            draggable.Show();
+        }
+    }
+
     private void Scoreboard_RaceEvent(CTmRaceClientEvent e)
     {
         switch (e.Type)
@@ -391,16 +457,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
                     frame = control.Parent.Parent.Parent;
                 }
 
-                frame.GetFirstChild("LabelRateName").Hide();
-
-                if (frame.ControlId == "FrameDifficulty")
-                {
-                    QuadDifficultyBlink.Hide();
-                }
-                else if (frame.ControlId == "FrameQuality")
-                {
-                    QuadQualityBlink.Hide();
-                }
+                ClearPersonalRating(frame);
             }
 
             if (controlId == "QuadBox")
@@ -491,6 +548,31 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         return false;
     }
 
+    private void UpdatePersonalRatings()
+    {
+        var ratingsUpdated = false;
+
+        foreach (var r in MyRatings)
+        {
+            if (ConstructRatingFilterKey(r.Filter) == ConstructRatingFilterKey())
+            {
+                SetPersonalRating(FrameDifficulty, r.Rating.Difficulty);
+                SetPersonalRating(FrameQuality, r.Rating.Quality);
+
+                ratingsUpdated = true;
+                break;
+            }
+        }
+
+        if (ratingsUpdated)
+        {
+            return;
+        }
+
+        SetPersonalRating(FrameDifficulty, -1);
+        SetPersonalRating(FrameQuality, -1);
+    }
+
     public void Loop()
     {
         ScoreTableIsVisible = PageIsVisible;
@@ -507,6 +589,8 @@ public class Scoreboard : CTmMlScriptIngame, IContext
 
             if (RatingEnabled)
             {
+                UpdatePersonalRatings();
+
                 QuadDifficultyGlow.Opacity = 0.25f;
                 QuadQualityGlow.Opacity = 0.25f;
             }
@@ -600,6 +684,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         if (GetCar() != PrevCar)
         {
             UpdateRatings();
+            UpdatePersonalRatings();
 
             PrevCar = GetCar();
         }
