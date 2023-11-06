@@ -414,8 +414,8 @@ public class Envimix : UniverseModeBase
             vehicleManialink = $"{vehicleManialink}        <label pos=\"0 -0.5\" z-index=\"3\" size=\"70 10\" text=\"{vehicle}\" halign=\"center\" valign=\"center2\" textsize=\"6\" textfont=\"RajdhaniMono\" id=\"LabelVehicle\"/>";
             vehicleManialink = $"{vehicleManialink}        <label pos=\"37.5 -8\" z-index=\"2\" size=\"75 5\" text=\"Default\" textprefix=\"$t\" halign=\"right\" valign=\"bottom\" textfont=\"Oswald\" textsize=\"2\" textcolor=\"FF0\" id=\"LabelDefault\" translate=\"1\" hidden=\"1\"/>";
             vehicleManialink = $"{vehicleManialink}        <quad pos=\"35 5\" z-index=\"3\" size=\"7.5 7.5\" halign=\"center\" valign=\"center\" style=\"BgRaceScore2\" substyle=\"Fame\" id=\"QuadStar\" hidden=\"1\"/>";
-            vehicleManialink = $"{vehicleManialink}        <gauge id=\"GaugeDifficulty\" pos=\"-40 -5\" z-index=\"3\" size=\"0 6.5\" drawbg=\"0\" valign=\"center\" ratio=\"0\"/>";
-            vehicleManialink = $"{vehicleManialink}        <gauge id=\"GaugeQuality\" pos=\"-40 -7\" z-index=\"3\" size=\"0 6.5\" drawbg=\"0\" valign=\"center\" ratio=\"0\"/>";
+            vehicleManialink = $"{vehicleManialink}        <gauge id=\"GaugeDifficulty\" pos=\"-40 -5\" z-index=\"3\" size=\"11 6.5\" drawbg=\"0\" valign=\"center\" ratio=\"0\"/>";
+            vehicleManialink = $"{vehicleManialink}        <gauge id=\"GaugeQuality\" pos=\"-40 -7\" z-index=\"3\" size=\"11 6.5\" drawbg=\"0\" valign=\"center\" ratio=\"0\"/>";
             vehicleManialink = $"{vehicleManialink}        <quad id=\"QuadFlash\" z-index=\"4\" size=\"80 19\" valign=\"center\" halign=\"center\" style=\"Bgs1\" substyle=\"BgWindow4\" opacity=\"0\"/>";
             vehicleManialink = $"{vehicleManialink}     </frame>";
         }
@@ -539,7 +539,7 @@ public class Envimix : UniverseModeBase
         return userInfo;
     }
 
-    private static string ConstructUserRatingFilterKey(CTmPlayer player)
+    private static string ConstructUserRatingFilterKey(CPlayer player)
     {
         var car = Netwrite<string>.For(player);
         var gravity = Netwrite<int>.For(player);
@@ -1875,7 +1875,18 @@ public class Envimix : UniverseModeBase
                 var difficulty = req.Rating.Difficulty;
                 var quality = req.Rating.Quality;
 
-                if (difficulty != -1)
+                var isDifficultyDifferent = true;
+                var isQualityDifferent = true;
+
+                if (UserRatings.ContainsKey(key))
+                {
+                    isDifficultyDifferent = UserRatings[key].Difficulty != difficulty;
+                    isQualityDifferent = UserRatings[key].Quality != quality;
+                }
+
+                UserRatings[key] = req.Rating;
+
+                if (difficulty != -1 && isDifficultyDifferent)
                 {
                     var word = "";
 
@@ -1907,7 +1918,7 @@ public class Envimix : UniverseModeBase
                     UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map is $<{word}$> with $<$ff8{req.Car}$> ({TextLib.FormatReal(difficulty * 100, 2, _HideZeroes: true, _HideDot: true)}%).");
                 }
 
-                if (quality != -1)
+                if (quality != -1 && isQualityDifferent)
                 {
                     var word = "";
 
@@ -1983,6 +1994,64 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    private bool TryRate(CPlayer player, string type, float value)
+    {
+        var key = ConstructUserRatingFilterKey(player);
+
+        // Validate
+        var val = MathLib.Clamp(value, 0, 1);
+
+        SRating rating = new();
+
+        if (UserRatings.ContainsKey(key))
+        {
+            rating = UserRatings[key];
+        }
+        else if (UserRatingsToRequest.ContainsKey(key))
+        {
+            rating = UserRatingsToRequest[key].Rating;
+        }
+        else
+        {
+            rating.Difficulty = -1;
+            rating.Quality = -1;
+        }
+
+        if (type == "Difficulty")
+        {
+            if (val == rating.Difficulty)
+            {
+                return false;
+            }
+
+            rating.Difficulty = val;
+        }
+        else if (type == "Quality")
+        {
+            if (val == rating.Quality)
+            {
+                return false;
+            }
+
+            rating.Quality = val;
+        }
+
+        var car = Netwrite<string>.For(player);
+        var gravity = Netwrite<int>.For(player);
+
+        SRatingServerRequest ratingReq = new()
+        {
+            User = CreateUserInfo(player.User),
+            Car = car.Get(),
+            Gravity = gravity.Get(),
+            Rating = rating
+        };
+
+        UserRatingsToRequest[key] = ratingReq;
+
+        return true;
+    }
+
     public void ProcessGeneralEnvimixEvents(CUIConfigEvent e)
     {
         switch (e.CustomEventType)
@@ -1993,48 +2062,7 @@ public class Envimix : UniverseModeBase
                     var type = e.CustomEventData[0];
                     var value = TextLib.ToReal(e.CustomEventData[1]);
                     var player = GetPlayer(e.UI);
-                    var key = ConstructUserRatingFilterKey(player);
-
-                    // Validate
-                    value = MathLib.Clamp(value, 0, 1);
-
-                    SRating rating = new();
-
-                    if (UserRatings.ContainsKey(key))
-                    {
-                        rating = UserRatings[key];
-                    }
-                    else if (UserRatingsToRequest.ContainsKey(key))
-                    {
-                        rating = UserRatingsToRequest[key].Rating;
-                    }
-                    else
-                    {
-                        rating.Difficulty = -1;
-                        rating.Quality = -1;
-                    }
-
-                    if (type == "Difficulty")
-                    {
-                        rating.Difficulty = value;
-                    }
-                    else if (type == "Quality")
-                    {
-                        rating.Quality = value;
-                    }
-
-                    var car = Netwrite<string>.For(player);
-                    var gravity = Netwrite<int>.For(player);
-
-                    SRatingServerRequest ratingReq = new()
-                    {
-                        User = CreateUserInfo(player.User),
-                        Car = car.Get(),
-                        Gravity = gravity.Get(),
-                        Rating = rating
-                    };
-
-                    UserRatingsToRequest[key] = ratingReq;
+                    TryRate(player, type, value);
                 }
                 break;
         }

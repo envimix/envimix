@@ -2020,13 +2020,11 @@ public class Menu : CTmMlScriptIngame, IContext
             foreach (var control in FrameInnerVehicles.Controls)
             {
                 var frame = (control as CMlFrame)!;
-                var gaugeDifficulty = frame.GetFirstChild("GaugeDifficulty");
-                var gaugeQuality = frame.GetFirstChild("GaugeQuality");
+                var gaugeDifficulty = (frame.GetFirstChild("GaugeDifficulty") as CMlGauge)!;
+                var gaugeQuality = (frame.GetFirstChild("GaugeQuality") as CMlGauge)!;
 
                 if (RatingEnabled)
                 {
-                    gaugeDifficulty.Size.X = 0;
-                    gaugeQuality.Size.X = 0;
                     AnimMgr.Add(gaugeDifficulty, "<gauge size=\"11 6.5\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
                     AnimMgr.Add(gaugeQuality, "<gauge size=\"11 6.5\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
