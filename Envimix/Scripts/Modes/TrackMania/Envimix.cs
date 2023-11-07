@@ -255,6 +255,7 @@ public class Envimix : UniverseModeBase
         UnitedCars.Clear();
         CustomCars.Clear();
         DisplayedCars.Clear();
+        ItemCars.Clear();
 
         var skins = Netwrite<Dictionary<string, Dictionary<string, SSkin>>>.For(Teams[0]);
         
@@ -302,7 +303,7 @@ public class Envimix : UniverseModeBase
                                             
                 itemCars[car] = itemName;
 
-                if (AlwaysUseVehicleItems || (EnableStadiumEnvimix && car != "StadiumCar") || (EnableTrafficCarInStadium && car == "TrafficCar"))
+                if (AlwaysUseVehicleItems || (EnableStadiumEnvimix && car != "StadiumCar" && car != "TrafficCar") || (EnableTrafficCarInStadium && car == "TrafficCar"))
                 {
                     itemName = $"{VehicleFolder}{TextLib.Replace(VehicleFileFormat, "%1", car)}";
                     SpecialCars[car] = new()
