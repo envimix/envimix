@@ -752,6 +752,34 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    private void InitiateRatingsForAllPlayers(SEnvimaniaSessionResponse sessionResponse)
+    {
+        Dictionary<string, SRating> ratings = new();
+
+        foreach (var filteredRating in sessionResponse.Ratings)
+        {
+            ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
+        }
+
+        Ratings = ratings;
+
+        foreach (var player in AllPlayers)
+        {
+            if (!sessionResponse.UserRatings.ContainsKey(player.User.Login) || UIManager.GetUI(player) is null)
+            {
+                continue;
+            }
+
+            var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(player));
+            myRatings.Set(sessionResponse.UserRatings[player.User.Login]);
+
+            Log(nameof(Envimix), $"Informed user {player.User.Login} about their ratings.");
+        }
+
+        RatingsUpdatedAt = Now;
+        RatingEnabled = true;
+    }
+
     public void CheckEnvimaniaSession()
     {
         if (!HasRemoteConnection())
@@ -792,7 +820,7 @@ public class Envimix : UniverseModeBase
             EnvimaniaSessionRequestTimeout = -1;
         }
 
-        // Session response handle
+        // New session response handle (HTTP)
         if (EnvimaniaSessionRequest is not null && EnvimaniaSessionRequest.IsCompleted)
         {
             if (EnvimaniaSessionRequest.StatusCode != 200)
@@ -839,30 +867,7 @@ public class Envimix : UniverseModeBase
             {
                 EnvimaniaSessionToken = sessionResponse.Token!;
 
-                Dictionary<string, SRating> ratings = new();
-
-                foreach (var filteredRating in sessionResponse.Ratings)
-                {
-                    ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
-                }
-
-                Ratings = ratings;
-
-                foreach (var player in AllPlayers)
-                {
-                    if (!sessionResponse.UserRatings.ContainsKey(player.User.Login) || UIManager.GetUI(player) is null)
-                    {
-                        continue;
-                    }
-
-                    var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(player));
-                    myRatings.Set(sessionResponse.UserRatings[player.User.Login]);
-
-                    Log(nameof(Envimix), $"Informed user {player.User.Login} about their ratings.");
-                }
-
-                RatingsUpdatedAt = Now;
-                RatingEnabled = true;
+                InitiateRatingsForAllPlayers(sessionResponse);
             }
 
             Http.Destroy(EnvimaniaSessionRequest);
@@ -1098,6 +1103,11 @@ public class Envimix : UniverseModeBase
             EnvimaniaRecordsRequests.Remove(filterKey);
             Http.Destroy(request);
         }
+    }
+
+    public override void OnXmlRpcEvent(CXmlRpcEvent e)
+    {
+        base.OnXmlRpcEvent(e);
     }
 
     #endregion
