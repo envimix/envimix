@@ -56,6 +56,14 @@ public class RankingsCar : CTmMlScriptIngame, IContext
         return $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
     }
 
+    string ConstructFilterKey()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car}_{gravity}_Time";
+    }
+
     public void Main()
     {
         FrameRankingsCar.Visible = IsVisible();
@@ -78,14 +86,14 @@ public class RankingsCar : CTmMlScriptIngame, IContext
             {
                 var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(score);
 
-                foreach (var (car, time) in envimixBestRace.Get())
+                foreach (var (key, time) in envimixBestRace.Get())
                 {
-                    if (!ranker.ContainsKey(car))
+                    if (!ranker.ContainsKey(key))
                     {
-                        ranker[car] = new();
+                        ranker[key] = new();
                     }
 
-                    ranker[car][score.User.Login] = envimixBestRace.Get()[car].Time;
+                    ranker[key][score.User.Login] = envimixBestRace.Get()[key].Time;
                 }
             }
         }
@@ -145,9 +153,11 @@ public class RankingsCar : CTmMlScriptIngame, IContext
             {
                 var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(GetPlayer().Score);
 
-                if (envimixBestRace.Get().ContainsKey(car) && envimixBestRace.Get()[car].Time != -1)
+                var key = ConstructFilterKey();
+
+                if (envimixBestRace.Get().ContainsKey(key) && envimixBestRace.Get()[key].Time != -1)
                 {
-                    labelTime.Value = TimeToTextWithMilli(envimixBestRace.Get()[car].Time);
+                    labelTime.Value = TimeToTextWithMilli(envimixBestRace.Get()[key].Time);
 
                     if (ranks.ContainsKey(car))
                     {

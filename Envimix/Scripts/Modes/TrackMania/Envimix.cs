@@ -572,6 +572,19 @@ public class Envimix : UniverseModeBase
         return $"{filter.Car}_{filter.Gravity}_{filter.Type}";
     }
 
+    public static string ConstructFilterKey(CPlayer player)
+    {
+        var car = Netwrite<string>.For(player);
+        var gravity = Netwrite<int>.For(player);
+
+        return $"{car.Get()}_{gravity.Get()}_Time";
+    }
+
+    public static string ConstructFilterKey(string car)
+    {
+        return $"{car}_0_Time";
+    }
+
     #region Envimania
 
     public bool ManiaPlanetAuthenticationRequested;
@@ -1089,26 +1102,28 @@ public class Envimix : UniverseModeBase
         var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
         var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
 
-        envimixPrevRace.Get()[car.Get()] = tempRace.Get();
+        var key = ConstructFilterKey(e.Player);
+
+        envimixPrevRace.Get()[key] = tempRace.Get();
         Record.ToResult(e.Player.Score.PrevRace, tempRace.Get());
 
         var firstFinishOrImprovement = false;
-
-        if (!envimixBestRace.Get().ContainsKey(car.Get()) || envimixBestRace.Get()[car.Get()].Time == -1)
+        
+        if (!envimixBestRace.Get().ContainsKey(key) || envimixBestRace.Get()[key].Time == -1)
         {
-            envimixBestRace.Get()[car.Get()] = tempRace.Get();
+            envimixBestRace.Get()[key] = tempRace.Get();
             Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
             //log("first finish");
             firstFinishOrImprovement = true;
         }
-        else if (tempRace.Get().Time < envimixBestRace.Get()[car.Get()].Time)
+        else if (tempRace.Get().Time < envimixBestRace.Get()[key].Time)
         {
-            envimixBestRace.Get()[car.Get()] = tempRace.Get();
+            envimixBestRace.Get()[key] = tempRace.Get();
             Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
             //log("improvement");
             firstFinishOrImprovement = true;
         }
-        else if (tempRace.Get().Time == envimixBestRace.Get()[car.Get()].Time)
+        else if (tempRace.Get().Time == envimixBestRace.Get()[key].Time)
         {
             //log("equal");
         }
@@ -1432,11 +1447,13 @@ public class Envimix : UniverseModeBase
 
         player.GravityCoef = (gravity.Get() + 10) / 10f;
 
+        var key = ConstructFilterKey(player);
+
         var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(player.Score);
 
-        if (envimixBestRace.Get().ContainsKey(carName))
+        if (envimixBestRace.Get().ContainsKey(key))
         {
-            Record.ToResult(player.Score.BestRace, envimixBestRace.Get()[carName]);
+            Record.ToResult(player.Score.BestRace, envimixBestRace.Get()[key]);
         }
         else
         {
@@ -1445,9 +1462,9 @@ public class Envimix : UniverseModeBase
 
         var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(player.Score);
 
-        if (envimixPrevRace.Get().ContainsKey(carName))
+        if (envimixPrevRace.Get().ContainsKey(key))
         {
-            Record.ToResult(player.Score.PrevRace, envimixPrevRace.Get()[carName]);
+            Record.ToResult(player.Score.PrevRace, envimixPrevRace.Get()[key]);
         }
         else
         {
@@ -1672,9 +1689,11 @@ public class Envimix : UniverseModeBase
         {
             var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
 
-            if (envimixBestRace.Get().ContainsKey(car) && (record.Time == -1 || envimixBestRace.Get()[car].Time < record.Time))
+            var key = ConstructFilterKey(car);
+
+            if (envimixBestRace.Get().ContainsKey(key) && (record.Time == -1 || envimixBestRace.Get()[key].Time < record.Time))
             {
-                record = envimixBestRace.Get()[car];
+                record = envimixBestRace.Get()[key];
             }
         }
 
@@ -1684,9 +1703,11 @@ public class Envimix : UniverseModeBase
             {
                 var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
 
-                if (envimixBestRace.Get().ContainsKey(car) && envimixBestRace.Get()[car].Time == record.Time)
+                var key = ConstructFilterKey(car);
+
+                if (envimixBestRace.Get().ContainsKey(key) && envimixBestRace.Get()[key].Time == record.Time)
                 {
-                    records.Add(envimixBestRace.Get()[car]);
+                    records.Add(envimixBestRace.Get()[key]);
                 }
             }
 	    }
@@ -1733,9 +1754,11 @@ public class Envimix : UniverseModeBase
         {
             var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
 
-		    if (envimixBestRace.Get().ContainsKey(car) && envimixBestRace.Get()[car].Time != -1)
+            var key = ConstructFilterKey(car);
+
+            if (envimixBestRace.Get().ContainsKey(key) && envimixBestRace.Get()[key].Time != -1)
             {
-                records.Add(envimixBestRace.Get()[car]);
+                records.Add(envimixBestRace.Get()[key]);
             }
         }
 
@@ -1751,17 +1774,20 @@ public class Envimix : UniverseModeBase
 		    var bestTime = GetBestTime(car);
 
             var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+            
+            var key = ConstructFilterKey(car);
+
             var wrPb = 0f;
 
-		    if (envimixBestRace.Get().ContainsKey(car))
+		    if (envimixBestRace.Get().ContainsKey(key))
             {
-                if (envimixBestRace.Get()[car].Time == 0)
+                if (envimixBestRace.Get()[key].Time == 0)
                 {
                     wrPb = 1;
                 }
                 else
                 {
-                    wrPb = bestTime / MathLib.ToReal(envimixBestRace.Get()[car].Time);
+                    wrPb = bestTime / MathLib.ToReal(envimixBestRace.Get()[key].Time);
                 }
             }
 

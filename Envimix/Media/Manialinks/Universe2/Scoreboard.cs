@@ -118,14 +118,14 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         return car.Get();
     }
 
-    static string ConstructRatingFilterKey(string car, int gravity)
+    static string ConstructFilterKey(string car, int gravity)
     {
         return $"{car}_{gravity}_Time";
     }
 
     static string ConstructRatingFilterKey(SRatingFilter filter)
     {
-        return ConstructRatingFilterKey(filter.Car, filter.Gravity);
+        return ConstructFilterKey(filter.Car, filter.Gravity);
     }
 
     string ConstructRatingFilterKey()
@@ -133,7 +133,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         var car = Netread<string>.For(GetPlayer());
         var gravity = Netread<int>.For(GetPlayer());
 
-        return ConstructRatingFilterKey(car.Get(), gravity.Get());
+        return ConstructFilterKey(car.Get(), gravity.Get());
     }
 
     static int EchelonToInteger(CUser.EEchelon echelon)
@@ -317,14 +317,14 @@ public class Scoreboard : CTmMlScriptIngame, IContext
             {
                 var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(score);
 
-                foreach (var (car, time) in envimixBestRace.Get())
+                foreach (var (key, time) in envimixBestRace.Get())
                 {
-                    if (!ranker.ContainsKey(car))
+                    if (!ranker.ContainsKey(key))
                     {
-                        ranker[car] = new();
+                        ranker[key] = new();
                     }
 
-                    ranker[car][score.User.Login] = envimixBestRace.Get()[car].Time;
+                    ranker[key][score.User.Login] = envimixBestRace.Get()[key].Time;
                 }
             }
 
