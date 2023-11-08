@@ -183,6 +183,9 @@ public class Envimix : UniverseModeBase
     [Setting(As = "Envimix Web API")]
     public string EnvimixWebAPI = "";
 
+    [Setting(As = "Envimix XML-RPC")]
+    public bool EnvimixXmlRpc = false;
+
     [Setting(As = "Use skillpoints")]
     public bool UseSkillpoints = false;
 
@@ -211,7 +214,7 @@ public class Envimix : UniverseModeBase
     public CHttpRequest? UserRatingRequest;
     public required int UserRatingsUpdatedAt;
 
-    public Dictionary<string, SUserInfo> UserJoinAdditionalInfosToRequest;
+    public required Dictionary<string, SUserInfo> UserJoinAdditionalInfosToRequest;
     public CHttpRequest? UserJoinAdditionalInfoRequest;
     public required int UserJoinAdditionalInfosUpdatedAt;
 
@@ -598,16 +601,24 @@ public class Envimix : UniverseModeBase
     public CHttpRequest? EnvimaniaStatusRequest;
     public CHttpRequest? EnvimaniaCloseRequest;
 
+    public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
+    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
+    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaFinishedRecordsRequests;
+    public int EnvimaniaRecordsRequestsLastCheck;
+    public CHttpRequest? EnvimaniaRecordsRequest;
+
+    private bool HasRemoteConnection()
+    {
+        return (EnvimixXmlRpc && XmlRpc is not null) || (EnvimixWebAPI is not "" && ServerAdmin is not null);
+    }
+
     public bool RequestEnvimaniaSession()
     {
-        if (EnvimixWebAPI is "" || ServerAdmin is null)
+        if (!HasRemoteConnection())
         {
             return false;
         }
 
-        Log(nameof(Envimix), "Requesting Envimania session (ManiaPlanet token)...");
-
-        ManiaPlanetAuthenticationRequested = true;
         EnvimaniaSessionRequestTimeout = -1;
         EnvimaniaSessionFirstRequestTimeout = -1;
         EnvimaniaSessionToken = "";
@@ -615,68 +626,27 @@ public class Envimix : UniverseModeBase
         EnvimaniaStatusReceived = -1;
         EnvimaniaRecordsRequestsLastCheck = -1;
 
-        ServerAdmin.Authentication_GetToken(null, "Envimix");
+        if (EnvimixXmlRpc)
+        {
+            Log(nameof(Envimix), "Requesting Envimania session (XML-RPC)...");
+
+            DirectlyRequestEnvimaniaSession();
+        }
+        else
+        {
+            Log(nameof(Envimix), "Requesting Envimania session (ManiaPlanet token)...");
+
+            ManiaPlanetAuthenticationRequested = true;
+            ServerAdmin.Authentication_GetToken(null, "Envimix");
+        }
 
         return true;
-    }
-
-    public bool CloseEnvimaniaSession()
-    {
-        if (EnvimixWebAPI is "")
-        {
-            return false;
-        }
-
-        if (EnvimaniaSessionToken is "")
-        {
-            Log(nameof(Envimix), "Cannot close Envimania session without a session token.");
-            return false;
-        }
-
-        Log(nameof(Envimix), "Closing Envimania session...");
-
-        EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Envimania {EnvimaniaSessionToken}");
-
-        return true;
-    }
-
-    void DirectlyRequestEnvimaniaSession()
-    {
-        ImmutableArray<SUserInfo> userInfos = new();
-
-        foreach (var player in AllPlayers)
-        {
-            userInfos.Add(CreateUserInfo(player.User));
-        }
-
-        SMapInfo mapInfo = new()
-        {
-            Name = Map.MapInfo.Name,
-            Uid = Map.MapInfo.MapUid
-        };
-
-        SEnvimaniaSessionRequest sessionRequest = new()
-        {
-            Map = mapInfo,
-            Players = userInfos,
-            Cars = DisplayedCars
-        };
-
-        Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
-
-        EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
     }
 
     public static string ConstructRecordsFilterKey(SEnvimaniaRecordsFilter filter)
     {
         return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
     }
-
-    public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
-    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
-    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaFinishedRecordsRequests;
-    public int EnvimaniaRecordsRequestsLastCheck;
-    public CHttpRequest? EnvimaniaRecordsRequest;
 
     /// <summary>
     /// Request leaderboards of certain leaderboard type.
@@ -721,14 +691,75 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
+    public bool CloseEnvimaniaSession()
+    {
+        if (!HasRemoteConnection())
+        {
+            return false;
+        }
+
+        if (!EnvimixXmlRpc && EnvimaniaSessionToken is "")
+        {
+            Log(nameof(Envimix), "Cannot close Envimania session without a session token.");
+            return false;
+        }
+
+        Log(nameof(Envimix), "Closing Envimania session...");
+
+        if (EnvimixXmlRpc)
+        {
+            XmlRpc.SendCallback("Envimix.Envimania.Session.Close", "");
+        }
+        else
+        {
+            EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Envimania {EnvimaniaSessionToken}");
+        }
+
+        return true;
+    }
+
+    void DirectlyRequestEnvimaniaSession()
+    {
+        ImmutableArray<SUserInfo> userInfos = new();
+
+        foreach (var player in AllPlayers)
+        {
+            userInfos.Add(CreateUserInfo(player.User));
+        }
+
+        SMapInfo mapInfo = new()
+        {
+            Name = Map.MapInfo.Name,
+            Uid = Map.MapInfo.MapUid
+        };
+
+        SEnvimaniaSessionRequest sessionRequest = new()
+        {
+            Map = mapInfo,
+            Players = userInfos,
+            Cars = DisplayedCars
+        };
+
+        Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
+
+        if (EnvimixXmlRpc)
+        {
+            XmlRpc.SendCallback("Envimix.Envimania.Session.New", sessionRequest.ToJson());
+        }
+        else
+        {
+            EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
+        }
+    }
+
     public void CheckEnvimaniaSession()
     {
-        if (EnvimixWebAPI is "" || ServerAdmin is null)
+        if (!HasRemoteConnection())
         {
             return;
         }
 
-        // Session request creation
+        // Authentication token retrieval for session request creation
         if (ManiaPlanetAuthenticationRequested && ServerAdmin.Authentication_GetTokenResponseReceived)
         {
             if (ManiaPlanetAuthenticationToken != ServerAdmin.Authentication_Token)
