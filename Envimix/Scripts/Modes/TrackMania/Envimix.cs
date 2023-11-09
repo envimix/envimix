@@ -648,6 +648,35 @@ public class Envimix : UniverseModeBase
         return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
     }
 
+    public void ProcessXmlRpcEvent(string name, string value)
+    {
+        switch (name)
+        {
+            case "Envimix.Envimania.Session.New":
+                Log(nameof(Envimix), "Received Envimania session (XML-RPC).");
+
+                SEnvimaniaSessionResponse sessionResponse = new();
+
+                if (!sessionResponse.FromJson(value))
+                {
+                    Log(nameof(Envimix), "Envimania session creation failed (JSON issue).");
+                    Log(nameof(Envimix), value);
+                }
+                else if (sessionResponse.ServerLogin != ServerLogin)
+                {
+                    Log(nameof(Envimix), "Envimania session creation failed (server login mismatch).");
+                }
+                else
+                {
+                    EnvimaniaSessionToken = sessionResponse.Token!;
+
+                    InitiateRatingsForAllPlayers(sessionResponse);
+                }
+
+                break;
+        }
+    }
+
     /// <summary>
     /// Request leaderboards of certain leaderboard type.
     /// </summary>
@@ -693,12 +722,7 @@ public class Envimix : UniverseModeBase
 
     public bool CloseEnvimaniaSession()
     {
-        if (!HasRemoteConnection())
-        {
-            return false;
-        }
-
-        if (!EnvimixXmlRpc && EnvimaniaSessionToken is "")
+        if (EnvimaniaSessionToken is "")
         {
             Log(nameof(Envimix), "Cannot close Envimania session without a session token.");
             return false;
@@ -706,14 +730,7 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), "Closing Envimania session...");
 
-        if (EnvimixXmlRpc)
-        {
-            XmlRpc.SendCallback("Envimix.Envimania.Session.Close", "");
-        }
-        else
-        {
-            EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Envimania {EnvimaniaSessionToken}");
-        }
+        EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Envimania {EnvimaniaSessionToken}");
 
         return true;
     }
