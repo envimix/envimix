@@ -612,6 +612,40 @@ public class Envimix : UniverseModeBase
         return (EnvimixXmlRpc && XmlRpc is not null) || (EnvimixWebAPI is not "" && ServerAdmin is not null);
     }
 
+    void DirectlyRequestEnvimaniaSession()
+    {
+        ImmutableArray<SUserInfo> userInfos = new();
+
+        foreach (var player in AllPlayers)
+        {
+            userInfos.Add(CreateUserInfo(player.User));
+        }
+
+        SMapInfo mapInfo = new()
+        {
+            Name = Map.MapInfo.Name,
+            Uid = Map.MapInfo.MapUid
+        };
+
+        SEnvimaniaSessionRequest sessionRequest = new()
+        {
+            Map = mapInfo,
+            Players = userInfos,
+            Cars = DisplayedCars
+        };
+
+        Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
+
+        if (EnvimixXmlRpc)
+        {
+            XmlRpc.SendCallback("Envimix.Envimania.Session.New", sessionRequest.ToJson());
+        }
+        else
+        {
+            EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
+        }
+    }
+
     public bool RequestEnvimaniaSession()
     {
         if (!HasRemoteConnection())
@@ -646,6 +680,34 @@ public class Envimix : UniverseModeBase
     public static string ConstructRecordsFilterKey(SEnvimaniaRecordsFilter filter)
     {
         return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
+    }
+
+    private void InitiateRatingsForAllPlayers(SEnvimaniaSessionResponse sessionResponse)
+    {
+        Dictionary<string, SRating> ratings = new();
+
+        foreach (var filteredRating in sessionResponse.Ratings)
+        {
+            ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
+        }
+
+        Ratings = ratings;
+
+        foreach (var player in AllPlayers)
+        {
+            if (!sessionResponse.UserRatings.ContainsKey(player.User.Login) || UIManager.GetUI(player) is null)
+            {
+                continue;
+            }
+
+            var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(player));
+            myRatings.Set(sessionResponse.UserRatings[player.User.Login]);
+
+            Log(nameof(Envimix), $"Informed user {player.User.Login} about their ratings.");
+        }
+
+        RatingsUpdatedAt = Now;
+        RatingEnabled = true;
     }
 
     public void ProcessXmlRpcEvent(string name, string value)
@@ -733,68 +795,6 @@ public class Envimix : UniverseModeBase
         EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Envimania {EnvimaniaSessionToken}");
 
         return true;
-    }
-
-    void DirectlyRequestEnvimaniaSession()
-    {
-        ImmutableArray<SUserInfo> userInfos = new();
-
-        foreach (var player in AllPlayers)
-        {
-            userInfos.Add(CreateUserInfo(player.User));
-        }
-
-        SMapInfo mapInfo = new()
-        {
-            Name = Map.MapInfo.Name,
-            Uid = Map.MapInfo.MapUid
-        };
-
-        SEnvimaniaSessionRequest sessionRequest = new()
-        {
-            Map = mapInfo,
-            Players = userInfos,
-            Cars = DisplayedCars
-        };
-
-        Log(nameof(Envimix), "Requesting Envimania session (Envimania token)...");
-
-        if (EnvimixXmlRpc)
-        {
-            XmlRpc.SendCallback("Envimix.Envimania.Session.New", sessionRequest.ToJson());
-        }
-        else
-        {
-            EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
-        }
-    }
-
-    private void InitiateRatingsForAllPlayers(SEnvimaniaSessionResponse sessionResponse)
-    {
-        Dictionary<string, SRating> ratings = new();
-
-        foreach (var filteredRating in sessionResponse.Ratings)
-        {
-            ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
-        }
-
-        Ratings = ratings;
-
-        foreach (var player in AllPlayers)
-        {
-            if (!sessionResponse.UserRatings.ContainsKey(player.User.Login) || UIManager.GetUI(player) is null)
-            {
-                continue;
-            }
-
-            var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(player));
-            myRatings.Set(sessionResponse.UserRatings[player.User.Login]);
-
-            Log(nameof(Envimix), $"Informed user {player.User.Login} about their ratings.");
-        }
-
-        RatingsUpdatedAt = Now;
-        RatingEnabled = true;
     }
 
     public void CheckEnvimaniaSession()
@@ -1124,7 +1124,7 @@ public class Envimix : UniverseModeBase
 
     public override void OnXmlRpcEvent(CXmlRpcEvent e)
     {
-        base.OnXmlRpcEvent(e);
+
     }
 
     #endregion
