@@ -257,7 +257,7 @@
 				<quad z-index="0" size="60 60" halign="center" valign="center" style="Bgs1" substyle="Glow" hidden="1"/>
 			</frame>
 		</frame>
-		<frame pos="0 -80" id="FrameTeamInfo">
+		<frame pos="0 -80" id="FrameTeamInfo" hidden="1">
 			<frame pos="0 20.5">
 				<frame id="FrameTeamMessage">
 					<quad z-index="0" size="80 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>

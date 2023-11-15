@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Envimix.Media.Manialinks.Universe2;
+﻿namespace Envimix.Media.Manialinks.Universe2;
 
 public class Status : CTmMlScriptIngame, IContext
 {

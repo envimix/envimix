@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using Envimix.Media.Manialinks.Universe2;
+using System.Collections.Immutable;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
@@ -30,6 +31,7 @@ public class EnvimixTeamAttack : Envimix
         ModeStatusMessage = ModeHelp;
 
         UseClans = true;
+        UseForcedClans = true;
         Teams[0].Name = "Team Red";
         Teams[0].ColorPrimary = new Vec3(1, 0, 0);
         Teams[0].PresentationManialinkUrl = "envimix?team=red";
@@ -44,6 +46,13 @@ public class EnvimixTeamAttack : Envimix
         else
         {
             RespawnBehaviour = CTmMode.ETMRespawnBehaviour.AlwaysGiveUp;
+        }
+
+        Users_DestroyAllFakes();
+
+        for (var i = 0; i < 2; i++)
+        {
+            Users_CreateFake($"User{i}", 0);
         }
     }
 
@@ -68,8 +77,6 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnMapLoad()
     {
-        UseForcedClans = false; // Allow free team joining, won't be used soon
-
         SetLaps(); // Define independent laps or forced amount of laps
 
         PrespawnEnvimixPlayers();
@@ -104,6 +111,7 @@ public class EnvimixTeamAttack : Envimix
     {
         // Period to select a starting car once the map is fully loaded
         CarSelectionMode = true;
+        TeamSelectionMode = true;
 
         foreach (var player in Players)
         {
@@ -131,7 +139,34 @@ public class EnvimixTeamAttack : Envimix
                         switch (e.CustomEventType)
                         {
                             case "JoinTeam":
-                                Log(nameof(EnvimixTeamAttack), "JoinTeam");
+                                var team = TextLib.ToInteger(e.CustomEventData[0]);
+
+                                if (team == 1 || team == 2)
+                                {
+                                    Dictionary<int, int> teamPlayerCounts = new()
+                                    {
+                                        { 1, 0 },
+                                        { 2, 0 }
+                                    };
+
+                                    foreach (var score in Scores)
+                                    {
+                                        if (teamPlayerCounts.ContainsKey(score.TeamNum))
+                                        {
+                                            teamPlayerCounts[score.TeamNum] += 1;
+                                        }
+                                    }
+
+                                    foreach (var (t, count) in teamPlayerCounts)
+                                    {
+                                        if (teamPlayerCounts[team] < count)
+                                        {
+                                            ChangePlayerClan(GetPlayer(e.UI), team);
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 break;
                         }
                         break;
@@ -163,6 +198,7 @@ public class EnvimixTeamAttack : Envimix
         }
 
         CarSelectionMode = false;
+        TeamSelectionMode = false;
 
         foreach (var player in Players)
         {

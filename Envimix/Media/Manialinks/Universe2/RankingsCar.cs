@@ -61,7 +61,7 @@ public class RankingsCar : CTmMlScriptIngame, IContext
         var car = Netread<string>.For(GetPlayer());
         var gravity = Netread<int>.For(GetPlayer());
 
-        return $"{car}_{gravity}_Time";
+        return $"{car.Get()}_{gravity.Get()}_Time";
     }
 
     public void Main()

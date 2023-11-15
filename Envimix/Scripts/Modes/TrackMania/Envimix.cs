@@ -203,6 +203,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public required IList<string> DisplayedCars { get; set; }
     [Netwrite] public required Dictionary<string, string> ItemCars { get; set; }
     [Netwrite] public bool CarSelectionMode { get; set; }
+    [Netwrite] public bool TeamSelectionMode { get; set; }
     [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
     [Netwrite] public required string EnvimaniaStatusMessage { get; set; }
     [Netwrite] public bool RatingEnabled { get; set; }
@@ -403,7 +404,7 @@ public class Envimix : UniverseModeBase
         CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
         CreateLayer("Score", CUILayer.EUILayerType.Normal);
         CreateLayer("Rating", CUILayer.EUILayerType.Normal);
-        CreateLayer("Status", CUILayer.EUILayerType.Normal);
+        CreateLayer("Status2", CUILayer.EUILayerType.Normal);
         CreateLayer("Envimania", CUILayer.EUILayerType.Normal);
         CreateLayer("Map", CUILayer.EUILayerType.Normal);
         CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);

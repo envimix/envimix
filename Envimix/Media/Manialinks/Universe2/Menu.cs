@@ -1801,7 +1801,7 @@ public class Menu : CTmMlScriptIngame, IContext
             LabelBluePlayerCount.Value = "0";
         }
 
-        if (UseClans)
+        /*if (UseClans)
         {
             FrameTeamInfo.Show();
 
@@ -1859,15 +1859,9 @@ public class Menu : CTmMlScriptIngame, IContext
         else
         {
             FrameTeamInfo.Hide();
-        }
+        }*/
 
-        if (MenuOpenTime != -1)
-        {
-            //FrameLabelTeamMessage.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - MenuOpenTime, 0, 55, 600);
-            //FrameLabelTimeLimit.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - MenuOpenTime, 0, 50, 500);
-        }
-
-        if (UseForcedClans != PrevUseForcedClans)
+        /*if (UseForcedClans != PrevUseForcedClans)
         {
             if (UseForcedClans)
             {
@@ -1879,7 +1873,7 @@ public class Menu : CTmMlScriptIngame, IContext
             }
 
             PrevUseForcedClans = UseForcedClans;
-        }
+        }*/
 
         PreviousMenuKind = MenuKind;
 
