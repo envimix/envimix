@@ -10,15 +10,17 @@
 		</frame>
 		<frame pos="0 -12.5" id="FramePointStatus">
 			<frame z-index="2">
-				<quad z-index="-1" size="30 10" pos="-30 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="000" opacity=".5"/>
-				<quad id="QuadRedPoints" z-index="0" size="30 10" pos="-30 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="B00" opacity=".6"/>
-				<quad id="QuadJoinRed" z-index="1" size="30 10" pos="-30 0" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="F00" halign="left" valign="center"/>
+				<quad z-index="-1" size="30.15 10" pos="-30 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="000" opacity=".5"/>
+				<quad id="QuadRedPoints" z-index="0" size="30.1 10" pos="-30 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="B00" opacity=".6"/>
+				<quad id="QuadJoinRed" z-index="1" size="30.1 10" pos="-30 0" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="F00" halign="left" valign="center"/>
 				<label id="LabelRedPoints" pos="-15 -0.25" z-index="2" size="17 8" text="Join" halign="center" valign="center2" textfont="RajdhaniMono" translate="1"/>
+				<label id="LabelRedPlayerCount" pos="-36.5 -0.5" z-index="2" size="17 8" textemboss="1" textsize="4" text="0" halign="center" valign="center2" textfont="RajdhaniMono"/>
 				
-				<quad z-index="-1" size="30 10" pos="30 0" halign="right" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="000" opacity=".5"/>
-				<quad id="QuadBluePoints" z-index="0" size="30 10" pos="30 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="00B" opacity=".6" halign="right"/>
-				<quad id="QuadJoinBlue" z-index="1" size="30 10" pos="30 0" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="00F" halign="right" valign="center"/>
+				<quad z-index="-1" size="30.15 10" pos="30 0" halign="right" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="000" opacity=".5"/>
+				<quad id="QuadBluePoints" z-index="0" size="30.1 10" pos="30 0" valign="center" style="Bgs1InRace" substyle="BgWindow4" colorize="00B" opacity=".6" halign="right"/>
+				<quad id="QuadJoinBlue" z-index="1" size="30.1 10" pos="30 0" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="00F" halign="right" valign="center"/>
 				<label id="LabelBluePoints" pos="15 -0.25" z-index="2" size="30 8" text="Join" halign="center" valign="center2" textfont="RajdhaniMono" translate="1"/>
+				<label id="LabelBluePlayerCount" pos="36.5 -0.5" z-index="2" size="17 8" textemboss="1" textsize="4" text="0" halign="center" valign="center2" textfont="RajdhaniMono"/>
 			</frame>
 		</frame>
 	</frame>

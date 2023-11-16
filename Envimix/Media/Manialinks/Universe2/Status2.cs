@@ -5,6 +5,9 @@ public class Status2 : CTmMlScriptIngame, IContext
     public int Start;
     public bool PrevIsInMenu;
     public bool PrevTeamSelectionMode;
+    public IList<int> PrevClanScores;
+    public IList<int> PrevClanScoresForAnim;
+    public IList<int> PrevClanScoresTime;
 
     [ManialinkControl] public required CMlFrame FrameStatus;
     [ManialinkControl] public required CMlQuad QuadRedPoints;
@@ -15,6 +18,8 @@ public class Status2 : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelBluePoints;
     [ManialinkControl] public required CMlQuad QuadTeam;
     [ManialinkControl] public required CMlLabel LabelTeam;
+    [ManialinkControl] public required CMlLabel LabelRedPlayerCount;
+    [ManialinkControl] public required CMlLabel LabelBluePlayerCount;
 
     [Netread] public bool TeamSelectionMode { get; }
 
@@ -26,6 +31,8 @@ public class Status2 : CTmMlScriptIngame, IContext
             {
                 Log("Joining Team Red...");
                 SendCustomEvent("JoinTeam", new[] { "1" });
+                LabelRedPoints.RelativeScale = 1.2f;
+                AnimMgr.Add(LabelRedPoints, "<label scale=\"1\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         };
 
@@ -35,6 +42,8 @@ public class Status2 : CTmMlScriptIngame, IContext
             {
                 Log("Joining Team Blue...");
                 SendCustomEvent("JoinTeam", new[] { "2" });
+                LabelBluePoints.RelativeScale = 1.2f;
+                AnimMgr.Add(LabelBluePoints, "<label scale=\"1\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         };
     }
@@ -75,6 +84,9 @@ public class Status2 : CTmMlScriptIngame, IContext
     {
         Start = Now;
         PrevIsInMenu = IsInGameMenuDisplayed;
+        PrevClanScores = new[] { ClanScores[0], ClanScores[1], ClanScores[2] };
+        PrevClanScoresForAnim = new[] { ClanScores[0], ClanScores[1], ClanScores[2] };
+        PrevClanScoresTime = new[] { 0, 0, 0 };
 
         ChangeStatusPosition();
 
@@ -134,13 +146,13 @@ public class Status2 : CTmMlScriptIngame, IContext
                             if (t1 == 1)
                             {
                                 LabelRedPoints.SetText("Join");
-                                LabelBluePoints.SetText("");
+                                LabelBluePoints.SetText("🔒");
                                 QuadJoinRed.Visible = true;
                                 QuadJoinBlue.Visible = false;
                             }
                             else if (t1 == 2)
                             {
-                                LabelRedPoints.SetText("");
+                                LabelRedPoints.SetText("🔒");
                                 LabelBluePoints.SetText("Join");
                                 QuadJoinRed.Visible = false;
                                 QuadJoinBlue.Visible = true;
@@ -148,6 +160,9 @@ public class Status2 : CTmMlScriptIngame, IContext
                         }
                     }
                 }
+
+                LabelRedPlayerCount.SetText(teamPlayerCounts[1].ToString());
+                LabelBluePlayerCount.SetText(teamPlayerCounts[2].ToString());
             }
         }
 
@@ -155,6 +170,8 @@ public class Status2 : CTmMlScriptIngame, IContext
         {
             QuadJoinRed.Visible = TeamSelectionMode;
             QuadJoinBlue.Visible = TeamSelectionMode;
+            LabelRedPlayerCount.Visible = TeamSelectionMode;
+            LabelBluePlayerCount.Visible = TeamSelectionMode;
 
             if (TeamSelectionMode)
             {
@@ -177,6 +194,66 @@ public class Status2 : CTmMlScriptIngame, IContext
         {
             QuadTeam.Colorize = Teams[GetPlayer().Score.TeamNum - 1].ColorPrimary;
             LabelTeam.SetText(Teams[GetPlayer().Score.TeamNum - 1].Name);
+        }
+
+        for (var i = 0; i < ClanScores.Count; i++)
+        {
+            if (ClanScores[i] != PrevClanScores[i])
+            {
+                PrevClanScoresTime[i] = Now;
+                PrevClanScoresForAnim[i] = PrevClanScores[i];
+                PrevClanScores[i] = ClanScores[i];
+            }
+        }
+
+        var animatedScore1 = 0f;
+        var animatedScore2 = 0f;
+        var isAnimating = false;
+
+        for (int i = 0; i < PrevClanScoresTime.Count; i++)
+        {
+            var time = PrevClanScoresTime[i];
+
+            if (Now - time < 1200)
+            {
+                var score = ClanScores[i];
+                var prevScore = PrevClanScoresForAnim[i];
+
+                var animatedScore = AnimLib.EaseOutQuad(Now - time, prevScore * 1f, (score - prevScore) * 1f, 1000);
+
+                if (i == 1)
+                {
+                    animatedScore1 = animatedScore;
+                    LabelRedPoints.SetText(ToNicerNumber(MathLib.NearestInteger(animatedScore)));
+                }
+                else if (i == 2)
+                {
+                    animatedScore2 = animatedScore;
+                    LabelBluePoints.SetText(ToNicerNumber(MathLib.NearestInteger(animatedScore)));
+                }
+
+                isAnimating = true;
+            }
+        }
+
+        if (isAnimating)
+        {
+            var redRatio = .5f;
+            var blueRatio = .5f;
+
+            if (animatedScore1 + animatedScore2 > 0)
+            {
+                redRatio = animatedScore1 / (animatedScore1 + animatedScore2);
+                blueRatio = animatedScore2 / (animatedScore1 + animatedScore2);
+            }
+
+            redRatio = MathLib.Clamp(redRatio, .2f, .8f);
+            blueRatio = MathLib.Clamp(blueRatio, .2f, .8f);
+
+            QuadRedPoints.Size.X = 47f * redRatio - (QuadRedPoints.RelativePosition_V3.X + 23.4);
+            QuadBluePoints.Size.X = 47f * blueRatio - (-QuadBluePoints.RelativePosition_V3.X + 23.4);
+            LabelRedPoints.RelativePosition_V3.X = QuadRedPoints.RelativePosition_V3.X + QuadRedPoints.Size.X / 2;
+            LabelBluePoints.RelativePosition_V3.X = -QuadRedPoints.RelativePosition_V3.X - QuadBluePoints.Size.X / 2;
         }
     }
 
