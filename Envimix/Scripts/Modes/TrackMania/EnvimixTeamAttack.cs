@@ -1,5 +1,4 @@
-﻿using Envimix.Media.Manialinks.Universe2;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
@@ -440,5 +439,13 @@ public class EnvimixTeamAttack : Envimix
                 }
                 break;
         }
+    }
+
+    public void ChangePlayerClan(CTmPlayer player, int clan)
+    {
+        UnspawnPlayer(player);
+        SetPlayerClan(player, clan);
+        var car = Netwrite<string>.For(player);
+        SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen: true);
     }
 }

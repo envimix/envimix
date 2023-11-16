@@ -405,13 +405,6 @@ public class UniverseModeBase : CTmMode, IContext
         }
     }
 
-    public void ChangePlayerClan(CTmPlayer player, int clan)
-    {
-        UnspawnPlayer(player);
-        SetPlayerClan(player, clan);
-        player.IsSpawned = true;
-    }
-
     public void Main()
     {
         // nothing
