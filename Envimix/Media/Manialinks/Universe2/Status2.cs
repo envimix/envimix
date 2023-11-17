@@ -33,7 +33,12 @@ public class Status2 : CTmMlScriptIngame, IContext
                 SendCustomEvent("JoinTeam", new[] { "1" });
                 LabelRedPoints.RelativeScale = 1.2f;
                 AnimMgr.Add(LabelRedPoints, "<label scale=\"1\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
             }
+        };
+        QuadJoinRed.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         QuadJoinBlue.MouseClick += () =>
@@ -44,7 +49,12 @@ public class Status2 : CTmMlScriptIngame, IContext
                 SendCustomEvent("JoinTeam", new[] { "2" });
                 LabelBluePoints.RelativeScale = 1.2f;
                 AnimMgr.Add(LabelBluePoints, "<label scale=\"1\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
             }
+        };
+        QuadJoinBlue.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
     }
 

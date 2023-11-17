@@ -257,6 +257,16 @@
 				<quad z-index="0" size="60 60" halign="center" valign="center" style="Bgs1" substyle="Glow" hidden="1"/>
 			</frame>
 		</frame>
+		<frame id="FrameModeHelp" pos="0 -130" hidden="1">
+			<quad z-index="-1" size="110 40" valign="center" halign="center" style="Bgs1" substyle="BgCardList" />
+			<label id="LabelModeHelpName" pos="-50 16" z-index="0" size="90 5" text="" textfont="RajdhaniMono" textsize="6"/>
+			<label id="LabelModeHelpDescription" pos="-50 7" z-index="0" size="100 5" text="" autonewline="1" textfont="Oswald"/>
+			<frame pos="40 -9.5">
+				<quad size="25 8.5" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5" />
+				<quad id="QuadButtonModeHelpClose" size="24.75 8.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" />
+				<label pos="0 -4.65" z-index="1" size="20 10" textprefix="$t" text="Close" valign="center2" textfont="RajdhaniMono" translate="1" textsize="2.5" halign="center"/>
+			</frame>
+		</frame>
 		<frame pos="0 -80" id="FrameTeamInfo" hidden="1">
 			<frame pos="0 20.5">
 				<frame id="FrameTeamMessage">

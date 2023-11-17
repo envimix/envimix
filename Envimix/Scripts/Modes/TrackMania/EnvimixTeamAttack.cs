@@ -26,7 +26,7 @@ public class EnvimixTeamAttack : Envimix
 
         CreateServersideLayers();
         IndependantLaps = true;
-        ModeHelp = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible."; ;
+        ModeHelp = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible.";
         ModeStatusMessage = ModeHelp;
 
         UseClans = true;

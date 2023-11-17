@@ -31,6 +31,11 @@ public class Map : CTmMlScriptIngame, IContext
         {
             ShowCurChallengeCard();
         };
+
+        QuadMapName.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+        };
     }
 
     private CTmMlPlayer GetPlayer()

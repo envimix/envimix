@@ -147,6 +147,10 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadLoading;
     [ManialinkControl] public required CMlLabel LabelLoadingResult;
     [ManialinkControl] public required CMlQuad QuadGhostRefresh;
+    [ManialinkControl] public required CMlFrame FrameModeHelp;
+    [ManialinkControl] public required CMlLabel LabelModeHelpName;
+    [ManialinkControl] public required CMlLabel LabelModeHelpDescription;
+    [ManialinkControl] public required CMlQuad QuadButtonModeHelpClose;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -197,7 +201,8 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
-
+    [Netread] public string ModeHelp { get; set; }
+    
     public Menu()
     {
         MouseOver += Menu_MouseOver;
@@ -228,6 +233,10 @@ public class Menu : CTmMlScriptIngame, IContext
         MenuNavigation += Menu_MenuNavigation;
 
         QuadGravityButton.MouseClick += QuadGravityButton_MouseClick;
+        QuadGravityButton.MouseOver += () =>
+        {
+            Focus3();
+        };
         QuadGravityValue.MouseClick += QuadGravityValue_MouseClick;
 
         QuadGravityValue.MouseOver += () =>
@@ -273,6 +282,19 @@ public class Menu : CTmMlScriptIngame, IContext
 
         LabelGhostSelection.MouseClick += RefreshRecords;
         QuadGhostRefresh.MouseClick += RefreshRecords;
+
+        QuadButtonModeHelpClose.MouseClick += QuadButtonModeHelpClose_MouseClick;
+
+        QuadButtonModeHelpClose.MouseOver += () =>
+        {
+            Focus2();
+        };
+    }
+
+    private void QuadButtonModeHelpClose_MouseClick()
+    {
+        AnimMgr.Add(FrameModeHelp, "<frame pos=\"0 -130\" hidden=\"1\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
     CTmMlPlayer GetPlayer()
@@ -846,7 +868,10 @@ public class Menu : CTmMlScriptIngame, IContext
 
     private void ShowCustomModeHelp()
     {
-        ShowModeHelp();
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+
+        AnimMgr.Add(FrameModeHelp, "<frame pos=\"0 0\" hidden=\"0\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        NavFocusedControl = QuadButtonModeHelpClose;
     }
 
     private void Menu_MenuNavigation(CMlScriptEvent.EMenuNavAction action)
@@ -932,7 +957,9 @@ public class Menu : CTmMlScriptIngame, IContext
                     }
                     else if (NavFocusedControl == QuadButtonModeHelp)
                     {
+                        NavFocusedControl.StyleSelected = false;
                         ShowCustomModeHelp();
+                        NavFocusedControl.StyleSelected = true;
                     }
                     else if (NavFocusedControl == QuadButtonServerSettings)
                     {
@@ -949,6 +976,10 @@ public class Menu : CTmMlScriptIngame, IContext
                     else if (NavFocusedControl == QuadButtonSpectator)
                     {
                         QUAD_BUTTON_SPECTATOR();
+                    }
+                    else if (NavFocusedControl == QuadButtonModeHelpClose)
+                    {
+                        QuadButtonModeHelpClose_MouseClick();
                     }
                 }
                 break;
@@ -1542,6 +1573,10 @@ public class Menu : CTmMlScriptIngame, IContext
                 {
                     SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
                 }
+
+                AnimMgr.Flush(FrameModeHelp);
+                FrameModeHelp.Visible = false;
+                FrameModeHelp.RelativePosition_V3 = new Vec2(0, -130f);
             }
         }
 
@@ -2073,6 +2108,12 @@ public class Menu : CTmMlScriptIngame, IContext
             }
 
             PrevRatingsUpdatedAt = RatingsUpdatedAt;
+        }
+
+        if (FrameModeHelp.Visible)
+        {
+            LabelModeHelpName.Value = Playground.ServerInfo.ModeName;
+            LabelModeHelpDescription.Value = ModeHelp;
         }
     }
 }
