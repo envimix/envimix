@@ -412,6 +412,7 @@ public class Envimix : UniverseModeBase
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
         CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);
         CreateLayer("SpectatorInfo", CUILayer.EUILayerType.Normal);
+        CreateLayer("SpectatorEffect", CUILayer.EUILayerType.Normal);
         CreateLayer("Scoreboard", CUILayer.EUILayerType.ScoresTable);
         //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 

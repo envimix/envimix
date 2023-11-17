@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-	<frame id="FrameNotice" pos="0 25">
+	<frame id="FrameNotice" pos="0 27.5">
 		<quad z-index="0" size="110 12" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 		<frame id="FrameClipNotice" z-index="2" clip="1" clipsizen="102.5 10">
 			<label size="102.5 10" halign="center" valign="center" text=" You will be able to switch the car after the intro ends for everyone." textfont="RajdhaniMono" textsize="2" autonewline="1" id="LabelNotice"/>

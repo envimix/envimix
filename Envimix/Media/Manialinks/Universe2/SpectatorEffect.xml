@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+	<frame id="FrameSpectatorEffect">
+		<quad pos="114 65" z-index="0" size="39 1" bgcolor="FFF" valign="top" halign="right"/>
+		<quad pos="115 65" z-index="0" size="1 40" bgcolor="FFF" halign="right"/>
+		<quad pos="115 -65" z-index="0" size="1 40" bgcolor="FFF" valign="bottom" halign="right"/>
+		<quad pos="114 -65" z-index="0" size="39 1" bgcolor="FFF" valign="bottom" halign="right"/>
+		<quad pos="-114 65" z-index="0" size="39 1" bgcolor="FFF" valign="top" halign="left"/>
+		<quad pos="-115 65" z-index="0" size="1 40" bgcolor="FFF" halign="left"/>
+		<quad pos="-115 -65" z-index="0" size="1 40" bgcolor="FFF" valign="bottom" halign="left"/>
+		<quad pos="-114 -65" z-index="0" size="39 1" bgcolor="FFF" valign="bottom" halign="left"/>
+	</frame>
+</manialink>
