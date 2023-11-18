@@ -407,7 +407,7 @@ public class Envimix : UniverseModeBase
         CreateLayer("Status2", CUILayer.EUILayerType.Normal);
         CreateLayer("Envimania", CUILayer.EUILayerType.Normal);
         CreateLayer("Map", CUILayer.EUILayerType.Normal);
-        CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
+        CreateLayer("Checkpoint2", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
         CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);

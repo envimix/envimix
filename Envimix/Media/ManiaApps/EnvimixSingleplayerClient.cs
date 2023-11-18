@@ -50,7 +50,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         CreateLayer("321Go", CUILayer.EUILayerType.Normal);
         CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
         CreateLayer("Map", CUILayer.EUILayerType.Normal);
-        CreateLayer("Checkpoint", CUILayer.EUILayerType.Normal);
+        CreateLayer("Checkpoint2", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
         CreateLayer("Score", CUILayer.EUILayerType.Normal);
