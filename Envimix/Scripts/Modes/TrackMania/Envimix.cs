@@ -413,7 +413,6 @@ public class Envimix : UniverseModeBase
         CreateLayer("SpectatorCount", CUILayer.EUILayerType.Normal);
         CreateLayer("SpectatorInfo", CUILayer.EUILayerType.Normal);
         CreateLayer("SpectatorEffect", CUILayer.EUILayerType.Normal);
-        CreateLayer("Scoreboard", CUILayer.EUILayerType.ScoresTable);
         //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
         var vehicleManialink = $"<quad z-index=\"-1\" pos=\"0 {-DisplayedCars.Count * 20 / 2}\" size=\"320 {DisplayedCars.Count * 20 + 160}\" halign=\"center\" valign=\"center\" style=\"Bgs1InRace\" substyle=\"BgEmpty\" scriptevents=\"1\"/>";

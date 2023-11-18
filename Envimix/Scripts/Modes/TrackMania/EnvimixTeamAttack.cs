@@ -25,8 +25,9 @@ public class EnvimixTeamAttack : Envimix
         ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
 
         CreateServersideLayers();
+        CreateLayer("ScoreboardTeamAttack", CUILayer.EUILayerType.ScoresTable);
         IndependantLaps = true;
-        ModeHelp = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible.";
+        ModeHelp = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible under a time limit.";
         ModeStatusMessage = ModeHelp;
 
         UseClans = true;
@@ -45,13 +46,6 @@ public class EnvimixTeamAttack : Envimix
         else
         {
             RespawnBehaviour = CTmMode.ETMRespawnBehaviour.AlwaysGiveUp;
-        }
-
-        Users_DestroyAllFakes();
-
-        for (var i = 0; i < 2; i++)
-        {
-            Users_CreateFake($"User{i}", 0);
         }
     }
 
@@ -246,8 +240,6 @@ public class EnvimixTeamAttack : Envimix
                 }
             }
         }*/
-
-        UseForcedClans = true;
     }
 
     private bool TrySpawnEnvimixTeamAttackPlayer(CTmPlayer player, bool frozen)

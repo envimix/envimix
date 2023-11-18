@@ -260,7 +260,7 @@
 		<frame id="FrameModeHelp" pos="0 -130" hidden="1">
 			<quad z-index="-1" size="110 40" valign="center" halign="center" style="Bgs1" substyle="BgCardList" />
 			<label id="LabelModeHelpName" pos="-50 16" z-index="0" size="90 5" text="" textfont="RajdhaniMono" textsize="6"/>
-			<label id="LabelModeHelpDescription" pos="-50 7" z-index="0" size="100 5" text="" autonewline="1" textfont="Oswald"/>
+			<label id="LabelModeHelpDescription" pos="-50 7" z-index="0" size="100 5" text="" textsize="2.5" autonewline="1" textfont="Oswald"/>
 			<frame pos="40 -9.5">
 				<quad size="25 8.5" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5" />
 				<quad id="QuadButtonModeHelpClose" size="24.75 8.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" />

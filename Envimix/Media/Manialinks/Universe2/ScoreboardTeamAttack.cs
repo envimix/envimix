@@ -2,7 +2,7 @@
 
 namespace Envimix.Media.Manialinks.Universe2;
 
-public class Scoreboard : CTmMlScriptIngame, IContext
+public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 {
     public struct SCheckpoint
     {
@@ -86,7 +86,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
     [Netread(NetFor.UI)] public required IList<SFilteredRating> MyRatings { get; set; }
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
-    public Scoreboard()
+    public ScoreboardTeamAttack()
     {
         RaceEvent += Scoreboard_RaceEvent;
         MouseClick += Scoreboard_MouseClick;
