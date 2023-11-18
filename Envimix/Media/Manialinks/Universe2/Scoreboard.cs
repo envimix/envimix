@@ -154,6 +154,38 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         return 0;
     }
 
+    static string ToNicerNumber(int num)
+    {
+        var numText = num.ToString();
+        var newText = "";
+
+        var numTextLength = TextLib.Length(numText);
+        var numLengthReal = numTextLength / 3f;
+        var numLength = MathLib.FloorInteger(numLengthReal);
+
+        if (numLengthReal <= 1)
+        {
+            return numText;
+        }
+
+        for (var i = 0; i < numLength + 1; i++)
+        {
+            var length = MathLib.Min(3, numTextLength - i * 3);
+
+            var numPart = TextLib.SubText(numText, numTextLength - 3 - i * 3, length);
+
+            if (i == 0)
+            {
+                newText = numPart;
+                continue;
+            }
+
+            newText = $"{numPart} {newText}";
+        }
+
+        return newText;
+    }
+
     private void UpdatePlayer(CMlFrame frame, CTmScore score, int rank)
     {
         var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
@@ -189,7 +221,7 @@ public class Scoreboard : CTmMlScriptIngame, IContext
         labelPlayerName.SetText(score.User.Name);
 
         var labelScore = (frame.GetFirstChild("LabelScore") as CMlLabel)!;
-        labelScore.SetText(score.Points.ToString());
+        labelScore.SetText(ToNicerNumber(score.Points));
 
         var frameCarRanks = (frame.GetFirstChild("FrameCarRanks") as CMlFrame)!;
 

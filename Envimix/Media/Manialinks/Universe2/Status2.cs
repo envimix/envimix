@@ -3,6 +3,7 @@
 public class Status2 : CTmMlScriptIngame, IContext
 {
     public int Start;
+    public bool PrevVisible;
     public bool PrevIsInMenu;
     public bool PrevTeamSelectionMode;
     public IList<int> PrevClanScores;
@@ -75,24 +76,40 @@ public class Status2 : CTmMlScriptIngame, IContext
 
     static string ToNicerNumber(int num)
     {
+        var numText = num.ToString();
         var newText = "";
 
-        for (var i = 0; i < TextLib.Length(num.ToString()); i++)
-        {
-            newText = $"{newText}{TextLib.SubText(num.ToString(), i, 1)}";
+        var numTextLength = TextLib.Length(numText);
+        var numLengthReal = numTextLength / 3f;
+        var numLength = MathLib.FloorInteger(numLengthReal);
 
-            if (((TextLib.Length(num.ToString()) - i - 1) % 3) == 0)
-            {
-                newText = newText + " ";
-            }
+        if (numLengthReal <= 1)
+        {
+            return numText;
         }
 
-        return TextLib.SubText(newText, 0, TextLib.Length(newText) - 1);
+        for (var i = 0; i < numLength + 1; i++)
+        {
+            var length = MathLib.Min(3, numTextLength - i * 3);
+
+            var numPart = TextLib.SubText(numText, numTextLength - 3 - i * 3, length);
+
+            if (i == 0)
+            {
+                newText = numPart;
+                continue;
+            }
+
+            newText = $"{numPart} {newText}";
+        }
+
+        return newText;
     }
 
     public void Main()
     {
         Start = Now;
+        PrevVisible = IsVisible();
         PrevIsInMenu = IsInGameMenuDisplayed;
         PrevClanScores = new[] { ClanScores[0], ClanScores[1], ClanScores[2] };
         PrevClanScoresForAnim = new[] { ClanScores[0], ClanScores[1], ClanScores[2] };
@@ -104,6 +121,8 @@ public class Status2 : CTmMlScriptIngame, IContext
         QuadBluePoints.ModulateColor = Teams[1].ColorPrimary;
         QuadJoinRed.ModulateColor = Teams[0].ColorPrimary;
         QuadJoinBlue.ModulateColor = Teams[1].ColorPrimary;
+
+        FrameStatus.Visible = IsVisible();
 
         Wait(() => GetPlayer() is not null);
     }
@@ -264,6 +283,13 @@ public class Status2 : CTmMlScriptIngame, IContext
             QuadBluePoints.Size.X = 47f * blueRatio - (-QuadBluePoints.RelativePosition_V3.X + 23.4);
             LabelRedPoints.RelativePosition_V3.X = QuadRedPoints.RelativePosition_V3.X + QuadRedPoints.Size.X / 2;
             LabelBluePoints.RelativePosition_V3.X = -QuadRedPoints.RelativePosition_V3.X - QuadBluePoints.Size.X / 2;
+        }
+
+        if (IsVisible() != PrevVisible)
+        {
+            FrameStatus.Visible = IsVisible();
+
+            PrevVisible = IsVisible();
         }
     }
 
