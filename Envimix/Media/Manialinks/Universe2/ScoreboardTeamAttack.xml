@@ -22,7 +22,7 @@
 			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
 			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
 		</frame>
-		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png" pos="137 0"/>
+		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png" pos="136 0"/>
 	</framemodel>
 	<framemodel id="FramemodelRating">
 		<frame pos="0 2.5" z-index="1">
@@ -40,7 +40,7 @@
 	</framemodel>
 	<frame z-index="1000">
 		<quad pos="0 0" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
-		<frame id="FRAME_RATING" pos="0 47.5">
+		<frame pos="0 47.5">
 			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
 			<label pos="0 -0.75" z-index="0" size="60 10" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="7"/>
 		</frame>
@@ -64,8 +64,8 @@
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/BayCar.png" pos="54 0"/>
 					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CoastCar.png" pos="60 0"/>
 				</frame>
-				<label pos="137 2.5" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
-				<label pos="137 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
+				<label pos="136 2.3" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
+				<label pos="136 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
 			</frame>
 			<frame pos="0 28" z-index="1" id="FrameGlobalScores">
 				<frameinstance modelid="FramemodelScore"/>
@@ -81,6 +81,10 @@
 			</frame>
 			<frame pos="0 -34" z-index="1">
 				<frameinstance modelid="FramemodelScore" id="FrameYourScore"/>
+			</frame>
+			<frame pos="143 31">
+				<quad z-index="0" size="1.5 60" style="Bgs1" substyle="BgCardList" id="QuadScoreboardScrollable" opacity="0.5" scriptevents="1" halign="center"/>
+				<quad z-index="1" size="1.5 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadScoreboardScrollbar" scriptevents="1" halign="center" hidden="1"/>
 			</frame>
 		</frame>
 		<frame pos="73 0">
