@@ -187,6 +187,13 @@ public class Status2 : CTmMlScriptIngame, IContext
                                 QuadJoinBlue.Visible = true;
                             }
                         }
+                        else if (count1 == count2)
+                        {
+                            LabelRedPoints.SetText("🔒");
+                            LabelBluePoints.SetText("🔒");
+                            QuadJoinRed.Visible = false;
+                            QuadJoinBlue.Visible = false;
+                        }
                     }
                 }
 
