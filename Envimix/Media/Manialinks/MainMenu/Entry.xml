@@ -2,26 +2,26 @@
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
 	<frame z-index="-1" pos="90 -5">
 		<quad z-index="-1" size="80 100" valign="center" halign="center" style="Bgs1" substyle="BgCardList"  pos="0 10"/>
-		<quad pos="0 43" z-index="0" size="60 27.5" bgcolor="FFFA" halign="center" valign="center" style="TitleLogos" substyle="Title"/>
-		<frame pos="0 30">
+		<quad pos="0 41.5" z-index="0" size="60 27.5" bgcolor="FFFA" halign="center" valign="center" style="TitleLogos" substyle="Title"/>
+		<frame pos="0 27">
 			<quad size="79 15" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"  valign="center" pos="0 -7.5"/>
 			<quad size="78.75 14.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -7.5" colorize="258" valign="center"/>
 			<label pos="-30 -8" z-index="1" size="70 10" text="Play Solo" valign="center2" textfont="RajdhaniMono" translate="1"  textprefix="$t" textsize="5"/>
 			<quad pos="27.5 -7.75" z-index="1" size="12 12" halign="center" valign="center" style="Icons128x128_1" substyle="Solo"/>
 		</frame>
-		<frame pos="0 15.5">
+		<frame pos="0 12.5">
 			<quad size="79 13" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"  valign="center" pos="0 -7.5"/>
 			<quad size="78.75 12.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -7.5" colorize="258" valign="center"/>
 			<label pos="-30 -8" z-index="1" size="70 10" text="Multiplayer" valign="center2" textfont="RajdhaniMono" translate="1"  textprefix="$t" textsize="4"/>
 			<quad pos="27.5 -7.5" z-index="1" size="9 9" halign="center" valign="center" style="Icons128x128_1" substyle="ServersAll"/>
 		</frame>
-		<frame pos="0 -5">
+		<frame pos="0 -7">
 			<quad size="79 13" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"  valign="center" pos="0 -7.5"/>
 			<quad size="78.75 12.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -7.5" colorize="258" valign="center"/>
 			<label pos="30 -8" z-index="1" size="70 10" text="Local Play" valign="center2" textfont="RajdhaniMono" translate="1"  halign="right" textprefix="$t" textsize="4"/>
 			<quad pos="-27.5 -7.6" z-index="1" size="9 9" halign="center" valign="center" style="Icons128x128_1" substyle="Lan"/>
 		</frame>
-		<frame pos="0 -18.5">
+		<frame pos="0 -20.5">
 			<quad size="79 13" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"  valign="center" pos="0 -7.5"/>
 			<quad size="78.75 12.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -7.5" colorize="258" valign="center"/>
 			<label pos="30 -8" z-index="1" size="70 10" text="Editors" valign="center2" textfont="RajdhaniMono" translate="1"  halign="right" textprefix="$t" textsize="4"/>
