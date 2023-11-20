@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
 	<framemodel id="FramemodelScore">
-		<quad id="QuadRowHelper" pos="0.2 0" z-index="-1" size="144.6 6" bgcolor="000" valign="center" opacity=".0"/>
+		<quad id="QuadRowHelper" pos="0.2 0" z-index="-1" size="144.6 6" bgcolor="000" valign="center" opacity=".0" scriptevents="1"/>
 		<quad id="QuadTeam" pos="1 0" z-index="0" size="1.5 5" bgcolor="F00" valign="center" opacity=".7"/>
 		<label id="LabelRank" pos="7 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center"/>
 		<quad id="QuadEchelon" pos="14 0" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
@@ -67,17 +67,19 @@
 				<label pos="136 2.3" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
 				<label pos="136 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
 			</frame>
-			<frame pos="0 28" z-index="1" id="FrameGlobalScores">
-				<frameinstance modelid="FramemodelScore"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -6"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -12"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -18"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -24"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -30"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -36"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -42"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -48"/>
-				<frameinstance modelid="FramemodelScore" pos="0 -54"/>
+			<frame id="FrameOuterGlobalScores" pos="0 28" z-index="1" clip="1" clipposn="71 -26.75" clipsizen="142 59" scroll="1" scrollgrid="0 6" scrollmax="0 0">
+				<frame id="FrameGlobalScores">
+					<frameinstance modelid="FramemodelScore"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -6"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -12"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -18"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -24"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -30"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -36"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -42"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -48"/>
+					<frameinstance modelid="FramemodelScore" pos="0 -54"/>
+				</frame>
 			</frame>
 			<frame pos="0 -34" z-index="1">
 				<frameinstance modelid="FramemodelScore" id="FrameYourScore"/>

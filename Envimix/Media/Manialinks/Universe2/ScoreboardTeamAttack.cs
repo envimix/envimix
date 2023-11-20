@@ -42,6 +42,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         public SRating Rating;
     }
 
+    [ManialinkControl] public required CMlFrame FrameOuterGlobalScores;
     [ManialinkControl] public required CMlFrame FrameGlobalScores;
     [ManialinkControl] public required CMlFrame FrameYourScore;
     [ManialinkControl] public required CMlLabel LabelYourName;
@@ -79,6 +80,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public bool PrevRatingEnabled;
     public int PrevRatingsUpdatedAt;
     public string PrevCar;
+    public float PrevScrollOffsetY;
 
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
@@ -383,17 +385,29 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             }
         }
 
+        if (Scores.Count > 10)
+        {
+            FrameOuterGlobalScores.ScrollMax = new Vec2(0, (Scores.Count - 10) * 6f);
+        }
+        else
+        {
+            FrameOuterGlobalScores.ScrollOffset = new Vec2(0, 0);
+            FrameOuterGlobalScores.ScrollMax = new Vec2(0, 0);
+        }
+
         for (int i = 0; i < FrameGlobalScores.Controls.Count; i++)
         {
             var frame = (FrameGlobalScores.Controls[i] as CMlFrame)!;
 
-            if (Scores.Count <= i)
+            var newI = i + MathLib.FloorInteger((float)FrameOuterGlobalScores.ScrollOffset.Y / 6);
+
+            if (Scores.Count <= newI)
             {
                 frame.Visible = false;
                 continue;
             }
-
-            UpdatePlayer(frame, Scores[i], rank: i + 1);
+            
+            UpdatePlayer(frame, Scores[newI], rank: newI + 1);
 
             frame.Visible = true;
         }
@@ -534,6 +548,12 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         if (InputPlayer is not null && InputPlayer.User.LadderPoints != CurrentLadderPoints)
         {
             CurrentLadderPoints = InputPlayer.User.LadderPoints;
+            return true;
+        }
+
+        if (FrameOuterGlobalScores.ScrollOffset.Y != PrevScrollOffsetY)
+        {
+            PrevScrollOffsetY = (float)FrameOuterGlobalScores.ScrollOffset.Y;
             return true;
         }
 
@@ -720,5 +740,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
             PrevCar = GetCar();
         }
+
+        FrameGlobalScores.RelativePosition_V3 = new Vec2(-FrameOuterGlobalScores.ScrollOffset.X, -FrameOuterGlobalScores.ScrollOffset.Y);
     }
 }
