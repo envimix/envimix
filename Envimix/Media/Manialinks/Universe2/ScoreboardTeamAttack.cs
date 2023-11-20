@@ -57,6 +57,8 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameQuality;
     [ManialinkControl] public required CMlQuad QuadMyCar;
     [ManialinkControl] public required CMlLabel LabelMyCar;
+    [ManialinkControl] public required CMlQuad QuadScoreboardScrollable;
+    [ManialinkControl] public required CMlQuad QuadScoreboardScrollbar;
 
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
@@ -388,11 +390,16 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         if (Scores.Count > 10)
         {
             FrameOuterGlobalScores.ScrollMax = new Vec2(0, (Scores.Count - 10) * 6f);
+            QuadScoreboardScrollbar.Size.Y = 10f / Scores.Count * 60f;
+            // position the scrollbar according to the size
+            QuadScoreboardScrollbar.RelativePosition_V3.Y = (float)-FrameOuterGlobalScores.ScrollOffset.Y * 10f / (Scores.Count - 10);
+            QuadScoreboardScrollbar.Show();
         }
         else
         {
             FrameOuterGlobalScores.ScrollOffset = new Vec2(0, 0);
             FrameOuterGlobalScores.ScrollMax = new Vec2(0, 0);
+            QuadScoreboardScrollbar.Hide();
         }
 
         for (int i = 0; i < FrameGlobalScores.Controls.Count; i++)
