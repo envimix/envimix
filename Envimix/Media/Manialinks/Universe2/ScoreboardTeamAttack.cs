@@ -59,6 +59,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelMyCar;
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollable;
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollbar;
+    [ManialinkControl] public required CMlLabel LabelCheckpoint;
 
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
@@ -83,6 +84,8 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public int PrevRatingsUpdatedAt;
     public string PrevCar;
     public float PrevScrollOffsetY;
+    public bool HoldsScrollbar;
+    public float HoldsScrollbarMouseY;
 
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
@@ -94,6 +97,22 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     {
         RaceEvent += Scoreboard_RaceEvent;
         MouseClick += Scoreboard_MouseClick;
+
+        QuadScoreboardScrollbar.MouseOver += () =>
+        {
+            AnimMgr.Add(QuadScoreboardScrollbar, "<quad opacity=\"0.9\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadScoreboardScrollbar.MouseOut += () =>
+        {
+            AnimMgr.Add(QuadScoreboardScrollbar, "<quad opacity=\"0.75\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadScoreboardScrollbar.MouseClick += () =>
+        {
+            HoldsScrollbar = true;
+            HoldsScrollbarMouseY = MouseY;
+        };
     }
 
     CTmMlPlayer GetPlayer()
@@ -391,8 +410,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         {
             FrameOuterGlobalScores.ScrollMax = new Vec2(0, (Scores.Count - 10) * 6f);
             QuadScoreboardScrollbar.Size.Y = 10f / Scores.Count * 60f;
-            // position the scrollbar according to the size
-            QuadScoreboardScrollbar.RelativePosition_V3.Y = (float)-FrameOuterGlobalScores.ScrollOffset.Y * 10f / (Scores.Count - 10);
+            QuadScoreboardScrollbar.RelativePosition_V3.Y = -FrameOuterGlobalScores.ScrollOffset.Y * 10f / (Scores.Count - 10) * ((QuadScoreboardScrollable.Size.Y - QuadScoreboardScrollbar.Size.Y) / QuadScoreboardScrollable.Size.Y);
             QuadScoreboardScrollbar.Show();
         }
         else
@@ -467,10 +485,14 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         switch (e.Type)
         {
             case CTmRaceClientEvent.EType.WayPoint:
+                LabelCheckpoint.SetText(TimeToTextWithMilli(e.RaceTime));
                 if (e.IsEndRace)
                 {
                     UpdateScoreboard();
                 }
+                break;
+            case CTmRaceClientEvent.EType.Respawn:
+                LabelCheckpoint.SetText("0:00.000");
                 break;
         }
 
@@ -746,6 +768,18 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             UpdatePersonalRatings();
 
             PrevCar = GetCar();
+        }
+
+        if (HoldsScrollbar)
+        {
+            var mouseY = MouseY - HoldsScrollbarMouseY;
+
+            //FrameOuterGlobalScores.ScrollOffset = new Vec2(0, -mouseY);
+
+            if (!MouseLeftButton)
+            {
+                HoldsScrollbar = false;
+            }
         }
 
         FrameGlobalScores.RelativePosition_V3 = new Vec2(-FrameOuterGlobalScores.ScrollOffset.X, -FrameOuterGlobalScores.ScrollOffset.Y);
