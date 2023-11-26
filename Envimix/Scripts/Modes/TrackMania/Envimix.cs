@@ -400,7 +400,7 @@ public class Envimix : UniverseModeBase
         CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
         CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
         CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
-        CreateLayer("LiveRankingsCar", CUILayer.EUILayerType.Normal);
+        CreateLayer("LiveRankingsCar2", CUILayer.EUILayerType.Normal);
         CreateLayer("RankingsCar", CUILayer.EUILayerType.Normal);
         CreateLayer("Score", CUILayer.EUILayerType.Normal);
         CreateLayer("Rating", CUILayer.EUILayerType.Normal);
