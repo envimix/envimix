@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/BigBang1112/manialink-xsd/main/manialink_v3_ns.xsd">
 	<framemodel id="FramemodelRecord">
-		<quad pos="-2 0" z-index="0" size="0.75 4" bgcolor="F00" valign="center"/>
+		<quad id="QuadTeam" pos="-2 0" z-index="0" size="0.75 4" bgcolor="F00" valign="center"/>
 		<label pos="0 0.3" z-index="0" size="5 5" text="01" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" id="LabelRank"/>
 		<frame pos="5.5 0.15" z-index="0">
 			<label size="20.5 5" text="$aaa[unknown]" valign="center" textfont="Oswald" textsize="1.5" id="LabelNickname"/>
 		</frame>
 		<label pos="38 0.3" z-index="0" size="15 5" text="-:--.---" halign="right" valign="center" textfont="OswaldMono" textsize="1.75" id="LabelTime"/>
-		<quad pos="43.5 0" z-index="0" size="4.5 4.5" halign="center" valign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png"/>
+		<quad id="QuadCar" pos="43.5 0" z-index="0" size="4.5 4.5" halign="center" valign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png"/>
 	</framemodel>
 	<frame pos="-162 12.5" id="FrameLiveRankingsCar" scale="0.85">
 		<frame pos="26 -3">

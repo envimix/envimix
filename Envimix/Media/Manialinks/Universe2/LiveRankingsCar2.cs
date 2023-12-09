@@ -61,9 +61,28 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
         Wait(() => GetPlayer() is not null);
     }
 
+    public Dictionary<string, bool> GetPlayersOf(string carName)
+    {
+        Dictionary<string, bool> playerLogins = new();
+
+        foreach (var player in Players)
+        {
+            var car = Netread<string>.For(player);
+
+            if (carName == car.Get())
+            {
+                playerLogins[player.User.Login] = true;
+            }
+        }
+
+        return playerLogins;
+    }
+
     public void Loop()
     {
         var car = Netread<string>.For(GetPlayer());
+
+        var playersOfThisCar = GetPlayersOf(car.Get());
 
         FrameLiveRankingsCar.Visible = IsVisible();
 
@@ -142,9 +161,11 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
                 continue;
             }
 
+            var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
+            var quadCar = (frame.GetFirstChild("QuadCar") as CMlQuad)!;
 
             var envimixPoints = Netread<Dictionary<string, int>>.For(Scores[carScores[i]]);
             var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(Scores[carScores[i]]);
@@ -193,6 +214,14 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             }
 
             labelNickname.Value = Scores[carScores[i]].User.Name;
+
+            quadTeam.BgColor = Teams[Scores[carScores[i]].TeamNum - 1].ColorPrimary;
+            
+            if (playersOfThisCar.ContainsKey(Scores[carScores[i]].User.Login))
+            {
+                quadCar.ChangeImageUrl($"https://envimix.bigbang1112.cz/img/cars/{car.Get()}.png");
+                quadCar.Show();
+            }
 
             frame.Show();
         }
