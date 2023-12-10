@@ -114,6 +114,7 @@ public class Status2 : CTmMlScriptIngame, IContext
         PrevClanScores = new[] { ClanScores[0], ClanScores[1], ClanScores[2] };
         PrevClanScoresForAnim = new[] { ClanScores[0], ClanScores[1], ClanScores[2] };
         PrevClanScoresTime = new[] { 0, 0, 0 };
+        PrevTeamSelectionMode = !TeamSelectionMode;
 
         ChangeStatusPosition();
 
