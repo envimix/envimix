@@ -2,7 +2,6 @@
 
 public class MusicPlayer : CTmMlScriptIngame, IContext
 {
-    public CAudioSourceMusic Music;
     public int LatestCheckpointForPlayers = -1;
 
     public MusicPlayer()
@@ -15,24 +14,57 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                     // switch track
                     break;
                 case CTmRaceClientEvent.EType.StopEngine:
-                    Music.NextVariant();
+                    //Music.NextVariant();
                     break;
                 case CTmRaceClientEvent.EType.StartEngine:
-                    Music.NextVariant();
+                    //Music.NextVariant();
                     break;
                 case CTmRaceClientEvent.EType.WayPoint:
                     if (e.IsEndRace)
                     {
-                        Music.NextVariant();
+                        //Music.NextVariant();
                     }
                     else if (e.IsEndLap)
                     {
                         //M_LapTrackNeeded = True;
                     }
-                    else if (e.CheckpointInRace > LatestCheckpointForPlayers)
+                    else
                     {
-                        LatestCheckpointForPlayers = e.CheckpointInRace;
-                        Music.NextVariant();
+                        int difference;
+
+                        if (e.Player.Score.BestRace is null || e.Player.Score.BestRace.Checkpoints.Count == 0)
+                        {
+                            difference = 0;
+                        }
+                        else if (IndependantLaps)
+                        {
+                            difference = e.LapTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInLap];
+                        }
+                        else
+                        {
+                            difference = e.RaceTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInRace];
+                        }
+
+                        if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
+                        {
+                            if (MathLib.Rand(0, 3) == 0)
+                            {
+                                if (difference > 0)
+                                {
+                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-no-{MathLib.Rand(1, 38)}.wav", 1);
+                                }
+                                else
+                                {
+                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-yes-{MathLib.Rand(1, 23)}.wav", 1);
+                                }
+                            }
+                        }
+
+                        /*if (e.CheckpointInRace > LatestCheckpointForPlayers)
+                        {
+                            LatestCheckpointForPlayers = e.CheckpointInRace;
+                            Music.NextVariant();
+                        }*/
                     }
                     break;
             }
@@ -51,23 +83,21 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
 
     public void Main()
     {
-        Music = Audio.CreateMusic("file://Media/Sounds/87 Bustre Combine.zip");
-        Music.EnableSegment("loop");
-        Music.FadeDuration = .35f;
-        Music.FadeTracksDuration = 1;
-        Music.UpdateMode = CAudioSourceMusic.EUpdateMode.OnNextBeat;
-        Music.Volume = 1f;
-        Log(Music);
-        
-        Music.Play();
+        if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
+        {
+            if (MathLib.Rand(0, 3) == 0)
+            {
+                Audio.PlaySoundEvent("file://Media/Sounds/Voices/voice-welcome.wav", 1);
+            }
+        }
     }
 
     public void Loop()
     {
-        var ratio = GetPlayer().DisplaySpeed / 200f;
+        /*var ratio = GetPlayer().DisplaySpeed / 200f;
         if (ratio > 1) ratio = 1;
         if (ratio < 0.2f) ratio = 0.2f;
         Music.LPF_CutoffRatio = ratio;
-        Music.LPF_Q = 1;
+        Music.LPF_Q = 2;*/
     }
 }
