@@ -5,6 +5,9 @@ namespace Envimix.Media.ManiaApps;
 public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 {
     public required Dictionary<string, CUILayer> Layers;
+    public CAudioSourceMusic Music;
+
+    public IList<string> Songs;
 
     public EnvimixSingleplayerClient()
     {
@@ -36,6 +39,25 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                             }
                         }
                     }
+
+                    // 20% chance to continue the song, otherwise switch to another one
+                    /*if (e.CustomEventType == "Car" && e.CustomEventData.Count >= 2 && e.CustomEventData[1] == "False")
+                    {
+                        Music.LPF_CutoffRatio = 1;
+                    }*/
+
+                    if (e.CustomEventType == "MenuOpen" && e.CustomEventData.Count == 1)
+                    {
+                        if (e.CustomEventData[0] == "True")
+                        {
+                            Music.LPF_CutoffRatio = 0.3f;
+                        }
+                        else if (e.CustomEventData[0] == "False")
+                        {
+                            Music.LPF_CutoffRatio = 1;
+                        }
+                    }
+
                     break;
             }
         };
@@ -55,7 +77,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
         CreateLayer("Score", CUILayer.EUILayerType.Normal);
         CreateLayer("Endscreen", CUILayer.EUILayerType.Normal);
-        //CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
+        CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
 
         var displayedCars = Netread<IList<string>>.For(Playground.Teams[0]);
 
@@ -85,6 +107,30 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
 
         Log("All manialinks successfully created!");
+        
+        if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
+        {
+            if (MathLib.Rand(0, 3) == 0)
+            {
+                Audio.PlaySoundEvent("file://Media/Sounds/Voices/voice-welcome.wav", 1);
+            }
+
+            Songs = new[] { "In The Past", "Grown", "These Times", "The Only Thing I Miss (Is You)", "Warning", "Final Thing To See" };
+
+            var randomSongPick = Songs[MathLib.Rand(0, Songs.Count - 1)];
+
+            Music = Audio.CreateMusic($"file://Media/Musics/Album/Loops/{randomSongPick}.zip");
+            Music.EnableSegment("loop");
+            Music.FadeDuration = .35f;
+            Music.FadeTracksDuration = 1;
+            Music.FadeFiltersDuration = 1.25f;
+            Music.UpdateMode = CAudioSourceMusic.EUpdateMode.OnNextBeat;
+            Music.Volume = 1f;
+            Music.LPF_CutoffRatio = 0.3f;
+            Music.LPF_Q = 8;
+
+            Music.Play();
+        }
     }
 
     public void Loop()

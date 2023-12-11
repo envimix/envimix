@@ -1494,6 +1494,9 @@ public class Menu : CTmMlScriptIngame, IContext
         if (IsMenuOpen != IsMenuNavigationForeground)
         {
             IsMenuOpen = IsMenuNavigationForeground;
+
+            SendCustomEvent("MenuOpen", new[] { IsMenuOpen.ToString() });
+
             if (IsMenuOpen)
             {
                 if (NavOnVehicle)
