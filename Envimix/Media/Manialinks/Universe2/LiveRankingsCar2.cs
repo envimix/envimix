@@ -222,6 +222,10 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
                 quadCar.ChangeImageUrl($"https://envimix.bigbang1112.cz/img/cars/{car.Get()}.png");
                 quadCar.Show();
             }
+            else
+            {
+                quadCar.Hide();
+            }
 
             frame.Show();
         }
