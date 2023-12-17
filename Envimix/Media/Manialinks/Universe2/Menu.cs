@@ -525,6 +525,7 @@ public class Menu : CTmMlScriptIngame, IContext
                             else
                             {
                                 SendCustomEvent("Car", new[] { DisplayedCars[index], "False" });
+                                SendCustomEvent("MusicSwitch", new[] { "" });
                             }
                         }
 

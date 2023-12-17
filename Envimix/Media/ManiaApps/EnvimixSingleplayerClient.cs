@@ -32,6 +32,8 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                             if (e.CustomEventData[0] == "Start")
                             {
                                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 0, 1);
+                                Music.LPF_CutoffRatio = 1;
+                                Music.VolumedB = 1;
                             }
                             else
                             {
@@ -56,6 +58,12 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                         {
                             Music.LPF_CutoffRatio = 1;
                         }
+                    }
+
+                    if (e.CustomEventType == "MusicSwitch")
+                    {
+                        PlayRandomSong();
+                        Music.NextVariant();
                     }
 
                     break;
@@ -115,22 +123,27 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                 Audio.PlaySoundEvent("file://Media/Sounds/Voices/voice-welcome.wav", 1);
             }
 
-            Songs = new[] { "In The Past", "Grown", "These Times", "The Only Thing I Miss (Is You)", "Warning", "Final Thing To See" };
-
-            var randomSongPick = Songs[MathLib.Rand(0, Songs.Count - 1)];
-
-            Music = Audio.CreateMusic($"file://Media/Musics/Album/Loops/{randomSongPick}.zip");
-            Music.EnableSegment("loop");
-            Music.FadeDuration = .35f;
-            Music.FadeTracksDuration = 1;
-            Music.FadeFiltersDuration = 1.25f;
-            Music.UpdateMode = CAudioSourceMusic.EUpdateMode.OnNextBeat;
-            Music.Volume = 1f;
-            Music.LPF_CutoffRatio = 0.3f;
-            Music.LPF_Q = 8;
-
-            Music.Play();
+            PlayRandomSong();
         }
+    }
+
+    private void PlayRandomSong()
+    {
+        Songs = new[] { "In The Past", "Grown", "These Times", "The Only Thing I Miss (Is You)", "Warning", "Final Thing To See" };
+
+        var randomSongPick = Songs[MathLib.Rand(0, Songs.Count - 1)];
+
+        Music = Audio.CreateMusic($"file://Media/Musics/Album/Loops/{randomSongPick}.zip");
+        Music.EnableSegment("loop");
+        Music.FadeDuration = .35f;
+        Music.FadeTracksDuration = 1;
+        Music.FadeFiltersDuration = 1.5f;
+        Music.UpdateMode = CAudioSourceMusic.EUpdateMode.OnNextBeat;
+        Music.Volume = 1f;
+        Music.LPF_CutoffRatio = 0.3f;
+        Music.LPF_Q = 8;
+
+        Music.Play();
     }
 
     public void Loop()
