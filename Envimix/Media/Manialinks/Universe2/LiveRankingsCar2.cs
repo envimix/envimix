@@ -78,6 +78,13 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
         return playerLogins;
     }
 
+    string ConstructFilterKey(string car)
+    {
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car}_{gravity.Get()}_Time";
+    }
+
     public void Loop()
     {
         var car = Netread<string>.For(GetPlayer());
@@ -95,6 +102,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
                     control.Size.X = 0;
                     AnimMgr.Add(control, "<quad size=\"42.5 6\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
+
                 FrameLiveRankingsRecords.Controls[0].Size.X = 0;
                 AnimMgr.Add(FrameLiveRankingsRecords.Controls[0], "<quad size=\"42.5 52.5\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
 
@@ -117,49 +125,54 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
 
         LabelCar.Value = car.Get();
 
-        Dictionary<string, int> loginSort = new();
+        Dictionary<string, int> playerTimes = new();
+        ImmutableArray<string> playerLogins = new();
+        Dictionary<string, int> scoreIndices = new();
+
+        var key = ConstructFilterKey(car.Get());
 
         for (var i = 0; i < Scores.Count; i++)
         {
-            var envimixPoints = Netread<Dictionary<string, int>>.For(Scores[i]);
+            var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(Scores[i]);
 
-            if (envimixPoints.Get().ContainsKey(car.Get()))
+            var login = Scores[i].User.Login;
+
+            if (envimixBestRace.Get().ContainsKey(key))
             {
-                loginSort[Scores[i].User.Login] = envimixPoints.Get()[car.Get()];
+                playerTimes[login] = envimixBestRace.Get()[key].Time;
             }
             else
             {
-                loginSort[Scores[i].User.Login] = 0;
+                playerTimes[login] = -1;
             }
+
+            scoreIndices[login] = i;
         }
 
-        loginSort = loginSort.SortReverse();
+        Log(playerTimes);
+        playerTimes.Sort();
 
-        ImmutableArray<int> carScores = new();
-
-        foreach (var (login, s) in loginSort)
+        foreach (var (login, time) in playerTimes)
         {
-            for (int i = 0; i < Scores.Count; i++)
-            {
-                if (login == Scores[i].User.Login)
-                {
-                    carScores.Add(i);
-                }
-            }
+            playerLogins.Add(login);
         }
 
         var offset = 0;
-        var previousScore = 0;
+        var previousTime = 0;
 
         for (int i = 0; i < FrameRecords.Controls.Count; i++)
         {
             var frame = (FrameRecords.Controls[i] as CMlFrame)!;
 
-            if (carScores.Length <= i)
+            if (playerLogins.Length <= i)
             {
                 frame.Hide();
                 continue;
             }
+
+            var login = playerLogins[i];
+            var time = playerTimes[login];
+            var scoreIndex = scoreIndices[login];
 
             var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
@@ -167,57 +180,11 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
             var quadCar = (frame.GetFirstChild("QuadCar") as CMlQuad)!;
 
-            var envimixPoints = Netread<Dictionary<string, int>>.For(Scores[carScores[i]]);
-            var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(Scores[carScores[i]]);
+            labelNickname.Value = Scores[scoreIndex].User.Name;
 
-            if (envimixPoints.Get().ContainsKey(car.Get()))
-            {
-                if (envimixPoints.Get()[car.Get()] > 0)
-                {
-                    if (envimixPoints.Get()[car.Get()] == previousScore)
-                    {
-                        offset += 1;
-                    }
-                    else
-                    {
-                        offset = 0;
-                    }
+            quadTeam.BgColor = Teams[Scores[scoreIndex].TeamNum - 1].ColorPrimary;
 
-                    previousScore = envimixPoints.Get()[car.Get()];
-                    labelRank.Value = TextLib.FormatInteger(i - offset + 1, 2);
-
-                    labelRank.Size.X = labelRank.ComputeWidth(labelRank.Value);
-                    labelRank.Visible = true;
-
-                    labelNickname.Parent.RelativePosition_V3.X = labelRank.Size.X + 1;
-                }
-                else
-                {
-                    labelRank.Visible = false;
-                    labelNickname.Parent.RelativePosition_V3.X = 0;
-                }
-
-                if (envimixBestRace.Get().ContainsKey(car.Get()))
-                {
-                    labelTime.Value = TimeToTextWithMilli(envimixBestRace.Get()[car.Get()].Time);
-                }
-                else
-                {
-                    labelTime.Value = "-:--.---";
-                }
-            }
-            else
-            {
-                labelRank.Visible = false;
-                labelNickname.Parent.RelativePosition_V3.X = 0;
-                labelTime.Value = "-:--.---";
-            }
-
-            labelNickname.Value = Scores[carScores[i]].User.Name;
-
-            quadTeam.BgColor = Teams[Scores[carScores[i]].TeamNum - 1].ColorPrimary;
-            
-            if (playersOfThisCar.ContainsKey(Scores[carScores[i]].User.Login))
+            if (playersOfThisCar.ContainsKey(login))
             {
                 quadCar.ChangeImageUrl($"https://envimix.bigbang1112.cz/img/cars/{car.Get()}.png");
                 quadCar.Show();
@@ -226,6 +193,34 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             {
                 quadCar.Hide();
             }
+
+            if (time == -1)
+            {
+                labelRank.Visible = false;
+                labelNickname.Parent.RelativePosition_V3.X = 0;
+                labelTime.Value = "-:--.---";
+                continue;
+            }
+
+            if (time == previousTime)
+            {
+                offset += 1;
+            }
+            else
+            {
+                offset = 0;
+            }
+
+            previousTime = time;
+
+            labelRank.Value = TextLib.FormatInteger(i - offset + 1, 2);
+
+            labelRank.Size.X = labelRank.ComputeWidth(labelRank.Value);
+            labelRank.Visible = true;
+
+            labelNickname.Parent.RelativePosition_V3.X = labelRank.Size.X + 1;
+
+            labelTime.Value = TimeToTextWithMilli(time);
 
             frame.Show();
         }
