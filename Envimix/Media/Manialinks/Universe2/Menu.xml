@@ -20,8 +20,8 @@
 		<frame id="FrameMenu">
 			<frame z-index="-1" pos="-110 0">
 				<frame pos="46 72.5" id="FrameStarButton">
-					<quad id="QuadStarButton" pos="0 0" z-index="0" size="11 5" style="Bgs1" substyle="BgWindow4" colorize="EE0" halign="center" valign="center" scriptevents="1" opacity=".8"/>
-					<label pos="0 -0.2" z-index="2" size="11 5" text="STAR" halign="center" valign="center2" textfont="RajdhaniMono" textcolor="222" textsize=".5" opacity=".9"/>
+					<quad id="QuadStarButton" pos="0 0" z-index="0" size="11 5" style="Bgs1" substyle="BgWindow4" colorize="ED0" halign="center" valign="center" scriptevents="1" opacity=".8"/>
+					<label pos="0 -0.2" z-index="2" size="11 5" textprefix="$t" text="Star" halign="center" valign="center2" textfont="RajdhaniMono" textcolor="222" textsize=".5" opacity=".9"/>
 				</frame>
 				<quad z-index="-1" size="80 160" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 				<frame pos="-35 75" clip="1" clipposn="36 -6" clipsizen="70 21" id="FrameLabelMapName">

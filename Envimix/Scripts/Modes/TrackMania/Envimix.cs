@@ -33,6 +33,19 @@ public class Envimix : UniverseModeBase
         public string Uid;
     }
 
+    public struct SEnvimaniaRecord
+    {
+        public SUserInfo User;
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+        public bool Verified;
+        public bool Projected;
+        public string GhostUrl;
+    }
+
     public struct SRating
     {
         public float Difficulty;
@@ -70,6 +83,7 @@ public class Envimix : UniverseModeBase
         public string Token;
         public ImmutableArray<SFilteredRating> Ratings;
         public Dictionary<string, IList<SFilteredRating>> UserRatings;
+        public Dictionary<string, SEnvimaniaRecord> Validations;
     }
 
     public struct SEnvimaniaSessionRecordRequest
@@ -90,19 +104,6 @@ public class Envimix : UniverseModeBase
     {
         public string Login;
         public IList<SFilteredRating> Ratings;
-    }
-
-    public struct SEnvimaniaRecord
-    {
-        public SUserInfo User;
-        public int Time;
-        public int Score;
-        public int NbRespawns;
-        public float Distance;
-        public float Speed;
-        public bool Verified;
-        public bool Projected;
-        public string GhostUrl;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -209,6 +210,8 @@ public class Envimix : UniverseModeBase
     [Netwrite] public bool RatingEnabled { get; set; }
     [Netwrite] public required Dictionary<string, SRating> Ratings { get; set; }
     [Netwrite] public required int RatingsUpdatedAt { get; set; }
+    [Netwrite] public required Dictionary<string, SEnvimaniaRecord> Validations { get; set; }
+    [Netwrite] public required int ValidationsUpdatedAt { get; set; }
 
     public required Dictionary<string, SRating> UserRatings;
     public required Dictionary<string, SRatingServerRequest> UserRatingsToRequest;
@@ -497,8 +500,9 @@ public class Envimix : UniverseModeBase
         EnvimaniaFinishedRecordsRequests.Clear();
         Ratings.Clear();
         RatingEnabled = false;
-
         RatingsUpdatedAt = Now;
+        Validations.Clear();
+        ValidationsUpdatedAt = 0;
 
         var requested = RequestEnvimaniaSession();
 
@@ -681,6 +685,11 @@ public class Envimix : UniverseModeBase
     public static string ConstructRecordsFilterKey(SEnvimaniaRecordsFilter filter)
     {
         return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
+    }
+
+    public static string ConstructValidationFilterKey(SEnvimaniaRecordsFilter filter)
+    {
+        return $"{filter.Car}_{filter.Gravity}_{filter.Laps}";
     }
 
     private void InitiateRatingsForAllPlayers(SEnvimaniaSessionResponse sessionResponse)
@@ -886,6 +895,10 @@ public class Envimix : UniverseModeBase
                 EnvimaniaSessionToken = sessionResponse.Token!;
 
                 InitiateRatingsForAllPlayers(sessionResponse);
+
+                Validations = sessionResponse.Validations!;
+                ValidationsUpdatedAt = Now;
+                Log(nameof(Envimix), $"{Validations.Count} validations have been retrieved.");
             }
 
             Http.Destroy(EnvimaniaSessionRequest);
@@ -1221,6 +1234,25 @@ public class Envimix : UniverseModeBase
                 if (envimaniaRecords.Get().ContainsKey(filterKey))
                 {
                     recResponse = envimaniaRecords.Get()[filterKey];
+
+                    if (recResponse.Records.Length == 0)
+                    {
+                        SEnvimaniaRecord validationRec = new()
+                        {
+                            User = CreateUserInfo(e.Player.User),
+                            Distance = tempRace.Get().Distance,
+                            GhostUrl = "",
+                            NbRespawns = tempRace.Get().NbRespawns,
+                            Score = tempRace.Get().Score,
+                            Projected = true,
+                            Speed = tempRace.Get().Speed,
+                            Time = tempRace.Get().Time,
+                            Verified = false
+                        };
+
+                        var validations = Netwrite<Dictionary<string, SEnvimaniaRecord>>.For(Teams[0]);
+                        validations.Get()[ConstructValidationFilterKey(filter)] = validationRec;
+                    }
                 }
 
                 foreach (var r in recResponse.Records)

@@ -149,7 +149,6 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             scoreIndices[login] = i;
         }
 
-        Log(playerTimes);
         playerTimes.Sort();
 
         foreach (var (login, time) in playerTimes)

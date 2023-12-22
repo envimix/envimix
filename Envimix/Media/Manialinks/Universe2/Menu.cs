@@ -151,6 +151,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelModeHelpName;
     [ManialinkControl] public required CMlLabel LabelModeHelpDescription;
     [ManialinkControl] public required CMlQuad QuadButtonModeHelpClose;
+    [ManialinkControl] public required CMlLabel LabelValidator;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -182,6 +183,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public required Dictionary<string, bool> SelectedGhosts;
     public int PrevRatingsUpdatedAt;
     public bool PrevRatingEnabled;
+    public int PrevValidationsUpdatedAt;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -202,7 +204,9 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
     [Netread] public string ModeHelp { get; set; }
-    
+    //[Netread] public required Dictionary<string, SEnvimaniaRecord> Validations { get; set; }
+    //[Netread] public int ValidationsUpdatedAt { get; set; }
+
     public Menu()
     {
         MouseOver += Menu_MouseOver;
@@ -369,6 +373,13 @@ public class Menu : CTmMlScriptIngame, IContext
         }
 
         return NbLaps;
+    }
+
+    string ConstructValidationFilterKey(string car)
+    {
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car}_{gravity.Get()}_{GetLaps()}";
     }
 
     private void UpdateVehicles()
@@ -2118,6 +2129,29 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             LabelModeHelpName.Value = Playground.ServerInfo.ModeName;
             LabelModeHelpDescription.Value = ModeHelp;
+        }
+
+        var validations = Netread<Dictionary<string, SEnvimaniaRecord>>.For(Teams[0]);
+        var validationsUpdatedAt = Netread<int>.For(Teams[0]);
+
+        /*if (validationsUpdatedAt.Get() != PrevValidationsUpdatedAt)
+        {
+            PrevValidationsUpdatedAt = validationsUpdatedAt.Get();
+        }*/
+
+        var currentFilterKey = ConstructValidationFilterKey(car.Get());
+
+        if (validations.Get().ContainsKey(currentFilterKey))
+        {
+            LabelValidator.Value = validations.Get()[currentFilterKey].User.Nickname;
+        }
+        else if (validationsUpdatedAt.Get() == 0)
+        {
+            LabelValidator.Value = "$aaa[unknown]";
+        }
+        else
+        {
+            LabelValidator.Value = "$aaanobody";
         }
     }
 }
