@@ -93,6 +93,7 @@ public class Envimix : UniverseModeBase
         public int Gravity;
         public int Laps;
         public Record.SRecord Record;
+        public int PreferenceNumber;
     }
 
     public struct SEnvimaniaSessionRecordBulkRequest
@@ -1276,7 +1277,8 @@ public class Envimix : UniverseModeBase
                         Car = car.Get(),
                         Gravity = gravity,
                         Laps = GetLaps(),
-                        Record = tempRace.Get()
+                        Record = tempRace.Get(),
+                        PreferenceNumber = Now
                     };
 
                     //var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
