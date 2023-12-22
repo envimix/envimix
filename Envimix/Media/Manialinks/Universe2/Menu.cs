@@ -152,6 +152,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelModeHelpDescription;
     [ManialinkControl] public required CMlQuad QuadButtonModeHelpClose;
     [ManialinkControl] public required CMlLabel LabelValidator;
+    [ManialinkControl] public required CMlQuad QuadStarButton;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -198,11 +199,10 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public string EnvimixWebAPI { get; set; }
     [Netread] public IList<SGhostMetadata> LocalGhostMetadata { get; }
     [Netread] public int LocalGhostMetadataUpdatedAt { get; }
-    [Netread] public bool CanListenToUIEvents { get; }
 
     [Netread] public bool RatingEnabled { get; }
-    [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
-    [Netread] public required int RatingsUpdatedAt { get; set; }
+    //[Netread] public required Dictionary<string, SRating> Ratings { get; set; }
+    //[Netread] public required int RatingsUpdatedAt { get; set; }
     [Netread] public string ModeHelp { get; set; }
     //[Netread] public required Dictionary<string, SEnvimaniaRecord> Validations { get; set; }
     //[Netread] public int ValidationsUpdatedAt { get; set; }
@@ -291,6 +291,18 @@ public class Menu : CTmMlScriptIngame, IContext
 
         QuadButtonModeHelpClose.MouseOver += () =>
         {
+            Focus2();
+        };
+
+        QuadStarButton.MouseOver += () =>
+        {
+            AnimMgr.Add(QuadStarButton, "<quad opacity=\"1\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+            Focus2();
+        };
+
+        QuadStarButton.MouseOut += () =>
+        {
+            AnimMgr.Add(QuadStarButton, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             Focus2();
         };
     }
@@ -1479,7 +1491,8 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (IsSolo())
         {
-            Wait(() => CanListenToUIEvents);
+            var canListenToUIEvents = Netread<bool>.For(Teams[0]);
+            Wait(() => canListenToUIEvents.Get());
             LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
         }
 
@@ -1630,7 +1643,10 @@ public class Menu : CTmMlScriptIngame, IContext
             {
                 SetSlidingText(FrameLabelMapType, "$ff0ENVIMIX MAP");
             }
-            else SetSlidingText(FrameLabelMapType, "$aaaNON-ENVIMIX MAP");
+            else
+            {
+                SetSlidingText(FrameLabelMapType, "$aaaNON-ENVIMIX MAP");
+            }
             PreviousMapUid = Map.MapInfo.Name;
         }
 
@@ -1663,9 +1679,13 @@ public class Menu : CTmMlScriptIngame, IContext
 
         LabelPbNickname.Value = GetPlayer().User.Name;
         if (GetPlayer().Score is null || GetPlayer().Score.BestRace.Time < 0)
+        {
             LabelPbTime.Value = "-.--.---";
+        }
         else
+        {
             LabelPbTime.Value = TimeToTextWithMilli(GetPlayer().Score.BestRace.Time);
+        }
 
         LabelServerName.Value = Playground.ServerInfo.ServerName;
         LabelMode.Value = Playground.ServerInfo.ModeName;
@@ -2082,8 +2102,12 @@ public class Menu : CTmMlScriptIngame, IContext
             PrevRatingEnabled = RatingEnabled;
         }
 
-        if (RatingsUpdatedAt != PrevRatingsUpdatedAt)
+        var ratingsUpdatedAt = Netread<int>.For(Teams[0]);
+
+        if (ratingsUpdatedAt.Get() != PrevRatingsUpdatedAt)
         {
+            var ratings = Netread<Dictionary<string, SRating>>.For(Teams[0]);
+
             foreach (var control in FrameInnerVehicles.Controls)
             {
                 var frame = (control as CMlFrame)!;
@@ -2094,14 +2118,14 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 var filterKey = ConstructRatingFilterKey(carName);
 
-                if (!Ratings.ContainsKey(filterKey))
+                if (!ratings.Get().ContainsKey(filterKey))
                 {
                     gaugeDifficulty.Ratio = 0;
                     gaugeQuality.Ratio = 0;
                     continue;
                 }
 
-                var rating = Ratings[filterKey];
+                var rating = ratings.Get()[filterKey];
 
                 if (rating.Difficulty < 0)
                 {
@@ -2122,7 +2146,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 }
             }
 
-            PrevRatingsUpdatedAt = RatingsUpdatedAt;
+            PrevRatingsUpdatedAt = ratingsUpdatedAt.Get();
         }
 
         if (FrameModeHelp.Visible)

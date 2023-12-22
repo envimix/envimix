@@ -140,11 +140,6 @@
 					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonExit" halign="center" data-nav="True" pos="0 -0.125" colorize="F22"/>
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Exit" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
-				<frame pos="165 -65" hidden="1">
-					<quad z-index="-1" size="30 30" halign="center" valign="center" image="file://Media/Images/CircleBlack.png" opacity=".5"/>
-					<quad z-index="0" size="30 30" image="file://Media/Images/MoonBlack.png" halign="center" valign="center" opacity=".5"/>
-					<quad z-index="0" size="60 60" halign="center" valign="center" style="Bgs1" substyle="Glow" hidden="1"/>
-				</frame>
 				<frame pos="40 50" clip="1" clipsizen="51 22" clipposn="25 0">
 					<frame pos="5 0" id="FrameGravity">
 						<quad z-index="-2" size="50 20" style="Bgs1" substyle="BgCardList" halign="right" valign="center"/>
@@ -199,11 +194,6 @@
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkinBack" halign="center" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Back" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
-			<frame pos="55 -65" hidden="1">
-				<quad z-index="-1" size="30 30" halign="center" valign="center" image="file://Media/Images/CircleBlack.png" opacity=".5"/>
-				<quad z-index="0" size="30 30" image="file://Media/Images/MoonBlack.png" halign="center" valign="center" opacity=".5"/>
-				<quad z-index="0" size="60 60" halign="center" valign="center" style="Bgs1" substyle="Glow" hidden="1"/>
-			</frame>
 		</frame>
 		<frame id="FrameAdvancedSettings" pos="-110 0" hidden="1">
 			<frame z-index="-1" pos="-110 0">
@@ -254,11 +244,6 @@
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad id="QuadButtonSettingsBack" size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
 				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Back" valign="center2" textfont="RajdhaniMono" translate="1"/>
-			</frame>
-			<frame pos="55 -65" hidden="1">
-				<quad z-index="-1" size="30 30" halign="center" valign="center" image="file://Media/Images/CircleBlack.png" opacity=".5"/>
-				<quad z-index="0" size="30 30" image="file://Media/Images/MoonBlack.png" halign="center" valign="center" opacity=".5"/>
-				<quad z-index="0" size="60 60" halign="center" valign="center" style="Bgs1" substyle="Glow" hidden="1"/>
 			</frame>
 		</frame>
 		<frame id="FrameModeHelp" pos="0 -130" hidden="1">
