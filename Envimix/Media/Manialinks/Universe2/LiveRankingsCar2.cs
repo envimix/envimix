@@ -169,6 +169,8 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
                 continue;
             }
 
+            frame.Show();
+
             var login = playerLogins[i];
             var time = playerTimes[login];
             var scoreIndex = scoreIndices[login];
@@ -183,7 +185,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
 
             quadTeam.BgColor = Teams[Scores[scoreIndex].TeamNum - 1].ColorPrimary;
 
-            if (playersOfThisCar.ContainsKey(login))
+            if (car.Get() != "" && playersOfThisCar.ContainsKey(login))
             {
                 quadCar.ChangeImageUrl($"https://envimix.bigbang1112.cz/img/cars/{car.Get()}.png");
                 quadCar.Show();
@@ -220,8 +222,6 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             labelNickname.Parent.RelativePosition_V3.X = labelRank.Size.X + 1;
 
             labelTime.Value = TimeToTextWithMilli(time);
-
-            frame.Show();
         }
     }
 }
