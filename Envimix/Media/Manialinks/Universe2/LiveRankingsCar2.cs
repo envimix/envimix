@@ -143,7 +143,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             }
             else
             {
-                playerTimes[login] = -1;
+                playerTimes[login] = 2147483647;
             }
 
             scoreIndices[login] = i;
@@ -195,7 +195,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
                 quadCar.Hide();
             }
 
-            if (time == -1)
+            if (time == 2147483647)
             {
                 labelRank.Visible = false;
                 labelNickname.Parent.RelativePosition_V3.X = 0;
