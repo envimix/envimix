@@ -8,65 +8,68 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
     {
         RaceEvent += (e) =>
         {
-            switch (e.Type)
+            if (e.Player.User.Login == GetPlayer().User.Login)
             {
-                case CTmRaceClientEvent.EType.Respawn:
-                    // switch track
-                    break;
-                case CTmRaceClientEvent.EType.StopEngine:
-                    //Music.NextVariant();
-                    break;
-                case CTmRaceClientEvent.EType.StartEngine:
-                    //Music.NextVariant();
-                    break;
-                case CTmRaceClientEvent.EType.WayPoint:
-                    if (e.IsEndRace)
-                    {
+                switch (e.Type)
+                {
+                    case CTmRaceClientEvent.EType.Respawn:
+                        // switch track
+                        break;
+                    case CTmRaceClientEvent.EType.StopEngine:
                         //Music.NextVariant();
-                    }
-                    else if (e.IsEndLap)
-                    {
-                        //M_LapTrackNeeded = True;
-                    }
-                    else
-                    {
-                        int difference;
-
-                        if (e.Player.Score.BestRace is null || e.Player.Score.BestRace.Checkpoints.Count == 0)
+                        break;
+                    case CTmRaceClientEvent.EType.StartEngine:
+                        //Music.NextVariant();
+                        break;
+                    case CTmRaceClientEvent.EType.WayPoint:
+                        if (e.IsEndRace)
                         {
-                            difference = 0;
+                            //Music.NextVariant();
                         }
-                        else if (IndependantLaps)
+                        else if (e.IsEndLap)
                         {
-                            difference = e.LapTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInLap];
+                            //M_LapTrackNeeded = True;
                         }
                         else
                         {
-                            difference = e.RaceTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInRace];
-                        }
+                            int difference;
 
-                        if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
-                        {
-                            if (MathLib.Rand(0, 3) == 0)
+                            if (e.Player.Score.BestRace is null || e.Player.Score.BestRace.Checkpoints.Count == 0)
                             {
-                                if (difference > 0)
+                                difference = 0;
+                            }
+                            else if (IndependantLaps)
+                            {
+                                difference = e.LapTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInLap];
+                            }
+                            else
+                            {
+                                difference = e.RaceTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInRace];
+                            }
+
+                            if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
+                            {
+                                if (MathLib.Rand(0, 5) == 0)
                                 {
-                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-no-{MathLib.Rand(1, 38)}.wav", 1);
-                                }
-                                else
-                                {
-                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-yes-{MathLib.Rand(1, 23)}.wav", 1);
+                                    if (difference > 0)
+                                    {
+                                        Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-no-{MathLib.Rand(1, 38)}.wav", 1);
+                                    }
+                                    else
+                                    {
+                                        Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-yes-{MathLib.Rand(1, 23)}.wav", 1);
+                                    }
                                 }
                             }
-                        }
 
-                        /*if (e.CheckpointInRace > LatestCheckpointForPlayers)
-                        {
-                            LatestCheckpointForPlayers = e.CheckpointInRace;
-                            Music.NextVariant();
-                        }*/
-                    }
-                    break;
+                            /*if (e.CheckpointInRace > LatestCheckpointForPlayers)
+                            {
+                                LatestCheckpointForPlayers = e.CheckpointInRace;
+                                Music.NextVariant();
+                            }*/
+                        }
+                        break;
+                }
             }
         };
     }
@@ -83,13 +86,7 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
 
     public void Main()
     {
-        if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
-        {
-            if (MathLib.Rand(0, 3) == 0)
-            {
-                Audio.PlaySoundEvent("file://Media/Sounds/Voices/voice-welcome.wav", 1);
-            }
-        }
+        
     }
 
     public void Loop()
