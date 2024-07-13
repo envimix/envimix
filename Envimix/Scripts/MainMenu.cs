@@ -30,7 +30,8 @@ public class MainMenu : CManiaAppTitle, IContext
             "cobrask",
             "tmpurification",
             "trysketuri",
-            "x3kuba3x"
+            "x3kuba3x",
+            "hetna"
         };
 
         if (!allowedLogins.Contains(LocalUser.Login))
