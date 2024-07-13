@@ -29,7 +29,8 @@ public class MainMenu : CManiaAppTitle, IContext
             "marosis99",
             "cobrask",
             "tmpurification",
-            "trysketuri"
+            "trysketuri",
+            "x3kuba3x"
         };
 
         if (!allowedLogins.Contains(LocalUser.Login))
