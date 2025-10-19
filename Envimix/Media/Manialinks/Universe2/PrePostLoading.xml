@@ -5,14 +5,14 @@
 			<quad z-index="0" size="320 12.5" halign="center" valign="bottom" pos="0 -10" style="Bgs1InRace" substyle="BgGradTop" id="QuadTopShadow" hidden="1"/>
 			<quad z-index="1" size="320 90" bgcolor="000" halign="center" valign="bottom"/>
 			<frame z-index="2" clip="1" clipsizen="320 90" clipposn="0 45">
-				<quad pos="0 -0.5" size="180 26" halign="center" valign="center" image="https://cdn.discordapp.com/attachments/958628272449667132/1147733471700189204/Envimix.png"/>
+				<quad pos="0 -0.5" size="180 26" halign="center" valign="center" image="https://envimix.gbx.tools/img/envimix.png"/>
 			</frame>
 		</frame>
 		<frame id="FrameBottom" pos="0 0">
 			<quad z-index="0" size="320 12.5" halign="center" valign="top" pos="0 10" style="Bgs1InRace" substyle="BgGradBottom" id="QuadBottomShadow" hidden="1"/>
 			<quad z-index="1" size="320 90" bgcolor="000" halign="center" valign="top"/>
 			<frame z-index="2" clip="1" clipsizen="320 90" clipposn="0 -45">
-				<quad pos="0 -0.5" size="180 26" halign="center" valign="center" image="https://cdn.discordapp.com/attachments/958628272449667132/1147733471700189204/Envimix.png"/>
+				<quad pos="0 -0.5" size="180 26" halign="center" valign="center" image="https://envimix.gbx.tools/img/envimix.png"/>
 			</frame>
 
 			<label z-index="2" size="160 8" text="CRAFTED BY $o$i$nBIGBANG1112" halign="center" pos="0 -74" valign="center2" textfont="RajdhaniMono" textsize="4"/>

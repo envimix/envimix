@@ -22,7 +22,7 @@
 			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
 			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
 		</frame>
-		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png" pos="136 0"/>
+		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png" pos="136 0"/>
 	</framemodel>
 	<framemodel id="FramemodelRating">
 		<frame pos="0 2.5" z-index="1">
@@ -52,17 +52,17 @@
 				<label pos="18 0.4" z-index="0" size="20 5" text="Players" valign="center" textfont="RajdhaniMono" textsize="2" translate="1"/>
 				<label pos="60 0.4" z-index="0" size="20 5" text="Score" valign="center" textfont="RajdhaniMono" textsize="2" translate="1" halign="right"/>
 				<frame pos="66 0">
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/StadiumCar.png" pos="6 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/ValleyCar.png" pos="12 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/LagoonCar.png" pos="18 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/TrafficCar.png" pos="24 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/DesertCar.png" pos="30 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/SnowCar.png" pos="36 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/RallyCar.png" pos="42 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/IslandCar.png" pos="48 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/BayCar.png" pos="54 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CoastCar.png" pos="60 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/StadiumCar.png" pos="6 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/ValleyCar.png" pos="12 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/LagoonCar.png" pos="18 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/TrafficCar.png" pos="24 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/DesertCar.png" pos="30 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/SnowCar.png" pos="36 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/RallyCar.png" pos="42 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/IslandCar.png" pos="48 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/BayCar.png" pos="54 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CoastCar.png" pos="60 0"/>
 				</frame>
 				<label pos="136 2.3" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
 				<label pos="136 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
@@ -108,11 +108,11 @@
 				<quad z-index="2" size="50 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1"/>
 				<quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QuadEchelonPercent" colorize="CB6"/>
 			</frame>
-			<quad pos="0 -32.5" z-index="0" size="45 6.48" halign="center" valign="center" image="https://envimix.bigbang1112.cz/img/envimix.png" scale="0.75"/>
+			<quad pos="0 -32.5" z-index="0" size="45 6.48" halign="center" valign="center" image="https://envimix.gbx.tools/img/envimix.png" scale="0.75"/>
 		</frame>
 		<frame pos="0 -47.5">
 			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
-			<quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png" pos="-92 0"/>
+			<quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png" pos="-92 0"/>
 			<label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4"/>
 			<quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame"/>
 			<frameinstance pos="2.5 0" id="FrameDifficulty" modelid="FramemodelRating"/>

@@ -267,7 +267,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         
         if (PlayerCars.ContainsKey(score.User.Login))
         {
-            var currentCarUrl = $"https://envimix.bigbang1112.cz/img/cars/{PlayerCars[score.User.Login]}.png";
+            var currentCarUrl = $"https://envimix.gbx.tools/img/cars/{PlayerCars[score.User.Login]}.png";
 
             if (quadCurrentCar.ImageUrl != currentCarUrl)
             {
@@ -339,7 +339,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         if (PlayerCars.ContainsKey(LocalUser.Login))
         {
-            var currentCarUrl = $"https://envimix.bigbang1112.cz/img/cars/{PlayerCars[LocalUser.Login]}.png";
+            var currentCarUrl = $"https://envimix.gbx.tools/img/cars/{PlayerCars[LocalUser.Login]}.png";
 
             if (QuadMyCar.ImageUrl != currentCarUrl)
             {

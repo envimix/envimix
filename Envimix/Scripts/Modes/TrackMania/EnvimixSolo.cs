@@ -18,7 +18,7 @@ public class EnvimixSolo : Envimix
     [Setting] public new bool EnableTrafficCarInStadium = true;
     [Setting] public new bool UseUnitedModels = true;
     [Setting] public new bool AlwaysUseVehicleItems = false;
-    [Setting] public new string EnvimixWebAPI = "https://envimix.bigbang1112.cz/api";
+    [Setting] public new string EnvimixWebAPI = "https://api.envimix.gbx.tools";
     [Setting] public new string SkinsFile = "Skins_Turbo.json";
 
     public Dictionary<Ident, string> LocalGhostsTaskFiles;

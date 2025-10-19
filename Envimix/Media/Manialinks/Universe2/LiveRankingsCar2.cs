@@ -187,7 +187,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
 
             if (car.Get() != "" && playersOfThisCar.ContainsKey(login))
             {
-                quadCar.ChangeImageUrl($"https://envimix.bigbang1112.cz/img/cars/{car.Get()}.png");
+                quadCar.ChangeImageUrl($"https://envimix.gbx.tools/img/cars/{car.Get()}.png");
                 quadCar.Show();
             }
             else

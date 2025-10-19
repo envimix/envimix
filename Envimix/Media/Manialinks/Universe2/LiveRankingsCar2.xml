@@ -7,7 +7,7 @@
 			<label size="20.5 5" text="$aaa[unknown]" valign="center" textfont="Oswald" textsize="1.5" id="LabelNickname"/>
 		</frame>
 		<label pos="38 0.3" z-index="0" size="15 5" text="-:--.---" halign="right" valign="center" textfont="OswaldMono" textsize="1.75" id="LabelTime"/>
-		<quad id="QuadCar" pos="43.5 0" z-index="0" size="4.5 4.5" halign="center" valign="center" image="https://envimix.bigbang1112.cz/img/cars/CanyonCar.png"/>
+		<quad id="QuadCar" pos="43.5 0" z-index="0" size="4.5 4.5" halign="center" valign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png"/>
 	</framemodel>
 	<frame pos="-162 12.5" id="FrameLiveRankingsCar" scale="0.85">
 		<frame pos="26 -3">
