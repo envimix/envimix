@@ -1295,7 +1295,16 @@ public class Menu : CTmMlScriptIngame, IContext
         QuadLoading.Hide();
 
         var response = EnvimaniaFinishedRecordsRequests[filterKey][zone];
-        
+
+        if (response.Records.Length == 0)
+        {
+            LabelLoadingResult.SetText("No records found");
+        }
+        else
+        {
+            LabelLoadingResult.SetText("");
+        }
+
         for (var i = 0; i < FrameGhosts.Controls.Count; i++)
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
