@@ -29,6 +29,7 @@ public class EnvimixSolo : Envimix
     [Netwrite] public IList<SGhostMetadata> LocalGhostMetadata { get; set; }
     [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
     [Netwrite] public bool CanListenToUIEvents { get; set; }
+    [Local(LocalFor.Users0)] public string EnvimixTurboUserToken { get; set; } = "";
 
     public override void OnServerInit()
     {

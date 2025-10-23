@@ -5,7 +5,7 @@ namespace Envimix.Media.ManiaApps;
 public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 {
     public required Dictionary<string, CUILayer> Layers;
-    public CAudioSourceMusic Music;
+    public CAudioSourceMusic? Music;
 
     public IList<string> Songs;
 
@@ -32,8 +32,12 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                             if (e.CustomEventData[0] == "Start")
                             {
                                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Countdown, 0, 1);
-                                Music.LPF_CutoffRatio = 1;
-                                Music.VolumedB = 1;
+
+                                if (Music is not null)
+                                {
+                                    Music.LPF_CutoffRatio = 1;
+                                    Music.VolumedB = 1;
+                                }
                             }
                             else
                             {
@@ -48,7 +52,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                         Music.LPF_CutoffRatio = 1;
                     }*/
 
-                    if (e.CustomEventType == "MenuOpen" && e.CustomEventData.Count == 1)
+                    if (Music is not null && e.CustomEventType == "MenuOpen" && e.CustomEventData.Count == 1)
                     {
                         if (e.CustomEventData[0] == "True")
                         {
@@ -60,7 +64,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                         }
                     }
 
-                    if (e.CustomEventType == "MusicSwitch")
+                    if (Music is not null && e.CustomEventType == "MusicSwitch")
                     {
                         PlayRandomSong();
                         Music.NextVariant();
@@ -129,11 +133,11 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
     private void PlayRandomSong()
     {
-        Songs = new[] { "In The Past", "Grown", "These Times", "The Only Thing I Miss (Is You)", "Warning", "Final Thing To See" };
+        Songs = new[] { "In The Past", "Grown", "These Times", "The Only Thing I Miss (Is You)", "Warning", "Passion", "Final Thing To See" };
 
         var randomSongPick = Songs[MathLib.Rand(0, Songs.Count - 1)];
 
-        Music = Audio.CreateMusic($"file://Media/Musics/Album/Loops/{randomSongPick}.zip");
+        /*Music = Audio.CreateMusic($"file://Media/Musics/Album/Loops/{randomSongPick}.zip");
         Music.EnableSegment("loop");
         Music.FadeDuration = .35f;
         Music.FadeTracksDuration = 1;
@@ -141,9 +145,9 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         Music.UpdateMode = CAudioSourceMusic.EUpdateMode.OnNextBeat;
         Music.Volume = 1f;
         Music.LPF_CutoffRatio = 0.3f;
-        Music.LPF_Q = 8;
+        Music.LPF_Q = 8;*/
 
-        Music.Play();
+        //Music.Play();
     }
 
     public void Loop()

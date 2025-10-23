@@ -1,25 +1,46 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-	<frame pos="-120 50">
-		<label pos="0 10" z-index="0" size="30 20" text="4" halign="center" valign="center2" textsize="20" textfont="RajdhaniMono" textemboss="1"/>
-		<label id="LabelPlay4" pos="-0 0" z-index="0" size="20 5" text="Play" halign="center" style="CardButtonMedium" scriptevents="1"/>
-		<label id="LabelExplore4" pos="0 -8" z-index="0" size="20 5" text="Explore" halign="center" style="CardButtonSmallS" scriptevents="1"/>
-	</frame>
-	<frame pos="-80 50">
-		<label pos="0 10" z-index="0" size="30 20" text="7" halign="center" valign="center2" textsize="20" textfont="RajdhaniMono" textemboss="1"/>
-		<label id="LabelPlay7" pos="-0 0" z-index="0" size="20 5" text="Play" halign="center" style="CardButtonMedium" scriptevents="1"/>
-		<label id="LabelExplore7" pos="0 -8" z-index="0" size="20 5" text="Explore" halign="center" style="CardButtonSmallS" scriptevents="1"/>
-	</frame>
-	<frame pos="-40 50">
-		<label pos="0 10" z-index="0" size="30 20" text="10" halign="center" valign="center2" textsize="20" textfont="RajdhaniMono" textemboss="1"/>
-		<label id="LabelPlay10" pos="-0 0" z-index="0" size="20 5" text="Play" halign="center" style="CardButtonMedium" scriptevents="1"/>
-		<label id="LabelExplore10" pos="0 -8" z-index="0" size="20 5" text="Explore" halign="center" style="CardButtonSmallS" scriptevents="1"/>
-	</frame>
-	<label id="LabelSolo" pos="120 60" z-index="0" size="20 5" text="Solo" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
-	<label id="LabelLocal" pos="120 50" z-index="0" size="20 5" text="Local" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
-	<label id="LabelInternet" pos="120 40" z-index="0" size="20 5" text="Internet" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
-	<label id="LabelEditor" pos="120 30" z-index="0" size="20 5" text="Editor" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
-	<label id="LabelProfile" pos="120 20" z-index="0" size="20 5" text="Profile" halign="center" style="CardButtonMedium" scriptevents="1" valign="center"/>
-	<quad pos="60 -45" z-index="0" size="80 35" style="TitleLogos" substyle="Title"/>
-	<label pos="-150 -77.5" z-index="0" size="300 5" id="LabelBuildVersion" textsize="2"/>
+    <frame pos="90 75" scale="1.2" id="FrameMainMenu">
+        <quad z-index="0" size="70 120" style="Bgs1" substyle="BgCardList" halign="center"/>
+        <quad z-index="0" size="70 120" style="Bgs1" substyle="BgCardList" halign="center"/>
+        <frame z-index="1">
+            <quad pos="0 -15" z-index="0" size="60 25" halign="center" valign="center" style="TitleLogos" substyle="Title" scale="0.9"/>
+            <frame pos="0 -25">
+                <quad size="65 15" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" modulatecolor="0F0"/>
+                <quad size="65 14.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" id="QuadSolo"/>
+                <label pos="0 -7.75" z-index="1" size="55 10" text="Play Solo" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t"/>
+            </frame>
+            <frame pos="0 -41">
+                <quad size="65 8" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="036" opacity=".9" />
+                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258"/>
+                <label pos="0 -4.25" z-index="1" size="55 8" text="Leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+            </frame>
+            <frame pos="0 -52">
+                <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258"/>
+                <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.5"/>
+                <quad size="65 24.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258"/>
+                <label pos="0 -12.25" z-index="1" size="55 25" text="Track of the Day" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+            </frame>
+            <frame pos="0 -80">
+                <quad size="65 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
+                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" id="QuadLocal"/>
+                <label pos="0 -4.25" z-index="1" size="55 8" text="Local Play" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+            </frame>
+            <frame pos="0 -89">
+                <quad size="65 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
+                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" id="QuadInternet"/>
+                <label pos="0 -4.25" z-index="1" size="55 8" text="Online Play" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+            </frame>
+            <frame pos="0 -98">
+                <quad size="65 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
+                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" id="QuadEditor"/>
+                <label pos="0 -4.25" z-index="1" size="55 8" text="Editors" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+            </frame>
+            <frame pos="0 -110">
+                <quad size="65 8" style="Bgs1" substyle="BgTitle" halign="center" opacity="0.7" colorize="F00" z-index="1"/>
+                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="F00" id="QuadQuit"/>
+                <label pos="0 -4.25" z-index="2" size="35 8" text="Quit to ManiaPlanet" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+            </frame>
+        </frame>
+    </frame>
 </manialink>

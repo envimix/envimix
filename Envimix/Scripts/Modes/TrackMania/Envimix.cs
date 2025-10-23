@@ -72,6 +72,8 @@ public class Envimix : UniverseModeBase
 
     public struct SEnvimaniaSessionRequest
     {
+        public string ServerLogin;
+        public string ServerToken;
         public SMapInfo Map;
         public ImmutableArray<SUserInfo> Players;
         public IList<string> Cars;
@@ -80,7 +82,7 @@ public class Envimix : UniverseModeBase
     public struct SEnvimaniaSessionResponse
     {
         public string ServerLogin;
-        public string Token;
+        public string SessionToken;
         public ImmutableArray<SFilteredRating> Ratings;
         public Dictionary<string, IList<SFilteredRating>> UserRatings;
         public Dictionary<string, SEnvimaniaRecord> Validations;
@@ -635,6 +637,8 @@ public class Envimix : UniverseModeBase
 
         SEnvimaniaSessionRequest sessionRequest = new()
         {
+            ServerLogin = ServerLogin,
+            ServerToken = ServerAdmin.Authentication_Token,
             Map = mapInfo,
             Players = userInfos,
             Cars = DisplayedCars
@@ -648,7 +652,7 @@ public class Envimix : UniverseModeBase
         }
         else
         {
-            EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), $"Content-Type: application/json\nAuthorization: Ingame {ServerLogin}:{ServerAdmin.Authentication_Token}");
+            EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), "Content-Type: application/json");
         }
     }
 
@@ -741,7 +745,7 @@ public class Envimix : UniverseModeBase
                 }
                 else
                 {
-                    EnvimaniaSessionToken = sessionResponse.Token!;
+                    EnvimaniaSessionToken = sessionResponse.SessionToken!;
 
                     InitiateRatingsForAllPlayers(sessionResponse);
                 }
@@ -780,7 +784,7 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), $"Requesting Envimania records... ({carName}, G: {gravity}, Type: Time)");
 
-        EnvimaniaRecordsRequests[filterKey] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&laps={GetLaps()}", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaRecordsRequests[filterKey] = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/records/{carName}?gravity={gravity}&laps={GetLaps()}", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}");
         EnvimaniaUnfinishedRecordsRequests[filterKey] = filter;
 
         if (EnvimaniaFinishedRecordsRequests.Count == 0)
@@ -803,7 +807,7 @@ public class Envimix : UniverseModeBase
 
         Log(nameof(Envimix), "Closing Envimania session...");
 
-        EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Envimania {EnvimaniaSessionToken}");
+        EnvimaniaCloseRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/close", "", $"Authorization: Bearer {EnvimaniaSessionToken}");
 
         return true;
     }
@@ -893,7 +897,7 @@ public class Envimix : UniverseModeBase
             }
             else
             {
-                EnvimaniaSessionToken = sessionResponse.Token!;
+                EnvimaniaSessionToken = sessionResponse.SessionToken!;
 
                 InitiateRatingsForAllPlayers(sessionResponse);
 
@@ -919,9 +923,9 @@ public class Envimix : UniverseModeBase
                 EnvimaniaStatusReceived = Now;
             }
 
-            // request new ManiaPlanet auth token every 20 minutes, session token expires in 30 minutes
+            // request new ManiaPlanet auth token every 30 minutes, session token expires in 30 minutes but with ~5 minute grace period
             // no new session, only refreshed internally, swapped token
-            if (Now - EnvimaniaSessionTokenReceived >= 1200000)
+            if (Now - EnvimaniaSessionTokenReceived >= 1800000)
             {
                 Log(nameof(Envimix), "Running Envimania session refresh...");
                 RequestEnvimaniaSession();
@@ -930,7 +934,7 @@ public class Envimix : UniverseModeBase
             else if (Now - EnvimaniaStatusReceived >= 60000)
             {
                 EnvimaniaStatusReceived = -1;
-                EnvimaniaStatusRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/status", UseCache: false, $"Authorization: Envimania {EnvimaniaSessionToken}");
+                EnvimaniaStatusRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/status", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}");
             }
 
             ImmutableArray<string> recordsToRequestAgain = new();
@@ -1042,7 +1046,7 @@ public class Envimix : UniverseModeBase
 
                 var recRequest = EnvimaniaSessionRecordRequests[0];
 
-                EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+                EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
                 // removes just the one record here
                 EnvimaniaSessionRecordRequests.Clear();
@@ -1069,7 +1073,7 @@ public class Envimix : UniverseModeBase
                     bulkRequest.Requests = EnvimaniaSessionRecordRequests;
                 }
 
-                EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/records", bulkRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+                EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/records", bulkRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
                 // if more than 20 records, remove just the partial requests
                 if (EnvimaniaSessionRecordRequests.Length > 20)
@@ -1281,7 +1285,7 @@ public class Envimix : UniverseModeBase
                         PreferenceNumber = Now
                     };
 
-                    //var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+                    //var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
                     EnvimaniaSessionRecordRequests.Add(recordRequest);
 
@@ -2107,7 +2111,7 @@ public class Envimix : UniverseModeBase
                 }
             }
 
-            UserRatingRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/rate", ratingReqs.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+            UserRatingRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/rate", ratingReqs.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
             UserRatingsToRequest.Clear();
 
@@ -2159,7 +2163,7 @@ public class Envimix : UniverseModeBase
 
         if (UserJoinAdditionalInfoRequest is null && UserJoinAdditionalInfosToRequest.Count > 0 && UserJoinAdditionalInfosUpdatedAt + 1000 <= Now)
         {            
-            UserJoinAdditionalInfoRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/users", UserJoinAdditionalInfosToRequest.ToJson(), $"Authorization: Envimania {EnvimaniaSessionToken}\nContent-Type: application/json");
+            UserJoinAdditionalInfoRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/users", UserJoinAdditionalInfosToRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
             UserJoinAdditionalInfosToRequest.Clear();
             UserJoinAdditionalInfosUpdatedAt = Now;

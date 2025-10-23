@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <framemodel id="FramemodelMap">
+        <quad size="14.75 14.75" halign="center" valign="center" bgcolor="222" opacity="0.75" z-index="0"/>
+        <quad size="14.75 14.75" halign="center" valign="center" bgcolor="222" opacity="0.75" z-index="0" hidden="1"/>
+        <quad id="QuadMapThumbnail" size="14 14" halign="center" valign="center" image="file://Thumbnails/MapUid/YAGV4LM73qshYEC2mHm_RJqrOM8" z-index="1" hidden="1"/>
+        <quad id="QuadMapButton" size="15 15" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" z-index="2" scriptevents="1" opacity="0.5" hidden="1"/>
+        <quad id="QuadMapName" size="7 5" halign="right" valign="bottom" bgcolor="222" opacity="0.9" z-index="2" pos="7 -7"/>
+        <label id="LabelMapName" z-index="3" size="15 15" text="001" valign="bottom" textsize="2" textfont="OswaldMono" pos="6 -6.6" halign="right" hidden="1"/>
+        <label id="LabelSkillpoints" z-index="3" size="15 15" text="0" textsize="1" style="TextRaceChrono" pos="-6 6" textcolor="0F0" hidden="1"/>
+    </framemodel>
+    <framemodel id="FramemodelMapGroup">
+        <frameinstance modelid="FramemodelMap" pos="-30 0"/>
+        <frameinstance modelid="FramemodelMap" pos="-15 0"/>
+        <frameinstance modelid="FramemodelMap" pos="0 0"/>
+        <frameinstance modelid="FramemodelMap" pos="15 0"/>
+        <frameinstance modelid="FramemodelMap" pos="30 0"/>
+        <frameinstance modelid="FramemodelMap" pos="-30 -15"/>
+        <frameinstance modelid="FramemodelMap" pos="-15 -15"/>
+        <frameinstance modelid="FramemodelMap" pos="0 -15"/>
+        <frameinstance modelid="FramemodelMap" pos="15 -15"/>
+        <frameinstance modelid="FramemodelMap" pos="30 -15"/>
+    </framemodel>
+    <framemodel id="FramemodelRating">
+        <gauge pos="0 0" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -5" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -10" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -15" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -20" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -25" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -30" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -35" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -40" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -45" z-index="0" size="35 8" drawbg="0" valign="center"/>
+        <gauge pos="0 -50" z-index="0" size="35 8" drawbg="0" valign="center"/>
+    </framemodel>
+    <framemodel id="FramemodelLeaderboard">
+        <frame id="FrameRecords">
+            <label size="45 5" text="01 -:--.---  $i$888you could be here!" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -5" size="44 5" text="02 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -10" size="44 5" text="03 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -15" size="44 5" text="04 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -20" size="44 5" text="05 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -25" size="44 5" text="06 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -30" size="44 5" text="07 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -35" size="44 5" text="08 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -40" size="44 5" text="09 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -45" size="44 5" text="10 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+        </frame>
+        <frame id="FramePersonalBest" pos="21.5 -52.5" scale="1.5">
+            <quad z-index="0" size="29 6" style="Bgs1" substyle="BgCardList" halign="center"/>
+            <quad z-index="0" size="29 6" style="Bgs1" substyle="BgCardList" halign="center" />
+            <label pos="0 -2.7" z-index="1" size="30 6" text="-:--.---" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" />
+        </frame>
+        <quad pos="21 -20" z-index="0" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING"/>
+    </framemodel>
+    <frame clip="1" clipsizen="320 130" clipposn="0 25">
+        <frame pos="0 80" id="FrameCampaignOverview">
+            <frame pos="53 7">
+                <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>
+                <label pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0F0"/>
+            </frame>
+            <frame pos="84 7">
+                <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>
+                <label pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0FF"/>
+            </frame>
+            <frame pos="155 7">
+                <quad z-index="0" size="70 6" style="Bgs1" substyle="BgCardList" halign="right"/>
+                <label pos="-35 -2.7" z-index="1" size="70 6" text="Envimix $ff0Turbo$g completion: $o100.00000%" halign="center" valign="center" textfont="Oswald" textprefix="$t" textsize="2"/>
+            </frame>
+            <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>
+            <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>
+            <quad pos="-115.5 0" z-index="1" size="78 40" halign="center" image="file://Media/Images/Menu/CanyonBg.png"/>
+            <quad pos="-38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/ValleyBg.png"/>
+            <quad pos="38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/LagoonBg.png"/>
+            <quad pos="115.5 0" z-index="1" size="78 40" halign="center" image="file://Media/Images/Menu/StadiumBg.png"/>
+            <label pos="-115 -6.5" z-index="2" size="75 8" text="Canyon Grand Drift" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
+            <label pos="-38.25 -6.5" z-index="2" size="75 8" text="Down &amp; Dirty Valley" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
+            <label pos="38.25 -6.5" z-index="2" size="75 8" text="Rollercoaster Lagoon" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
+            <label pos="115 -6.5" z-index="2" size="75 8" text="International Stadium" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
+            <frame z-index="2" pos="0 -13" clip="1" clipsizen="309 106" clipposn="0 -53.25" scroll="1" scrollgrid="0 11" scrollmax="0 58.75" id="FrameCampaign">
+                <frame>
+                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75"/>
+                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                </frame>
+                <frame pos="0 -33">
+                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="0F0"/>
+                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                </frame>
+                <frame pos="0 -66">
+                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="00F"/>
+                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                </frame>
+                <frame pos="0 -99">
+                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="F00"/>
+                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                </frame>
+                <frame pos="0 -132">
+                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="111"/>
+                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                </frame>
+            </frame>
+        </frame>
+    </frame>
+    <frame clip="1" clipsizen="320 50" clipposn="0 -65">
+        <frame pos="-155 -41" id="FrameMapOverview">
+            <quad z-index="0" size="310 40" style="Bgs1" substyle="BgCardList"/>
+            <quad z-index="0" size="310 40" style="Bgs1" substyle="BgCardList"/>
+            <quad z-index="0" size="310 40" style="Bgs1" substyle="BgCardList"/>
+            <frame z-index="1">
+                <frame pos="25 -5">
+                    <label id="LabelSelectedMapName" z-index="0" size="40 10" text="0" halign="center" textsize="9" textfont="OswaldMono" textprefix="$o" hidden="0"/>
+                    <frame pos="0 -12.5">
+                        <quad size="45 12" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" modulatecolor="0F0"/>
+                        <quad id="QuadPlay" size="45 11.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125"/>
+                        <label pos="0 -6.25" z-index="1" size="45 10" text="Play" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" textprefix="$t"/>
+                    </frame>
+                    <frame pos="0 -25">
+                        <quad size="45 8" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9"/>
+                        <quad id="QuadExplore" size="45 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258"/>
+                        <label pos="0 -4.25" z-index="1" size="45 8" text="Explore" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+                    </frame>
+                </frame>
+                <frame pos="62.5 -3" scale="0.6">
+                    <frame>
+                        <label pos="20 0" z-index="0" size="30 4" text="Difficulty" textsize="2.5" valign="center2" textfont="RajdhaniMono" halign="center" textprefix="$t"/>
+                        <label pos="55 0" z-index="0" size="30 4" text="Quality" textsize="2.5" valign="center2" textfont="RajdhaniMono" halign="center" textprefix="$t"/>
+                        <frame pos="0 -5">
+                            <label pos="0 0" z-index="0" size="20 4" text="CanyonCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -5" z-index="0" size="20 4" text="StadiumCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -10" z-index="0" size="20 4" text="ValleyCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -15" z-index="0" size="20 4" text="LagoonCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -20" z-index="0" size="20 4" text="TrafficCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -25" z-index="0" size="20 4" text="DesertCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -30" z-index="0" size="20 4" text="SnowCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -35" z-index="0" size="20 4" text="RallyCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -40" z-index="0" size="20 4" text="IslandCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -45" z-index="0" size="20 4" text="BayCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                            <label pos="0 -50" z-index="0" size="20 4" text="CoastCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
+                        </frame>
+                        <frameinstance modelid="FramemodelRating" pos="2.5 -4.75" />
+                        <frameinstance modelid="FramemodelRating" pos="37.5 -4.75" />
+                    </frame>
+                    <frame pos="100 0">
+                        <frame id="FrameCars">
+                            <label pos="-22.5 0" z-index="0" size="45 5" text="CanyonCar" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
+                            <label pos="22.5 0" z-index="0" size="45 5" text="StadiumCar" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
+                            <label pos="67.5 0" z-index="0" size="45 5" text="ValleyCar" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
+                            <label pos="112.5 0" z-index="0" size="45 5" text="LagoonCar" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
+                            <label pos="157.5 0" z-index="0" size="45 5" text="TrafficCar" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
+                            <label pos="202.5 0" z-index="0" size="45 5" text="HighlandsCar?" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
+                        </frame>
+                        <frame id="FrameValidations" pos="0 -5">
+                            <label pos="-22.5 0" z-index="0" size="45 5" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="22.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="67.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="112.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="157.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="202.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                        </frame>
+                        <frame id="FrameLeaderboards" pos="0 -10.25">
+                            <frameinstance modelid="FramemodelLeaderboard" pos="-22.5 0" />
+                            <frameinstance modelid="FramemodelLeaderboard" pos="22.5 0" />
+                            <frameinstance modelid="FramemodelLeaderboard" pos="67.5 0" />
+                            <frameinstance modelid="FramemodelLeaderboard" pos="112.5 0" />
+                            <frameinstance modelid="FramemodelLeaderboard" pos="157.5 0" />
+                            <frameinstance modelid="FramemodelLeaderboard" pos="202.5 0" hidden="1" />
+                        </frame>
+                    </frame>
+                </frame>
+                <frame pos="290 0">
+                    <frame pos="0 -2">
+                        <quad size="35 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+                        <quad size="35 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" styleselected="1" id="QuadTM2Cars"/>
+                        <quad pos="-12.5 -4" z-index="2" size="6 6" halign="center" valign="center" image="file://Media/Images/Cars/CanyonCar.png"/>
+                        <quad pos="-6.25 -4" z-index="2" size="6 6" halign="center" valign="center" image="file://Media/Images/Cars/StadiumCar.png"/>
+                        <quad pos="0 -4" z-index="2" size="6 6" halign="center" valign="center" image="file://Media/Images/Cars/ValleyCar.png"/>
+                        <quad pos="6.25 -4" z-index="2" size="6 6" halign="center" valign="center" image="file://Media/Images/Cars/LagoonCar.png"/>
+                        <quad pos="12.5 -4" z-index="2" size="6 6" halign="center" valign="center" image="file://Media/Images/Cars/TrafficCar.png"/>
+                    </frame>
+                    <frame pos="0 -10">
+                        <quad size="35 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
+                        <quad size="35 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" id="QuadTMUFCars"/>
+                        <quad pos="-13 -4" z-index="2" size="5 5" halign="center" valign="center" image="file://Media/Images/Cars/DesertCar.png"/>
+                        <quad pos="-7.75 -4" z-index="2" size="5 5" halign="center" valign="center" image="file://Media/Images/Cars/SnowCar.png"/>
+                        <quad pos="-2.75 -4" z-index="2" size="5 5" halign="center" valign="center" image="file://Media/Images/Cars/RallyCar.png"/>
+                        <quad pos="2.75 -4" z-index="2" size="5 5" halign="center" valign="center" image="file://Media/Images/Cars/IslandCar.png"/>
+                        <quad pos="7.75 -4" z-index="2" size="5 5" halign="center" valign="center" image="file://Media/Images/Cars/BayCar.png"/>
+                        <quad pos="13 -4" z-index="2" size="5 5" halign="center" valign="center" image="file://Media/Images/Cars/CoastCar.png"/>
+                    </frame>
+                    <frame pos="0 -30">
+                        <quad size="35 8" style="Bgs1" substyle="BgTitle" halign="center" opacity="0.7" colorize="F00" z-index="1"/>
+                        <quad size="35 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="F00" id="QuadBack"/>
+                        <label pos="0 -4.25" z-index="2" size="35 8" text="Back to menu" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+                    </frame>
+                </frame>
+            </frame>
+        </frame>
+    </frame>
+</manialink>
