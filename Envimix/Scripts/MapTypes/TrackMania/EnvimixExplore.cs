@@ -8,7 +8,7 @@ public class EnvimixExplore : CTmMapType, IContext
     {
         StartTest += () =>
         {
-            TestMapWithMode("Scripts/Modes/TrackMania/EnvimixSolo.Script.txt",);
+            TestMapWithMode("Scripts/Modes/TrackMania/EnvimixSolo.Script.txt");
             LayerCustomEvent(ExploreLayer, "StartTest", new[] { "" });
         };
     }
