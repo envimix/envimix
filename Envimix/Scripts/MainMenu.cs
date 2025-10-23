@@ -49,12 +49,8 @@ public class MainMenu : CManiaAppTitle, IContext
         ImmutableArray<string> allowedLogins = new()
         {
             "bigbang1112",
-            "linuxcat",
-            "pekatour",
-            "adamkooo",
             "poutrel",
             "riolu",
-            "eyohna",
             "dragontm",
             "mystixor",
             "spookykoala2113",
@@ -65,12 +61,7 @@ public class MainMenu : CManiaAppTitle, IContext
             "totokill13",
             "tushy444trackmaniagamer",
             "naruto42",
-            "burpman",
-            "marosis99",
-            "cobrask",
-            "tmpurification",
             "trysketuri",
-            "x3kuba3x",
             "hetna"
         };
 
