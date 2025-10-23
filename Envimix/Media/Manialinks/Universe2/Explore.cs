@@ -23,8 +23,7 @@ public class Explore : CMapEditorPluginLayer, IContext
     {
         QuadTest.MouseClick += () =>
         {
-            Testing = !Testing;
-            QuadTest.StyleSelected = Testing;
+            SetTesting(!Testing);
         };
 
         QuadSwitchEditor.MouseClick += () =>
@@ -36,6 +35,7 @@ public class Explore : CMapEditorPluginLayer, IContext
             if (NormalEditor)
             {
                 LabelSwitchEditor.SetText("Switch to Explore mode");
+                SetTesting(false);
             }
             else
             {
@@ -49,11 +49,27 @@ public class Explore : CMapEditorPluginLayer, IContext
         {
             MoveToStart();
         };
+
+        PluginCustomEvent += (eventName, eventParams) =>
+        {
+            switch (eventName)
+            {
+                case "StartTest":
+                    //SetTesting(false);
+                    break;
+            }
+        };
     }
 
     public void Main()
     {
-        
+        EnableMenuNavigation(true, false, null, 1000);
+    }
+
+    private void SetTesting(bool testing)
+    {
+        Testing = testing;
+        QuadTest.StyleSelected = testing;
     }
 
     private void MoveToStart()
@@ -124,12 +140,17 @@ public class Explore : CMapEditorPluginLayer, IContext
             }
         }
 
+        if (Input.IsKeyPressed(36))
+        {
+            SetTesting(false);
+        }
+
         if (Testing)
         {
             Editor.PlaceModeE = CMapEditorPlugin.PlaceMode.Test;
             Editor.EditModeE = CMapEditorPlugin.EditMode.Place;
         }
-        else
+        else if (!NormalEditor)
         {
             Editor.PlaceModeE = CMapEditorPlugin.PlaceMode.Block;
             Editor.EditModeE = CMapEditorPlugin.EditMode.FreeLook;

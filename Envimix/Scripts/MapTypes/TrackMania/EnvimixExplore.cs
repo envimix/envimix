@@ -2,11 +2,14 @@
 
 public class EnvimixExplore : CTmMapType, IContext
 {
+    public CUILayer ExploreLayer;
+
     public EnvimixExplore()
     {
         StartTest += () =>
         {
-            TestMapWithMode("Scripts/Modes/TrackMania/EnvimixSolo.Script.txt");
+            TestMapWithMode("Scripts/Modes/TrackMania/EnvimixSolo.Script.txt",);
+            LayerCustomEvent(ExploreLayer, "StartTest", new[] { "" });
         };
     }
 
@@ -30,7 +33,8 @@ public class EnvimixExplore : CTmMapType, IContext
         HideEditorInterface = true;
         EnableMapTypeStartTest = true;
 
-        UILayerCreate().ManialinkPage = ReadFile("Manialinks/Universe2/Explore.xml");
+        ExploreLayer = UILayerCreate();
+        ExploreLayer.ManialinkPage = ReadFile("Manialinks/Universe2/Explore.xml");
     }
 
     public void Loop()
