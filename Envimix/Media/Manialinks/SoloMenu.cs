@@ -45,19 +45,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadPlay.MouseClick += () =>
         {
-            if (Campaign is not null && MapGroupNum != -1 && MapInfoNum != -1)
+            if (MapGroupNum != -1 && MapInfoNum != -1)
             {
-                PlayMap(Campaign);
+                PlaySelectedMap();
             }
         };
 
         QuadExplore.MouseClick += () =>
         {
-            if (Campaign is not null && MapGroupNum != -1 && MapInfoNum != -1)
+            if (MapGroupNum != -1 && MapInfoNum != -1)
             {
-                var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
-                Log("Exploring map: " + mapInfo.FileName);
-                TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_NewMapName\" type=\"text\" value=\"{mapInfo.Name}\"/></settings>");
+                ExploreSelectedMap();
             }
         };
 
@@ -299,18 +297,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
-    private void PlayMap(CCampaign campaign)
+    private void PlaySelectedMap()
     {
-        TitleControl.PlayCampaign(campaign, campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum], "Modes/TrackMania/EnvimixSolo.Script.txt", "");
+        SendCustomEvent("PlayMap", new[] { MapGroupNum.ToString(), MapInfoNum.ToString() });
+    }
+
+    private void ExploreSelectedMap()
+    {
+        SendCustomEvent("ExploreMap", new[] { MapGroupNum.ToString(), MapInfoNum.ToString() });
     }
 
     private void MapClick(CMlControl control)
     {
-        if (Campaign is null)
-        {
-            return;
-        }
-
         var mapGroupNum = TextLib.ToInteger(control.DataAttributeGet("MapGroupNum"));
         var mapInfoNum = TextLib.ToInteger(control.DataAttributeGet("MapInfoNum"));
 
@@ -318,7 +316,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             if ((Now - MapSelectedAt) < 500)
             {
-                PlayMap(Campaign);
+                PlaySelectedMap();
             }
             else
             {

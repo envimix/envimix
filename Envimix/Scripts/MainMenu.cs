@@ -1,7 +1,9 @@
-﻿using System.Collections.Immutable;
+﻿using Envimix.Scripts.Libs.Envimix;
+using System.Collections.Immutable;
 
 namespace Envimix.Scripts;
 
+[Include(typeof(Loading))]
 public class MainMenu : CManiaAppTitle, IContext
 {
     public struct SUserInfo
@@ -41,6 +43,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
     public CUILayer MainMenuLayer;
     public CUILayer SoloMenuLayer;
+    public CUILayer LoadingLayer;
 
     public const string EnvimixWebAPI = "https://api.envimix.gbx.tools";
 
@@ -79,6 +82,9 @@ public class MainMenu : CManiaAppTitle, IContext
 
         SoloMenuLayer = UILayerCreate();
         SoloMenuLayer.ManialinkPage = "file://Media/Manialinks/SoloMenu.xml";
+
+        LoadingLayer = UILayerCreate();
+        LoadingLayer.Type = CUILayer.EUILayerType.LoadingScreen;
 
         ManiaPlanetAuthenticationRequested = true;
         Authentication_GetToken(null, "Envimix");
@@ -134,6 +140,18 @@ public class MainMenu : CManiaAppTitle, IContext
                         Log("Switching to Main Menu...");
                         LayerCustomEvent(SoloMenuLayer, "AnimateClose", new[] { "" });
                         LayerCustomEvent(MainMenuLayer, "AnimateOpen", new[] { "" });
+                    }
+                    if (e.CustomEventType == "PlayMap")
+                    {
+                        var mapGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
+                        var mapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
+                        PlayMap(mapGroupNum, mapInfoNum);
+                    }
+                    if (e.CustomEventType == "ExploreMap")
+                    {
+                        var mapGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
+                        var mapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
+                        ExploreMap(mapGroupNum, mapInfoNum);
                     }
                     break;
             }
@@ -236,6 +254,39 @@ public class MainMenu : CManiaAppTitle, IContext
             ResetUserTokenState();
             RequestUserToken();
         }
+    }
+
+    private void PlayMap(int mapGroupNum, int mapInfoNum)
+    {
+        if (DataFileMgr.Campaigns.Count == 0)
+        {
+            return;
+        }
+
+        var campaign = DataFileMgr.Campaigns[0];
+        var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
+
+        LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+
+        Wait(() => TitleControl.IsReady);
+        TitleControl.PlayCampaign(campaign, mapInfo, "Modes/TrackMania/EnvimixSolo.Script.txt", "");
+    }
+
+    private void ExploreMap(int mapGroupNum, int mapInfoNum)
+    {
+        if (DataFileMgr.Campaigns.Count == 0)
+        {
+            return;
+        }
+
+        var campaign = DataFileMgr.Campaigns[0];
+        var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
+
+        LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+
+        Wait(() => TitleControl.IsReady);
+        Log("Exploring map: " + mapInfo.FileName);
+        TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_NewMapName\" type=\"text\" value=\"{mapInfo.Name}\"/></settings>");
     }
 
     private void ResetUserTokenState()
