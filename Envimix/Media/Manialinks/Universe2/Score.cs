@@ -10,6 +10,19 @@ public class Score : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelBestTime;
     [ManialinkControl] public required CMlLabel LabelLastTime;
 
+    public Score()
+    {
+        PluginCustomEvent += (eventName, eventParams) =>
+        {
+            switch (eventName)
+            {
+                case "MenuOpen":
+                    MenuOpen = eventParams.Length > 0 && eventParams[0] == "True";
+                    break;
+            }
+        };
+    }
+
     CTmMlPlayer GetPlayer()
     {
         if (GUIPlayer is not null)
@@ -20,8 +33,20 @@ public class Score : CTmMlScriptIngame, IContext
         return InputPlayer;
     }
 
+    public bool MenuOpen;
+
+    bool IsExplore()
+    {
+        return CurrentServerModeName is "";
+    }
+
     bool IsVisible()
     {
+        if (IsExplore())
+        {
+            return !MenuOpen;
+        }
+
         return !IsInGameMenuDisplayed;
     }
 

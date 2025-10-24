@@ -199,6 +199,9 @@ public class Envimix : UniverseModeBase
     [Setting(As = "Allow respawn")]
     public bool AllowRespawn = true;
 
+    [Setting(As = "* Menu as normal layer", ReloadOnChange = true)]
+    public bool MenuAsNormalLayer = false;
+
     public required Dictionary<string, Dictionary<string, Ident>> Cars;
     public required Dictionary<string, Dictionary<string, Ident>> SpecialCars;
     public required Dictionary<string, Dictionary<string, Ident>> UnitedCars;

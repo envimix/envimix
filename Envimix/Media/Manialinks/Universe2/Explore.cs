@@ -63,7 +63,7 @@ public class Explore : CMapEditorPluginLayer, IContext
 
     public void Main()
     {
-        EnableMenuNavigation(true, false, null, 1000);
+        //EnableMenuNavigation(true, false, null, 1000);
     }
 
     private void SetTesting(bool testing)

@@ -52,15 +52,30 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
                         Music.LPF_CutoffRatio = 1;
                     }*/
 
-                    if (Music is not null && e.CustomEventType == "MenuOpen" && e.CustomEventData.Count == 1)
+                    if (e.CustomEventType == "MenuOpen" && e.CustomEventData.Count == 1)
                     {
-                        if (e.CustomEventData[0] == "True")
+                        var menuOpen = e.CustomEventData[0] == "True";
+
+                        if (IsMenuAsNormalLayer())
                         {
-                            Music.LPF_CutoffRatio = 0.3f;
+                            var layersToToggle = new[] { "Dashboard", "Map", "Score" };
+                            foreach (var layerName in layersToToggle)
+                            {
+                                LayerCustomEvent(Layers[layerName], "MenuOpen", new[] { e.CustomEventData[0] });
+                            }
+                            Layers["Menu"].IsVisible = menuOpen;
                         }
-                        else if (e.CustomEventData[0] == "False")
+
+                        if (Music is not null)
                         {
-                            Music.LPF_CutoffRatio = 1;
+                            if (menuOpen)
+                            {
+                                Music.LPF_CutoffRatio = 0.3f;
+                            }
+                            else
+                            {
+                                Music.LPF_CutoffRatio = 1;
+                            }
                         }
                     }
 
@@ -116,7 +131,16 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
         vehicleManialink = $"{vehicleManialink}</frame>";
 
-        CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
+        if (IsMenuAsNormalLayer())
+        {
+            Log("Menu layer type: Normal");
+            CreateLayer("Menu", CUILayer.EUILayerType.Normal, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
+        }
+        else
+        {
+            Log("Menu layer type: InGameMenu");
+            CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
+        }
 
         Log("All manialinks successfully created!");
         
@@ -129,6 +153,12 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
             PlayRandomSong();
         }
+    }
+
+    bool IsMenuAsNormalLayer()
+    {
+        var menuAsNormalLayer = Netread<bool>.For(Playground.Teams[0]);
+        return menuAsNormalLayer.Get();
     }
 
     private void PlayRandomSong()

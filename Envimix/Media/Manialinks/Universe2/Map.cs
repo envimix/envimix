@@ -21,9 +21,11 @@ public class Map : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadMapName;
 
     public string PreviousMapName = "";
-    public string PreviousMapAuthor = "";
+    public string PreviousMapAuthor = " ";
     public string PreviousCar = "";
     public bool PreviousIsVisible;
+
+    public string MapNameInExplore;
 
     public Map()
     {
@@ -35,6 +37,16 @@ public class Map : CTmMlScriptIngame, IContext
         QuadMapName.MouseOver += () =>
         {
             Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+        };
+
+        PluginCustomEvent += (eventName, eventParams) =>
+        {
+            switch (eventName)
+            {
+                case "MenuOpen":
+                    MenuOpen = eventParams.Length > 0 && eventParams[0] == "True";
+                    break;
+            }
         };
     }
 
@@ -48,8 +60,20 @@ public class Map : CTmMlScriptIngame, IContext
         return InputPlayer;
     }
 
+    public bool MenuOpen;
+
+    bool IsExplore()
+    {
+        return CurrentServerModeName is "";
+    }
+
     private bool IsVisible()
     {
+        if (IsExplore())
+        {
+            return !MenuOpen;
+        }
+
         return !IsInGameMenuDisplayed;
     }
 
@@ -108,6 +132,12 @@ public class Map : CTmMlScriptIngame, IContext
 
     public void Main()
     {
+        if (IsExplore())
+        {
+            var exploreMapName = Metadata<string>.For(Map);
+            MapNameInExplore = exploreMapName.Get();
+        }
+
         FrameMapName.Hide();
         FrameCar.Hide();
 
@@ -215,6 +245,15 @@ public class Map : CTmMlScriptIngame, IContext
         FrameCar.Visible = false;
     }
 
+    private string GetMapName()
+    {
+        if (IsExplore())
+        {
+            return MapNameInExplore;
+        }
+        return Map.MapInfo.Name;
+    }
+
     private void AdjustCarFrame()
     {
         var car = Netread<string>.For(GetPlayer());
@@ -225,7 +264,7 @@ public class Map : CTmMlScriptIngame, IContext
             return;
         }
 
-        Map.MapName = $"{Map.MapInfo.Name}.{car.Get()}";
+        Map.MapName = $"{GetMapName()}.{car.Get()}";
 
         foreach (var control in FrameCarBg.Controls)
         {
@@ -269,7 +308,7 @@ public class Map : CTmMlScriptIngame, IContext
 
     private void AdjustMapNameFrame()
     {
-        if (Map.MapInfo.Name == PreviousMapName)
+        if (GetMapName() == PreviousMapName)
         {
             return;
         }
@@ -281,7 +320,7 @@ public class Map : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            quad.Size.X = LabelMapName.ComputeWidth(Map.MapInfo.Name) + 5;
+            quad.Size.X = LabelMapName.ComputeWidth(GetMapName()) + 5;
 
             if (quad.Size.X > 80)
             {
@@ -291,8 +330,8 @@ public class Map : CTmMlScriptIngame, IContext
             FrameMapNameBg.DataAttributeSet("size", quad.Size.X.ToString());
         }
 
-        SetSlidingText(FrameLabelMapName, Map.MapInfo.Name);
-        PreviousMapName = Map.MapInfo.Name;
+        SetSlidingText(FrameLabelMapName, GetMapName());
+        PreviousMapName = GetMapName();
 
         if (PreviousMapName is "")
         {
@@ -304,9 +343,19 @@ public class Map : CTmMlScriptIngame, IContext
         }
     }
 
+    private string GetAuthorName()
+    {
+        if (IsExplore())
+        {
+            // This should probably move to separate location with other map types
+            return "EXPLORE MODE";
+        }
+        return Map.MapInfo.AuthorNickName;
+    }
+
     private void AdjustMapAuthorFrame()
     {
-        if (Map.MapInfo.AuthorNickName == PreviousMapAuthor)
+        if (GetAuthorName() == PreviousMapAuthor)
         {
             return;
         }
@@ -318,7 +367,7 @@ public class Map : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            quad.Size.X = LabelMapAuthor.ComputeWidth(Map.MapInfo.AuthorNickName) + 5;
+            quad.Size.X = LabelMapAuthor.ComputeWidth(GetAuthorName()) + 5;
 
             if (quad.Size.X > 80)
             {
@@ -328,8 +377,8 @@ public class Map : CTmMlScriptIngame, IContext
             FrameMapAuthorBg.DataAttributeSet("size", quad.Size.X.ToString());
         }
 
-        SetSlidingText(FrameLabelMapAuthor, Map.MapInfo.AuthorNickName);
-        PreviousMapAuthor = Map.MapInfo.AuthorNickName;
+        SetSlidingText(FrameLabelMapAuthor, GetAuthorName());
+        PreviousMapAuthor = GetAuthorName();
 
         if (PreviousMapAuthor is "")
         {

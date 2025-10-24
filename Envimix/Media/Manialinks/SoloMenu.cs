@@ -55,9 +55,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             if (Campaign is not null && MapGroupNum != -1 && MapInfoNum != -1)
             {
-                var fileName = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum].FileName;
-                Log("Exploring map: " + fileName);
-                TitleControl.EditNewMapFromBaseMap(fileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "", "");
+                var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+                Log("Exploring map: " + mapInfo.FileName);
+                TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_NewMapName\" type=\"text\" value=\"{mapInfo.Name}\"/></settings>");
             }
         };
 

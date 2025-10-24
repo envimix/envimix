@@ -69,6 +69,16 @@ public class Dashboard : CTmMlScriptIngame, IContext
                     break;
             }
         };
+
+        PluginCustomEvent += (eventName, eventParams) =>
+        {
+            switch (eventName)
+            {
+                case "MenuOpen":
+                    MenuOpen = eventParams.Length > 0 && eventParams[0] == "True";
+                    break;
+            }
+        };
     }
 
     CTmMlPlayer GetOwner()
@@ -193,8 +203,20 @@ public class Dashboard : CTmMlScriptIngame, IContext
         DistanceOffset = 0;
     }
 
-    bool IsVisible()
+    public bool MenuOpen;
+
+    bool IsExplore()
     {
+        return CurrentServerModeName is "";
+    }
+
+    private bool IsVisible()
+    {
+        if (IsExplore())
+        {
+            return !MenuOpen;
+        }
+
         return !IsInGameMenuDisplayed;
     }
 

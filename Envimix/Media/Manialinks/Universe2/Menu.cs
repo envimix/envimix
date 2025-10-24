@@ -158,7 +158,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public int PreviousVehicleIndex;
     public string MenuKind;
     public string PreviousMenuKind;
-    public string PreviousMapUid;
+    public string PreviousMapUid = " ";
     public string PreviousCar;
     public string PreviousMapAuthor;
     public bool IsMenuOpen;
@@ -185,6 +185,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public int PrevRatingsUpdatedAt;
     public bool PrevRatingEnabled;
     public int PrevValidationsUpdatedAt;
+    public string MapNameInExplore = "";
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -333,6 +334,11 @@ public class Menu : CTmMlScriptIngame, IContext
     bool IsSolo()
     {
         return CurrentServerLogin is "";
+    }
+
+    bool IsExplore()
+    {
+        return CurrentServerModeName is "";
     }
 
     string ConstructRatingFilterKey(string car)
@@ -522,6 +528,18 @@ public class Menu : CTmMlScriptIngame, IContext
         }
     }
 
+    private void ResumeMenu()
+    {
+        if (IsExplore())
+        {
+            SendCustomEvent("MenuOpen", new[] { "False" });
+        }
+        else
+        {
+            CloseInGameMenu(CMlScriptIngame.EInGameMenuResult.Resume);
+        }
+    }
+
     private void Menu_MouseClick(CMlControl control, string controlId)
     {
         switch (controlId)
@@ -566,7 +584,7 @@ public class Menu : CTmMlScriptIngame, IContext
                             AnimMgr.Add(FrameAdvancedSettings, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
                             MenuKind = "";
                         }
-                        CloseInGameMenu(CMlScriptIngame.EInGameMenuResult.Resume);
+                        ResumeMenu();
                     }
                 }
                 else
@@ -791,8 +809,8 @@ public class Menu : CTmMlScriptIngame, IContext
     }
 
 	private void QUAD_BUTTON_CONTINUE()
-	{
-        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
+    {
+        ResumeMenu();
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
@@ -826,7 +844,14 @@ public class Menu : CTmMlScriptIngame, IContext
 
 	private void QUAD_BUTTON_EXIT()
 	{
-        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Quit);
+        if (IsExplore())
+        {
+            ShowInGameMenu();
+        }
+        else
+        {
+            CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Quit);
+        }
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
@@ -862,7 +887,7 @@ public class Menu : CTmMlScriptIngame, IContext
         MenuKind = "";
 
         SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
-        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
+        ResumeMenu();
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
@@ -906,7 +931,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 if (UI.UISequence == CUIConfig.EUISequence.Intro)
                 {
                     if (ShowMenuLittleLater == -1)
-                        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
+                        ResumeMenu();
                     ShowMenuLittleLater = Now;
                 }
                 else if (MenuKind == "Skin")
@@ -924,7 +949,7 @@ public class Menu : CTmMlScriptIngame, IContext
                     MenuKind = "";
                 }
                 else
-                    CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Resume);
+                    ResumeMenu();
                 break;
             case CMlScriptEvent.EMenuNavAction.Select:
                 if (NavOnVehicle)
@@ -962,7 +987,7 @@ public class Menu : CTmMlScriptIngame, IContext
                             MenuKind = "";
                         }
 
-                        CloseInGameMenu(CMlScriptIngame.EInGameMenuResult.Resume);
+                        ResumeMenu();
                     }
                 }
                 else
@@ -1405,10 +1430,18 @@ public class Menu : CTmMlScriptIngame, IContext
         NavFirstControl = QuadButtonContinue;
         NavFocusedControl = NavFirstControl;
 
-        while (!IsInGameMenuDisplayed)
+        if (IsExplore())
         {
-            Yield();
-            ShowInGameMenu();
+            var exploreMapName = Metadata<string>.For(Map);
+            MapNameInExplore = exploreMapName.Get();
+        }
+        else
+        {
+            while (!IsInGameMenuDisplayed)
+            {
+                Yield();
+                ShowInGameMenu();
+            }
         }
 
         FrameMultiplayer.Visible = !IsSolo();
@@ -1647,16 +1680,30 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (Map.MapInfo.MapUid != PreviousMapUid)
         {
-            SetSlidingText(FrameLabelMapName, Map.MapInfo.Name);
+            string mapName;
+            if (IsExplore())
+            {
+                mapName = MapNameInExplore;
+            }
+            else
+            {
+                mapName = Map.MapInfo.Name;
+            }
+
+            SetSlidingText(FrameLabelMapName, mapName);
             if (Map.MapType == "Envimix" || Map.MapType == "TrackMania\\Envimix")
             {
                 SetSlidingText(FrameLabelMapType, "$ff0ENVIMIX MAP");
+            }
+            else if (Map.MapType == "EnvimixExplore" || Map.MapType == "TrackMania\\EnvimixExplore")
+            {
+                SetSlidingText(FrameLabelMapType, "$4afEXPLORE MODE");
             }
             else
             {
                 SetSlidingText(FrameLabelMapType, "$aaaNON-ENVIMIX MAP");
             }
-            PreviousMapUid = Map.MapInfo.Name;
+            PreviousMapUid = Map.MapInfo.MapUid;
         }
 
         MoveSlidingText(FrameLabelMapName, 10, -0.01f);
