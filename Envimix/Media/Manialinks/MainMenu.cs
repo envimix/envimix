@@ -8,6 +8,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadEditor;
     [ManialinkControl] public required CMlQuad QuadQuit;
     [ManialinkControl] public required CMlFrame FrameMainMenu;
+    [ManialinkControl] public required CMlLabel LabelBuild;
 
     public MainMenu()
     {
@@ -54,6 +55,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     {
         FrameMainMenu.RelativePosition_V3.X = 210;
         ShowMenuFrame();
+
+        LabelBuild.SetText(TextLib.Split(" ", LoadedTitle.TitleVersion)[0]);
     }
 
     public void Loop()

@@ -42,5 +42,11 @@
                 <label pos="0 -4.25" z-index="2" size="35 8" text="Quit to ManiaPlanet" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
             </frame>
         </frame>
+        <frame pos="0 -120.5">
+            <quad z-index="0" size="70 6" style="Bgs1" substyle="BgCardList" halign="center" />
+            <quad z-index="0" size="70 6" style="Bgs1" substyle="BgCardList" halign="center" />
+            <quad pos="38 -2.5" z-index="1" size="28 8" style="TitleLogos" substyle="Author" valign="center" halign="right"/>
+            <label id="LabelBuild" pos="-32 -2.75" z-index="1" size="20 5" text="unknown build" valign="center" textsize="1" textfont="Oswald"/>
+        </frame>
     </frame>
 </manialink>
