@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <frame z-index="10000">
+        <quad pos="0 0" z-index="0" size="60 25" style="TitleLogos" substyle="Title" halign="center" valign="center" id="QuadTitleLogo" scale="1"/>
+        <quad pos="0.3 -0.3" z-index="-1" size="60 25" style="TitleLogos" substyle="Title" halign="center" valign="center" id="QuadTitleLogoShadow" scale="1" modulatecolor="222"/>
+    </frame>
+</manialink>

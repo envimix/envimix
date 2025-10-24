@@ -32,18 +32,28 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Token;
     }
 
+    public struct STitleReleaseInfo
+    {
+        public string ReleasedAt;
+    }
+
     public bool ManiaPlanetAuthenticationRequested;
     public required string ManiaPlanetAuthenticationToken;
     public CHttpRequest? UserTokenRequest;
-    public int UserTokenRequestTimeout;
-    public int UserTokenFirstRequestTimeout;
+    public int UserTokenRequestTimeout = -1;
+    public int UserTokenFirstRequestTimeout = -1;
     public int UserTokenReceived = -1;
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
     public int ManiaPlanetAuthReceivedAt = -1;
 
+    [Local(LocalFor.LocalUser)] public string TitleRelease { get; set; } = "";
+
     public CUILayer MainMenuLayer;
     public CUILayer SoloMenuLayer;
     public CUILayer LoadingLayer;
+    public CUILayer ReleaseLayer;
+
+    public string MenuLocation = "MainMenu";
 
     public const string EnvimixWebAPI = "https://api.envimix.gbx.tools";
 
@@ -77,6 +87,80 @@ public class MainMenu : CManiaAppTitle, IContext
             }
         }
 
+        ManiaPlanetAuthenticationRequested = true;
+        Authentication_GetToken(null, "Envimix");
+
+        var introLayer = UILayerCreate();
+        introLayer.ManialinkPage = "file://Media/Manialinks/Intro.xml";
+
+        ReleaseLayer = UILayerCreate();
+        ReleaseLayer.ManialinkPage = "file://Media/Manialinks/Release.xml";
+
+        var releaseReceivedAt = -1;
+        TitleRelease = "";
+
+        while (TitleRelease == "" || TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) <= 0)
+        {
+            // this is some REAL maniascript bullshit bug right here
+            if (TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) > 0)
+            {
+                break;
+            }
+
+            // if we received release info recently, wait a bit before requesting again
+            if (releaseReceivedAt != -1 && Now - releaseReceivedAt < 30000)
+            {
+                Yield();
+                foreach (var e in PendingEvents)
+                {
+                    if (e.Type == CManiaAppEvent.EType.LayerCustomEvent)
+                    {
+                        if (e.CustomEventLayer == introLayer && e.CustomEventType == "IntroEnded")
+                        {
+                            LayerCustomEvent(ReleaseLayer, "Show", new[] { "" });
+                            break;
+                        }
+                    }
+                }
+                CheckToken();
+                continue;
+            }
+
+            var titleReleaseRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/release");
+            Wait(() => titleReleaseRequest.IsCompleted);
+
+            if (titleReleaseRequest.StatusCode == 200)
+            {
+                STitleReleaseInfo releaseInfo = new();
+                if (releaseInfo.FromJson(titleReleaseRequest.Result))
+                {
+                    Log("Title release info received.");
+                    TitleRelease = releaseInfo.ReleasedAt!;
+                    releaseReceivedAt = Now;
+                }
+                else
+                {
+                    Log("Failed to parse title release info. You can press ESC to escape.");
+                    Sleep(10000);
+                }
+            }
+            else if (titleReleaseRequest.StatusCode == 404)
+            {
+                Log("No title release info found. This assumes the title pack is playable.");
+                releaseReceivedAt = Now;
+            }
+            else
+            {
+                Log($"Failed to fetch title release info ({titleReleaseRequest.StatusCode}). You can press ESC to escape.");
+                Sleep(10000);
+            }
+            Http.Destroy(titleReleaseRequest);
+        }
+
+        LayerCustomEvent(ReleaseLayer, "Hide", new[] { "" });
+
+        EnableMenuNavigationInputs = true;
+
         MainMenuLayer = UILayerCreate();
         MainMenuLayer.ManialinkPage = "file://Media/Manialinks/MainMenu.xml";
 
@@ -85,9 +169,6 @@ public class MainMenu : CManiaAppTitle, IContext
 
         LoadingLayer = UILayerCreate();
         LoadingLayer.Type = CUILayer.EUILayerType.LoadingScreen;
-
-        ManiaPlanetAuthenticationRequested = true;
-        Authentication_GetToken(null, "Envimix");
     }
 
     private static SUserInfo CreateUserInfo(CUser user)
@@ -109,19 +190,6 @@ public class MainMenu : CManiaAppTitle, IContext
         return userInfo;
     }
 
-    private void RequestUserToken()
-    {
-        SAuthenticateUserRequest userRequest = new()
-        {
-            Token = ManiaPlanetAuthenticationToken,
-            User = CreateUserInfo(LocalUser)
-        };
-
-        Log("Requesting user token...");
-
-        UserTokenRequest = Http.CreatePost($"{EnvimixWebAPI}/users", userRequest.ToJson(), "Content-Type: application/json");
-    }
-
     public void Loop()
     {
         foreach (var e in PendingEvents)
@@ -134,12 +202,11 @@ public class MainMenu : CManiaAppTitle, IContext
                         Log("Switching to Solo Menu...");
                         LayerCustomEvent(SoloMenuLayer, "AnimateOpen", new[] { "" });
                         LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
+                        MenuLocation = "MenuSolo";
                     }
                     if (e.CustomEventType == "MainMenu")
                     {
-                        Log("Switching to Main Menu...");
-                        LayerCustomEvent(SoloMenuLayer, "AnimateClose", new[] { "" });
-                        LayerCustomEvent(MainMenuLayer, "AnimateOpen", new[] { "" });
+                        SwitchToMainMenu();
                     }
                     if (e.CustomEventType == "PlayMap")
                     {
@@ -154,12 +221,53 @@ public class MainMenu : CManiaAppTitle, IContext
                         ExploreMap(mapGroupNum, mapInfoNum);
                     }
                     break;
+                case CManiaAppEvent.EType.MenuNavigation:
+                    if (e.MenuNavAction == CManiaAppEvent.EMenuNavAction.Cancel)
+                    {
+                        if (MenuLocation == "MainMenu")
+                        {
+                            Menu_Quit();
+                        }
+                        else if (MenuLocation == "MenuSolo")
+                        {
+                            SwitchToMainMenu();
+                        }
+                    }
+                    break;
             }
         }
 
+        CheckToken();
+    }
+
+    private void RequestUserToken()
+    {
+        SAuthenticateUserRequest userRequest = new()
+        {
+            Token = ManiaPlanetAuthenticationToken,
+            User = CreateUserInfo(LocalUser)
+        };
+
+        Log("Requesting user token...");
+
+        UserTokenRequest = Http.CreatePost($"{EnvimixWebAPI}/users", userRequest.ToJson(), "Content-Type: application/json");
+    }
+
+    private void ResetUserTokenState()
+    {
+        UserTokenRequestTimeout = -1;
+        UserTokenFirstRequestTimeout = -1;
+        EnvimixTurboUserToken = "";
+        UserTokenReceived = -1;
+    }
+
+    private void CheckToken()
+    {
         // Zpracování odpovědi na požadavek ManiaPlanet tokenu
         if (ManiaPlanetAuthenticationRequested && Authentication_GetTokenResponseReceived)
         {
+            ManiaPlanetAuthenticationRequested = false;
+
             if (Authentication_ErrorCode == 0)
             {
                 Log("ManiaPlanet authentication token received.");
@@ -171,8 +279,6 @@ public class MainMenu : CManiaAppTitle, IContext
             {
                 Log($"ManiaPlanet authentication token not received (error {Authentication_ErrorCode}).");
             }
-
-            ManiaPlanetAuthenticationRequested = false;
         }
 
         // Periodické obnovení ManiaPlanet tokenu (např. každých 30 min)
@@ -204,7 +310,14 @@ public class MainMenu : CManiaAppTitle, IContext
         {
             if (UserTokenRequest.StatusCode != 200)
             {
-                Log($"User token request failed ({UserTokenRequest.StatusCode}). Retry in 10 seconds.");
+                if (UserTokenRequest.StatusCode == 429)
+                {
+                    Log("User token request rate limited (429). Retry in 10 seconds.");
+                }
+                else
+                {
+                    Log($"User token request failed ({UserTokenRequest.StatusCode}). Retry in 10 seconds.");
+                }
                 Http.Destroy(UserTokenRequest);
                 UserTokenRequest = null;
                 UserTokenRequestTimeout = Now;
@@ -250,10 +363,18 @@ public class MainMenu : CManiaAppTitle, IContext
         // Periodické obnovení uživatelského tokenu (bez ztráty session)
         if (UserTokenReceived != -1 && Now - UserTokenReceived >= 1200000)
         {
-            Log("Running Envimania session refresh...");
+            Log("Running user token refresh...");
             ResetUserTokenState();
             RequestUserToken();
         }
+    }
+
+    private void SwitchToMainMenu()
+    {
+        Log("Switching to Main Menu...");
+        LayerCustomEvent(SoloMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(MainMenuLayer, "AnimateOpen", new[] { "" });
+        MenuLocation = "MainMenu";
     }
 
     private void PlayMap(int mapGroupNum, int mapInfoNum)
@@ -287,13 +408,5 @@ public class MainMenu : CManiaAppTitle, IContext
         Wait(() => TitleControl.IsReady);
         Log("Exploring map: " + mapInfo.FileName);
         TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_NewMapName\" type=\"text\" value=\"{mapInfo.Name}\"/></settings>");
-    }
-
-    private void ResetUserTokenState()
-    {
-        UserTokenRequestTimeout = -1;
-        UserTokenFirstRequestTimeout = -1;
-        EnvimixTurboUserToken = "";
-        UserTokenReceived = -1;
     }
 }

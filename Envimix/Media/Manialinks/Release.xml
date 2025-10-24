@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <quad id="QuadBg" bgcolor="111" opacity="0.75" size="320 50" halign="center" valign="center"/>
+    <label id="LabelDelta" pos="0 4" z-index="1" size="300 30" text="COMING SOON" halign="center" valign="center2" textfont="RajdhaniMono" textsize="20"/>
+    <label id="LabelDate" pos="0 -10" z-index="1" size="200 15" text="EXACT DATE TO BE YET ANNOUNCED" halign="center" valign="center2" textfont="RajdhaniMono" textsize="6"/>
+</manialink>

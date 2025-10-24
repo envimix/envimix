@@ -52,7 +52,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
     public void Main()
     {
-        
+        FrameMainMenu.RelativePosition_V3.X = 210;
+        ShowMenuFrame();
     }
 
     public void Loop()
