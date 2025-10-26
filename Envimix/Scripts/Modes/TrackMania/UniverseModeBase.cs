@@ -343,7 +343,10 @@ public class UniverseModeBase : CTmMode, IContext
 
     public static string TimeToTextWithMilli(int time)
     {
-        return $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
+        var formatted = $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
+        if (TextLib.Length(TextLib.Split(".", formatted)[1]) > 3)
+            return TextLib.SubString(formatted, 0, TextLib.Length(formatted) - 1);
+        return formatted;
     }
 
     private string GetSpectatorTargetFromLogin(string login)
