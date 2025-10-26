@@ -4,10 +4,16 @@ namespace Envimix.Media.ManiaApps;
 
 public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 {
-    public required Dictionary<string, CUILayer> Layers;
     public CAudioSourceMusic? Music;
-
     public IList<string> Songs;
+
+    public CUILayer Layer321Go;
+    public CUILayer LayerDashboard;
+    public CUILayer LayerMap;
+    public CUILayer LayerScore;
+    public CUILayer LayerMenu;
+    public CUILayer LayerMenuFake;
+    public CUILayer LayerOutro;
 
     public EnvimixSingleplayerClient()
     {
@@ -25,7 +31,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
                     SendCustomEvent(e.CustomEventType, data.ToArray());
 
-                    if (Layers.ContainsKey("321Go") && e.CustomEventLayer == Layers["321Go"])
+                    if (e.CustomEventLayer == Layer321Go)
                     {
                         if (e.CustomEventType == "Countdown" && e.CustomEventData.Count == 1)
                         {
@@ -58,12 +64,12 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
                         if (IsMenuAsNormalLayer())
                         {
-                            var layersToToggle = new[] { "Dashboard", "Map", "Score" };
-                            foreach (var layerName in layersToToggle)
+                            var layersToToggle = new[] { LayerDashboard, LayerMap, LayerScore };
+                            foreach (var layer in layersToToggle)
                             {
-                                LayerCustomEvent(Layers[layerName], "MenuOpen", new[] { e.CustomEventData[0] });
+                                LayerCustomEvent(layer, "MenuOpen", new[] { e.CustomEventData[0] });
                             }
-                            Layers["Menu"].IsVisible = menuOpen;
+                            LayerMenu.IsVisible = menuOpen;
                         }
 
                         if (Music is not null)
@@ -96,15 +102,17 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
         Log("Creating manialinks...");
         
-        CreateLayer("321Go", CUILayer.EUILayerType.Normal);
-        CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
-        CreateLayer("Map", CUILayer.EUILayerType.Normal);
+        Layer321Go = CreateLayer("321Go", CUILayer.EUILayerType.Normal);
+        LayerDashboard = CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
+        LayerMap = CreateLayer("Map", CUILayer.EUILayerType.Normal);
         CreateLayer("Checkpoint2", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);
         CreateLayer("Stunt", CUILayer.EUILayerType.Normal);
-        CreateLayer("Score", CUILayer.EUILayerType.Normal);
+        LayerScore = CreateLayer("Score", CUILayer.EUILayerType.Normal);
         CreateLayer("Endscreen", CUILayer.EUILayerType.Normal);
         CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
+        LayerOutro = CreateLayer("Outro", CUILayer.EUILayerType.Normal);
+        LayerOutro.IsVisible = false;
 
         var displayedCars = Netread<IList<string>>.For(Playground.Teams[0]);
 
@@ -134,12 +142,12 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         if (IsMenuAsNormalLayer())
         {
             Log("Menu layer type: Normal");
-            CreateLayer("Menu", CUILayer.EUILayerType.Normal, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
+            LayerMenu = CreateLayer("Menu", CUILayer.EUILayerType.Normal, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
         }
         else
         {
             Log("Menu layer type: InGameMenu");
-            CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
+            LayerMenu = CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
         }
 
         Log("All manialinks successfully created!");
@@ -180,9 +188,38 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         //Music.Play();
     }
 
+    public int PrevFinishedAt = -1;
+    public bool PrevOutro = false;
+
     public void Loop()
     {
+        // cheese to disallow menu during endscreen
+        var finishedAt = Netread<int>.For(Playground.Teams[0]);
+        if (finishedAt.Get() != PrevFinishedAt)
+        {
+            PrevFinishedAt = finishedAt.Get();
+            var isEndscreen = finishedAt.Get() != -1;
 
+            if (isEndscreen)
+            {
+                LayerMenuFake = CreateLayer("MenuFake", CUILayer.EUILayerType.InGameMenu);
+                LayerMenu.Type = CUILayer.EUILayerType.Normal;
+                LayerMenu.IsVisible = false;
+            }
+            else
+            {
+                UILayerDestroy(LayerMenuFake);
+                LayerMenu.Type = CUILayer.EUILayerType.InGameMenu;
+                LayerMenu.IsVisible = true;
+            }
+        }
+
+        var outro = Netread<bool>.For(Playground.Teams[0]);
+        if (outro.Get() != PrevOutro)
+        {
+            PrevOutro = outro.Get();
+            LayerOutro.IsVisible = outro.Get();
+        }
     }
 
     public string ReadFile(string fileName)
@@ -200,38 +237,28 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         return result;
     }
 
-    public void DestroyLayer(string layerName)
+    public CUILayer CreateLayer(CUILayer.EUILayerType layerType, string manialinkXml, string toReplace, string replaceWith)
     {
-        UILayerDestroy(Layers[layerName]);
-    }
-
-    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string manialinkXml, string toReplace, string replaceWith)
-    {
-        if (Layers.ContainsKey(layerName))
-        {
-            DestroyLayer(layerName);
-        }
-
         var layer = UILayerCreate();
         layer.Type = layerType;
         layer.ManialinkPage = TextLib.Replace(ReadFile(manialinkXml), toReplace, replaceWith);
-        Layers[layerName] = layer;
+        return layer;
     }
 
-    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string manialinkXml)
+    public CUILayer CreateLayer(CUILayer.EUILayerType layerType, string manialinkXml)
     {
-        CreateLayer(layerName, layerType, manialinkXml, "", "");
+        return CreateLayer(layerType, manialinkXml, "", "");
     }
 
-    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType)
+    public CUILayer CreateLayer(string layerName, CUILayer.EUILayerType layerType)
     {
-        Log("Creating layer " + layerName + "...");
-        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml");
+        Log($"Creating layer {layerName}...");
+        return CreateLayer(layerType, $"Manialinks/Universe2/{layerName}.xml");
     }
 
-    public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
+    public CUILayer CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
     {
-        Log("Creating layer " + layerName + "...");
-        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
+        Log($"Creating layer {layerName}...");
+        return CreateLayer(layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
     }
 }

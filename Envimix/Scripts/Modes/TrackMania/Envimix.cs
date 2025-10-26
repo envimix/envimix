@@ -234,7 +234,7 @@ public class Envimix : UniverseModeBase
 
         //UIManager.UIAll.OverlayHide321Go = true;
         UIManager.UIAll.OverlayHideChrono = true;
-        UIManager.UIAll.OverlayHideBackground = false;
+        UIManager.UIAll.OverlayHideBackground = true;
         UIManager.UIAll.OverlayHideCheckPointTime = true;
         UIManager.UIAll.OverlayHideChat = false;
         UIManager.UIAll.OverlayChatOffset = new Vec2(0, 0.15);

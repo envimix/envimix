@@ -43,6 +43,9 @@ public class Dashboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameSteepnessZeroOne;
     [ManialinkControl] public required CMlLabel LabelSteepnessZeroOne;
 
+    [Netread(NetFor.Teams0)] public int FinishedAt { get; set; }
+    [Netread(NetFor.Teams0)] public bool Outro { get; set; }
+
     public Dashboard()
     {
         PluginCustomEvent += (string type, ImmutableArray<string> data) =>
@@ -217,7 +220,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
             return !MenuOpen;
         }
 
-        return !IsInGameMenuDisplayed;
+        return !IsInGameMenuDisplayed && FinishedAt == -1 && !Outro;
     }
 
     public void Main()

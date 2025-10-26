@@ -10,6 +10,8 @@ public class Score : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelBestTime;
     [ManialinkControl] public required CMlLabel LabelLastTime;
 
+    [Netread(NetFor.Teams0)] public int FinishedAt { get; set; }
+
     public Score()
     {
         PluginCustomEvent += (eventName, eventParams) =>
@@ -47,7 +49,7 @@ public class Score : CTmMlScriptIngame, IContext
             return !MenuOpen;
         }
 
-        return !IsInGameMenuDisplayed;
+        return !IsInGameMenuDisplayed && FinishedAt == -1;
     }
 
     static string TimeToTextWithMilli(int time)

@@ -26,6 +26,14 @@ public class EnvimixSolo : Envimix
     public Dictionary<string, IList<CGhost>> LocalGhosts;
     public Dictionary<CGhost, Ident> SpawnedGhosts;
 
+    [Netwrite] public int FinishedAt { get; set; }
+    [Netwrite] public bool Outro { get; set; }
+    public CGhost? OutroGhost;
+    public int OutroGhostMaxFinishLength;
+    public bool OutroGhostReachedMaxFinishLength;
+    public Ident? OutroGhostViewInst;
+    public int OutroGhostEndTime;
+
     [Netwrite] public IList<SGhostMetadata> LocalGhostMetadata { get; set; }
     [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
     [Netwrite] public bool CanListenToUIEvents { get; set; }
@@ -38,11 +46,17 @@ public class EnvimixSolo : Envimix
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.SmallScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.ScoreTableOnlyManialink = true;
+
+        FinishedAt = -1;
+        Outro = false;
+        OutroGhostMaxFinishLength = 2500;
     }
 
     public override void OnMapLoad()
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load
+
+        RaceGhost_RemoveAll();
 
         CanListenToUIEvents = true;
 
@@ -58,6 +72,7 @@ public class EnvimixSolo : Envimix
                 ProcessUpdateSkinEvent(e);
                 ProcessUpdateCarEvent(e);
                 ProcessReplayEvent(e);
+                ProcessEndscreenEvent(e);
                 // ProcessUpdateGravityEvent(e); unexpected behavior due to GravityCoef being applied once after spawning
                 break;
         }
@@ -68,14 +83,45 @@ public class EnvimixSolo : Envimix
         PrespawnPlayer(e.Player);
     }
 
+    public override void OnPlayerGiveUp(CTmModeEvent e)
+    {
+        if (FinishedAt != -1)
+        {
+            Discard(e);
+        }
+    }
+
+    public override void OnPlayerFinish(CTmModeEvent e)
+    {
+        FinishedAt = Now;
+        UIManager.GetUI(e.Player).UISequence = CUIConfig.EUISequence.Outro;
+        OutroGhost = ScoreMgr.Playground_GetPlayerGhost(e.Player);
+    }
+
     public override void OnGameLoop()
     {
-        foreach (var player in PlayersWaiting)
+        if (!Outro)
         {
-            TrySpawnEnvimixPlayer(player, frozen: false);
+            foreach (var player in PlayersWaiting)
+            {
+                TrySpawnEnvimixPlayer(player, frozen: false);
+            }
+        }
+
+        // Extends outro ghost until maximum safe
+        if (FinishedAt != -1 && Now > FinishedAt + OutroGhostMaxFinishLength && !OutroGhostReachedMaxFinishLength)
+        {
+            Log(nameof(EnvimixSolo), "Extending outro ghost to maximum length.");
+            OutroGhost = ScoreMgr.Playground_GetPlayerGhost(GetPlayer());
+            OutroGhostReachedMaxFinishLength = true;
         }
 
         CheckForLocalGhosts();
+    }
+
+    private CTmPlayer GetPlayer()
+    {
+        return Players[0];
     }
 
     private void ProcessUpdateCarEvent(CUIConfigEvent e)
@@ -145,6 +191,61 @@ public class EnvimixSolo : Envimix
                     Log(nameof(EnvimixSolo), $"Ghost '{replayFileNameRemove}' (#{ghostIndexRemove}) is missing but shouldn't be.");
                 }
 
+                break;
+        }
+    }
+
+    private void SwitchToOutro(CUIConfig ui)
+    {
+        if (FinishedAt == -1)
+        {
+            return;
+        }
+
+        FinishedAt = -1;
+
+        if (!OutroGhostReachedMaxFinishLength)
+        {
+            Log(nameof(EnvimixSolo), "Extending outro ghost for outro switch.");
+            OutroGhost = ScoreMgr.Playground_GetPlayerGhost(GetPlayer());
+        }
+
+        // possibly best option for outro sequence
+        ui.UISequence = CUIConfig.EUISequence.EndRound;
+
+        UnspawnAllPlayers();
+        RaceGhost_RemoveAll();
+
+        OutroGhostViewInst = RaceGhost_Add(OutroGhost, false);
+        OutroGhostEndTime = Now + 2500 + OutroGhost.Result.Time;
+
+        Outro = true;
+
+        ui.SpectatorForcedTarget = OutroGhostViewInst;
+        ui.SpectatorForceCameraType = 1;
+    }
+
+    private void SwitchFromOutro(CUIConfig ui)
+    {
+        if (!Outro)
+        {
+            return;
+        }
+
+        Outro = false;
+
+        ui.UISequence = CUIConfig.EUISequence.Playing;
+    }
+
+    private void ProcessEndscreenEvent(CUIConfigEvent e)
+    {
+        switch (e.CustomEventType)
+        {
+            case "EndscreenContinue":
+                SwitchToOutro(e.UI);
+                break;
+            case "OutroContinue":
+                SwitchFromOutro(e.UI);
                 break;
         }
     }

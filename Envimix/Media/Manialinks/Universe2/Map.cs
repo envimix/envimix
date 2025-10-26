@@ -27,6 +27,9 @@ public class Map : CTmMlScriptIngame, IContext
 
     public string MapNameInExplore;
 
+    [Netread(NetFor.Teams0)] public int FinishedAt { get; set; }
+    [Netread(NetFor.Teams0)] public bool Outro { get; set; }
+
     public Map()
     {
         QuadMapName.MouseClick += () =>
@@ -74,7 +77,7 @@ public class Map : CTmMlScriptIngame, IContext
             return !MenuOpen;
         }
 
-        return !IsInGameMenuDisplayed;
+        return !IsInGameMenuDisplayed && FinishedAt == -1 && !Outro;
     }
 
     private void SetSlidingText(CMlFrame frame, string value)

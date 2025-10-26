@@ -37,4 +37,7 @@
 		<quad id="QuadSwitchEditor" z-index="-1" size="60 10" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258" />
 		<label id="LabelSwitchEditor" pos="0 -0.3" z-index="0" size="60 10" text="Switch to normal editor" halign="center" valign="center2" textfont="RajdhaniMono" />
 	</frame>
+    <label pos="145 -55" z-index="0" size="150 5" text="To move around, hold the left mouse button." halign="right" textemboss="1" textfont="BiryaniDemiBold"/>
+    <label pos="145 -60" z-index="0" size="150 5" text="To orbit around a point, hold the right mouse button." halign="right" textemboss="1" textfont="BiryaniDemiBold"/>
+    <label pos="145 -65" z-index="0" size="150 5" text="To move up and down, hold both the left and right mouse button." halign="right" textemboss="1" textfont="BiryaniDemiBold"/>
 </manialink>

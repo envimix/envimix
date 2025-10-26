@@ -8,99 +8,105 @@
 		</frame>
 	</framemodel>
 	<frame z-index="100">
-		<frame id="FramePopup" hidden="1">
-			<label z-index="0" size="300 25" text="New personal best!" halign="center" valign="center2" textsize="10" textfont="RajdhaniMono" textprefix="$o$i$t" textemboss="1"/>
-			<label z-index="1" size="300 25" text="New personal best!" halign="center" valign="center2" textsize="10" textfont="RajdhaniMono" textprefix="$o$i$t"/>
-		</frame>
-		<frame id="FRAME_ENDSCREEN_INFO" hidden="1">
-			<quad pos="0 0" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
-			<frame pos="-30 50">
-				<quad z-index="-2" size="139 30" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-				<label pos="0 -1.2" z-index="0" size="110 20" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="20" id="LABEL_TIME"/>
-			</frame>
-			<frame pos="-30 35">
-				<quad z-index="-2" size="139 78" halign="center" style="Bgs1" substyle="BgCardList" pos="0 -1"/>
-				<frame pos="-65 -5.5" id="FRAME_LABEL_MAPNAME" clip="1" clipposn="41 -5" clipsizen="80 12">
-					<label z-index="0" size="200 10" text="$888[unknown]" valign="top" textfont="Oswald" textsize="10" id="LABEL_MAPNAME"/>
-					<label z-index="0" size="200 10" text="$888[unknown]" valign="top" textfont="Oswald" textsize="10" id="LABEL_MAPNAME_2"/>
-				</frame>
-				<frame pos="64 -11" id="FRAME_LABEL_CAR" clip="1" clipposn="-22.5 0" clipsizen="45 9">
-					<label z-index="0" size="200 7" text="StadiumCar" valign="center2" textfont="Oswald" textsize="6" id="LABEL_CAR" halign="right" textprefix="$o"/>
-					<label z-index="0" size="200 7" text="StadiumCar" valign="center2" textfont="Oswald" textsize="6" id="LABEL_CAR_2" halign="right" textprefix="$o"/>
-				</frame>
-				<label z-index="0" size="8 8" text="by" valign="top" textfont="Oswald" textsize="5" pos="-64.7 -17"/>
-				<label z-index="0" size="70 8" text="$888[unknown]" valign="top" textfont="Oswald" textsize="5" pos="-58 -17"/>
-				<quad pos="60 -20" z-index="0" size="9 9" halign="center" valign="center" image="file://Media/Images/Environments/Stadium.png"/>
+        <quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur"/>
+		<frame id="FrameEndscreenInfo">
+            <frame pos="-30 50" clip="1" clipsizen="139 30" clipposn="0 0.5">
+                <frame id="FrameTime">
+                    <quad z-index="-2" size="139 30" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
+                    <label pos="0 -1.2" z-index="0" size="110 20" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="20" id="LabelTime"/>
+                </frame>
+            </frame>
+            <frame pos="-30 35" clip="1" clipsizen="139 80" clipposn="0 -40">
+                <frame id="FrameScore">
+                    <quad z-index="-2" size="139 78" halign="center" style="Bgs1" substyle="BgCardList" pos="0 -1"/>
+                    <frame pos="-65 -5.5" id="FrameLabelMapName" clip="1" clipposn="41 -5" clipsizen="80 12">
+                        <label z-index="0" size="200 10" text="$888[unknown]" valign="top" textfont="Oswald" textsize="10"/>
+                        <label z-index="0" size="200 10" text="$888[unknown]" valign="top" textfont="Oswald" textsize="10" hidden="1"/>
+                    </frame>
+                    <frame pos="64 -11" id="FrameLabelCar" clip="1" clipposn="-22.5 0" clipsizen="45 9">
+                        <label z-index="0" size="200 7" text="StadiumCar" valign="center2" textfont="Oswald" textsize="6" halign="right" textprefix="$o"/>
+                        <label z-index="0" size="200 7" text="StadiumCar" valign="center2" textfont="Oswald" textsize="6" halign="right" textprefix="$o" hidden="1"/>
+                    </frame>
+                    <label z-index="0" size="8 8" pos="-64.7 -17" text="by" valign="top" textfont="Oswald" textsize="5"/>
+                    <label id="LabelAuthor" z-index="0" size="70 8" pos="-58 -17" text="$888[unknown]" valign="top" textfont="Oswald" textsize="5"/>
 
-				<frame pos="0 -26">
-					<quad z-index="-1" size="130 30" halign="center" style="Bgs1" substyle="BgCardList" opacity=".5" valign="center" pos="0 -16"/>
-					<quad pos="-65 -4" z-index="0" size="130 3.5" bgcolor="FFFA" hidden="1"/>
-					<quad pos="-65 -13.75" z-index="0" size="130 3.8" bgcolor="FFFA" hidden="1"/>
-					<quad pos="-65 -23.75" z-index="0" size="130 3.5" bgcolor="FFFA" hidden="1"/>
-					<frame pos="-57.5 -15">
-						<label pos="0 5" z-index="0" size="50 10" text="Skillpoints" textprefix="$t" textfont="Oswald" textsize="6" valign="center"/>
-						<label pos="0 -5" z-index="0" size="50 10" text="Activity points" textprefix="$t" textfont="Oswald" textsize="6" valign="center"/>
-					</frame>
-					<frame pos="57.5 -15">
-						<label pos="0 5.4" z-index="0" size="50 10" text="90 000" textfont="RajdhaniMono" textsize="9" valign="center" halign="right" textcolor="0F0"/>
-						<label pos="0 -4.6" z-index="0" size="50 10" text="900 000" textfont="RajdhaniMono" textsize="9" valign="center" halign="right" textcolor="0FF"/>
-					</frame>
-				</frame>
+                    <label id="LabelEnvironment" z-index="0" size="200 7" pos="54 -20.5" text="Stadium" valign="center2" textfont="Oswald" textsize="4" halign="right"/>
+                    <quad id="QuadEnvironment" pos="60 -20" z-index="0" size="9 9" halign="center" valign="center" image="file://Media/Images/Environments/Stadium.png"/>
 
-				<label pos="1 -65.25" z-index="0" size="65 8" textprefix="$t" text="Screenshot and share" valign="center" textfont="Oswald" textsize="5.5" halign="right"/>
-				<label pos="1 -71.25" z-index="0" size="65 5" textprefix="$t" text="your effort in our friendly little place" valign="center" textfont="Oswald" textsize="1.5" halign="right"/>
-				<frame pos="35 -67.5" z-index="1" id="FRAME_DISCORD">
-					<quad z-index="0" size="60 15" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="ABD" id="QUAD_BUTTON_DISCORD" valign="center" pos="0 0"/>
-					<quad z-index="1" size="9 9" halign="center" valign="center" pos="-22.25 0" image="file://Media/Images/Discord.png"/>
-					<quad pos="-15 0" size="42.5 11" bgcolor="0004" valign="center" z-index="2"/>
-					<frame pos="-15 0" z-index="3" clip="1" clipsizen="42.5 11" clipposn="21.25 0" id="FRAME_DISCORD">
-						<label pos="3 -0.3" z-index="0" size="37.5 5" text="..." valign="center2" textfont="Oswald" id="LABEL_NAME"/>
-						<label pos="21 -0.3" z-index="0" size="37.5 5" text="$888• $fff0 members online" valign="center2" textfont="Oswald" halign="center" textsize="2.5" id="LABEL_MEMBERCOUNT" opacity="0"/>
-						<frame pos="6 0" id="FRAME_USER1" hidden="1">
-							<quad z-index="0" size="6 6" bgcolor="000A" halign="center" valign="center" id="QUAD_AVATAR"/>
-							<label pos="5 -0.2" z-index="0" size="28 5" text="BigBang1112$ACF#4564" valign="center2" textsize="1" textfont="BiryaniDemiBold" id="LABEL_USERNAME"/>
-						</frame>
-						<frame pos="6 -10" id="FRAME_USER2" hidden="1">
-							<quad z-index="0" size="6 6" bgcolor="000A" halign="center" valign="center" id="QUAD_AVATAR"/>
-							<label pos="5 -0.2" z-index="0" size="28 5" text="BigBang1112$ACF#4564" valign="center2" textsize="1" textfont="BiryaniDemiBold" id="LABEL_USERNAME"/>
-						</frame>
-					</frame>
-				</frame>
-			</frame>
-			<frame pos="70 65">
-				<quad z-index="-2" size="59 109" bgcolor="FFFA" halign="center" style="Bgs1" substyle="BgCardList"/>
-				<label pos="0 -8" z-index="0" size="50 10" textprefix="$t$o" text="Leaderboard" halign="center" textfont="Oswald" valign="center" textsize="4"/>
-				<frame pos="0 -17" id="FRAME_PANEL2_ZONE">
-					<quad pos="0 0" z-index="0" size="55 7" style="Bgs1" substyle="BgCard3" halign="center" valign="center" opacity=".25"/>
-					<quad pos="0.1 -0.1" z-index="1" size="55 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QUAD_ZONE"/>
-					<label pos="0 0.2" z-index="2" size="55 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LABEL_ZONE" translate="1" textprefix="$t"/>
-				</frame>
-				<quad pos="0 -60" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QUAD_LOADING_PANEL2"/>
-				<frame pos="-25 -60">
-					<frame id="FRAME_LB_GLOBAL_RECORDS">
-						<frameinstance modelid="FramemodelRecord" pos="0 35"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 30"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 25"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 20"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 15"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 10"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 5"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 0"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 -5"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 -10"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 -15"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 -20"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 -25"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 -30"/>
-						<frameinstance modelid="FramemodelRecord" pos="0 -35"/>
-					</frame>
-					<frameinstance modelid="FramemodelRecord" pos="0 -43"/>
-				</frame>
-			</frame>
-			<frame pos="0 -55">
-				<quad z-index="-2" size="199 20" bgcolor="FFFA" valign="center" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" scriptevents="1" id="QUAD_BUTTON_CONTINUE" opacity="0.75"/>
-				<label pos="0 -.7" z-index="0" size="110 10" text="Continue" halign="center" valign="center2" textfont="RajdhaniMono" textsize="9" textprefix="$t" translate="1"/>
-			</frame>
+                    <frame pos="0 -26">
+                        <quad z-index="-1" size="130 30" halign="center" style="Bgs1" substyle="BgCardList" opacity=".5" valign="center" pos="0 -16"/>
+                        <quad pos="-65 -4" z-index="0" size="130 3.5" bgcolor="FFFA" hidden="1"/>
+                        <quad pos="-65 -13.75" z-index="0" size="130 3.8" bgcolor="FFFA" hidden="1"/>
+                        <quad pos="-65 -23.75" z-index="0" size="130 3.5" bgcolor="FFFA" hidden="1"/>
+                        <frame pos="-57.5 -15">
+                            <label pos="0 5" z-index="0" size="50 10" text="Skillpoints" textprefix="$t" textfont="Oswald" textsize="6" valign="center" />
+                            <label pos="0 -5.5" z-index="0" size="50 10" text="Activity points" textprefix="$t" textfont="Oswald" textsize="6" valign="center" />
+                        </frame>
+                        <frame pos="57.5 -15">
+                            <label pos="0 5.5" z-index="0" size="50 10" text="0" textfont="RajdhaniMono" textsize="8" valign="center" halign="right" textcolor="0F0" />
+                            <label pos="0 -5" z-index="0" size="50 10" text="0" textfont="RajdhaniMono" textsize="8" valign="center" halign="right" textcolor="0FF" />
+                        </frame>
+                    </frame>
+
+                    <label pos="1 -65.25" z-index="0" size="65 8" textprefix="$t" text="Screenshot and share" valign="center" textfont="Oswald" textsize="5.5" halign="right"/>
+                    <label pos="1 -71.25" z-index="0" size="65 5" textprefix="$t" text="your effort in our friendly little place" valign="center" textfont="Oswald" textsize="1.5" halign="right"/>
+                    <frame pos="35 -67.5" z-index="1" id="FRAME_DISCORD">
+                        <quad z-index="0" size="60 15" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="ABD" id="QUAD_BUTTON_DISCORD" valign="center" pos="0 0"/>
+                        <quad z-index="1" size="9 9" halign="center" valign="center" pos="-22.25 0" image="file://Media/Images/Discord.png"/>
+                        <quad pos="-15 0" size="42.5 11" bgcolor="0004" valign="center" z-index="2"/>
+                        <frame pos="-15 0" z-index="3" clip="1" clipsizen="42.5 11" clipposn="21.25 0" id="FRAME_DISCORD">
+                            <label pos="3 -0.3" z-index="0" size="37.5 5" text="..." valign="center2" textfont="Oswald" id="LABEL_NAME"/>
+                            <label pos="21 -0.3" z-index="0" size="37.5 5" text="$888• $fff0 members online" valign="center2" textfont="Oswald" halign="center" textsize="2.5" id="LABEL_MEMBERCOUNT" opacity="0"/>
+                            <frame pos="6 0" id="FRAME_USER1" hidden="1">
+                                <quad z-index="0" size="6 6" bgcolor="000A" halign="center" valign="center" id="QUAD_AVATAR"/>
+                                <label pos="5 -0.2" z-index="0" size="28 5" text="BigBang1112$ACF#4564" valign="center2" textsize="1" textfont="BiryaniDemiBold" id="LABEL_USERNAME"/>
+                            </frame>
+                            <frame pos="6 -10" id="FRAME_USER2" hidden="1">
+                                <quad z-index="0" size="6 6" bgcolor="000A" halign="center" valign="center" id="QUAD_AVATAR"/>
+                                <label pos="5 -0.2" z-index="0" size="28 5" text="BigBang1112$ACF#4564" valign="center2" textsize="1" textfont="BiryaniDemiBold" id="LABEL_USERNAME"/>
+                            </frame>
+                        </frame>
+                    </frame>
+                </frame>
+            </frame>
+            <frame pos="70 65" clip="1" clipsizen="60 110" clipposn="0 -54">
+                <frame id="FrameLeaderboard">
+                    <quad z-index="-2" size="59 109" halign="center" style="Bgs1" substyle="BgCardList"/>
+                    <label pos="0 -8" z-index="0" size="50 10" textprefix="$t$o" text="Leaderboard" halign="center" textfont="Oswald" valign="center" textsize="4"/>
+                    <frame pos="0 -17" id="FRAME_PANEL2_ZONE">
+                        <quad pos="0 0" z-index="0" size="55 7" style="Bgs1" substyle="BgCard3" halign="center" valign="center" opacity=".25"/>
+                        <quad pos="0.1 -0.1" z-index="1" size="55 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QUAD_ZONE"/>
+                        <label pos="0 0.2" z-index="2" size="55 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LABEL_ZONE" translate="1" textprefix="$t"/>
+                    </frame>
+                    <quad pos="0 -60" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QUAD_LOADING_PANEL2"/>
+                    <frame pos="-25 -60">
+                        <frame id="FRAME_LB_GLOBAL_RECORDS">
+                            <frameinstance modelid="FramemodelRecord" pos="0 35"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 30"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 25"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 20"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 15"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 10"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 5"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 0"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 -5"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 -10"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 -15"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 -20"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 -25"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 -30"/>
+                            <frameinstance modelid="FramemodelRecord" pos="0 -35"/>
+                        </frame>
+                        <frameinstance modelid="FramemodelRecord" pos="0 -43"/>
+                    </frame>
+                </frame>
+            </frame>
+            <frame pos="0 -55" clip="1" clipsizen="200 20">
+                <frame id="FrameContinue">
+                    <quad z-index="-2" size="199 20" valign="center" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" scriptevents="1" id="QuadContinue" opacity="0.75"/>
+                    <label pos="0 -.7" z-index="0" size="110 10" text="Continue" halign="center" valign="center2" textfont="RajdhaniMono" textsize="9" textprefix="$t" translate="1"/>
+                </frame>
+            </frame>
 		</frame>
 		<frame z-index="2" id="FRAME_TOOLTIP" hidden="1">
 			<quad pos="0 0" z-index="-1" size="43.5 6" bgcolor="FFFA" style="Bgs1" substyle="BgCardOnline" colorize="000"/>
