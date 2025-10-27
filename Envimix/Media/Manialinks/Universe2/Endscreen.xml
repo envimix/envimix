@@ -78,9 +78,9 @@
                         <quad pos="0.1 -0.1" z-index="1" size="55 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QUAD_ZONE"/>
                         <label pos="0 0.2" z-index="2" size="55 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LABEL_ZONE" translate="1" textprefix="$t"/>
                     </frame>
-                    <quad pos="0 -60" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QUAD_LOADING_PANEL2"/>
-                    <frame pos="-25 -60">
-                        <frame id="FRAME_LB_GLOBAL_RECORDS">
+                    <quad pos="0 -60" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QuadLoadingLeaderboard"/>
+                    <frame pos="-25 -60" hidden="1">
+                        <frame id="FrameLeaderboard">
                             <frameinstance modelid="FramemodelRecord" pos="0 35"/>
                             <frameinstance modelid="FramemodelRecord" pos="0 30"/>
                             <frameinstance modelid="FramemodelRecord" pos="0 25"/>
