@@ -320,8 +320,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
             else
             {
-                MapGroupNum = -1;
-                MapInfoNum = -1;
                 MapSelectedAt = -1;
                 SetupCampaign();
             }
