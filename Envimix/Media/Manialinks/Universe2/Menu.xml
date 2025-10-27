@@ -53,7 +53,7 @@
 				<frame pos="0 30">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonContinue" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
-					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Continue" valign="center2" textfont="RajdhaniMono" translate="1"/>
+					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Continue" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
 				<frame pos="0 20" id="FrameButtonSpectator" data-checked="False" data-startanimate="-1">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
@@ -63,7 +63,7 @@
 				<frame id="FrameButtonChooseSkin" pos="0 9">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 					<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkin" halign="center" data-nav="True" pos="0 -0.125" colorize="258"/>
-					<label pos="-36 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Choose skin" valign="center2" textfont="RajdhaniMono" translate="1"/>
+					<label pos="-35.8 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Choose skin" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
 				<frame id="FrameButtonAdvancedOptions" pos="0 -1">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
