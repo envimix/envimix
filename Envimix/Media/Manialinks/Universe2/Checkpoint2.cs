@@ -52,10 +52,18 @@ public class Checkpoint2 : CTmMlScriptIngame, IContext
             switch (e.Type)
             {
                 case CTmRaceClientEvent.EType.WayPoint:
-                    RaceEventWaypoint(e);
+                    if (!e.IsEndRace || IsExplore())
+                    {
+                        RaceEventWaypoint(e);
+                    }
                     break;
             }
         };
+    }
+
+    bool IsExplore()
+    {
+        return CurrentServerModeName is "";
     }
 
     static string TimeToTextWithMilli(int time)
