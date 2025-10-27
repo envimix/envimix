@@ -11,15 +11,18 @@
                 <label pos="0 -7.75" z-index="1" size="55 10" text="Play Solo" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t"/>
             </frame>
             <frame pos="0 -41">
-                <quad size="65 8" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="036" opacity=".9" />
+                <quad size="65 8" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" />
                 <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258"/>
                 <label pos="0 -4.25" z-index="1" size="55 8" text="Leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
             </frame>
             <frame pos="0 -52">
                 <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258"/>
                 <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.5"/>
-                <quad size="65 24.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258"/>
-                <label pos="0 -12.25" z-index="1" size="55 25" text="Track of the Day" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+                <quad size="65 24.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" />
+                <quad pos="-30 -12.25" z-index="1" size="20 20" bgcolor="FFFA" valign="center"/>
+                <label pos="-7.2 -2.5" z-index="1" size="55 10" text="005" textfont="OswaldMono" translate="1" textsize="6" />
+                <label pos="-7 -11" z-index="1" size="55 10" text="Canyon" textfont="RajdhaniMono" translate="1" textsize="2" />
+                <label pos="-7 -21" z-index="1" size="55 10" text="Track of the Day" valign="center2" textfont="RajdhaniMono" translate="1" textsize="2" textprefix="$t" />
             </frame>
             <frame pos="0 -80">
                 <quad size="65 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
