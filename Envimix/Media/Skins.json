@@ -2,318 +2,392 @@
 	"CanyonCar": {
 		"Ace": {
 			"File": "CanyonCar/Ace.zip",
-			"Icon": "Images/Skins/CanyonCar/Ace.dds"
+			"Icon": "Images/Skins/CanyonCar/Ace.dds",
+			"Model": ""
 		},
 		"Defrag": {
 			"File": "CanyonCar/Defrag.zip",
-			"Icon": "Images/Skins/CanyonCar/Defrag.dds"
+			"Icon": "Images/Skins/CanyonCar/Defrag.dds",
+			"Model": ""
 		},
 		"Duke": {
 			"File": "CanyonCar/Duke.zip",
-			"Icon": "Images/Skins/CanyonCar/Duke.dds"
+			"Icon": "Images/Skins/CanyonCar/Duke.dds",
+			"Model": ""
 		},
 		"EXD": {
 			"File": "CanyonCar/EXD.zip",
-			"Icon": "Images/Skins/CanyonCar/EXD.dds"
+			"Icon": "Images/Skins/CanyonCar/EXD.dds",
+			"Model": ""
 		},
 		"ForTOne": {
 			"File": "CanyonCar/ForTOne.zip",
-			"Icon": "Images/Skins/CanyonCar/ForTOne.dds"
+			"Icon": "Images/Skins/CanyonCar/ForTOne.dds",
+			"Model": ""
 		},
 		"Fusi5n": {
 			"File": "CanyonCar/Fusi5n.zip",
-			"Icon": "Images/Skins/CanyonCar/Fusi5n.dds"
+			"Icon": "Images/Skins/CanyonCar/Fusi5n.dds",
+			"Model": ""
 		},
 		"Gramberg": {
 			"File": "CanyonCar/Gramberg.zip",
-			"Icon": "Images/Skins/CanyonCar/Gramberg.dds"
+			"Icon": "Images/Skins/CanyonCar/Gramberg.dds",
+			"Model": ""
 		},
 		"GT500": {
 			"File": "CanyonCar/GT500.zip",
-			"Icon": "Images/Skins/CanyonCar/GT500.dds"
+			"Icon": "Images/Skins/CanyonCar/GT500.dds",
+			"Model": ""
 		},
 		"JustForward": {
 			"File": "CanyonCar/JustForward.zip",
-			"Icon": "Images/Skins/CanyonCar/JustForward.dds"
+			"Icon": "Images/Skins/CanyonCar/JustForward.dds",
+			"Model": ""
 		},
 		"Liberty": {
 			"File": "CanyonCar/Liberty.zip",
-			"Icon": "Images/Skins/CanyonCar/Liberty.dds"
+			"Icon": "Images/Skins/CanyonCar/Liberty.dds",
+			"Model": ""
 		},
 		"Magma": {
 			"File": "CanyonCar/Magma.zip",
-			"Icon": "Images/Skins/CanyonCar/Magma.dds"
+			"Icon": "Images/Skins/CanyonCar/Magma.dds",
+			"Model": ""
 		},
 		"MP": {
 			"File": "CanyonCar/MP.zip",
-			"Icon": "Images/Skins/CanyonCar/MP.dds"
+			"Icon": "Images/Skins/CanyonCar/MP.dds",
+			"Model": ""
 		},
 		"NTeam": {
 			"File": "CanyonCar/NTeam.zip",
-			"Icon": "Images/Skins/CanyonCar/NTeam.dds"
+			"Icon": "Images/Skins/CanyonCar/NTeam.dds",
+			"Model": ""
 		},
 		"SafetyCar": {
 			"File": "CanyonCar/SafetyCar.zip",
-			"Icon": "Images/Skins/CanyonCar/SafetyCar.dds"
+			"Icon": "Images/Skins/CanyonCar/SafetyCar.dds",
+			"Model": ""
 		},
 		"Tecnivals": {
 			"File": "CanyonCar/Tecnivals.zip",
-			"Icon": "Images/Skins/CanyonCar/Tecnivals.dds"
+			"Icon": "Images/Skins/CanyonCar/Tecnivals.dds",
+			"Model": ""
 		}
 	},
 	"StadiumCar": {},
 	"ValleyCar": {
 		"AzurSwift": {
 			"File": "ValleyCar/AzurSwift.zip",
-			"Icon": "Images/Skins/ValleyCar/AzurSwift.dds"
+			"Icon": "Images/Skins/ValleyCar/AzurSwift.dds",
+			"Model": ""
 		},
 		"Grass99TM": {
 			"File": "ValleyCar/Grass99TM.zip",
-			"Icon": "Images/Skins/ValleyCar/Grass99TM.dds"
+			"Icon": "Images/Skins/ValleyCar/Grass99TM.dds",
+			"Model": ""
 		},
 		"KingMustard": {
 			"File": "ValleyCar/KingMustard.zip",
-			"Icon": "Images/Skins/ValleyCar/KingMustard.dds"
+			"Icon": "Images/Skins/ValleyCar/KingMustard.dds",
+			"Model": ""
 		},
 		"RedTurn": {
 			"File": "ValleyCar/RedTurn.zip",
-			"Icon": "Images/Skins/ValleyCar/RedTurn.dds"
+			"Icon": "Images/Skins/ValleyCar/RedTurn.dds",
+			"Model": ""
 		},
 		"ShadowMantis": {
 			"File": "ValleyCar/ShadowMantis.zip",
-			"Icon": "Images/Skins/ValleyCar/ShadowMantis.dds"
+			"Icon": "Images/Skins/ValleyCar/ShadowMantis.dds",
+			"Model": ""
 		},
 		"StraightBlue": {
 			"File": "ValleyCar/StraightBlue.zip",
-			"Icon": "Images/Skins/ValleyCar/StraightBlue.dds"
+			"Icon": "Images/Skins/ValleyCar/StraightBlue.dds",
+			"Model": ""
 		},
 		"TheWasp": {
 			"File": "ValleyCar/TheWasp.zip",
-			"Icon": "Images/Skins/ValleyCar/TheWasp.dds"
+			"Icon": "Images/Skins/ValleyCar/TheWasp.dds",
+			"Model": ""
 		},
 		"TriGen": {
 			"File": "ValleyCar/TriGen.zip",
-			"Icon": "Images/Skins/ValleyCar/TriGen.dds"
+			"Icon": "Images/Skins/ValleyCar/TriGen.dds",
+			"Model": ""
 		},
 		"WhiteLegend": {
 			"File": "ValleyCar/WhiteLegend.zip",
-			"Icon": "Images/Skins/ValleyCar/WhiteLegend.dds"
+			"Icon": "Images/Skins/ValleyCar/WhiteLegend.dds",
+			"Model": ""
 		},
 		"Windleaf": {
 			"File": "ValleyCar/Windleaf.zip",
-			"Icon": "Images/Skins/ValleyCar/Windleaf.dds"
+			"Icon": "Images/Skins/ValleyCar/Windleaf.dds",
+			"Model": ""
 		}
 	},
 	"LagoonCar": {
 		"Aloha": {
 			"File": "LagoonCar/Aloha.zip",
-			"Icon": "Images/Skins/LagoonCar/Aloha.dds"
+			"Icon": "Images/Skins/LagoonCar/Aloha.dds",
+			"Model": ""
 		},
 		"Coral": {
 			"File": "LagoonCar/Coral.zip",
-			"Icon": "Images/Skins/LagoonCar/Coral.dds"
+			"Icon": "Images/Skins/LagoonCar/Coral.dds",
+			"Model": ""
 		},
 		"Farewell": {
 			"File": "LagoonCar/Farewell.zip",
-			"Icon": "Images/Skins/LagoonCar/Farewell.dds"
+			"Icon": "Images/Skins/LagoonCar/Farewell.dds",
+			"Model": ""
 		},
 		"jellyfish": {
 			"File": "LagoonCar/jellyfish.zip",
-			"Icon": "Images/Skins/LagoonCar/jellyfish.dds"
+			"Icon": "Images/Skins/LagoonCar/jellyfish.dds",
+			"Model": ""
 		},
 		"Ocean": {
 			"File": "LagoonCar/Ocean.zip",
-			"Icon": "Images/Skins/LagoonCar/Ocean.dds"
+			"Icon": "Images/Skins/LagoonCar/Ocean.dds",
+			"Model": ""
 		},
 		"Orchid": {
 			"File": "LagoonCar/Orchid.zip",
-			"Icon": "Images/Skins/LagoonCar/Orchid.dds"
+			"Icon": "Images/Skins/LagoonCar/Orchid.dds",
+			"Model": ""
 		},
 		"R3D": {
 			"File": "LagoonCar/R3D.zip",
-			"Icon": "Images/Skins/LagoonCar/R3D.dds"
+			"Icon": "Images/Skins/LagoonCar/R3D.dds",
+			"Model": ""
 		},
 		"Ray": {
 			"File": "LagoonCar/Ray.zip",
-			"Icon": "Images/Skins/LagoonCar/Ray.dds"
+			"Icon": "Images/Skins/LagoonCar/Ray.dds",
+			"Model": ""
 		},
 		"Samurai": {
 			"File": "LagoonCar/Samurai.zip",
-			"Icon": "Images/Skins/LagoonCar/Samurai.dds"
+			"Icon": "Images/Skins/LagoonCar/Samurai.dds",
+			"Model": ""
 		},
 		"Shark": {
 			"File": "LagoonCar/Shark.zip",
-			"Icon": "Images/Skins/LagoonCar/Shark.dds"
+			"Icon": "Images/Skins/LagoonCar/Shark.dds",
+			"Model": ""
 		},
 		"Thunder": {
 			"File": "LagoonCar/Thunder.zip",
-			"Icon": "Images/Skins/LagoonCar/Thunder.dds"
+			"Icon": "Images/Skins/LagoonCar/Thunder.dds",
+			"Model": ""
 		},
 		"Wave": {
 			"File": "LagoonCar/Wave.zip",
-			"Icon": "Images/Skins/LagoonCar/Wave.dds"
+			"Icon": "Images/Skins/LagoonCar/Wave.dds",
+			"Model": ""
 		}
 	},
 	"TrafficCar": {
 		"9thArrow": {
 			"File": "TrafficCar/9thArrow.zip",
-			"Icon": "Images/Skins/TrafficCar/9thArrow.dds"
+			"Icon": "Images/Skins/TrafficCar/9thArrow.dds",
+			"Model": ""
 		}
 	},
 	"DesertCar": {
 		"Blackdevil": {
 			"File": "AmericanCar/Blackdevil.zip",
-			"Icon": "Images/Skins/AmericanCar/Blackdevil.dds"
+			"Icon": "Images/Skins/AmericanCar/Blackdevil.dds",
+			"Model": ""
 		},
 		"Default": {
 			"File": "AmericanCar/Default.zip",
-			"Icon": "Images/Skins/AmericanCar/Default.dds"
+			"Icon": "Images/Skins/AmericanCar/Default.dds",
+			"Model": ""
 		},
 		"Funkyrace": {
 			"File": "AmericanCar/Funkyrace.zip",
-			"Icon": "Images/Skins/AmericanCar/Funkyrace.dds"
+			"Icon": "Images/Skins/AmericanCar/Funkyrace.dds",
+			"Model": ""
 		},
 		"Lagoonracer": {
 			"File": "AmericanCar/Lagoonracer.zip",
-			"Icon": "Images/Skins/AmericanCar/Lagoonracer.dds"
+			"Icon": "Images/Skins/AmericanCar/Lagoonracer.dds",
+			"Model": ""
 		},
 		"Silvermania": {
 			"File": "AmericanCar/Silvermania.zip",
-			"Icon": "Images/Skins/AmericanCar/Silvermania.dds"
+			"Icon": "Images/Skins/AmericanCar/Silvermania.dds",
+			"Model": ""
 		},
 		"Toggleindustry": {
 			"File": "AmericanCar/Toggleindustry.zip",
-			"Icon": "Images/Skins/AmericanCar/Toggleindustry.dds"
+			"Icon": "Images/Skins/AmericanCar/Toggleindustry.dds",
+			"Model": ""
 		}
 	},
 	"RallyCar": {
 		"DarkVelvet": {
 			"File": "RallyCar/DarkVelvet.zip",
-			"Icon": "Images/Skins/RallyCar/DarkVelvet.dds"
+			"Icon": "Images/Skins/RallyCar/DarkVelvet.dds",
+			"Model": ""
 		},
 		"DeepSeaKing": {
 			"File": "RallyCar/DeepSeaKing.zip",
-			"Icon": "Images/Skins/RallyCar/DeepSeaKing.dds"
+			"Icon": "Images/Skins/RallyCar/DeepSeaKing.dds",
+			"Model": ""
 		},
 		"MadCow": {
 			"File": "RallyCar/MadCow.zip",
-			"Icon": "Images/Skins/RallyCar/MadCow.dds"
+			"Icon": "Images/Skins/RallyCar/MadCow.dds",
+			"Model": ""
 		},
 		"PurpleQueen": {
 			"File": "RallyCar/PurpleQueen.zip",
-			"Icon": "Images/Skins/RallyCar/PurpleQueen.dds"
+			"Icon": "Images/Skins/RallyCar/PurpleQueen.dds",
+			"Model": ""
 		},
 		"RoadManns": {
 			"File": "RallyCar/RoadManns.zip",
-			"Icon": "Images/Skins/RallyCar/RoadManns.dds"
+			"Icon": "Images/Skins/RallyCar/RoadManns.dds",
+			"Model": ""
 		},
 		"SilverBird": {
 			"File": "RallyCar/SilverBird.zip",
-			"Icon": "Images/Skins/RallyCar/SilverBird.dds"
+			"Icon": "Images/Skins/RallyCar/SilverBird.dds",
+			"Model": ""
 		}
 	},
 	"SnowCar": {
 		"Bubblecat": {
 			"File": "SnowCar/Bubblecat.zip",
-			"Icon": "Images/Skins/SnowCar/Bubblecat.dds"
+			"Icon": "Images/Skins/SnowCar/Bubblecat.dds",
+			"Model": ""
 		},
 		"Cerisier": {
 			"File": "SnowCar/Cerisier.zip",
-			"Icon": "Images/Skins/SnowCar/Cerisier.dds"
+			"Icon": "Images/Skins/SnowCar/Cerisier.dds",
+			"Model": ""
 		},
 		"Dragon": {
 			"File": "SnowCar/Dragon.zip",
-			"Icon": "Images/Skins/SnowCar/Dragon.dds"
+			"Icon": "Images/Skins/SnowCar/Dragon.dds",
+			"Model": ""
 		},
 		"Japon": {
 			"File": "SnowCar/Japon.zip",
-			"Icon": "Images/Skins/SnowCar/Japon.dds"
+			"Icon": "Images/Skins/SnowCar/Japon.dds",
+			"Model": ""
 		},
 		"Jungle": {
 			"File": "SnowCar/Jungle.zip",
-			"Icon": "Images/Skins/SnowCar/Jungle.dds"
+			"Icon": "Images/Skins/SnowCar/Jungle.dds",
+			"Model": ""
 		},
 		"Panda": {
 			"File": "SnowCar/Panda.zip",
-			"Icon": "Images/Skins/SnowCar/Panda.dds"
+			"Icon": "Images/Skins/SnowCar/Panda.dds",
+			"Model": ""
 		}
 	},
 	"IslandCar": {
 		"Black": {
 			"File": "SportCar/U_Black.zip",
-			"Icon": "Images/Skins/SportCar/U_Black.dds"
+			"Icon": "Images/Skins/SportCar/U_Black.dds",
+			"Model": ""
 		},
 		"Blue": {
 			"File": "SportCar/U_Blue.zip",
-			"Icon": "Images/Skins/SportCar/U_Blue.dds"
+			"Icon": "Images/Skins/SportCar/U_Blue.dds",
+			"Model": ""
 		},
 		"Green": {
 			"File": "SportCar/U_Green.zip",
-			"Icon": "Images/Skins/SportCar/U_Green.dds"
+			"Icon": "Images/Skins/SportCar/U_Green.dds",
+			"Model": ""
 		},
 		"Red": {
 			"File": "SportCar/U_Red.zip",
-			"Icon": "Images/Skins/SportCar/U_Red.dds"
+			"Icon": "Images/Skins/SportCar/U_Red.dds",
+			"Model": ""
 		},
 		"White": {
 			"File": "SportCar/U_White.zip",
-			"Icon": "Images/Skins/SportCar/U_White.dds"
+			"Icon": "Images/Skins/SportCar/U_White.dds",
+			"Model": ""
 		},
 		"Yellow": {
 			"File": "SportCar/U_Yellow.zip",
-			"Icon": "Images/Skins/SportCar/U_Yellow.dds"
+			"Icon": "Images/Skins/SportCar/U_Yellow.dds",
+			"Model": ""
 		}
 	},
 	"BayCar": {
 		"Black": {
 			"File": "BayCar/U_Black.zip",
-			"Icon": "Images/Skins/BayCar/U_Black.dds"
+			"Icon": "Images/Skins/BayCar/U_Black.dds",
+			"Model": ""
 		},
 		"Blue": {
 			"File": "BayCar/U_Blue.zip",
-			"Icon": "Images/Skins/BayCar/U_Blue.dds"
+			"Icon": "Images/Skins/BayCar/U_Blue.dds",
+			"Model": ""
 		},
 		"Green": {
 			"File": "BayCar/U_Green.zip",
-			"Icon": "Images/Skins/BayCar/U_Green.dds"
+			"Icon": "Images/Skins/BayCar/U_Green.dds",
+			"Model": ""
 		},
 		"Red": {
 			"File": "BayCar/U_Red.zip",
-			"Icon": "Images/Skins/BayCar/U_Red.dds"
+			"Icon": "Images/Skins/BayCar/U_Red.dds",
+			"Model": ""
 		},
 		"White": {
 			"File": "BayCar/U_White.zip",
-			"Icon": "Images/Skins/BayCar/U_White.dds"
+			"Icon": "Images/Skins/BayCar/U_White.dds",
+			"Model": ""
 		},
 		"Yellow": {
 			"File": "BayCar/U_Yellow.zip",
-			"Icon": "Images/Skins/BayCar/U_Yellow.dds"
+			"Icon": "Images/Skins/BayCar/U_Yellow.dds",
+			"Model": ""
 		}
 	},
 	"CoastCar": {
 		"Black": {
 			"File": "CoastCar/U_Black.zip",
-			"Icon": "Images/Skins/CoastCar/U_Black.dds"
+			"Icon": "Images/Skins/CoastCar/U_Black.dds",
+			"Model": ""
 		},
 		"Blue": {
 			"File": "CoastCar/U_Blue.zip",
-			"Icon": "Images/Skins/CoastCar/U_Blue.dds"
+			"Icon": "Images/Skins/CoastCar/U_Blue.dds",
+			"Model": ""
 		},
 		"Green": {
 			"File": "CoastCar/U_Green.zip",
-			"Icon": "Images/Skins/CoastCar/U_Green.dds"
+			"Icon": "Images/Skins/CoastCar/U_Green.dds",
+			"Model": ""
 		},
 		"Red": {
 			"File": "CoastCar/U_Red.zip",
-			"Icon": "Images/Skins/CoastCar/U_Red.dds"
+			"Icon": "Images/Skins/CoastCar/U_Red.dds",
+			"Model": ""
 		},
 		"White": {
 			"File": "CoastCar/U_White.zip",
-			"Icon": "Images/Skins/CoastCar/U_White.dds"
+			"Icon": "Images/Skins/CoastCar/U_White.dds",
+			"Model": ""
 		},
 		"Yellow": {
 			"File": "CoastCar/U_Yellow.zip",
-			"Icon": "Images/Skins/CoastCar/U_Yellow.dds"
+			"Icon": "Images/Skins/CoastCar/U_Yellow.dds",
+			"Model": ""
 		}
 	}
 }

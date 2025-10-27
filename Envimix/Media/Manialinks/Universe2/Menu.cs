@@ -8,8 +8,9 @@ namespace Envimix.Media.Manialinks.Universe2;
 public class Menu : CTmMlScriptIngame, IContext
 {
     public struct SSkin
-	{
-		public string File;
+    {
+        public string Model;
+        public string File;
 		public string Icon;
 	}
 

@@ -9,7 +9,8 @@ public class Envimix : UniverseModeBase
 {
     public struct SSkin
     {
-	    public string File;
+        public string Model;
+        public string File;
         public string Icon;
     }
 
@@ -309,8 +310,11 @@ public class Envimix : UniverseModeBase
                 {
                     foreach (var (name, skin) in skins.Get()[car])
                     {
-                        Log(nameof(Envimix), $"Adding {itemName} with skin {skin.File}...");
-                        Cars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
+                        var itemNameForSkin = itemName;
+                        if (skin.Model != "")
+                            itemNameForSkin = skin.Model;
+                        Log(nameof(Envimix), $"Adding {itemNameForSkin} with skin {skin.File}...");
+                        Cars[car][name] = ItemList_AddWithSkin(itemNameForSkin, $"Skins/Models/{skin.File}");
                     }
                 }
                                             
@@ -328,8 +332,11 @@ public class Envimix : UniverseModeBase
                     {
                         foreach (var (name, skin) in skins.Get()[car])
                         {
-                            Log(nameof(Envimix), $"Adding {itemName} with skin {skin.File}...");
-                            SpecialCars[car][name] = ItemList_AddWithSkin(itemName, $"Skins/Models/{skin.File}");
+                            var itemNameForSkin = itemName;
+                            if (skin.Model != "")
+                                itemNameForSkin = skin.Model;
+                            Log(nameof(Envimix), $"Adding {itemNameForSkin} with skin {skin.File}...");
+                            SpecialCars[car][name] = ItemList_AddWithSkin(itemNameForSkin, $"Skins/Models/{skin.File}");
                         }
                     }
                 }
