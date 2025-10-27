@@ -35,6 +35,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public struct STitleReleaseInfo
     {
         public string ReleasedAt;
+        public string Key;
     }
 
     public bool ManiaPlanetAuthenticationRequested;
@@ -55,7 +56,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
     public string MenuLocation = "MainMenu";
 
-    public const string EnvimixWebAPI = "https://api.envimix.gbx.tools";
+    public const string EnvimixWebAPI = "http://localhost:5118";
 
     public void Main()
     {        
@@ -98,17 +99,32 @@ public class MainMenu : CManiaAppTitle, IContext
 
         var releaseReceivedAt = -1;
         TitleRelease = "";
+        var titleKey = "";
+        var released = false;
 
-        while (TitleRelease == "" || TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) <= 0)
+        while (TitleRelease == "" || TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) < 0 || titleKey == "")
         {
             // this is some REAL maniascript bullshit bug right here
-            if (TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) > 0)
+            if (TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && titleKey != "")
             {
                 break;
             }
 
+            if (!released && TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && titleKey == "")
+            {
+                Log("Title has been released!");
+                released = true;
+                releaseReceivedAt = -1;
+            }
+
+            var waitTime = 30000;
+            if (released)
+            {
+                waitTime = 2000;
+            }
+
             // if we received release info recently, wait a bit before requesting again
-            if (releaseReceivedAt != -1 && Now - releaseReceivedAt < 30000)
+            if (releaseReceivedAt != -1 && Now - releaseReceivedAt < waitTime)
             {
                 Yield();
                 foreach (var e in PendingEvents)
@@ -134,8 +150,22 @@ public class MainMenu : CManiaAppTitle, IContext
                 STitleReleaseInfo releaseInfo = new();
                 if (releaseInfo.FromJson(titleReleaseRequest.Result))
                 {
-                    Log("Title release info received.");
+                    if (TitleRelease != releaseInfo.ReleasedAt)
+                    {
+                        released = false;
+                    }
+
                     TitleRelease = releaseInfo.ReleasedAt!;
+                    titleKey = releaseInfo.Key!;
+
+                    var expectation = "";
+                    if (released)
+                    {
+                        expectation = " (expecting release sometime now)";
+                    }
+
+                    Log($"Title release info received. Release date: {TimeLib.FormatDate(TitleRelease, TimeLib.EDateFormats.Full)}{expectation}");
+
                     releaseReceivedAt = Now;
                 }
                 else
@@ -146,8 +176,9 @@ public class MainMenu : CManiaAppTitle, IContext
             }
             else if (titleReleaseRequest.StatusCode == 404)
             {
-                Log("No title release info found. This assumes the title pack is playable.");
-                releaseReceivedAt = Now;
+                Log("No title release info found. You can press ESC to escape.");
+                //releaseReceivedAt = Now;
+                Sleep(10000);
             }
             else
             {
@@ -155,6 +186,11 @@ public class MainMenu : CManiaAppTitle, IContext
                 Sleep(10000);
             }
             Http.Destroy(titleReleaseRequest);
+        }
+
+        if (titleKey != "GlaLUAllmr1jrWZ7kymbmR2KOG")
+        {
+            Assert(false, "HELLO HACKER! Invalid title key.");
         }
 
         LayerCustomEvent(ReleaseLayer, "Hide", new[] { "" });
