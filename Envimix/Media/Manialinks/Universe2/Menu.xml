@@ -170,7 +170,7 @@
 			<frame pos="-110 50">
 				<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>
 				<quad size="78.75 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" id="QuadButtonSkinPlay" halign="center" pos="0 -0.125" colorize="258"/>
-				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Play" valign="center2" textfont="RajdhaniMono" translate="1"/>
+				<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Play" valign="center2" textfont="RajdhaniMono" translate="1"/>
 			</frame>
 			<frame pos="-110 39" z-index="1">
 				<frame pos="38 0" z-index="1">
