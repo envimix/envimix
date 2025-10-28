@@ -233,28 +233,27 @@ public class MainMenu : CManiaAppTitle, IContext
             switch (e.Type)
             {
                 case CManiaAppEvent.EType.LayerCustomEvent:
-                    if (e.CustomEventType == "MenuSolo")
+                    switch (e.CustomEventType)
                     {
-                        Log("Switching to Solo Menu...");
-                        LayerCustomEvent(SoloMenuLayer, "AnimateOpen", new[] { "" });
-                        LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
-                        MenuLocation = "MenuSolo";
-                    }
-                    if (e.CustomEventType == "MainMenu")
-                    {
-                        SwitchToMainMenu();
-                    }
-                    if (e.CustomEventType == "PlayMap")
-                    {
-                        var mapGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
-                        var mapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
-                        PlayMap(mapGroupNum, mapInfoNum);
-                    }
-                    if (e.CustomEventType == "ExploreMap")
-                    {
-                        var mapGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
-                        var mapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
-                        ExploreMap(mapGroupNum, mapInfoNum);
+                        case "MenuSolo":
+                            Log("Switching to Solo Menu...");
+                            LayerCustomEvent(SoloMenuLayer, "AnimateOpen", new[] { "" });
+                            LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
+                            MenuLocation = "MenuSolo";
+                            break;
+                        case "MainMenu":
+                            SwitchToMainMenu();
+                            break;
+                        case "PlayMap":
+                            var playMapGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
+                            var playMapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
+                            PlayMap(playMapGroupNum, playMapInfoNum);
+                            break;
+                        case "ExploreMap":
+                            var exploreMapGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
+                            var exploreMapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
+                            ExploreMap(exploreMapGroupNum, exploreMapInfoNum);
+                            break;
                     }
                     break;
                 case CManiaAppEvent.EType.MenuNavigation:
