@@ -21,6 +21,9 @@ public class EnvimixSolo : Envimix
     [Setting] public new string EnvimixWebAPI = "https://api.envimix.gbx.tools";
     [Setting] public new string SkinsFile = "Skins_Turbo.json";
 
+    [Setting(As = "Custom countdown")]
+    public int CustomCountdown = -1;
+
     public Dictionary<Ident, string> LocalGhostsTaskFiles;
     public IList<CTaskResult_GhostList> LocalGhostsTasks;
     public Dictionary<string, IList<CGhost>> LocalGhosts;
@@ -104,7 +107,7 @@ public class EnvimixSolo : Envimix
         {
             foreach (var player in PlayersWaiting)
             {
-                TrySpawnEnvimixPlayer(player, frozen: false);
+                TrySpawnEnvimixSoloPlayer(player, frozen: false);
             }
         }
 
@@ -122,6 +125,36 @@ public class EnvimixSolo : Envimix
     private CTmPlayer GetPlayer()
     {
         return Players[0];
+    }
+
+    private bool TrySpawnEnvimixSoloPlayer(CTmPlayer player, bool frozen)
+    {
+        if (frozen)
+        {
+            return TrySpawnEnvimixPlayer(player, frozen);
+        }
+
+        if (CustomCountdown < 0)
+        {
+            return TrySpawnEnvimixPlayer(player, -1);
+        }
+
+        return TrySpawnEnvimixPlayer(player, Now + CustomCountdown);
+    }
+
+    public bool SpawnEnvimixSoloPlayer(CTmPlayer player, string car, bool frozen)
+    {
+        if (frozen)
+        {
+            return SpawnEnvimixPlayer(player, car, frozen);
+        }
+
+        if (CustomCountdown < 0)
+        {
+            return SpawnEnvimixPlayer(player, car, -1);
+        }
+
+        return SpawnEnvimixPlayer(player, car, Now + CustomCountdown);
     }
 
     private void ProcessUpdateCarEvent(CUIConfigEvent e)
@@ -144,7 +177,7 @@ public class EnvimixSolo : Envimix
                         if (respawn)
                         {
                             var frozen = e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
-                            var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+                            var spawned = SpawnEnvimixSoloPlayer(player, car.Get(), frozen);
                         }
                     }
                 }
