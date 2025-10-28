@@ -63,7 +63,7 @@ public class Explore : CMapEditorPluginLayer, IContext
 
     public void Main()
     {
-        //EnableMenuNavigation(true, false, null, 1000);
+        SetupWaypoints();
     }
 
     private void SetTesting(bool testing)
@@ -103,6 +103,26 @@ public class Explore : CMapEditorPluginLayer, IContext
         QuadStartIcon.Hide();
         LabelStart.Show();
 
+
+        if (Input.IsKeyPressed(36))
+        {
+            SetTesting(false);
+        }
+
+        if (Testing)
+        {
+            Editor.PlaceModeE = CMapEditorPlugin.PlaceMode.Test;
+            Editor.EditModeE = CMapEditorPlugin.EditMode.Place;
+        }
+        else if (!NormalEditor)
+        {
+            Editor.PlaceModeE = CMapEditorPlugin.PlaceMode.Block;
+            Editor.EditModeE = CMapEditorPlugin.EditMode.FreeLook;
+        }
+    }
+
+    private void SetupWaypoints()
+    {
         var start = "";
         ImmutableArray<CBlock> cps = new();
         ImmutableArray<CBlock> finishes = new();
@@ -138,22 +158,6 @@ public class Explore : CMapEditorPluginLayer, IContext
 
                 finishes.Add(block);
             }
-        }
-
-        if (Input.IsKeyPressed(36))
-        {
-            SetTesting(false);
-        }
-
-        if (Testing)
-        {
-            Editor.PlaceModeE = CMapEditorPlugin.PlaceMode.Test;
-            Editor.EditModeE = CMapEditorPlugin.EditMode.Place;
-        }
-        else if (!NormalEditor)
-        {
-            Editor.PlaceModeE = CMapEditorPlugin.PlaceMode.Block;
-            Editor.EditModeE = CMapEditorPlugin.EditMode.FreeLook;
         }
     }
 }
