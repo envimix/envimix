@@ -1496,18 +1496,20 @@ public class Menu : CTmMlScriptIngame, IContext
             FrameVehicles.ScrollGrid = new Vec2(0, 20);
         }
 
+        var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
         foreach (var car in DisplayedCars)
         {
             var userSkins = UserSkins;
-            userSkins[car] = "";
-            UserSkins = userSkins;
-        }
 
-        var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
-        foreach (var (car, skin) in persistent_EnvimixSkins.Get())
-        {
-            var userSkins = UserSkins;
-            userSkins[car] = skin;
+            if (persistent_EnvimixSkins.Get().ContainsKey(car))
+            {
+                userSkins[car] = persistent_EnvimixSkins.Get()[car];
+            }
+            else
+            {
+                userSkins[car] = "";
+            }
+
             UserSkins = userSkins;
         }
 
