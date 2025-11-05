@@ -629,6 +629,9 @@ public class Menu : CTmMlScriptIngame, IContext
                     var userSkins = UserSkins;
                     userSkins[CName] = "";
                     UserSkins = userSkins;
+
+                    var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+                    persistent_EnvimixSkins.Get()[CName] = "";
                 }
                 else
                 {
@@ -649,6 +652,9 @@ public class Menu : CTmMlScriptIngame, IContext
                         var userSkins = UserSkins;
                         userSkins[CName] = SNames[Index];
                         UserSkins = userSkins;
+
+                        var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+                        persistent_EnvimixSkins.Get()[CName] = SNames[Index];
                     }
                 }
                 UpdateSkins();
@@ -1497,7 +1503,15 @@ public class Menu : CTmMlScriptIngame, IContext
             UserSkins = userSkins;
         }
 
-		FrameMenu.RelativePosition_V3.X = -110;
+        var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+        foreach (var (car, skin) in persistent_EnvimixSkins.Get())
+        {
+            var userSkins = UserSkins;
+            userSkins[car] = skin;
+            UserSkins = userSkins;
+        }
+
+        FrameMenu.RelativePosition_V3.X = -110;
         FrameVehicleList.RelativePosition_V3.X = 110;
         FrameTeamInfo.RelativePosition_V3.Y = -135;
 
