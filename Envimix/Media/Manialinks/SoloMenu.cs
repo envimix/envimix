@@ -64,10 +64,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             switch (type)
             {
                 case "AnimateOpen":
+                    EnableMenuNavigationInputs = true;
                     ShowCampaignOverviewFrame();
                     ShowMapOverviewFrame();
                     break;
                 case "AnimateClose":
+                    EnableMenuNavigationInputs = false;
                     HideCampaignOverviewFrame();
                     HideMapOverviewFrame();
                     break;
@@ -89,6 +91,16 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 MapSelect(control);
             }
         };
+
+        MenuNavigation += (action) =>
+        {
+            switch (action)
+            {
+                case CMlScriptEvent.EMenuNavAction.Cancel:
+                    SendCustomEvent("MainMenu", new[] { "" });
+                    break;
+            }
+        };
     }
 
     public void Main()
@@ -99,6 +111,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
         TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
         FunnyCars = new() { "HighlandsCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
+
+        EnableMenuNavigationInputs = true;
 
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
 

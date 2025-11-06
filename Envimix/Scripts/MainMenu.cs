@@ -54,8 +54,6 @@ public class MainMenu : CManiaAppTitle, IContext
     public CUILayer LoadingLayer;
     public CUILayer ReleaseLayer;
 
-    public string MenuLocation = "MainMenu";
-
     public const string EnvimixWebAPI = "http://localhost:5118";
 
     public void Main()
@@ -195,8 +193,6 @@ public class MainMenu : CManiaAppTitle, IContext
 
         LayerCustomEvent(ReleaseLayer, "Hide", new[] { "" });
 
-        EnableMenuNavigationInputs = true;
-
         MainMenuLayer = UILayerCreate();
         MainMenuLayer.ManialinkPage = "file://Media/Manialinks/MainMenu.xml";
 
@@ -239,10 +235,12 @@ public class MainMenu : CManiaAppTitle, IContext
                             Log("Switching to Solo Menu...");
                             LayerCustomEvent(SoloMenuLayer, "AnimateOpen", new[] { "" });
                             LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
-                            MenuLocation = "MenuSolo";
                             break;
                         case "MainMenu":
                             SwitchToMainMenu();
+                            break;
+                        case "Quit":
+                            Menu_Quit();
                             break;
                         case "PlayMap":
                             var playMapGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
@@ -254,19 +252,6 @@ public class MainMenu : CManiaAppTitle, IContext
                             var exploreMapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
                             ExploreMap(exploreMapGroupNum, exploreMapInfoNum);
                             break;
-                    }
-                    break;
-                case CManiaAppEvent.EType.MenuNavigation:
-                    if (e.MenuNavAction == CManiaAppEvent.EMenuNavAction.Cancel)
-                    {
-                        if (MenuLocation == "MainMenu")
-                        {
-                            Menu_Quit();
-                        }
-                        else if (MenuLocation == "MenuSolo")
-                        {
-                            SwitchToMainMenu();
-                        }
                     }
                     break;
             }
@@ -409,7 +394,6 @@ public class MainMenu : CManiaAppTitle, IContext
         Log("Switching to Main Menu...");
         LayerCustomEvent(SoloMenuLayer, "AnimateClose", new[] { "" });
         LayerCustomEvent(MainMenuLayer, "AnimateOpen", new[] { "" });
-        MenuLocation = "MainMenu";
     }
 
     private void PlayMap(int mapGroupNum, int mapInfoNum)

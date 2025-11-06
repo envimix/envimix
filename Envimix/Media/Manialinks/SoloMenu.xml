@@ -2,7 +2,6 @@
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
     <framemodel id="FramemodelMap">
         <quad size="14.75 14.75" halign="center" valign="center" bgcolor="222" opacity="0.75" z-index="0"/>
-        <quad size="14.75 14.75" halign="center" valign="center" bgcolor="222" opacity="0.75" z-index="0" hidden="1"/>
         <quad id="QuadMapThumbnail" size="14 14" halign="center" valign="center" image="file://Thumbnails/MapUid/YAGV4LM73qshYEC2mHm_RJqrOM8" z-index="1" hidden="1"/>
         <quad id="QuadMapButton" size="15 15" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" z-index="2" scriptevents="1" opacity="0.5" hidden="1"/>
         <quad id="QuadMapName" size="7 5" halign="right" valign="bottom" bgcolor="222" opacity="0.9" z-index="2" pos="7 -7"/>
@@ -20,6 +19,7 @@
         <frameinstance modelid="FramemodelMap" pos="0 -15"/>
         <frameinstance modelid="FramemodelMap" pos="15 -15"/>
         <frameinstance modelid="FramemodelMap" pos="30 -15"/>
+        <quad size="14.75 14.75" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" opacity="0.75" z-index="0" hidden="1"/>
     </framemodel>
     <framemodel id="FramemodelRating">
         <gauge pos="0 0" z-index="0" size="35 8" drawbg="0" valign="center"/>

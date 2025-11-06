@@ -42,10 +42,22 @@ public class MainMenu : CManiaAppTitleLayer, IContext
             switch (type)
             {
                 case "AnimateOpen":
+                    EnableMenuNavigationInputs = true;
                     ShowMenuFrame();
                     break;
                 case "AnimateClose":
+                    EnableMenuNavigationInputs = false;
                     HideMenuFrame();
+                    break;
+            }
+        };
+
+        MenuNavigation += (action) =>
+        {
+            switch (action)
+            {
+                case CMlScriptEvent.EMenuNavAction.Cancel:
+                    SendCustomEvent("Quit", new[] { "" });
                     break;
             }
         };

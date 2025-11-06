@@ -16,8 +16,7 @@
                 <label pos="0 -4.25" z-index="1" size="55 8" text="Leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
             </frame>
             <frame pos="0 -52">
-                <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258"/>
-                <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.5"/>
+                <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.9"/>
                 <quad size="65 24.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" />
                 <quad pos="-30 -12.25" z-index="1" size="20 20" bgcolor="FFFA" valign="center"/>
                 <label pos="-7.2 -2.5" z-index="1" size="55 10" text="005" textfont="OswaldMono" translate="1" textsize="6" />
