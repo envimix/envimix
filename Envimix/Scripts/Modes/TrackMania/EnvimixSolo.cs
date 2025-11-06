@@ -36,6 +36,9 @@ public class EnvimixSolo : Envimix
     public bool OutroGhostReachedMaxFinishLength;
     public Ident? OutroGhostViewInst;
     public int OutroGhostEndTime;
+    public CTaskResult? GhostUploadTask;
+    public bool GhostToUpload;
+    public string? GhostFinishTimestamp;
 
     [Netwrite] public IList<SGhostMetadata> LocalGhostMetadata { get; set; }
     [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
@@ -52,7 +55,7 @@ public class EnvimixSolo : Envimix
 
         FinishedAt = -1;
         Outro = false;
-        OutroGhostMaxFinishLength = 2500;
+        OutroGhostMaxFinishLength = 1500;
     }
 
     public override void OnMapLoad()
@@ -99,6 +102,12 @@ public class EnvimixSolo : Envimix
         FinishedAt = Now;
         UIManager.GetUI(e.Player).UISequence = CUIConfig.EUISequence.Outro;
         OutroGhost = ScoreMgr.Playground_GetPlayerGhost(e.Player);
+        GhostFinishTimestamp = TimeLib.GetCurrent();
+    }
+
+    public override void OnPlayerFirstFinishOrImprovement(CTmModeEvent e)
+    {
+        UploadGhost(OutroGhost!);
     }
 
     public override void OnGameLoop()
@@ -117,6 +126,25 @@ public class EnvimixSolo : Envimix
             Log(nameof(EnvimixSolo), "Extending outro ghost to maximum length.");
             OutroGhost = ScoreMgr.Playground_GetPlayerGhost(GetPlayer());
             OutroGhostReachedMaxFinishLength = true;
+        }
+
+        if (GhostUploadTask is not null && !GhostUploadTask.IsProcessing)
+        {
+            if (GhostUploadTask.HasSucceeded)
+            {
+                Log(nameof(EnvimixSolo), "Ghost upload succeeded.");
+                DataFileMgr.TaskResult_Release(GhostUploadTask.Id);
+                GhostUploadTask = null;
+                GhostToUpload = false;
+            }
+            else
+            {
+                Log(nameof(EnvimixSolo), $"Ghost upload failed - {GhostUploadTask.ErrorType} {GhostUploadTask.ErrorCode} {GhostUploadTask.ErrorDescription}. Retrying...");
+                DataFileMgr.TaskResult_Release(GhostUploadTask.Id);
+                GhostUploadTask = null;
+                Sleep(1000);
+                UploadGhost(OutroGhost!);
+            }
         }
 
         CheckForLocalGhosts();
@@ -228,6 +256,14 @@ public class EnvimixSolo : Envimix
         }
     }
 
+    private void UploadGhost(CGhost ghost)
+    {
+        GhostToUpload = true;
+
+        var envimixTurboUserToken = Local<string>.For(GetPlayer().User);
+        GhostUploadTask = DataFileMgr.Ghost_Upload($"{EnvimixWebAPI}/envimania/record", ghost, $"Authorization: Bearer {envimixTurboUserToken.Get()}\nX-Envimix-Timestamp: {GhostFinishTimestamp}");
+    }
+
     private void SwitchToOutro(CUIConfig ui)
     {
         if (FinishedAt == -1)
@@ -239,9 +275,11 @@ public class EnvimixSolo : Envimix
 
         if (!OutroGhostReachedMaxFinishLength)
         {
-            Log(nameof(EnvimixSolo), "Extending outro ghost for outro switch.");
+            Log(nameof(EnvimixSolo), "Extending outro ghost for outro switch...");
             OutroGhost = ScoreMgr.Playground_GetPlayerGhost(GetPlayer());
         }
+
+        OutroGhostReachedMaxFinishLength = false;
 
         // possibly best option for outro sequence
         ui.UISequence = CUIConfig.EUISequence.EndRound;
@@ -275,7 +313,10 @@ public class EnvimixSolo : Envimix
         switch (e.CustomEventType)
         {
             case "EndscreenContinue":
-                SwitchToOutro(e.UI);
+                if (!GhostToUpload)
+                {
+                    SwitchToOutro(e.UI);
+                }
                 break;
             case "OutroContinue":
                 SwitchFromOutro(e.UI);

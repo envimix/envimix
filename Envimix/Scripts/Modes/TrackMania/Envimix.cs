@@ -1182,6 +1182,10 @@ public class Envimix : UniverseModeBase
 
     public ImmutableArray<SEnvimaniaSessionRecordRequest> EnvimaniaSessionRecordRequests;
 
+    public virtual void OnPlayerFirstFinishOrImprovement(CTmModeEvent e)
+    {
+    }
+
     public override void OnPlayerFinish(CTmModeEvent e)
     {
         var tempRace = Netwrite<Record.SRecord>.For(e.Player.Score);
@@ -1219,6 +1223,8 @@ public class Envimix : UniverseModeBase
         {
             var envimixRecordUpdated = Netwrite<int>.For(e.Player.Score);
             envimixRecordUpdated.Set(Now);
+
+            OnPlayerFirstFinishOrImprovement(e);
 
             // Runs only in multiplayer with Envimania
             if (EnvimaniaSessionToken is not "")
