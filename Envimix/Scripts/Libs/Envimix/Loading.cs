@@ -74,15 +74,15 @@ public static class Loading
 
         var loadingManialink = "<manialink version=\"3\" name=\"Loading\">";
         loadingManialink = $"{loadingManialink}<frame z-index=\"0\">";
-        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-6\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Sunrise.jpg\" opacity=\"{opacities[0]*.9}\"/>";
-        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-5\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Day.jpg\" opacity=\"{opacities[1]*.9}\"/>";
-        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-4\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Sunset.jpg\" opacity=\"{opacities[2]*.9}\"/>";
-        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-3\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Night.jpg\" opacity=\"{opacities[3]*.9}\"/>";
-        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-2\" size=\"320 180\" bgcolor=\"000A\" halign=\"center\" valign=\"center\"/>";
+        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-6\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Sunrise.jpg\" opacity=\"{opacities[0]*.9}\" hidden=\"1\"/>";
+        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-5\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Day.jpg\" opacity=\"{opacities[1]*.9}\" hidden=\"1\"/>";
+        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-4\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Sunset.jpg\" opacity=\"{opacities[2]*.9}\" hidden=\"1\"/>";
+        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-3\" size=\"320 180\" bgcolor=\"000D\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Loading/{mapInfo.CollectionName}_Night.jpg\" opacity=\"{opacities[3]*.9}\" hidden=\"1\"/>";
+        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-2\" size=\"320 180\" bgcolor=\"111E\" halign=\"center\" valign=\"center\"/>";
         loadingManialink = $"{loadingManialink}    <frame pos=\"60\">";
         loadingManialink = $"{loadingManialink}        <frame pos=\"0 5\">";
         loadingManialink = $"{loadingManialink}            <quad pos=\"0 0\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" valign=\"center\"/>";
-        loadingManialink = $"{loadingManialink}            <quad pos=\"0.5 -0.5\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" modulatecolor=\"970\" valign=\"center\"/>";
+        loadingManialink = $"{loadingManialink}            <quad pos=\"0.5 -0.5\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" modulatecolor=\"640\" valign=\"center\"/>";
         loadingManialink = $"{loadingManialink}        </frame>";
         loadingManialink = $"{loadingManialink}        <label pos=\"25 -5\" z-index=\"0\" size=\"30 5\" text=\"LOADING...\" halign=\"center\" textemboss=\"1\" textfont=\"BiryaniDemiBold\"/>";
         loadingManialink = $"{loadingManialink}    </frame>";
