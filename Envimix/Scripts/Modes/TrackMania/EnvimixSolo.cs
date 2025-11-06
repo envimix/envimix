@@ -39,7 +39,7 @@ public class EnvimixSolo : Envimix
     public Ident? OutroGhostViewInst;
     public int OutroGhostEndTime;
     public CTaskResult? GhostUploadTask;
-    public bool GhostToUpload;
+    [Netwrite] public bool GhostToUpload { get; set; }
     public string? GhostFinishTimestamp;
     public CTaskResult? NewRecordTask;
 
@@ -487,6 +487,11 @@ public class EnvimixSolo : Envimix
                 var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(GetPlayer().Score);
                 envimixBestRace.Get()[key] = Record.ToRecord(ghostTask.Ghost.Result, -1, GetPlayer());
                 PersonalBestGhosts[key] = ghostTask.Ghost;
+
+                if (key == ConstructFilterKey(GetPlayer()))
+                {
+                    GetPlayer().Score.BestRace = ghostTask.Ghost.Result;
+                }
             }
             else
             {
