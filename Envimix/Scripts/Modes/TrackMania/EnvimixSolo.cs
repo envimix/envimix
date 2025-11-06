@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using Envimix.Scripts.Libs.BigBang1112;
+using System.Collections.Immutable;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
@@ -18,7 +19,7 @@ public class EnvimixSolo : Envimix
     [Setting] public new bool EnableTrafficCarInStadium = true;
     [Setting] public new bool UseUnitedModels = true;
     [Setting] public new bool AlwaysUseVehicleItems = false;
-    [Setting] public new string EnvimixWebAPI = "https://api.envimix.gbx.tools";
+    [Setting] public new string EnvimixWebAPI = "http://localhost:5118";
     [Setting] public new string SkinsFile = "Skins_Turbo.json";
 
     [Setting(As = "Custom countdown")]
@@ -28,6 +29,7 @@ public class EnvimixSolo : Envimix
     public IList<CTaskResult_GhostList> LocalGhostsTasks;
     public Dictionary<string, IList<CGhost>> LocalGhosts;
     public Dictionary<CGhost, Ident> SpawnedGhosts;
+    public Dictionary<CGhost, Ident> SpawnedPersonalGhosts;
 
     [Netwrite] public int FinishedAt { get; set; }
     [Netwrite] public bool Outro { get; set; }
@@ -39,6 +41,12 @@ public class EnvimixSolo : Envimix
     public CTaskResult? GhostUploadTask;
     public bool GhostToUpload;
     public string? GhostFinishTimestamp;
+    public CTaskResult? NewRecordTask;
+
+    public IList<CTaskResult_Ghost> PersonalGhostTasks;
+    public Dictionary<Ident, string> PersonalGhostFilterKeys;
+    public Dictionary<string, CGhost> PersonalBestGhosts;
+    public bool NewPersonalBest;
 
     [Netwrite] public IList<SGhostMetadata> LocalGhostMetadata { get; set; }
     [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
@@ -62,11 +70,27 @@ public class EnvimixSolo : Envimix
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load
 
-        RaceGhost_RemoveAll();
+        RemoveAllGhosts();
 
         CanListenToUIEvents = true;
 
         PrespawnEnvimixPlayers();
+
+        foreach (var car in DisplayedCars)
+        {
+            // alternatively, fetch personal best from envimix webapi
+
+            var key = ConstructFilterKey(car);
+            var task = ScoreMgr.Map_GetRecordGhost(null, Map.MapInfo.MapUid, "Test" + car);
+
+            if (task is null)
+            {
+                continue;
+            }
+
+            PersonalGhostFilterKeys[task.Id] = key;
+            PersonalGhostTasks.Add(task);
+        }
     }
 
     public override void OnUIEvent(CUIConfigEvent e)
@@ -107,7 +131,7 @@ public class EnvimixSolo : Envimix
 
     public override void OnPlayerFirstFinishOrImprovement(CTmModeEvent e)
     {
-        UploadGhost(OutroGhost!);
+        NewPersonalBest = true;
     }
 
     public override void OnGameLoop()
@@ -125,6 +149,10 @@ public class EnvimixSolo : Envimix
         {
             Log(nameof(EnvimixSolo), "Extending outro ghost to maximum length.");
             OutroGhost = ScoreMgr.Playground_GetPlayerGhost(GetPlayer());
+            if (NewPersonalBest)
+            {
+                AcknowledgePersonalBest(GetPlayer(), OutroGhost);
+            }
             OutroGhostReachedMaxFinishLength = true;
         }
 
@@ -147,6 +175,21 @@ public class EnvimixSolo : Envimix
             }
         }
 
+        if (NewRecordTask is not null && !NewRecordTask.IsProcessing)
+        {
+            if (NewRecordTask.HasSucceeded)
+            {
+                Log(nameof(EnvimixSolo), "New record registered successfully.");
+            }
+            else
+            {
+                Log(nameof(EnvimixSolo), $"New record registration failed - {NewRecordTask.ErrorType} {NewRecordTask.ErrorCode} {NewRecordTask.ErrorDescription}.");
+            }
+            DataFileMgr.TaskResult_Release(NewRecordTask.Id);
+            NewRecordTask = null;
+        }
+
+        CheckForPersonalGhosts();
         CheckForLocalGhosts();
     }
 
@@ -155,8 +198,26 @@ public class EnvimixSolo : Envimix
         return Players[0];
     }
 
+    private void SpawnPersonalGhost(CTmPlayer player)
+    {
+        foreach (var (ghost, spawnIdent) in SpawnedPersonalGhosts)
+        {
+            RaceGhost_Remove(spawnIdent);
+        }
+        SpawnedPersonalGhosts.Clear();
+
+        var key = ConstructFilterKey(player);
+        if (PersonalBestGhosts.ContainsKey(key))
+        {
+            var pbGhost = PersonalBestGhosts[key];
+            SpawnedPersonalGhosts[pbGhost] = RaceGhost_Add(pbGhost, DisplayAsPlayerBest: true);
+        }
+    }
+
     private bool TrySpawnEnvimixSoloPlayer(CTmPlayer player, bool frozen)
     {
+        SpawnPersonalGhost(player);
+
         if (frozen)
         {
             return TrySpawnEnvimixPlayer(player, frozen);
@@ -172,6 +233,8 @@ public class EnvimixSolo : Envimix
 
     public bool SpawnEnvimixSoloPlayer(CTmPlayer player, string car, bool frozen)
     {
+        SpawnPersonalGhost(player);
+
         if (frozen)
         {
             return SpawnEnvimixPlayer(player, car, frozen);
@@ -195,9 +258,9 @@ public class EnvimixSolo : Envimix
                     var carName = e.CustomEventData[0];
                     var player = GetPlayer(e.UI);
                     SetValidClientCar(player, carName);
-                    
+
                     var car = Netwrite<string>.For(player);
-                    
+
                     if (e.CustomEventData.Count > 1)
                     {
                         var respawn = true; // always respawn on Car event
@@ -264,6 +327,24 @@ public class EnvimixSolo : Envimix
         GhostUploadTask = DataFileMgr.Ghost_Upload($"{EnvimixWebAPI}/envimania/record", ghost, $"Authorization: Bearer {envimixTurboUserToken.Get()}\nX-Envimix-Timestamp: {GhostFinishTimestamp}");
     }
 
+    public void AcknowledgePersonalBest(CPlayer player, CGhost ghost)
+    {
+        PersonalBestGhosts[ConstructFilterKey(player)] = ghost;
+
+        UploadGhost(ghost);
+
+        var car = Netwrite<string>.For(player);
+        NewRecordTask = ScoreMgr.Map_SetNewRecord(null, Map.MapInfo.MapUid, $"Test{car.Get()}", ghost);
+
+        NewPersonalBest = false;
+    }
+
+    public void RemoveAllGhosts()
+    {
+        RaceGhost_RemoveAll();
+        SpawnedPersonalGhosts.Clear();
+    }
+
     private void SwitchToOutro(CUIConfig ui)
     {
         if (FinishedAt == -1)
@@ -277,18 +358,23 @@ public class EnvimixSolo : Envimix
         {
             Log(nameof(EnvimixSolo), "Extending outro ghost for outro switch...");
             OutroGhost = ScoreMgr.Playground_GetPlayerGhost(GetPlayer());
+
+            if (NewPersonalBest)
+            {
+                AcknowledgePersonalBest(GetPlayer(), OutroGhost);
+            }
         }
 
-        OutroGhostReachedMaxFinishLength = false;
+        OutroGhostReachedMaxFinishLength = false; // hack?
 
         // possibly best option for outro sequence
         ui.UISequence = CUIConfig.EUISequence.EndRound;
 
         UnspawnAllPlayers();
-        RaceGhost_RemoveAll();
+        RemoveAllGhosts();
 
         OutroGhostViewInst = RaceGhost_Add(OutroGhost, false);
-        OutroGhostEndTime = Now + 2500 + OutroGhost.Result.Time;
+        OutroGhostEndTime = Now + 2500 + OutroGhost!.Result.Time;
 
         Outro = true;
 
@@ -304,6 +390,7 @@ public class EnvimixSolo : Envimix
         }
 
         Outro = false;
+        RemoveAllGhosts();
 
         ui.UISequence = CUIConfig.EUISequence.Playing;
     }
@@ -374,6 +461,45 @@ public class EnvimixSolo : Envimix
         if (completedGhostTasks.Length > 0)
         {
             completedGhostTasks.Clear();
+        }
+    }
+
+    private void CheckForPersonalGhosts()
+    {
+        ImmutableArray<CTaskResult_Ghost> completedGhostTasks = new();
+
+        foreach (var ghostTask in PersonalGhostTasks)
+        {
+            if (ghostTask.IsProcessing)
+            {
+                continue;
+            }
+
+            var key = PersonalGhostFilterKeys[ghostTask.Id];
+
+            if (ghostTask.HasSucceeded)
+            {
+                if (ghostTask.Ghost is null)
+                {
+                    continue;
+                }
+
+                var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(GetPlayer().Score);
+                envimixBestRace.Get()[key] = Record.ToRecord(ghostTask.Ghost.Result, -1, GetPlayer());
+                PersonalBestGhosts[key] = ghostTask.Ghost;
+            }
+            else
+            {
+                Log(nameof(EnvimixSolo), $"Failed to get best ghost for {key}: {ghostTask.ErrorType} {ghostTask.ErrorCode} {ghostTask.ErrorDescription}");
+            }
+
+            completedGhostTasks.Add(ghostTask);
+            PersonalGhostFilterKeys.Remove(ghostTask.Id);
+        }
+
+        foreach (var ghostTask in completedGhostTasks)
+        {
+            PersonalGhostTasks.Remove(ghostTask);
         }
     }
 }
