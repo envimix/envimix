@@ -187,6 +187,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public bool PrevRatingEnabled;
     public int PrevValidationsUpdatedAt;
     public string MapNameInExplore = "";
+    public bool PrevGhostToUpload;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -208,6 +209,8 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public string ModeHelp { get; set; }
     //[Netread] public required Dictionary<string, SEnvimaniaRecord> Validations { get; set; }
     //[Netread] public int ValidationsUpdatedAt { get; set; }
+
+    [Netread] public bool GhostToUpload { get; set; }
 
     public Menu()
     {
@@ -2252,6 +2255,19 @@ public class Menu : CTmMlScriptIngame, IContext
         else
         {
             LabelValidator.Value = "$aaanobody";
+        }
+
+        // to refresh the leaderboard when a new record is driven
+        if (GhostToUpload != PrevGhostToUpload)
+        {
+            if (!GhostToUpload)
+            {
+                var filter = GetFilter();
+                var filterKey = ConstructFilterKey(filter);
+                EnvimaniaFinishedRecordsRequests.Remove(filterKey);
+                RequestCurrentZoneRecords(true);
+            }
+            PrevGhostToUpload = GhostToUpload;
         }
     }
 }
