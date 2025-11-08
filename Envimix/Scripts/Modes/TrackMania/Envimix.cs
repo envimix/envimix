@@ -16,12 +16,6 @@ public class Envimix : UniverseModeBase
         public string Icon;
     }
 
-    public struct SMapInfo
-    {
-        public string Name;
-        public string Uid;
-    }
-
     public struct SRatingServerResponse
     {
         public ImmutableArray<Envimania.SFilteredRating> Ratings;
@@ -31,7 +25,7 @@ public class Envimix : UniverseModeBase
     {
         public string ServerLogin;
         public string ServerToken;
-        public SMapInfo Map;
+        public Envimania.SMapInfo Map;
         public ImmutableArray<Envimania.SUserInfo> Players;
         public IList<string> Cars;
     }
@@ -92,14 +86,6 @@ public class Envimix : UniverseModeBase
         public string Nickname;
         public string Content;
         public int Timestamp;
-    }
-
-    public struct SRatingServerRequest
-    {
-        public Envimania.SUserInfo User;
-        public string Car;
-        public int Gravity;
-        public Envimania.SRating Rating;
     }
 
     [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
@@ -179,7 +165,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public int FinishedAt { get; set; }
 
     public required Dictionary<string, Envimania.SRating> UserRatings;
-    public required Dictionary<string, SRatingServerRequest> UserRatingsToRequest;
+    public required Dictionary<string, Envimania.SRatingServerRequest> UserRatingsToRequest;
     public CHttpRequest? UserRatingRequest;
     public required int UserRatingsUpdatedAt;
 
@@ -598,7 +584,7 @@ public class Envimix : UniverseModeBase
             userInfos.Add(CreateUserInfo(player.User));
         }
 
-        SMapInfo mapInfo = new()
+        Envimania.SMapInfo mapInfo = new()
         {
             Name = Map.MapInfo.Name,
             Uid = Map.MapInfo.MapUid
@@ -2001,7 +1987,7 @@ public class Envimix : UniverseModeBase
 
         if (UserRatingRequest is null && UserRatingsToRequest.Count > 0 && UserRatingsUpdatedAt + 1000 <= Now)
         {
-            ImmutableArray<SRatingServerRequest> ratingReqs = new();
+            ImmutableArray<Envimania.SRatingServerRequest> ratingReqs = new();
 
             foreach (var (key, req) in UserRatingsToRequest)
             {
@@ -2283,7 +2269,7 @@ public class Envimix : UniverseModeBase
             myRatings.Get().Add(filteredRating);
         }
 
-        SRatingServerRequest ratingReq = new()
+        Envimania.SRatingServerRequest ratingReq = new()
         {
             User = CreateUserInfo(player.User),
             Car = car.Get(),

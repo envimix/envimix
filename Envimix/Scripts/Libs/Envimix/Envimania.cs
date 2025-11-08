@@ -2,6 +2,12 @@
 
 public static class Envimania
 {
+    public struct SMapInfo
+    {
+        public string Name;
+        public string Uid;
+    }
+
     public struct SRating
     {
         public float Difficulty;
@@ -46,5 +52,13 @@ public static class Envimania
         public bool Verified;
         public bool Projected;
         public string GhostUrl;
+    }
+
+    public struct SRatingServerRequest
+    {
+        public SUserInfo User;
+        public string Car;
+        public int Gravity;
+        public SRating Rating;
     }
 }

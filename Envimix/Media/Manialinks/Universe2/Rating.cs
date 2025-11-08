@@ -18,13 +18,42 @@ public class Rating : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlGauge GaugeQuality;
     [ManialinkControl] public required CMlLabel LabelDifficulty;
     [ManialinkControl] public required CMlLabel LabelQuality;
+    [ManialinkControl] public required CMlQuad QuadRating;
 
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
 
-    bool IsVisible()
+    [Netread] public int FinishedAt { get; set; }
+    [Netread] public bool Outro { get; set; }
+
+    public bool MenuOpen;
+
+    public Rating()
     {
-        return !IsInGameMenuDisplayed;
+        QuadRating.MouseClick += () =>
+        {
+            SendCustomEvent("OpenRating", new[] {""});
+        };
+    }
+
+    bool IsExplore()
+    {
+        return CurrentServerModeName is "";
+    }
+
+    bool IsSolo()
+    {
+        return CurrentServerLogin is "";
+    }
+
+    private bool IsVisible()
+    {
+        if (IsExplore())
+        {
+            return !MenuOpen;
+        }
+
+        return !IsInGameMenuDisplayed && FinishedAt == -1 && !Outro;
     }
 
     CTmMlPlayer GetPlayer()
@@ -137,5 +166,7 @@ public class Rating : CTmMlScriptIngame, IContext
 
             PreviousVisible = FrameRating.Visible;
         }
+
+        QuadRating.Visible = IsSolo();
     }
 }

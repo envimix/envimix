@@ -1,6 +1,7 @@
 ﻿using Envimix.Scripts.Libs.BigBang1112;
 using Envimix.Scripts.Libs.Envimix;
 using System.Collections.Immutable;
+using System.Numerics;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
@@ -31,6 +32,20 @@ public class EnvimixSolo : Envimix
         public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
     }
 
+    public struct SRatingClientRequest
+    {
+        public Envimania.SMapInfo Map;
+        public string Car;
+        public int Gravity;
+        public Envimania.SRating Rating;
+    }
+
+    public struct SRatingClientResponse
+    {
+        public Envimania.SFilteredRating Rating;
+    }
+
+    [Setting] public new bool EnableDefaultCar = false; // TODO: enable after finished envimix car run
     [Setting] public new bool EnableStadiumEnvimix = true;
     [Setting] public new bool EnableUnitedCars = true;
     [Setting] public new bool EnableTrafficCar = true;
@@ -60,6 +75,7 @@ public class EnvimixSolo : Envimix
     public string? GhostFinishTimestamp;
     public CTaskResult? NewRecordTask;
     public CHttpRequest? MapInfoRequest;
+    public string PersonalRatingUpdatedAt;
 
     public IList<CTaskResult_Ghost> PersonalGhostTasks;
     public Dictionary<Ident, string> PersonalGhostFilterKeys;
@@ -97,9 +113,12 @@ public class EnvimixSolo : Envimix
 
         PrespawnEnvimixPlayers();
 
-        RequestMapInfo();
-
         RequestPersonalGhosts();
+    }
+
+    public override void OnMapStart()
+    {
+        RequestMapInfo();
     }
 
     public override void OnUIEvent(CUIConfigEvent e)
@@ -209,10 +228,28 @@ public class EnvimixSolo : Envimix
                 {
                     var validations = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecord>>.For(Teams[0]);
 
-                    foreach (var (key, validationRec) in mapInfoResponse.Validations)
+                    foreach (var (key, validationRec) in mapInfoResponse.Validations!)
                     {
                         validations.Get()[key] = validationRec;
                     }
+
+                    Dictionary<string, Envimania.SRating> ratings = new();
+
+                    foreach (var filteredRating in mapInfoResponse.Ratings)
+                    {
+                        ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
+                    }
+
+                    Ratings = ratings;
+
+                    var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(GetPlayer()));
+                    myRatings.Set(mapInfoResponse.UserRatings!);
+
+                    RatingEnabled = true;
+
+                    // this is overflow simulator but the game is paused during ratings often so Now doesnt update to this properly so this just works okay?? be cool with it
+                    RatingsUpdatedAt = TextLib.ToInteger(TimeLib.GetCurrent());
+
                     Log(nameof(EnvimixSolo), $"Map info for '{mapInfoResponse.Name}' ({mapInfoResponse.Uid}) received from webapi.");
                 }
                 else
@@ -231,6 +268,7 @@ public class EnvimixSolo : Envimix
 
         CheckForPersonalGhosts();
         CheckForLocalGhosts();
+        CheckPersonalRatings();
     }
 
     private CTmPlayer GetPlayer()
@@ -576,6 +614,85 @@ public class EnvimixSolo : Envimix
         foreach (var ghostTask in completedGhostTasks)
         {
             PersonalGhostTasks.Remove(ghostTask);
+        }
+    }
+
+    public void CheckPersonalRatings()
+    {
+        if (UserRatingRequest is null && UserRatingsToRequest.Count > 0 && (PersonalRatingUpdatedAt == "" || TimeLib.GetDelta(TimeLib.GetCurrent(), PersonalRatingUpdatedAt) > 0))
+        {
+            SRatingClientRequest ratingReq = new();
+
+            Envimania.SMapInfo mapInfo = new()
+            {
+                Name = Map.MapInfo.Name,
+                Uid = Map.MapInfo.MapUid
+            };
+
+            // transform server request to client request because I cant be bothered with this shit xdd
+
+            foreach (var (key, req) in UserRatingsToRequest)
+            {
+                ratingReq.Map = mapInfo;
+                ratingReq.Rating = req.Rating;
+                ratingReq.Car = req.Car;
+                ratingReq.Gravity = req.Gravity;
+
+                var difficulty = req.Rating.Difficulty;
+                var quality = req.Rating.Quality;
+
+                var isDifficultyDifferent = true;
+                var isQualityDifferent = true;
+
+                if (UserRatings.ContainsKey(key))
+                {
+                    isDifficultyDifferent = UserRatings[key].Difficulty != difficulty;
+                    isQualityDifferent = UserRatings[key].Quality != quality;
+                }
+
+                UserRatings[key] = req.Rating;
+            }
+
+            Log(nameof(EnvimixSolo), "Submitting rating...");
+
+            UserRatingRequest = Http.CreatePost($"{EnvimixWebAPI}/rate", ratingReq.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+
+            UserRatingsToRequest.Clear();
+
+            PersonalRatingUpdatedAt = TimeLib.GetCurrent();
+        }
+
+        if (UserRatingRequest is not null && UserRatingRequest.IsCompleted)
+        {
+            if (UserRatingRequest.StatusCode == 200)
+            {
+                Log(nameof(Envimix), "Rating submitted (200).");
+
+                SRatingClientResponse response = new();
+
+                if (response.FromJson(UserRatingRequest.Result))
+                {
+                    var ratings = Ratings;
+                    ratings[ConstructRatingFilterKey(response.Rating.Filter)] = response.Rating.Rating;
+
+                    Ratings = ratings;
+
+                    // this is overflow simulator but the game is paused during ratings often so Now doesnt update to this properly so this just works okay?? be cool with it
+                    RatingsUpdatedAt = TextLib.ToInteger(TimeLib.GetCurrent());
+                }
+                else
+                {
+                    Log(nameof(Envimix), $"Rating submission failed (JSON issue). Reported in server logs.");
+                    Log(nameof(Envimix), UserRatingRequest.Result);
+                }
+            }
+            else
+            {
+                Log(nameof(Envimix), $"Rating submission failed ({UserRatingRequest.StatusCode}).");
+            }
+
+            Http.Destroy(UserRatingRequest);
+            UserRatingRequest = null;
         }
     }
 }
