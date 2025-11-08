@@ -19,6 +19,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
     public int FinishedAt;
     public string PreviousCar = "";
 
+    [Netread] public bool GhostToUpload { get; set; }
+
     public Endscreen()
     {
         RaceEvent += (e) =>
@@ -154,7 +156,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
     private void Continue()
     {
-        if (FinishedAt == -1 || Now - FinishedAt < 500)
+        if (FinishedAt == -1 || Now - FinishedAt < 500 || GhostToUpload)
         {
             return;
         }
