@@ -30,6 +30,7 @@ public class MainMenu : CManiaAppTitle, IContext
     {
         public string Login;
         public string Token;
+        public bool IsAdmin;
     }
 
     public struct STitleReleaseInfo
@@ -45,6 +46,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public int UserTokenFirstRequestTimeout = -1;
     public int UserTokenReceived = -1;
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
+    [Local(LocalFor.LocalUser)] public bool EnvimixTurboUserIsAdmin { get; set; }
     public int ManiaPlanetAuthReceivedAt = -1;
 
     [Local(LocalFor.LocalUser)] public string TitleRelease { get; set; } = "";
@@ -369,6 +371,12 @@ public class MainMenu : CManiaAppTitle, IContext
             }
             else
             {
+                EnvimixTurboUserIsAdmin = response.IsAdmin;
+                if (response.IsAdmin)
+                {
+                    Log("Admin detected! Extra features have been enabled.");
+                }
+
                 EnvimixTurboUserToken = response.Token!;
                 if (UserTokenReceived == -1)
                     UserTokenReceived = Now;
