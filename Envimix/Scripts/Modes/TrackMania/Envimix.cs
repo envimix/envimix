@@ -1,9 +1,11 @@
 ﻿using Envimix.Scripts.Libs.BigBang1112;
+using Envimix.Scripts.Libs.Envimix;
 using System.Collections.Immutable;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
 [Include(typeof(Record))]
+[Include(typeof(Envimania))]
 [SettingsChangeDetectors]
 public class Envimix : UniverseModeBase
 {
@@ -14,61 +16,15 @@ public class Envimix : UniverseModeBase
         public string Icon;
     }
 
-    public struct SUserInfo
-    {
-        public string Login;
-        public string Nickname;
-        public string Zone;
-        public string AvatarUrl;
-        public string Language;
-        public string Description;
-        public Vec3 Color;
-        public string SteamUserId;
-        public int FameStars;
-        public float LadderPoints;
-    }
-
     public struct SMapInfo
     {
         public string Name;
         public string Uid;
     }
 
-    public struct SEnvimaniaRecord
-    {
-        public SUserInfo User;
-        public int Time;
-        public int Score;
-        public int NbRespawns;
-        public float Distance;
-        public float Speed;
-        public bool Verified;
-        public bool Projected;
-        public string GhostUrl;
-    }
-
-    public struct SRating
-    {
-        public float Difficulty;
-        public float Quality;
-    }
-
-    public struct SRatingFilter
-    {
-        public string Car;
-        public int Gravity;
-        public string Type;
-    }
-
-    public struct SFilteredRating
-    {
-        public SRatingFilter Filter;
-        public SRating Rating;
-    }
-
     public struct SRatingServerResponse
     {
-        public ImmutableArray<SFilteredRating> Ratings;
+        public ImmutableArray<Envimania.SFilteredRating> Ratings;
     }
 
     public struct SEnvimaniaSessionRequest
@@ -76,7 +32,7 @@ public class Envimix : UniverseModeBase
         public string ServerLogin;
         public string ServerToken;
         public SMapInfo Map;
-        public ImmutableArray<SUserInfo> Players;
+        public ImmutableArray<Envimania.SUserInfo> Players;
         public IList<string> Cars;
     }
 
@@ -84,14 +40,14 @@ public class Envimix : UniverseModeBase
     {
         public string ServerLogin;
         public string SessionToken;
-        public ImmutableArray<SFilteredRating> Ratings;
-        public Dictionary<string, IList<SFilteredRating>> UserRatings;
-        public Dictionary<string, SEnvimaniaRecord> Validations;
+        public ImmutableArray<Envimania.SFilteredRating> Ratings;
+        public Dictionary<string, IList<Envimania.SFilteredRating>> UserRatings;
+        public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
     }
 
     public struct SEnvimaniaSessionRecordRequest
     {
-        public SUserInfo User;
+        public Envimania.SUserInfo User;
         public string Car;
         public int Gravity;
         public int Laps;
@@ -107,7 +63,7 @@ public class Envimix : UniverseModeBase
     public struct SEnvimaniaSessionUser
     {
         public string Login;
-        public IList<SFilteredRating> Ratings;
+        public IList<Envimania.SFilteredRating> Ratings;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -122,7 +78,7 @@ public class Envimix : UniverseModeBase
     {
         public SEnvimaniaRecordsFilter Filter;
         public string Zone;
-        public ImmutableArray<SEnvimaniaRecord> Records;
+        public ImmutableArray<Envimania.SEnvimaniaRecord> Records;
     }
 
     public struct SEnvimaniaSessionRecordResponse
@@ -140,10 +96,10 @@ public class Envimix : UniverseModeBase
 
     public struct SRatingServerRequest
     {
-        public SUserInfo User;
+        public Envimania.SUserInfo User;
         public string Car;
         public int Gravity;
-        public SRating Rating;
+        public Envimania.SRating Rating;
     }
 
     [Setting(As = "Enable TM2 cars", ReloadOnChange = true)]
@@ -215,17 +171,19 @@ public class Envimix : UniverseModeBase
     [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
     [Netwrite] public required string EnvimaniaStatusMessage { get; set; }
     [Netwrite] public bool RatingEnabled { get; set; }
-    [Netwrite] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netwrite] public required Dictionary<string, Envimania.SRating> Ratings { get; set; }
     [Netwrite] public required int RatingsUpdatedAt { get; set; }
-    [Netwrite] public required Dictionary<string, SEnvimaniaRecord> Validations { get; set; }
+    [Netwrite] public required Dictionary<string, Envimania.SEnvimaniaRecord> Validations { get; set; }
     [Netwrite] public required int ValidationsUpdatedAt { get; set; }
 
-    public required Dictionary<string, SRating> UserRatings;
+    [Netwrite] public int FinishedAt { get; set; }
+
+    public required Dictionary<string, Envimania.SRating> UserRatings;
     public required Dictionary<string, SRatingServerRequest> UserRatingsToRequest;
     public CHttpRequest? UserRatingRequest;
     public required int UserRatingsUpdatedAt;
 
-    public required Dictionary<string, SUserInfo> UserJoinAdditionalInfosToRequest;
+    public required Dictionary<string, Envimania.SUserInfo> UserJoinAdditionalInfosToRequest;
     public CHttpRequest? UserJoinAdditionalInfoRequest;
     public required int UserJoinAdditionalInfosUpdatedAt;
 
@@ -252,7 +210,6 @@ public class Envimix : UniverseModeBase
         UIManager.UIAll.OverlayHideSpectatorInfos = true;
         UIManager.UIAll.OverlayHideGauges = true;
         UIManager.UIAll.ScoreTableOnlyManialink = true;
-
         //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
 
         ImmutableArray<string> tm2CarNames = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar" };
@@ -385,6 +342,8 @@ public class Envimix : UniverseModeBase
         foreach (var (name, car) in CustomCars) DisplayedCars.Add(name);
 
         EnvimaniaStatusMessage = "Envimania not connected";
+
+        FinishedAt = -1;
     }
 
     public override void BeforeServerStart()
@@ -498,7 +457,7 @@ public class Envimix : UniverseModeBase
             var prepareLoading = Netwrite<int>.For(UIManager.GetUI(player));
             prepareLoading.Set(-1);
 
-            var myRatings = Netwrite<ImmutableArray<SFilteredRating>>.For(UIManager.GetUI(player));
+            var myRatings = Netwrite<ImmutableArray<Envimania.SFilteredRating>>.For(UIManager.GetUI(player));
             myRatings.Set(new());
         }
     }
@@ -561,9 +520,9 @@ public class Envimix : UniverseModeBase
         CheckUserInfoRequests();
     }
 
-    public static SUserInfo CreateUserInfo(CUser user)
+    public static Envimania.SUserInfo CreateUserInfo(CUser user)
     {
-        SUserInfo userInfo = new()
+        Envimania.SUserInfo userInfo = new()
         {
             Login = user.Login,
             Nickname = user.Name,
@@ -588,7 +547,7 @@ public class Envimix : UniverseModeBase
         return $"{player.User.Login}_{car.Get()}_{gravity.Get()}";
     }
 
-    public static string ConstructRatingFilterKey(SRatingFilter filter)
+    public static string ConstructRatingFilterKey(Envimania.SRatingFilter filter)
     {
         return $"{filter.Car}_{filter.Gravity}_{filter.Type}";
     }
@@ -632,7 +591,7 @@ public class Envimix : UniverseModeBase
 
     void DirectlyRequestEnvimaniaSession()
     {
-        ImmutableArray<SUserInfo> userInfos = new();
+        ImmutableArray<Envimania.SUserInfo> userInfos = new();
 
         foreach (var player in AllPlayers)
         {
@@ -709,7 +668,7 @@ public class Envimix : UniverseModeBase
 
     private void InitiateRatingsForAllPlayers(SEnvimaniaSessionResponse sessionResponse)
     {
-        Dictionary<string, SRating> ratings = new();
+        Dictionary<string, Envimania.SRating> ratings = new();
 
         foreach (var filteredRating in sessionResponse.Ratings)
         {
@@ -725,7 +684,7 @@ public class Envimix : UniverseModeBase
                 continue;
             }
 
-            var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(player));
+            var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(player));
             myRatings.Set(sessionResponse.UserRatings[player.User.Login]);
 
             Log(nameof(Envimix), $"Informed user {player.User.Login} about their ratings.");
@@ -1258,7 +1217,7 @@ public class Envimix : UniverseModeBase
 
                     if (recResponse.Records.Length == 0)
                     {
-                        SEnvimaniaRecord validationRec = new()
+                        Envimania.SEnvimaniaRecord validationRec = new()
                         {
                             User = CreateUserInfo(e.Player.User),
                             Distance = tempRace.Get().Distance,
@@ -1271,7 +1230,7 @@ public class Envimix : UniverseModeBase
                             Verified = false
                         };
 
-                        var validations = Netwrite<Dictionary<string, SEnvimaniaRecord>>.For(Teams[0]);
+                        var validations = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecord>>.For(Teams[0]);
                         validations.Get()[ConstructValidationFilterKey(filter)] = validationRec;
                     }
                 }
@@ -1322,7 +1281,7 @@ public class Envimix : UniverseModeBase
                         break;
                     }
 
-                    SEnvimaniaRecord rec = new()
+                    Envimania.SEnvimaniaRecord rec = new()
                     {
                         User = recordRequest.User,
                         Time = recordRequest.Record.Time,
@@ -1338,7 +1297,7 @@ public class Envimix : UniverseModeBase
                     }
                     else
                     {
-                        ImmutableArray<SEnvimaniaRecord> recs = new();
+                        ImmutableArray<Envimania.SEnvimaniaRecord> recs = new();
 
                         for (int i = 0; i < recResponse.Records.Length; i++)
                         {
@@ -2202,7 +2161,7 @@ public class Envimix : UniverseModeBase
                             continue;
                         }
 
-                        var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(GetPlayer(user.Login)));
+                        var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(GetPlayer(user.Login)));
 
                         foreach (var filteredRating in user.Ratings)
                         {
@@ -2251,7 +2210,7 @@ public class Envimix : UniverseModeBase
         // Validate
         var val = MathLib.Clamp(value, 0, 1);
 
-        SRating rating = new();
+        Envimania.SRating rating = new();
 
         if (UserRatings.ContainsKey(key))
         {
@@ -2289,7 +2248,7 @@ public class Envimix : UniverseModeBase
         var car = Netwrite<string>.For(player);
         var gravity = Netwrite<int>.For(player);
 
-        var myRatings = Netwrite<IList<SFilteredRating>>.For(UIManager.GetUI(player));
+        var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(player));
 
         var hasMyRating = false;
 
@@ -2308,14 +2267,14 @@ public class Envimix : UniverseModeBase
 
         if (!hasMyRating)
         {
-            SRatingFilter filter = new()
+            Envimania.SRatingFilter filter = new()
             {
                 Car = car.Get(),
                 Gravity = gravity.Get(),
                 Type = "Time" // TODO: Add support for other types
             };
 
-            SFilteredRating filteredRating = new()
+            Envimania.SFilteredRating filteredRating = new()
             {
                 Filter = filter,
                 Rating = rating

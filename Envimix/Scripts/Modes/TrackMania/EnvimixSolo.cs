@@ -1,8 +1,10 @@
 ﻿using Envimix.Scripts.Libs.BigBang1112;
+using Envimix.Scripts.Libs.Envimix;
 using System.Collections.Immutable;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
+[Include(typeof(Envimania))]
 public class EnvimixSolo : Envimix
 {
     public struct SGhostMetadata
@@ -11,6 +13,22 @@ public class EnvimixSolo : Envimix
         public int Index;
         public string Nickname;
         public int Time;
+    }
+
+    public struct STitleDto
+    {
+        public string Id;
+        public string DisplayName;
+    }
+
+    public struct SMapInfoResponse
+    {
+        public string Name;
+        public string Uid;
+        public STitleDto TitlePack;
+        public ImmutableArray<Envimania.SFilteredRating> Ratings;
+        public IList<Envimania.SFilteredRating> UserRatings;
+        public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
     }
 
     [Setting] public new bool EnableStadiumEnvimix = true;
@@ -31,7 +49,6 @@ public class EnvimixSolo : Envimix
     public Dictionary<CGhost, Ident> SpawnedGhosts;
     public Dictionary<CGhost, Ident> SpawnedPersonalGhosts;
 
-    [Netwrite] public int FinishedAt { get; set; }
     [Netwrite] public bool Outro { get; set; }
     public CGhost? OutroGhost;
     public int OutroGhostMaxFinishLength;
@@ -42,6 +59,7 @@ public class EnvimixSolo : Envimix
     [Netwrite] public bool GhostToUpload { get; set; }
     public string? GhostFinishTimestamp;
     public CTaskResult? NewRecordTask;
+    public CHttpRequest? MapInfoRequest;
 
     public IList<CTaskResult_Ghost> PersonalGhostTasks;
     public Dictionary<Ident, string> PersonalGhostFilterKeys;
@@ -53,6 +71,8 @@ public class EnvimixSolo : Envimix
     [Netwrite] public bool CanListenToUIEvents { get; set; }
     [Local(LocalFor.Users0)] public string EnvimixTurboUserToken { get; set; } = "";
 
+    [Netwrite] public bool RatingOpen { get; set; }
+
     public override void OnServerInit()
     {
         ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixSingleplayerClient.Script.txt";
@@ -60,10 +80,11 @@ public class EnvimixSolo : Envimix
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.SmallScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.ScoreTableOnlyManialink = true;
+        UIManager.UIAll.OverlayHideSpectatorControllers = true;
 
-        FinishedAt = -1;
         Outro = false;
         OutroGhostMaxFinishLength = 1500;
+        RatingOpen = false;
     }
 
     public override void OnMapLoad()
@@ -76,21 +97,9 @@ public class EnvimixSolo : Envimix
 
         PrespawnEnvimixPlayers();
 
-        foreach (var car in DisplayedCars)
-        {
-            // alternatively, fetch personal best from envimix webapi
+        RequestMapInfo();
 
-            var key = ConstructFilterKey(car);
-            var task = ScoreMgr.Map_GetRecordGhost(null, Map.MapInfo.MapUid, "Test" + car);
-
-            if (task is null)
-            {
-                continue;
-            }
-
-            PersonalGhostFilterKeys[task.Id] = key;
-            PersonalGhostTasks.Add(task);
-        }
+        RequestPersonalGhosts();
     }
 
     public override void OnUIEvent(CUIConfigEvent e)
@@ -164,6 +173,7 @@ public class EnvimixSolo : Envimix
                 DataFileMgr.TaskResult_Release(GhostUploadTask.Id);
                 GhostUploadTask = null;
                 GhostToUpload = false;
+                RequestMapInfo();
             }
             else
             {
@@ -189,6 +199,36 @@ public class EnvimixSolo : Envimix
             NewRecordTask = null;
         }
 
+        if (MapInfoRequest is not null && MapInfoRequest.IsCompleted)
+        {
+            if (MapInfoRequest.StatusCode == 200)
+            {
+                SMapInfoResponse mapInfoResponse = new();
+
+                if (mapInfoResponse.FromJson(MapInfoRequest.Result))
+                {
+                    var validations = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecord>>.For(Teams[0]);
+
+                    foreach (var (key, validationRec) in mapInfoResponse.Validations)
+                    {
+                        validations.Get()[key] = validationRec;
+                    }
+                    Log(nameof(EnvimixSolo), $"Map info for '{mapInfoResponse.Name}' ({mapInfoResponse.Uid}) received from webapi.");
+                }
+                else
+                {
+                    Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (JSON issue).");
+                    Log(nameof(EnvimixSolo), MapInfoRequest.Result);
+                }
+            }
+            else
+            {
+                Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (status code: {MapInfoRequest.StatusCode})");
+            }
+            Http.Destroy(MapInfoRequest);
+            MapInfoRequest = null;
+        }
+
         CheckForPersonalGhosts();
         CheckForLocalGhosts();
     }
@@ -196,6 +236,25 @@ public class EnvimixSolo : Envimix
     private CTmPlayer GetPlayer()
     {
         return Players[0];
+    }
+
+    private void RequestPersonalGhosts()
+    {
+        foreach (var car in DisplayedCars)
+        {
+            // alternatively, fetch personal best from envimix webapi
+
+            var key = ConstructFilterKey(car);
+            var task = ScoreMgr.Map_GetRecordGhost(null, Map.MapInfo.MapUid, "Test" + car);
+
+            if (task is null)
+            {
+                continue;
+            }
+
+            PersonalGhostFilterKeys[task.Id] = key;
+            PersonalGhostTasks.Add(task);
+        }
     }
 
     private void SpawnPersonalGhost(CTmPlayer player)
@@ -212,6 +271,12 @@ public class EnvimixSolo : Envimix
             var pbGhost = PersonalBestGhosts[key];
             SpawnedPersonalGhosts[pbGhost] = RaceGhost_Add(pbGhost, DisplayAsPlayerBest: true);
         }
+    }
+
+    private void RequestMapInfo()
+    {
+        var envimixTurboUserToken = Local<string>.For(GetPlayer().User);
+        MapInfoRequest = Http.CreateGet($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", false, $"Authorization: Bearer {envimixTurboUserToken.Get()}");
     }
 
     private bool TrySpawnEnvimixSoloPlayer(CTmPlayer player, bool frozen)
@@ -315,6 +380,12 @@ public class EnvimixSolo : Envimix
                     Log(nameof(EnvimixSolo), $"Ghost '{replayFileNameRemove}' (#{ghostIndexRemove}) is missing but shouldn't be.");
                 }
 
+                break;
+            case "OpenRating":
+                RatingOpen = true;
+                break;
+            case "CloseRating":
+                RatingOpen = false;
                 break;
         }
     }
