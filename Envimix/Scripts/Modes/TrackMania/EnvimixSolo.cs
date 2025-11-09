@@ -250,6 +250,8 @@ public class EnvimixSolo : Envimix
                     // this is overflow simulator but the game is paused during ratings often so Now doesnt update to this properly so this just works okay?? be cool with it
                     RatingsUpdatedAt = TextLib.ToInteger(TimeLib.GetCurrent());
 
+                    ValidationsUpdatedAt = Now;
+
                     Log(nameof(EnvimixSolo), $"Map info for '{mapInfoResponse.Name}' ({mapInfoResponse.Uid}) received from webapi.");
                 }
                 else
