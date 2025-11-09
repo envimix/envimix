@@ -2,6 +2,41 @@
 
 public class Endscreen : CTmMlScriptIngame, IContext
 {
+    public struct SGame
+    {
+        public string name;
+    }
+
+    public struct SChannel
+    {
+        public string Id;
+        public string Name;
+        public int Position;
+    }
+
+    public struct SMember
+    {
+        //public string id;
+        public string Username;
+        public string Discriminator;
+        public string Avatar;
+        public string Status;
+        public string AvatarUrl;
+        public SGame Game;
+    }
+
+    public struct SWidget
+    {
+        public string Id;
+        public string Name;
+        public IList<SChannel> Channels;
+        public IList<SMember> Members;
+        public int PresenceCount;
+
+        public string Message;
+        public int Code;
+    }
+
     [ManialinkControl] public required CMlFrame FrameEndscreenInfo;
     [ManialinkControl] public required CMlQuad QuadBlur;
     [ManialinkControl] public required CMlQuad QuadContinue;
@@ -16,8 +51,21 @@ public class Endscreen : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadEnvironment;
     [ManialinkControl] public required CMlLabel LabelTime;
 
+    [ManialinkControl] public required CMlLabel LabelDiscordName;
+    [ManialinkControl] public required CMlFrame FrameDiscord;
+    [ManialinkControl] public required CMlLabel LabelDiscordMemberCount;
+    [ManialinkControl] public required CMlFrame FrameDiscordUser1;
+    [ManialinkControl] public required CMlFrame FrameDiscordUser2;
+    [ManialinkControl] public required CMlQuad QuadButtonDiscord;
+
     public int FinishedAt;
     public string PreviousCar = "";
+    public CHttpRequest? WidgetRequest;
+    public SWidget Widget;
+    public int WidgetAt = -1;
+    public bool WidgetHover;
+    public int WidgetCurrentMember;
+    public IList<CMlFrame> FrameDiscordUsers;
 
     [Netread] public bool GhostToUpload { get; set; }
 
@@ -55,6 +103,21 @@ public class Endscreen : CTmMlScriptIngame, IContext
         QuadContinue.MouseClick += () =>
         {
             Continue();
+        };
+
+        QuadButtonDiscord.MouseOver += () =>
+        {
+            WidgetHover = true;
+        };
+
+        QuadButtonDiscord.MouseOut += () =>
+        {
+            WidgetHover = false;
+        };
+
+        QuadButtonDiscord.MouseClick += () =>
+        {
+            OpenLink("https://discord.gg/Rh23k9jcch", CMlScript.LinkType.ExternalBrowser);
         };
     }
 
@@ -95,6 +158,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
         LabelEnvironment.Value = Map.CollectionName;
         QuadEnvironment.ChangeImageUrl($"file://Media/Images/Environments/{Map.CollectionName}.png");
 
+        FrameDiscordUsers = new[] { FrameDiscordUser1, FrameDiscordUser2 };
+
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
 
         Wait(() => GetPlayer() is not null);
@@ -128,6 +193,26 @@ public class Endscreen : CTmMlScriptIngame, IContext
                 control.RelativeRotation += Period * 0.2f;
             }
         }
+
+        if (WidgetRequest is not null && WidgetRequest.IsCompleted)
+        {
+            if (WidgetRequest.StatusCode == 200)
+            {
+                var cleanerResult = ToCleanerJson(WidgetRequest.Result);
+                if (Widget.FromJson(cleanerResult))
+                {
+                }
+                else
+                {
+                    // it's fairly common for the json to not parse entirely lol
+                }
+                WidgetAt = Now;
+            }
+            Http.Destroy(WidgetRequest);
+            WidgetRequest = null;
+        }
+
+        AnimateWidget();
     }
 
     void ShowEndscreen()
@@ -141,6 +226,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
         AnimMgr.Add(FrameLeaderboard, "<frame pos=\"0 0\" />", Now + 200, 400, CAnimManager.EAnimManagerEasing.QuadOut);
         FrameContinue.RelativeScale = 1;
         AnimMgr.Add(FrameContinue, "<frame pos=\"0 0\" />", Now + 600, 500, CAnimManager.EAnimManagerEasing.QuadOut);
+
+        WidgetRequest = Http.CreateGet($"https://discord.com/api/guilds/1324043936204980234/widget.json");
     }
 
     void HideEndscreen()
@@ -217,5 +304,152 @@ public class Endscreen : CTmMlScriptIngame, IContext
                 l2.RelativePosition_V3.X = l1.RelativePosition_V3.X - l1.Size.X - distance;
             }
         }
+    }
+
+    private void AnimateWidget()
+    {
+        if (Widget.Code == 50004)
+        {
+            LabelDiscordName.SetText("$f00WIDGET NOT ENABLED");
+            return;
+        }
+
+        if (Widget.Id == "")
+        {
+            return;
+        }
+
+        LabelDiscordName.SetText(Widget.Name);
+
+        if (WidgetAt == -1)
+        {
+            return;
+        }
+
+        var time = Now - WidgetAt;
+
+        if (WidgetHover && Widget.Members.Count != 0)
+        {
+            LabelDiscordName.Hide();
+            LabelDiscordMemberCount.Hide();
+
+            foreach (var frame in FrameDiscordUsers)
+            {
+                frame.Show();
+            }
+
+            if (Widget.Members.Count > 1)
+            {
+                var offset = 0;
+                if (time > 3000)
+                {
+                    offset = 1;
+                }
+
+                for (var i = 0; i < FrameDiscordUsers.Count; i++)
+                {
+                    var frame = FrameDiscordUsers[i];
+
+                    var pos = i;
+                    if (pos == 0) pos = i + offset * 2;
+                    if (WidgetCurrentMember + pos > Widget.Members.Count - 1) pos = -WidgetCurrentMember;
+
+                    var quadAvatar = (frame.GetFirstChild("QUAD_AVATAR") as CMlQuad)!;
+                    var labelUsername = (frame.GetFirstChild("LABEL_USERNAME") as CMlLabel)!;
+
+                    var member = Widget.Members[WidgetCurrentMember + pos];
+
+                    //quadAvatar.ChangeImageUrl(member.AvatarUrl);
+                    //quadAvatar.RefreshImages();
+
+                    var username = member.Username;
+                    if (username == "") username = "$BBB[unknown]";
+
+                    var StatusColor = "$888";
+                    if (member.Status == "idle") StatusColor = "$ff0";
+                    else if (member.Status == "online") StatusColor = "$0f0";
+                    else if (member.Status == "dnd") StatusColor = "$f00";
+
+                    labelUsername.SetText($"{username} {StatusColor}•");
+                }
+
+                FrameDiscordUsers[0].RelativePosition_V3.Y = AnimLib.EaseInOutQuad(time - 2000, 0, 10, 1000) + AnimLib.EaseInOutQuad(time - 2000 - 2000 - 1000, 0, 10, 1000) + offset * -20;
+                FrameDiscordUsers[1].RelativePosition_V3.Y = AnimLib.EaseInOutQuad(time - 2000, -10, 10, 1000) + AnimLib.EaseInOutQuad(time - 2000 - 2000 - 1000, 0, 10, 1000);
+
+                if (time > 6000)
+                {
+                    WidgetAt = Now;
+
+                    WidgetCurrentMember += 2;
+                    if (WidgetCurrentMember >= Widget.Members.Count) WidgetCurrentMember = 0;
+                }
+            }
+            else
+            {
+                // only one member online
+            }
+        }
+        else
+        {
+            foreach (var frame in FrameDiscordUsers) frame.Hide();
+
+            LabelDiscordName.Show();
+            LabelDiscordMemberCount.Show();
+
+            LabelDiscordName.Opacity = AnimLib.EaseOutQuad(time, 0, 1, 300) + AnimLib.EaseOutQuad(time - 2000, 0, -1, 300);
+            LabelDiscordMemberCount.Opacity = AnimLib.EaseOutQuad(time - 2000 - 300, 0, 1, 300) + AnimLib.EaseOutQuad(time - 2000 - 2000 - 300, 0, -1, 300);
+
+            if (Widget.Members.Count > 1) LabelDiscordMemberCount.SetText($"$0f0• $fff{Widget.Members.Count} members online");
+            else if (Widget.Members.Count == 1) LabelDiscordMemberCount.SetText($"$0f0• $fff{Widget.Members.Count} member online");
+            else LabelDiscordMemberCount.SetText("$888• $fff0 members online");
+
+            if (time > 4600) WidgetAt = Now;
+        }
+    }
+
+    private string RegexReplace(string _Pattern, string _Text, string _Flags, string _Replacement)
+    {
+        var Final = _Text;
+
+        var MatchFlags = TextLib.Replace(_Flags, "g", "");
+
+        IList<string> Finds = TextLib.RegexFind(_Pattern, _Text, _Flags);
+        for (var i = 0; i < Finds.Count; i++)
+        {
+            IList<string> Matches = TextLib.RegexMatch(_Pattern, Finds[i], MatchFlags);
+            var Replacement = _Replacement;
+            for (var j = 0; j < Matches.Count; j++)
+                Replacement = TextLib.Replace(Replacement, $"\\{j}", Matches[j]);
+            Final = TextLib.Replace(Final, Finds[i], Replacement);
+        }
+
+        return Final;
+    }
+
+    private string ToCleanerJson(string _Json)
+    {
+        var Final = _Json;
+        var AllKeys = TextLib.RegexFind("\"(.*?)\":(.*?)(,|})", _Json, "g");
+        foreach (var Key in AllKeys)
+        {
+            var PatternPrecise = "\"([a-z])(.*?)\":(.*?)(,|})";
+
+            var MatchFirstLetter = TextLib.RegexMatch(PatternPrecise, Key, "");
+            var FirstLetter = TextLib.ToUpperCase(MatchFirstLetter[1]);
+
+            var FixedRest = MatchFirstLetter[2];
+            var FindInnerFirstLetters = TextLib.RegexFind("_([a-z])(.*?)", FixedRest, "g");
+            foreach (var InnerFirstLetter in FindInnerFirstLetters)
+            {
+                var MatchInnerFirstLetters = TextLib.RegexMatch("_([a-z])(.*?)", InnerFirstLetter, "");
+                var FirstInnerLetter = TextLib.ToUpperCase(MatchInnerFirstLetters[1]);
+                FixedRest = TextLib.Replace(FixedRest, InnerFirstLetter, RegexReplace("_([a-z])(.*?)", InnerFirstLetter, "g", $"{FirstInnerLetter}\\2"));
+            }
+
+            var Fixed = RegexReplace(PatternPrecise, Key, "g", $"\"{FirstLetter}{FixedRest}\":\\3\\4");
+            Final = TextLib.Replace(Final, Key, Fixed);
+        }
+
+        return Final;
     }
 }
