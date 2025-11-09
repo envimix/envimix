@@ -119,6 +119,14 @@ public class Endscreen : CTmMlScriptIngame, IContext
         {
             OpenLink("https://discord.gg/Rh23k9jcch", CMlScript.LinkType.ExternalBrowser);
         };
+
+        Input.PadButtonPress += (pad, button, isAutoRepeat, keyCode, keyName) =>
+        {
+            if (button == CInputManager.EButton.A)
+            {
+                Continue();
+            }
+        };
     }
 
     CTmMlPlayer GetPlayer()
