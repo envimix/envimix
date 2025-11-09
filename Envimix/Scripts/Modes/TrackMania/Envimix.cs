@@ -164,6 +164,8 @@ public class Envimix : UniverseModeBase
 
     [Netwrite] public int FinishedAt { get; set; }
 
+    [Netwrite] public required Dictionary<string, Envimania.SStar> Stars { get; set; }
+
     public required Dictionary<string, Envimania.SRating> UserRatings;
     public required Dictionary<string, Envimania.SRatingServerRequest> UserRatingsToRequest;
     public CHttpRequest? UserRatingRequest;
@@ -457,6 +459,7 @@ public class Envimix : UniverseModeBase
         envimaniaRecords.Get().Clear();
         EnvimaniaFinishedRecordsRequests.Clear();
         Ratings.Clear();
+        Stars.Clear();
         RatingEnabled = false;
         RatingsUpdatedAt = Now;
         Validations.Clear();
@@ -1642,10 +1645,10 @@ public class Envimix : UniverseModeBase
 
         var spawned = SpawnEnvimixPlayer(player, car.Get(), raceStartTime);
 
-        if (spawned)
+        /*if (spawned)
         {
             Log(nameof(Envimix), $"{player.User.Name} spawned");
-        }
+        }*/
 
         if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
         {

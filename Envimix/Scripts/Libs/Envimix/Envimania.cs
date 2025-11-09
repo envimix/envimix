@@ -61,4 +61,10 @@ public static class Envimania
         public int Gravity;
         public SRating Rating;
     }
+
+    public struct SStar
+    {
+        public string Login;
+        public string Nickname;
+    }
 }

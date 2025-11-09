@@ -23,6 +23,12 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         public SRating Rating;
     }
 
+    public struct SStar
+    {
+        public string Login;
+        public string Nickname;
+    }
+
     [ManialinkControl] public required CMlFrame FrameRatingSolo;
     [ManialinkControl] public required CMlFrame FrameRatingSoloWrap;
     [ManialinkControl] public required CMlQuad QuadBlur;
@@ -39,9 +45,9 @@ public class RatingSolo : CTmMlScriptIngame, IContext
 
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netread] public required Dictionary<string, SStar> Stars { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
     [Netread(NetFor.UI)] public required IList<SFilteredRating> MyRatings { get; set; }
-    [Netread] public required Dictionary<string, bool> Stars { get; set; }
 
     public bool MenuOpen;
     public bool PreviousIsVisible;
@@ -78,12 +84,36 @@ public class RatingSolo : CTmMlScriptIngame, IContext
 
         QuadStar.MouseOver += () =>
         {
-            QuadStar.Opacity = 0.7f;
+            var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+
+            if (envimixTurboUserIsAdmin.Get())
+            {
+                if (HasStar())
+                {
+                    QuadStar.Opacity = 1;
+                }
+                else
+                {
+                    QuadStar.Opacity = 0.7f;
+                }
+            }
         };
 
         QuadStar.MouseOut += () =>
         {
-            QuadStar.Opacity = 0.1f;
+            var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+
+            if (envimixTurboUserIsAdmin.Get())
+            {
+                if (HasStar())
+                {
+                    QuadStar.Opacity = 0.9f;
+                }
+                else
+                {
+                    QuadStar.Opacity = 0.1f;
+                }
+            }
         };
 
         MouseClick += RatingSolo_MouseClick;
@@ -118,6 +148,29 @@ public class RatingSolo : CTmMlScriptIngame, IContext
     {
         var car = Netread<string>.For(GetPlayer());
         return car.Get();
+    }
+
+    static string ConstructFilterKey(string car, int gravity)
+    {
+        return $"{car}_{gravity}_Time";
+    }
+
+    static string ConstructRatingFilterKey(SRatingFilter filter)
+    {
+        return ConstructFilterKey(filter.Car, filter.Gravity);
+    }
+
+    string ConstructRatingFilterKey()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return ConstructFilterKey(car.Get(), gravity.Get());
+    }
+
+    bool HasStar()
+    {
+        return Stars.ContainsKey(ConstructRatingFilterKey());
     }
 
     public void Main()
@@ -303,24 +356,6 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         }
     }
 
-    static string ConstructFilterKey(string car, int gravity)
-    {
-        return $"{car}_{gravity}_Time";
-    }
-
-    static string ConstructRatingFilterKey(SRatingFilter filter)
-    {
-        return ConstructFilterKey(filter.Car, filter.Gravity);
-    }
-
-    string ConstructRatingFilterKey()
-    {
-        var car = Netread<string>.For(GetPlayer());
-        var gravity = Netread<int>.For(GetPlayer());
-
-        return ConstructFilterKey(car.Get(), gravity.Get());
-    }
-
     private void UpdateRatings()
     {
         var filterKey = ConstructRatingFilterKey();
@@ -350,6 +385,31 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         else
         {
             AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Quality * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+
+        var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+
+        if (Stars.ContainsKey(filterKey))
+        {
+            var star = Stars[filterKey];
+            QuadStar.Visible = true;
+
+            if (envimixTurboUserIsAdmin.Get())
+            {
+                QuadStar.Opacity = 0.9f;
+            }
+        }
+        else
+        {
+            if (envimixTurboUserIsAdmin.Get())
+            {
+                QuadStar.Visible = true;
+                QuadStar.Opacity = 0.1f;
+            }
+            else
+            {
+                QuadStar.Visible = false;
+            }
         }
     }
 

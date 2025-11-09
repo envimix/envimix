@@ -30,6 +30,7 @@ public class EnvimixSolo : Envimix
         public ImmutableArray<Envimania.SFilteredRating> Ratings;
         public IList<Envimania.SFilteredRating> UserRatings;
         public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
+        public Dictionary<string, Envimania.SStar> Stars;
     }
 
     public struct SRatingClientRequest
@@ -76,6 +77,7 @@ public class EnvimixSolo : Envimix
     public CTaskResult? NewRecordTask;
     public CHttpRequest? MapInfoRequest;
     public string PersonalRatingUpdatedAt;
+    public CTaskResult? SaveReplayTask;
 
     public IList<CTaskResult_Ghost> PersonalGhostTasks;
     public Dictionary<Ident, string> PersonalGhostFilterKeys;
@@ -88,6 +90,7 @@ public class EnvimixSolo : Envimix
     [Local(LocalFor.Users0)] public string EnvimixTurboUserToken { get; set; } = "";
 
     [Netwrite] public bool RatingOpen { get; set; }
+    [Netwrite] public bool ReplaySaved { get; set; }
 
     public override void OnServerInit()
     {
@@ -241,6 +244,7 @@ public class EnvimixSolo : Envimix
                     }
 
                     Ratings = ratings;
+                    Stars = mapInfoResponse.Stars!;
 
                     var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(GetPlayer()));
                     myRatings.Set(mapInfoResponse.UserRatings!);
@@ -266,6 +270,22 @@ public class EnvimixSolo : Envimix
             }
             Http.Destroy(MapInfoRequest);
             MapInfoRequest = null;
+        }
+
+        if (SaveReplayTask is not null && !SaveReplayTask.IsProcessing)
+        {
+            if (SaveReplayTask.HasSucceeded)
+            {
+                ReplaySaved = true;
+                Log(nameof(EnvimixSolo), "Outro replay saved successfully.");
+            }
+            else
+            {
+                Log(nameof(EnvimixSolo), $"Failed to save outro replay - {SaveReplayTask.ErrorType} {SaveReplayTask.ErrorCode} {SaveReplayTask.ErrorDescription}.");
+            }
+            
+            DataFileMgr.TaskResult_Release(SaveReplayTask.Id);
+            SaveReplayTask = null;
         }
 
         CheckForPersonalGhosts();
@@ -321,36 +341,46 @@ public class EnvimixSolo : Envimix
 
     private bool TrySpawnEnvimixSoloPlayer(CTmPlayer player, bool frozen)
     {
-        SpawnPersonalGhost(player);
+        bool spawned;
 
         if (frozen)
         {
-            return TrySpawnEnvimixPlayer(player, frozen);
+            spawned = TrySpawnEnvimixPlayer(player, frozen);
         }
-
-        if (CustomCountdown < 0)
+        else if (CustomCountdown < 0)
         {
-            return TrySpawnEnvimixPlayer(player, -1);
+            spawned = TrySpawnEnvimixPlayer(player, -1);
+        }
+        else
+        {
+            spawned = TrySpawnEnvimixPlayer(player, Now + CustomCountdown);
         }
 
-        return TrySpawnEnvimixPlayer(player, Now + CustomCountdown);
+        SpawnPersonalGhost(player);
+
+        return spawned;
     }
 
     public bool SpawnEnvimixSoloPlayer(CTmPlayer player, string car, bool frozen)
     {
-        SpawnPersonalGhost(player);
+        bool spawned;
 
         if (frozen)
         {
-            return SpawnEnvimixPlayer(player, car, frozen);
+            spawned = SpawnEnvimixPlayer(player, car, frozen);
         }
-
-        if (CustomCountdown < 0)
+        else if (CustomCountdown < 0)
         {
-            return SpawnEnvimixPlayer(player, car, -1);
+            spawned = SpawnEnvimixPlayer(player, car, -1);
+        }
+        else
+        {
+            spawned = SpawnEnvimixPlayer(player, car, Now + CustomCountdown);
         }
 
-        return SpawnEnvimixPlayer(player, car, Now + CustomCountdown);
+        SpawnPersonalGhost(player);
+
+        return spawned;
     }
 
     private void ProcessUpdateCarEvent(CUIConfigEvent e)
@@ -427,6 +457,19 @@ public class EnvimixSolo : Envimix
             case "CloseRating":
                 RatingOpen = false;
                 break;
+            case "SaveOutroReplay":
+                if (OutroGhost is null)
+                {
+                    Log(nameof(EnvimixSolo), "Cannot save outro replay - no outro ghost.");
+                }
+                else
+                {
+                    var car = Netwrite<string>.For(GetPlayer());
+                    var fileNameSupportedTime = TextLib.Replace(TextLib.Replace(TimeToTextWithMilli(OutroGhost.Result.Time), ":", "'"), ".", "''");
+                    var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{car.Get()}_({fileNameSupportedTime})";
+                    SaveReplayTask = DataFileMgr.Replay_Save($"Replays/{replayPath}.Replay.Gbx", Map, OutroGhost);
+                }
+                break;
         }
     }
 
@@ -501,6 +544,7 @@ public class EnvimixSolo : Envimix
         }
 
         Outro = false;
+        ReplaySaved = false;
         RemoveAllGhosts();
 
         ui.UISequence = CUIConfig.EUISequence.Playing;

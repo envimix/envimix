@@ -20,7 +20,7 @@
             <quad id="QuadRatingBg" halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center" />
             <quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png" pos="-92 0" />
             <label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4" />
-            <quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" opacity="0.1" scriptevents="1" />
+            <quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" opacity="0.9" scriptevents="1" />
             <frameinstance pos="2.5 0" id="FrameDifficulty" modelid="FramemodelRating" />
             <frameinstance pos="67.5 0" id="FrameQuality" modelid="FramemodelRating" />
         </frame>

@@ -8,6 +8,12 @@ public class Rating : CTmMlScriptIngame, IContext
         public float Quality;
     }
 
+    public struct SStar
+    {
+        public string Login;
+        public string Nickname;
+    }
+
     public bool PreviousVisible;
     public int VisibleTime = -1;
     public string PreviousCar = "";
@@ -19,8 +25,10 @@ public class Rating : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelDifficulty;
     [ManialinkControl] public required CMlLabel LabelQuality;
     [ManialinkControl] public required CMlQuad QuadRating;
+    [ManialinkControl] public required CMlQuad QuadStar;
 
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netread] public required Dictionary<string, SStar> Stars { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
 
     [Netread] public int FinishedAt { get; set; }
@@ -98,28 +106,38 @@ public class Rating : CTmMlScriptIngame, IContext
 
             if (rating.Difficulty < 0)
             {
-                AnimMgr.Add(GaugeDifficulty, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.AddChain(GaugeDifficulty, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 GaugeDifficulty.Ratio = 0;
             }
             else
             {
-                AnimMgr.Add(GaugeDifficulty, $"<gauge ratio=\"{rating.Difficulty * .84f + .16f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.AddChain(GaugeDifficulty, $"<gauge ratio=\"{rating.Difficulty * .84f + .16f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
             }
 
             if (rating.Quality < 0)
             {
-                AnimMgr.Add(GaugeQuality, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.AddChain(GaugeQuality, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 GaugeQuality.Ratio = 0;
             }
             else
             {
-                AnimMgr.Add(GaugeQuality, $"<gauge ratio=\"{rating.Quality * .84f + .16f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.AddChain(GaugeQuality, $"<gauge ratio=\"{rating.Quality * .84f + .16f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         }
         else
         {
             GaugeDifficulty.Ratio = 0;
             GaugeQuality.Ratio = 0;
+        }
+
+        if (Stars.ContainsKey(filterKey))
+        {
+            var star = Stars[filterKey];
+            QuadStar.Visible = true;
+        }
+        else
+        {
+            QuadStar.Visible = false;
         }
     }
 
@@ -162,6 +180,9 @@ public class Rating : CTmMlScriptIngame, IContext
                 LabelQuality.RelativePosition_V3.X = 40;
                 AnimMgr.Add(LabelDifficulty, "<label pos=\"23.5 2\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
                 AnimMgr.Add(LabelQuality, "<label pos=\"23.5 -1.7\"/>", 350, CAnimManager.EAnimManagerEasing.QuadOut);
+
+                QuadStar.RelativePosition_V3.X = -50;
+                AnimMgr.Add(QuadStar, "<quad pos=\"-25 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
             }
 
             PreviousVisible = FrameRating.Visible;

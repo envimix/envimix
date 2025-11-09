@@ -3,7 +3,7 @@
 namespace Envimix.Media.Manialinks.Universe2;
 
 /// <summary>
-/// This code went through 4 stages of development from 2019-2023, the code is quite confusing, sorry.
+/// This code went through 5 stages of development from 2019-2025, the code is quite confusing, sorry.
 /// </summary>
 public class Menu : CTmMlScriptIngame, IContext
 {
@@ -68,6 +68,12 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         public float Difficulty;
         public float Quality;
+    }
+
+    public struct SStar
+    {
+        public string Login;
+        public string Nickname;
     }
 
     [ManialinkControl] public required CMlFrame FrameInnerVehicles;
@@ -188,6 +194,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public int PrevValidationsUpdatedAt;
     public string MapNameInExplore = "";
     public bool PrevGhostToUpload;
+    public string PrevClientCar;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -211,6 +218,10 @@ public class Menu : CTmMlScriptIngame, IContext
     //[Netread] public int ValidationsUpdatedAt { get; set; }
 
     [Netread] public bool GhostToUpload { get; set; }
+
+    [Netread] public required Dictionary<string, SStar> Stars { get; set; }
+
+    [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
 
     public Menu()
     {
@@ -1395,7 +1406,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
         Log($"Requesting Envimania records... ({filter.Car}, G: {filter.Gravity}, Type: Time, Zone: {GetFullZone()})");
 
-        EnvimaniaRecordsRequests[filterKey] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{Map.MapInfo.MapUid}/{filter.Car}?gravity={filter.Gravity}&laps={filter.Laps}&zone={zone}", UseCache: false);
+        EnvimaniaRecordsRequests[filterKey] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{Map.MapInfo.MapUid}/{filter.Car}?gravity={filter.Gravity}&laps={filter.Laps}&zone={zone}", UseCache: false, $"Authorization: Bearer {EnvimixTurboUserToken}");
         EnvimaniaUnfinishedRecordsRequests[filterKey] = filter;
 
         QuadLoading.Show();
@@ -1579,7 +1590,6 @@ public class Menu : CTmMlScriptIngame, IContext
         }
 
         var car = Netread<string>.For(GetPlayer());
-        ClientCar = DisplayedCars[VehicleIndex];
 
         if (IsMenuOpen != IsMenuNavigationForeground)
         {
@@ -1877,8 +1887,20 @@ public class Menu : CTmMlScriptIngame, IContext
             PreviousSkinScrollOffset = FrameSkinList.Parent.ScrollOffset;
         }
 
+        if (ClientCar != PrevClientCar)
+        {
+            if (DisplayedCars.Contains(ClientCar))
+            {
+                VehicleIndex = DisplayedCars.IndexOf(ClientCar);
+                FrameVehicles.ScrollOffset.Y = VehicleIndex * 20f;
+                PreviousScrollOffset = (float)FrameVehicles.ScrollOffset.Y;
+            }
+            PrevClientCar = ClientCar;
+        }
+
         if (VehicleIndex != PreviousVehicleIndex)
         {
+            ClientCar = DisplayedCars[VehicleIndex];
             Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
             UpdateVehicles();
             UpdateSkins();
@@ -2186,6 +2208,7 @@ public class Menu : CTmMlScriptIngame, IContext
         if (ratingsUpdatedAt.Get() != PrevRatingsUpdatedAt)
         {
             var ratings = Netread<Dictionary<string, SRating>>.For(Teams[0]);
+            var stars = Netread<Dictionary<string, SStar>>.For(Teams[0]);
 
             foreach (var control in FrameInnerVehicles.Controls)
             {
@@ -2223,6 +2246,9 @@ public class Menu : CTmMlScriptIngame, IContext
                 {
                     AnimMgr.Add(gaugeQuality, $"<gauge ratio=\"{rating.Quality * .6f + .4f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
+
+                var quadStar = (frame.GetFirstChild("QuadStar") as CMlQuad)!;
+                quadStar.Visible = stars.Get().ContainsKey(filterKey);
             }
 
             PrevRatingsUpdatedAt = ratingsUpdatedAt.Get();
