@@ -58,7 +58,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public CUILayer LoadingLayer;
     public CUILayer ReleaseLayer;
 
-    public const string EnvimixWebAPI = "http://localhost:5118";
+    public const string EnvimixWebAPI = "https://api.envimix.gbx.tools";
 
     public void Main()
     {        
@@ -190,7 +190,7 @@ public class MainMenu : CManiaAppTitle, IContext
             Http.Destroy(titleReleaseRequest);
         }
 
-        if (titleKey != "GlaLUAllmr1jrWZ7kymbmR2KOG")
+        if (titleKey != "OEQCw9quJuaDak8Mz1KJTNIvXCzX")
         {
             Assert(false, "HELLO HACKER! Invalid title key.");
         }
