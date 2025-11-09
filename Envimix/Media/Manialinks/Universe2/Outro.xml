@@ -1,8 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <label id="LabelMapName" z-index="0" size="90 12" textsize="6" textfont="Oswald" halign="right" pos="156 86.5"/>
+    <label id="LabelMapAuthor" z-index="0" size="90 12" textsize="2" textfont="Oswald" halign="right" pos="155.5 79" textprefix="by "/>
+    <frame pos="-120 -81">
+        <quad id="QuadSaveReplayBg" size="65 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center" />
+        <quad id="QuadSaveReplay" size="65 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" />
+        <label pos="0 -0.5" z-index="1" size="55 10" text="Save replay" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t" />
+    </frame>
+    <frame pos="-55 -81">
+        <quad size="12.5 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center" />
+        <quad id="QuadPrevMap" size="12.5 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" />
+        <label pos="-3 -0.5" z-index="1" size="55 10" text="⏴" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" />
+        <label pos="1 -0.5" z-index="1" size="55 10" text="" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" />
+    </frame>
+    <frame pos="-42 -81">
+        <quad size="12.5 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center" />
+        <quad id="QuadPrevCar" size="12.5 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" />
+        <label pos="-3 -0.5" z-index="1" size="55 10" text="⏴" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" />
+        <label pos="1 -1.25" z-index="1" size="55 10" text="" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4.5" />
+    </frame>
     <frame pos="0 -81">
-        <quad size="65 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center"/>
-        <quad id="QuadContinue" size="65 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" />
+        <quad size="65 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center" />
+        <quad id="QuadContinue" size="65 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" styleselected="1" />
         <label pos="0 -0.5" z-index="1" size="55 10" text="Continue" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t" />
+    </frame>
+    <frame pos="42 -81">
+        <quad size="12.5 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center" />
+        <quad id="QuadNextCar" size="12.5 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" />
+        <label pos="-1 -1.25" z-index="1" size="55 10" text="" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4.5" />
+        <label pos="3.25 -0.5" z-index="1" size="55 10" text="⏵" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" />
+    </frame>
+	<frame pos="55 -81">
+        <quad size="12.5 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center" />
+        <quad id="QuadNextMap" size="12.5 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" />
+        <label pos="-1 -0.5" z-index="1" size="55 10" text="" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" />
+        <label pos="3.25 -0.5" z-index="1" size="55 10" text="⏵" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" />
+    </frame>
+    <frame pos="120 -81">
+        <quad size="65 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="A00" opacity=".9" valign="center" />
+        <quad id="QuadExit" size="65 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="F00" />
+        <label pos="0 -0.5" z-index="1" size="55 10" text="Exit" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t" />
     </frame>
 </manialink>

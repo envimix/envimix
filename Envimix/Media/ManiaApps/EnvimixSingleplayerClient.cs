@@ -221,6 +221,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         {
             PrevOutro = outro.Get();
             LayerOutro.IsVisible = outro.Get();
+            SendCustomEvent("OutroVisible", new[] { outro.Get().ToString() });
         }
     }
 

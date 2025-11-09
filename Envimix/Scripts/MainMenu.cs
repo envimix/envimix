@@ -51,6 +51,8 @@ public class MainMenu : CManiaAppTitle, IContext
 
     [Local(LocalFor.LocalUser)] public string TitleRelease { get; set; } = "";
 
+    [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
+
     public CUILayer MainMenuLayer;
     public CUILayer SoloMenuLayer;
     public CUILayer LoadingLayer;
@@ -260,6 +262,7 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         CheckToken();
+        TryOpenRequestedMap();
     }
 
     private void RequestUserToken()
@@ -435,5 +438,35 @@ public class MainMenu : CManiaAppTitle, IContext
         Wait(() => TitleControl.IsReady);
         Log("Exploring map: " + mapInfo.FileName);
         TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_NewMapName\" type=\"text\" value=\"{mapInfo.Name}\"/></settings>");
+    }
+
+    private void TryOpenRequestedMap()
+    {
+        if (EnvimixOpenMapUid == "")
+        {
+            return;
+        }
+
+        Log("Trying to open requested map UID: " + EnvimixOpenMapUid);
+
+        foreach (var campaign in DataFileMgr.Campaigns)
+        {
+            foreach (var mapGroup in campaign.MapGroups)
+            {
+                for (var i = 0; i < mapGroup.MapInfos.Count; i++)
+                {
+                    var mapInfo = mapGroup.MapInfos[i];
+                    if (mapInfo.MapUid == EnvimixOpenMapUid)
+                    {
+                        EnvimixOpenMapUid = "";
+                        PlayMap(campaign.MapGroups.IndexOf(mapGroup), i);
+                        return;
+                    }
+                }
+            }
+        }
+
+        Log("Requested map UID not found: " + EnvimixOpenMapUid);
+        EnvimixOpenMapUid = "";
     }
 }
