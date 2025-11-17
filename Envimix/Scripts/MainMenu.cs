@@ -39,6 +39,26 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Key;
     }
 
+    public struct SMapInfo
+    {
+        public string Name;
+        public string Uid;
+        public int Order;
+    }
+
+    public struct SSubmitMapsRequest
+    {
+        public string TitleId;
+        public IList<SMapInfo> Maps;
+    }
+
+    public struct SSubmitTitleRequest
+    {
+        public string TitleId;
+        public string Name;
+        public string Version;
+    }
+
     public bool ManiaPlanetAuthenticationRequested;
     public required string ManiaPlanetAuthenticationToken;
     public CHttpRequest? UserTokenRequest;
@@ -58,6 +78,10 @@ public class MainMenu : CManiaAppTitle, IContext
     public CUILayer SoloMenuLayer;
     public CUILayer LoadingLayer;
     public CUILayer ReleaseLayer;
+
+    public CHttpRequest? SubmitMapsRequest;
+    public CHttpRequest? SubmitTitleRequest;
+    public CHttpRequest? TotdRequest;
 
     public const string EnvimixWebAPI = "https://api.envimix.gbx.tools";
 
@@ -205,6 +229,13 @@ public class MainMenu : CManiaAppTitle, IContext
 
         LoadingLayer = UILayerCreate();
         LoadingLayer.Type = CUILayer.EUILayerType.LoadingScreen;
+
+        RequestTotd();
+    }
+
+    private void RequestTotd()
+    {
+        TotdRequest = Http.CreateGet($"{EnvimixWebAPI}/totd/{LoadedTitle.TitleId}");
     }
 
     private static SUserInfo CreateUserInfo(CUser user)
@@ -256,6 +287,15 @@ public class MainMenu : CManiaAppTitle, IContext
                             var exploreMapInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
                             ExploreMap(exploreMapGroupNum, exploreMapInfoNum);
                             break;
+                        case "SubmitCampaignMaps":
+                            SubmitCampaignMaps();
+                            break;
+                        case "SubmitTitle":
+                            SubmitTitle();
+                            break;
+                        case "Totd":
+                            RequestTotd();
+                            break;
                     }
                     break;
             }
@@ -268,6 +308,49 @@ public class MainMenu : CManiaAppTitle, IContext
         if (!ManiaPlanetAuthenticationRequested && Now - ManiaPlanetAuthReceivedAt < 1800000 && UserTokenRequest is null)
         {
             TryOpenRequestedMap();
+        }
+
+        if (SubmitMapsRequest is not null && SubmitMapsRequest.IsCompleted)
+        {
+            if (SubmitMapsRequest.StatusCode == 200)
+            {
+                Log("Campaign maps submitted successfully (200).");
+            }
+            else
+            {
+                Log($"Campaign maps submission failed ({SubmitMapsRequest.StatusCode}).");
+            }
+            Http.Destroy(SubmitMapsRequest);
+            SubmitMapsRequest = null;
+        }
+
+        if (SubmitTitleRequest is not null && SubmitTitleRequest.IsCompleted)
+        {
+            if (SubmitTitleRequest.StatusCode == 200)
+            {
+                Log("Title submitted successfully (200).");
+            }
+            else
+            {
+                Log($"Title submission failed ({SubmitTitleRequest.StatusCode}).");
+            }
+            Http.Destroy(SubmitTitleRequest);
+            SubmitTitleRequest = null;
+        }
+
+        if (TotdRequest is not null && TotdRequest.IsCompleted)
+        {
+            if (TotdRequest.StatusCode == 200)
+            {
+                Log("TOTD received (200).");
+                LayerCustomEvent(MainMenuLayer, "Totd", new[] { TotdRequest.Result });
+            }
+            else
+            {
+                Log($"TOTD request failed ({TotdRequest.StatusCode}).");
+            }
+            Http.Destroy(TotdRequest);
+            TotdRequest = null;
         }
     }
 
@@ -475,5 +558,48 @@ public class MainMenu : CManiaAppTitle, IContext
 
         Log("Requested map UID not found: " + EnvimixOpenMapUid);
         EnvimixOpenMapUid = "";
+    }
+
+    private void SubmitTitle()
+    {
+        SSubmitTitleRequest request = new()
+        {
+            TitleId = LoadedTitle.TitleId,
+            Name = LoadedTitle.Name,
+            Version = LoadedTitle.TitleVersion
+        };
+
+        SubmitTitleRequest = Http.CreatePost($"{EnvimixWebAPI}/titles", request.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+    }
+
+    private void SubmitCampaignMaps()
+    {
+        SSubmitMapsRequest request = new()
+        {
+            TitleId = LoadedTitle.TitleId,
+        };
+
+        if (DataFileMgr.Campaigns.Count == 0)
+        {
+            return;
+        }
+
+        var order = 0;
+        foreach (var group in DataFileMgr.Campaigns[0].MapGroups)
+        {
+            foreach (var map in group.MapInfos)
+            {
+                SMapInfo mapInfo = new()
+                {
+                    Name = map.Name,
+                    Uid = map.MapUid,
+                    Order = order
+                };
+                request.Maps!.Add(mapInfo);
+                order += 1;
+            }
+        }
+
+        SubmitMapsRequest = Http.CreatePost($"{EnvimixWebAPI}/maps", request.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
     }
 }
