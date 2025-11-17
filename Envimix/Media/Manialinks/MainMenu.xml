@@ -17,11 +17,15 @@
             </frame>
             <frame pos="0 -52">
                 <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.9"/>
-                <quad size="65 24.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" />
-                <quad pos="-30 -12.25" z-index="1" size="20 20" bgcolor="FFFA" valign="center"/>
-                <label pos="-7.2 -2.5" z-index="1" size="55 10" text="005" textfont="OswaldMono" translate="1" textsize="6" />
-                <label pos="-7 -11" z-index="1" size="55 10" text="Canyon" textfont="RajdhaniMono" translate="1" textsize="2" />
-                <label pos="-7 -21" z-index="1" size="55 10" text="Track of the Day" valign="center2" textfont="RajdhaniMono" translate="1" textsize="2" textprefix="$t" />
+                <quad pos="0 -12.5" size="15 15" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QuadTotdLoading" z-index="1"/>
+				<frame z-index="1" hidden="1" id="FrameTotd">
+                	<quad id="QuadTotd" size="65 24.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" />
+                	<quad id="QuadTotdThumbnail" pos="-30 -12.25" z-index="1" size="20 20" valign="center"/>
+                	<label id="LabelTotdName" pos="-7.2 -2.5" z-index="1" size="37 6" text="005" textfont="OswaldMono" translate="1" textsize="5" />
+                	<label id="LabelTotdEnv" pos="-7 -9.5" z-index="1" size="20 4" text="Canyon" textfont="RajdhaniMono" translate="1" textsize="2" />
+                	<label id="LabelTotdNextAt" pos="-7 -14.75" z-index="1" size="37 3" text="" textfont="RajdhaniMono" translate="1" textsize="0.5" />
+                	<label pos="-7 -20.5" z-index="1" size="37 10" text="Track of the Day" valign="center2" textfont="RajdhaniMono" translate="1" textsize="2" textprefix="$t" />
+				</frame>
             </frame>
             <frame pos="0 -80">
                 <quad size="65 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
@@ -50,5 +54,7 @@
             <quad pos="35 -2.5" z-index="1" size="28 8" style="TitleLogos" substyle="Author" valign="center" halign="right"/>
             <label id="LabelBuild" pos="-32 -2.75" z-index="1" size="20 5" text="unknown build" valign="center" textsize="1" textfont="Oswald"/>
         </frame>
+        <label id="LabelSubmitTitle" pos="-54 -107" z-index="-1" size="20 5" text="Submit title pack" halign="center" style="CardButtonSmall" scriptevents="1" />
+        <label id="LabelSubmitCampaignMaps" pos="-54 -113" z-index="-1" size="20 5" text="Submit campaign maps" halign="center" style="CardButtonSmall" scriptevents="1" />
     </frame>
 </manialink>

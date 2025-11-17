@@ -2,6 +2,19 @@
 
 public class MainMenu : CManiaAppTitleLayer, IContext
 {
+    public struct SMapInfo
+    {
+        public string Name;
+        public string Uid;
+        public int Order;
+    }
+
+    public struct STotdInfo
+    {
+        public SMapInfo Map;
+        public string NextAt;
+    }
+
     [ManialinkControl] public required CMlQuad QuadSolo;
     [ManialinkControl] public required CMlQuad QuadLocal;
     [ManialinkControl] public required CMlQuad QuadInternet;
@@ -9,6 +22,19 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadQuit;
     [ManialinkControl] public required CMlFrame FrameMainMenu;
     [ManialinkControl] public required CMlLabel LabelBuild;
+    [ManialinkControl] public required CMlLabel LabelSubmitCampaignMaps;
+    [ManialinkControl] public required CMlLabel LabelSubmitTitle;
+    [ManialinkControl] public required CMlQuad QuadTotdThumbnail;
+    [ManialinkControl] public required CMlLabel LabelTotdName;
+    [ManialinkControl] public required CMlLabel LabelTotdEnv;
+    [ManialinkControl] public required CMlLabel LabelTotdNextAt;
+    [ManialinkControl] public required CMlQuad QuadTotdLoading;
+    [ManialinkControl] public required CMlFrame FrameTotd;
+    [ManialinkControl] public required CMlQuad QuadTotd;
+
+    public STotdInfo TotdInfo;
+
+    [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
     public MainMenu()
     {
@@ -37,6 +63,24 @@ public class MainMenu : CManiaAppTitleLayer, IContext
             ParentApp.Menu_Quit();
         };
 
+        LabelSubmitCampaignMaps.MouseClick += () =>
+        {
+            SendCustomEvent("SubmitCampaignMaps", new[] { "" });
+        };
+
+        LabelSubmitTitle.MouseClick += () =>
+        {
+            SendCustomEvent("SubmitTitle", new[] { "" });
+        };
+
+        QuadTotd.MouseClick += () =>
+        {
+            if (TotdInfo.Map.Uid != "")
+            {
+                EnvimixOpenMapUid = TotdInfo.Map.Uid;
+            }
+        };
+
         PluginCustomEvent += (type, data) =>
         {
             switch (type)
@@ -48,6 +92,11 @@ public class MainMenu : CManiaAppTitleLayer, IContext
                 case "AnimateClose":
                     EnableMenuNavigationInputs = false;
                     HideMenuFrame();
+                    break;
+                case "Totd":
+                    if (data.Length < 1)
+                        break;
+                    SetTotd(data[0]);
                     break;
             }
         };
@@ -65,15 +114,103 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
     public void Main()
     {
+        LabelSubmitCampaignMaps.Hide();
+        LabelSubmitTitle.Hide();
+
+        EnableMenuNavigationInputs = true;
+
         FrameMainMenu.RelativePosition_V3.X = 210;
         ShowMenuFrame();
 
         LabelBuild.SetText(TextLib.Split(" ", LoadedTitle.TitleVersion)[0]);
+
+        Page.GetClassChildren("LOADING", Page.MainFrame, true);
     }
 
     public void Loop()
     {
+        var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
 
+        if (envimixTurboUserIsAdmin.Get() && EnableMenuNavigationInputs)
+        {
+            LabelSubmitCampaignMaps.Visible = true;
+            LabelSubmitTitle.Visible = true;
+        }
+        else
+        {
+            LabelSubmitCampaignMaps.Visible = false;
+            LabelSubmitTitle.Visible = false;
+        }
+
+        foreach (var control in Page.GetClassChildren_Result)
+        {
+            if (control.Visible)
+            {
+                control.RelativeRotation += Period * 0.2f;
+            }
+        }
+
+        SetNextAt();
+
+        if (TotdInfo.NextAt != "" && TimeLib.Compare(TotdInfo.NextAt, TimeLib.GetCurrent()) <= 0)
+        {
+            QuadTotdLoading.Show();
+            FrameTotd.Hide();
+            SendCustomEvent("Totd", new[] { "" });
+        }
+    }
+
+    private void SetNextAt()
+    {
+        if (TotdInfo.NextAt == "")
+        {
+            LabelTotdNextAt.Value = "N/A";
+        }
+        else
+        {
+            LabelTotdNextAt.Value = $"ends in {TimeLib.FormatDelta(TimeLib.GetCurrent(), TotdInfo.NextAt, TimeLib.EDurationFormats.Full)}";
+        }
+    }
+
+    private void SetTotd(string json)
+    {
+        TotdInfo.FromJson(json);
+
+        QuadTotdThumbnail.ChangeImageUrl($"file://Thumbnails/MapUid/{TotdInfo.Map.Uid}");
+        LabelTotdName.SetText(TotdInfo.Map.Name);
+
+        var environment = "";
+        foreach (var campaign in DataFileMgr.Campaigns)
+        {
+            foreach (var group in campaign.MapGroups)
+            {
+                foreach (var map in group.MapInfos)
+                {
+                    if (map.MapUid == TotdInfo.Map.Uid)
+                    {
+                        environment = map.CollectionName;
+                        break;
+                    }
+                }
+
+                if (environment != "")
+                {
+                    break;
+                }
+            }
+
+            if (environment != "")
+            {
+                break;
+            }
+        }
+
+        LabelTotdEnv.SetText(environment);
+
+        SetNextAt();
+
+        QuadTotdLoading.Hide();
+        FrameTotd.Show();
     }
 
     private void ShowMenuFrame()
