@@ -52,6 +52,11 @@ public class Outro : CTmMlScriptIngame, IContext
             NextCar();
         };
 
+        QuadNextMap.MouseClick += () =>
+        {
+            NextMap();
+        };
+
         QuadExit.MouseClick += () =>
         {
             Exit();
