@@ -50,7 +50,7 @@
         <frame id="FramePersonalBest" pos="21.5 -52.5" scale="1.5">
             <quad z-index="0" size="29 6" style="Bgs1" substyle="BgCardList" halign="center"/>
             <quad z-index="0" size="29 6" style="Bgs1" substyle="BgCardList" halign="center" />
-            <label pos="0 -2.7" z-index="1" size="30 6" text="-:--.---" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" />
+            <label id="LabelPersonalBest" pos="0 -2.7" z-index="1" size="30 6" text="-:--.---" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" />
         </frame>
         <quad pos="21 -20" z-index="0" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING"/>
     </framemodel>
@@ -66,7 +66,7 @@
             </frame>
             <frame pos="155 7">
                 <quad z-index="0" size="70 6" style="Bgs1" substyle="BgCardList" halign="right"/>
-                <label pos="-35 -2.7" z-index="1" size="70 6" text="Envimix $ff0Turbo$g completion: $o0%" halign="center" valign="center" textfont="Oswald" textprefix="$t" textsize="2"/>
+                <label id="LabelCompletionPercentage" pos="-35 -2.7" z-index="1" size="70 6" text="Envimix $ff0Turbo$g completion: $o0%" halign="center" valign="center" textfont="Oswald" textprefix="$t" textsize="2"/>
             </frame>
             <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>
             <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>

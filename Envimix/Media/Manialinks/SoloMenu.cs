@@ -16,6 +16,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelSelectedMapName;
     [ManialinkControl] public required CMlQuad QuadPlay;
     [ManialinkControl] public required CMlQuad QuadExplore;
+    [ManialinkControl] public required CMlLabel LabelCompletionPercentage;
 
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
@@ -25,6 +26,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public int MapGroupNum = -1;
     public int MapInfoNum = -1;
     public int MapSelectedAt = -1;
+    public int PersonalPerformanceAt = -1;
+
+    public string ScoreContextPrefix = "Test";
+
+    public bool IsTMUF;
 
     public SoloMenu()
     {
@@ -129,6 +135,66 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 control.RelativeRotation += Period * 0.2f;
             }
         }
+
+        // Update personal performance every minute
+        if (PersonalPerformanceAt == -1 || (Now - PersonalPerformanceAt) > 60000)
+        {
+            Log("Updating personal performance...");
+
+            var finishedEnvimixCount = 0;
+            var totalEnvimixCount = 0;
+
+            foreach (var campaign in DataFileMgr.Campaigns)
+            {
+                foreach (var mapGroup in campaign.MapGroups)
+                {
+                    foreach (var mapInfo in mapGroup.MapInfos)
+                    {
+                        // a bit of a hack but clientside on turbo maps it works - if current car context is environment car, skip
+                        if (mapInfo.CollectionName == "Canyon" && campaign.ScoreContext == ScoreContextPrefix + "CanyonCar")
+                        {
+                            continue;
+                        }
+                        if (mapInfo.CollectionName == "Stadium" && campaign.ScoreContext == ScoreContextPrefix + "StadiumCar")
+                        {
+                            continue;
+                        }
+                        if (mapInfo.CollectionName == "Valley" && campaign.ScoreContext == ScoreContextPrefix + "ValleyCar")
+                        {
+                            continue;
+                        }
+                        if (mapInfo.CollectionName == "Lagoon" && campaign.ScoreContext == ScoreContextPrefix + "LagoonCar")
+                        {
+                            continue;
+                        }
+
+                        if (ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, campaign.ScoreContext) != -1)
+                        {
+                            finishedEnvimixCount += 1;
+                        }
+
+                        totalEnvimixCount += 1;
+                    }
+                }
+            }
+
+            // TODO animate the percentage
+            var percentage = finishedEnvimixCount * 1f / totalEnvimixCount * 100;
+            var percentageText = TextLib.FormatReal(percentage, 4, false, true);
+            LabelCompletionPercentage.SetText($"Envimix $ff0Turbo$g completion: $o{percentageText}%");
+
+            // TODO request online performance
+
+            PersonalPerformanceAt = Now;
+        }
+    }
+
+    static string TimeToTextWithMilli(int time)
+    {
+        var formatted = $"{TextLib.TimeToText(time, true)}{MathLib.Abs(time % 10)}";
+        if (TextLib.Length(TextLib.Split(".", formatted)[1]) > 3)
+            return TextLib.SubString(formatted, 0, TextLib.Length(formatted) - 1);
+        return formatted;
     }
 
     private void ShowCampaignOverviewFrame()
@@ -153,6 +219,35 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         AnimMgr.Add(FrameMapOverview, "<frame pos=\"-155 10\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
     }
 
+    private void UpdatePBs(CMapInfo mapInfo, ImmutableArray<string> cars)
+    {
+        var carIndex = 0;
+        foreach (var control in FrameLeaderboards.Controls)
+        {
+            if (control is not CMlFrame frameLeaderboard)
+            {
+                continue;
+            }
+
+            var carName = cars[carIndex];
+
+            var labelPersonalBest = (frameLeaderboard.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
+
+            var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, $"{ScoreContextPrefix}{carName}");
+
+            if (time == -1)
+            {
+                labelPersonalBest.SetText("--:--.---");
+            }
+            else
+            {
+                labelPersonalBest.SetText(TimeToTextWithMilli(time));
+            }
+
+            carIndex += 1;
+        }
+    }
+
     private void SwitchCars(bool isTMUF)
     {
         ImmutableArray<string> cars;
@@ -167,6 +262,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadTMUFCars.StyleSelected = isTMUF;
         QuadTM2Cars.StyleSelected = !isTMUF;
+
+        IsTMUF = isTMUF;
 
         for (int i = 0; i < FrameCars.Controls.Count; i++)
         {
@@ -210,6 +307,27 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
 
             labelCar.Show();
+        }
+
+        if (DataFileMgr.Campaigns.Count == 0)
+        {
+            return;
+        }
+
+        Campaign = DataFileMgr.Campaigns[0];
+
+        if (MapGroupNum != -1 && MapInfoNum != -1)
+        {
+            var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+
+            if (IsTMUF)
+            {
+                UpdatePBs(selectedMapInfo, TMUFCars);
+            }
+            else
+            {
+                UpdatePBs(selectedMapInfo, TM2Cars);
+            }
         }
     }
 
@@ -303,6 +421,15 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
             LabelSelectedMapName.SetText(TextLib.FormatInteger(selectedNum + 1, 3));
             QuadPlay.Visible = true;
+
+            if (IsTMUF)
+            {
+                UpdatePBs(selectedMapInfo, TMUFCars);
+            }
+            else
+            {
+                UpdatePBs(selectedMapInfo, TM2Cars);
+            }
         }
         else
         {
