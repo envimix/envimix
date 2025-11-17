@@ -145,6 +145,7 @@ public class EnvimixSolo : Envimix
                 ProcessUpdateCarEvent(e);
                 ProcessReplayEvent(e);
                 ProcessEndscreenEvent(e);
+                ProcessStarEvent(e);
                 // ProcessUpdateGravityEvent(e); unexpected behavior due to GravityCoef being applied once after spawning
                 break;
         }
@@ -724,6 +725,16 @@ public class EnvimixSolo : Envimix
                 break;
             case "OutroContinue":
                 SwitchFromOutro(e.UI);
+                break;
+        }
+    }
+
+    private void ProcessStarEvent(CUIConfigEvent e)
+    {
+        switch (e.CustomEventType)
+        {
+            case "Star":
+                RequestMapInfo();
                 break;
         }
     }

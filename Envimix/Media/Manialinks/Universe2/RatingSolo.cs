@@ -29,6 +29,12 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         public string Nickname;
     }
 
+    public struct SRatingStarRequest
+    {
+        public string MapUid;
+        public SRatingFilter Filter;
+    }
+
     [ManialinkControl] public required CMlFrame FrameRatingSolo;
     [ManialinkControl] public required CMlFrame FrameRatingSoloWrap;
     [ManialinkControl] public required CMlQuad QuadBlur;
@@ -48,6 +54,9 @@ public class RatingSolo : CTmMlScriptIngame, IContext
     [Netread] public required Dictionary<string, SStar> Stars { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
     [Netread(NetFor.UI)] public required IList<SFilteredRating> MyRatings { get; set; }
+
+    [Netread] public string EnvimixWebAPI { get; set; }
+    [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
 
     public bool MenuOpen;
     public bool PreviousIsVisible;
@@ -69,6 +78,7 @@ public class RatingSolo : CTmMlScriptIngame, IContext
     public float PrevScrollOffsetY;
     public bool HoldsScrollbar;
     public float HoldsScrollbarMouseY;
+    public CHttpRequest? StarRequest;
 
     public RatingSolo()
     {
@@ -86,7 +96,7 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         {
             var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
 
-            if (envimixTurboUserIsAdmin.Get())
+            if (envimixTurboUserIsAdmin.Get() && StarRequest is null)
             {
                 if (HasStar())
                 {
@@ -103,7 +113,7 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         {
             var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
 
-            if (envimixTurboUserIsAdmin.Get())
+            if (envimixTurboUserIsAdmin.Get() && StarRequest is null)
             {
                 if (HasStar())
                 {
@@ -117,6 +127,41 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         };
 
         MouseClick += RatingSolo_MouseClick;
+
+        QuadStar.MouseClick += () =>
+        {
+            if (StarRequest is null)
+            {
+                var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+                if (envimixTurboUserIsAdmin.Get())
+                {
+                    var gravity = Netread<int>.For(GetPlayer());
+
+                    SRatingFilter filter = new()
+                    {
+                        Car = GetCar(),
+                        Gravity = gravity.Get(),
+                        Type = "Time"
+                    };
+                    SRatingStarRequest starRequest = new()
+                    {
+                        MapUid = Map.MapInfo.MapUid,
+                        Filter = filter
+                    };
+
+                    if (HasStar())
+                    {
+                        QuadStar.Opacity = 0.7f;
+                        StarRequest = Http.CreatePost($"{EnvimixWebAPI}/rate/unstar", starRequest.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+                    }
+                    else
+                    {
+                        QuadStar.Opacity = 0.9f;
+                        StarRequest = Http.CreatePost($"{EnvimixWebAPI}/rate/star", starRequest.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+                    }
+                }
+            }
+        };
     }
 
     CTmMlPlayer GetPlayer()
@@ -162,10 +207,9 @@ public class RatingSolo : CTmMlScriptIngame, IContext
 
     string ConstructRatingFilterKey()
     {
-        var car = Netread<string>.For(GetPlayer());
         var gravity = Netread<int>.For(GetPlayer());
 
-        return ConstructFilterKey(car.Get(), gravity.Get());
+        return ConstructFilterKey(GetCar(), gravity.Get());
     }
 
     bool HasStar()
@@ -353,6 +397,21 @@ public class RatingSolo : CTmMlScriptIngame, IContext
             UpdatePersonalRatings();
 
             PrevCar = GetCar();
+        }
+
+        if (StarRequest is not null && StarRequest.IsCompleted)
+        {
+            if (StarRequest.StatusCode == 200)
+            {
+                Log("Star/unstar request succeeded.");
+                SendCustomEvent("Star", new[] { "" });
+            }
+            else
+            {
+                Log($"Star/unstar request failed with status code {StarRequest.StatusCode}.");
+            }
+            Http.Destroy(StarRequest);
+            StarRequest = null;
         }
     }
 
