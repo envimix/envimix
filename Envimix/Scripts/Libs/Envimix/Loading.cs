@@ -82,7 +82,7 @@ public static class Loading
         loadingManialink = $"{loadingManialink}    <frame pos=\"60\">";
         loadingManialink = $"{loadingManialink}        <frame pos=\"0 5\">";
         loadingManialink = $"{loadingManialink}            <quad pos=\"0 0\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" valign=\"center\"/>";
-        loadingManialink = $"{loadingManialink}            <quad pos=\"0.5 -0.5\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" modulatecolor=\"640\" valign=\"center\"/>";
+        loadingManialink = $"{loadingManialink}            <quad pos=\"0.5 -0.5\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" modulatecolor=\"222\" valign=\"center\"/>";
         loadingManialink = $"{loadingManialink}        </frame>";
         loadingManialink = $"{loadingManialink}        <label pos=\"25 -5\" z-index=\"0\" size=\"30 5\" text=\"LOADING...\" halign=\"center\" textemboss=\"1\" textfont=\"BiryaniDemiBold\"/>";
         loadingManialink = $"{loadingManialink}    </frame>";
