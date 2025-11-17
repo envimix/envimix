@@ -1,7 +1,6 @@
 ﻿using Envimix.Scripts.Libs.BigBang1112;
 using Envimix.Scripts.Libs.Envimix;
 using System.Collections.Immutable;
-using System.Numerics;
 
 namespace Envimix.Scripts.Modes.TrackMania;
 
@@ -31,6 +30,7 @@ public class EnvimixSolo : Envimix
         public IList<Envimania.SFilteredRating> UserRatings;
         public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
         public Dictionary<string, Envimania.SStar> Stars;
+        public Dictionary<string, ImmutableArray<int>> Skillpoints;
     }
 
     public struct SRatingClientRequest
@@ -76,8 +76,10 @@ public class EnvimixSolo : Envimix
     public string? GhostFinishTimestamp;
     public CTaskResult? NewRecordTask;
     public CHttpRequest? MapInfoRequest;
+    public string MapInfoFailedAt;
     public string PersonalRatingUpdatedAt;
     public CTaskResult? SaveReplayTask;
+    public CHttpRequest? LeaderboardRequest;
 
     public IList<CTaskResult_Ghost> PersonalGhostTasks;
     public Dictionary<Ident, string> PersonalGhostFilterKeys;
@@ -88,9 +90,13 @@ public class EnvimixSolo : Envimix
     [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
     [Netwrite] public bool CanListenToUIEvents { get; set; }
     [Local(LocalFor.Users0)] public string EnvimixTurboUserToken { get; set; } = "";
+    [Local(LocalFor.Users0)] public string TitleKey { get; set; } = "";
 
     [Netwrite] public bool RatingOpen { get; set; }
     [Netwrite] public bool ReplaySaved { get; set; }
+
+    [Netwrite] public Envimania.SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
+    [Netwrite] public int EndscreenRecordsResponseReceivedAt { get; set; }
 
     public override void OnServerInit()
     {
@@ -110,6 +116,11 @@ public class EnvimixSolo : Envimix
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load
 
+        if (TitleKey != "OEQCw9quJuaDak8Mz1KJTNIvXCzX")
+        {
+            return;
+        }
+
         RemoveAllGhosts();
 
         CanListenToUIEvents = true;
@@ -121,7 +132,7 @@ public class EnvimixSolo : Envimix
 
     public override void OnMapStart()
     {
-        RequestMapInfo();
+        RequestMapVisit();
     }
 
     public override void OnUIEvent(CUIConfigEvent e)
@@ -184,6 +195,11 @@ public class EnvimixSolo : Envimix
             {
                 AcknowledgePersonalBest(GetPlayer(), OutroGhost);
             }
+            else
+            {
+                // just update the leaderboard on endscreen
+                RequestLeaderboard();
+            }
             OutroGhostReachedMaxFinishLength = true;
         }
 
@@ -195,6 +211,7 @@ public class EnvimixSolo : Envimix
                 DataFileMgr.TaskResult_Release(GhostUploadTask.Id);
                 GhostUploadTask = null;
                 GhostToUpload = false;
+                RequestLeaderboard();
                 RequestMapInfo();
             }
             else
@@ -205,6 +222,31 @@ public class EnvimixSolo : Envimix
                 Sleep(1000);
                 UploadGhost(OutroGhost!);
             }
+        }
+
+        if (LeaderboardRequest is not null && LeaderboardRequest.IsCompleted)
+        {
+            if (LeaderboardRequest.StatusCode == 200)
+            {
+                Log(nameof(EnvimixSolo), "Leaderboard data received from webapi.");
+
+                Envimania.SEnvimaniaRecordsResponse response = new();
+
+                if (!response.FromJson(LeaderboardRequest.Result))
+                {
+                    Log(nameof(EnvimixSolo), "Leaderboard has a JSON issue.");
+                    Log(nameof(EnvimixSolo), LeaderboardRequest.Result);
+                }
+
+                EndscreenRecordsResponse = response;
+                EndscreenRecordsResponseReceivedAt = Now;
+            }
+            else
+            {
+                Log(nameof(EnvimixSolo), $"Failed to get leaderboard data from webapi (status code: {LeaderboardRequest.StatusCode})");
+            }
+            Http.Destroy(LeaderboardRequest);
+            LeaderboardRequest = null;
         }
 
         if (NewRecordTask is not null && !NewRecordTask.IsProcessing)
@@ -227,49 +269,147 @@ public class EnvimixSolo : Envimix
             {
                 SMapInfoResponse mapInfoResponse = new();
 
-                if (mapInfoResponse.FromJson(MapInfoRequest.Result))
+                if (!mapInfoResponse.FromJson(MapInfoRequest.Result))
                 {
-                    var validations = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecord>>.For(Teams[0]);
-
-                    foreach (var (key, validationRec) in mapInfoResponse.Validations!)
-                    {
-                        validations.Get()[key] = validationRec;
-                    }
-
-                    Dictionary<string, Envimania.SRating> ratings = new();
-
-                    foreach (var filteredRating in mapInfoResponse.Ratings)
-                    {
-                        ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
-                    }
-
-                    Ratings = ratings;
-                    Stars = mapInfoResponse.Stars!;
-
-                    var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(GetPlayer()));
-                    myRatings.Set(mapInfoResponse.UserRatings!);
-
-                    RatingEnabled = true;
-
-                    // this is overflow simulator but the game is paused during ratings often so Now doesnt update to this properly so this just works okay?? be cool with it
-                    RatingsUpdatedAt = TextLib.ToInteger(TimeLib.GetCurrent());
-
-                    ValidationsUpdatedAt = Now;
-
-                    Log(nameof(EnvimixSolo), $"Map info for '{mapInfoResponse.Name}' ({mapInfoResponse.Uid}) received from webapi.");
+                    // map info can have json issue when title pack is null
                 }
-                else
+
+                var validations = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecord>>.For(Teams[0]);
+
+                foreach (var (key, validationRec) in mapInfoResponse.Validations!)
                 {
-                    Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (JSON issue).");
-                    Log(nameof(EnvimixSolo), MapInfoRequest.Result);
+                    validations.Get()[key] = validationRec;
                 }
+
+                Dictionary<string, Envimania.SRating> ratings = new();
+
+                foreach (var filteredRating in mapInfoResponse.Ratings)
+                {
+                    ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
+                }
+
+                Ratings = ratings;
+                Stars = mapInfoResponse.Stars!;
+
+                var skillpoints = Netwrite<Dictionary<string, int>>.For(Teams[0]);
+                var activityPoints = Netwrite<Dictionary<string, int>>.For(Teams[0]);
+
+                foreach (var car in DisplayedCars)
+                {
+                    // currently validation key, should be something else, but it is needed to retrieve the validation for extra activity points anyway
+                    // so wtf if this mess either way
+                    var key = $"{car}_0_{GetLaps()}";
+                    var pbTime = ScoreMgr.Map_GetRecord(null, Map.MapInfo.MapUid, "Test" + car);
+
+                    if (pbTime != -1 && mapInfoResponse.Skillpoints!.ContainsKey(key))
+                    {
+                        var times = mapInfoResponse.Skillpoints[key];
+
+                        var pbCounting = true;
+                        var pbRankCounter = 0;
+                        var pbSkillpointRankCounter = 0;
+                        var totalRecCount = 0;
+
+                        for (var i = 0; i < times.Length / 2; i++)
+                        {
+                            var time = times[i * 2];
+                            var count = times[i * 2 + 1];
+
+                            totalRecCount += count;
+
+                            if (pbCounting)
+                            {
+                                pbSkillpointRankCounter += count;
+                            }
+
+                            // should be just ==, however in cases where some offline recs are not synced with envimania, this works better
+                            if (time >= pbTime)
+                            {
+                                pbCounting = false;
+                                continue;
+                            }
+
+                            if (pbCounting)
+                            {
+                                pbRankCounter += count;
+                            }
+                        }
+
+                        var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
+
+                        int ceilingSkillpoints;
+                        if (skillpointsReal == MathLib.TruncInteger(skillpointsReal))
+                        {
+                            ceilingSkillpoints = MathLib.TruncInteger(skillpointsReal);
+                        }
+                        else
+                        {
+                            ceilingSkillpoints = MathLib.CeilingInteger(skillpointsReal);
+                        }
+                        Log(nameof(EnvimixSolo), $"Skillpoints calculation: ({totalRecCount} - {pbSkillpointRankCounter}) * 100 / {pbSkillpointRankCounter} = {skillpointsReal} (ceiling: {ceilingSkillpoints})");
+
+                        skillpoints.Get()[key] = ceilingSkillpoints;
+
+                        var wr = pbTime;
+                        if (times.Length > 0)
+                        {
+                            wr = times[0];
+                        }
+                        var wrPb = wr * 1f / pbTime;
+                        var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
+                        var activityPointsInt = MathLib.NearestInteger(activityPointsReal);
+
+                        Log(nameof(EnvimixSolo), $"Activity points calculation for {car}: 1000 * exp({totalRecCount} * ({wr} / {pbTime} - 1)) = {activityPointsReal} (nearest: {activityPointsInt})");
+
+                        if (mapInfoResponse.Validations.ContainsKey(key))
+                        {
+                            var validation = mapInfoResponse.Validations[key];
+                            if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && EndscreenRecordsResponse.TitlePackReleaseTimestamp != "")
+                            {
+                                var validationTimestampInSeconds = validation.DrivenAt;
+                                var titlePackReleaseTimestampInSeconds = EndscreenRecordsResponse.TitlePackReleaseTimestamp;
+                                var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
+                                var extraActivityPointsReal = 10 + validationAge / 86400f * 10;
+                                var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
+                                Log(nameof(EnvimixSolo), $"Extra activity points calculation for {car}: 10 + ({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400 * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
+                                activityPointsInt += extraActivityPointsInt;
+                            }
+                        }
+                        activityPoints.Get()[key] = activityPointsInt;
+                    }
+                    else
+                    {
+                        skillpoints.Get().Remove(key);
+                        activityPoints.Get().Remove(key);
+                    }
+                }
+
+                var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(GetPlayer()));
+                myRatings.Set(mapInfoResponse.UserRatings!);
+
+                RatingEnabled = true;
+
+                // this is overflow simulator but the game is paused during ratings often so Now doesnt update to this properly so this just works okay?? be cool with it
+                RatingsUpdatedAt = TextLib.ToInteger(TimeLib.GetCurrent());
+
+                ValidationsUpdatedAt = Now;
+
+                Log(nameof(EnvimixSolo), $"Map info for '{mapInfoResponse.Name}' ({mapInfoResponse.Uid}) received from webapi.");
             }
             else
             {
                 Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (status code: {MapInfoRequest.StatusCode})");
+                MapInfoFailedAt = TimeLib.GetCurrent();
             }
             Http.Destroy(MapInfoRequest);
             MapInfoRequest = null;
+        }
+
+        if (MapInfoFailedAt != "" && TimeLib.GetDelta(TimeLib.GetCurrent(), MapInfoFailedAt) > 5)
+        {
+            Log(nameof(EnvimixSolo), "Retrying map info request...");
+            RequestMapVisit(); // may count visit for record submittion but its miniature issue
+            MapInfoFailedAt = "";
         }
 
         if (SaveReplayTask is not null && !SaveReplayTask.IsProcessing)
@@ -337,6 +477,23 @@ public class EnvimixSolo : Envimix
     {
         var envimixTurboUserToken = Local<string>.For(GetPlayer().User);
         MapInfoRequest = Http.CreateGet($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", false, $"Authorization: Bearer {envimixTurboUserToken.Get()}");
+    }
+
+    private void RequestMapVisit()
+    {
+        var envimixTurboUserToken = Local<string>.For(GetPlayer().User);
+        MapInfoRequest = Http.CreatePost($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", "", $"Authorization: Bearer {envimixTurboUserToken.Get()}");
+    }
+
+    private void RequestLeaderboard()
+    {
+        var car = Netwrite<string>.For(GetPlayer());
+        var gravity = Netwrite<int>.For(GetPlayer());
+
+        Log(nameof(EnvimixSolo), $"Requesting endscreen leaderboard for car '{car.Get()}'...");
+
+        var envimixTurboUserToken = Local<string>.For(GetPlayer().User);
+        LeaderboardRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{Map.MapInfo.MapUid}/{car.Get()}?gravity={gravity.Get()}&laps={GetLaps()}", false, $"Authorization: Bearer {envimixTurboUserToken.Get()}");
     }
 
     private bool TrySpawnEnvimixSoloPlayer(CTmPlayer player, bool frozen)
@@ -516,6 +673,11 @@ public class EnvimixSolo : Envimix
             if (NewPersonalBest)
             {
                 AcknowledgePersonalBest(GetPlayer(), OutroGhost);
+            }
+            else
+            {
+                // just update the leaderboard on endscreen
+                RequestLeaderboard();
             }
         }
 

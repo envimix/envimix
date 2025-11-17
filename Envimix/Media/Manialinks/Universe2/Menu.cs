@@ -47,6 +47,7 @@ public class Menu : CTmMlScriptIngame, IContext
         public bool Verified;
         public bool Projected;
         public string GhostUrl;
+        public string DrivenAt;
     }
 
     public struct SEnvimaniaRecordsResponse
@@ -54,6 +55,9 @@ public class Menu : CTmMlScriptIngame, IContext
         public SEnvimaniaRecordsFilter Filter;
         public string Zone;
         public ImmutableArray<SEnvimaniaRecord> Records;
+        public ImmutableArray<SEnvimaniaRecord> Validation;
+        public ImmutableArray<int> Skillpoints;
+        public string TitlePackReleaseTimestamp;
     }
 
     public struct SGhostMetadata
@@ -220,6 +224,9 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public bool GhostToUpload { get; set; }
 
     [Netread] public required Dictionary<string, SStar> Stars { get; set; }
+
+    [Netread] public required Dictionary<string, int> Skillpoints { get; set; }
+    [Netread] public required Dictionary<string, int> ActivityPoints { get; set; }
 
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
 
@@ -1443,6 +1450,37 @@ public class Menu : CTmMlScriptIngame, IContext
         UpdateRecords();
     }
 
+    private string FormatNumberSpace(int number)
+    {
+        var txt = TextLib.ToText(number);
+        if (number < 0)
+        {
+            txt = TextLib.SubText(txt, 1, TextLib.Length(txt) - 1);
+        }
+        var result = "";
+        var len = TextLib.Length(txt);
+        var count = 0;
+
+        for (var i = 0; i < len; i++)
+        {
+            result = $"{TextLib.SubText(txt, len - 1 - i, 1)}{result}";
+            count += 1;
+
+            if (count == 3 && i < len - 1)
+            {
+                result = $" {result}";
+                count = 0;
+            }
+        }
+
+        if (number < 0)
+        {
+            result = $"-{result}";
+        }
+
+        return result;
+    }
+
     public void Main()
     {
         Page.GetClassChildren("LOADING", Page.MainFrame, Recursive: true);
@@ -2210,6 +2248,8 @@ public class Menu : CTmMlScriptIngame, IContext
             var ratings = Netread<Dictionary<string, SRating>>.For(Teams[0]);
             var stars = Netread<Dictionary<string, SStar>>.For(Teams[0]);
 
+            // skillpoints are retrieved from the same request as ratings, so this is just weirdness
+
             foreach (var control in FrameInnerVehicles.Controls)
             {
                 var frame = (control as CMlFrame)!;
@@ -2224,31 +2264,65 @@ public class Menu : CTmMlScriptIngame, IContext
                 {
                     gaugeDifficulty.Ratio = 0;
                     gaugeQuality.Ratio = 0;
-                    continue;
-                }
-
-                var rating = ratings.Get()[filterKey];
-
-                if (rating.Difficulty < 0)
-                {
-                    AnimMgr.Add(gaugeDifficulty, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
                 }
                 else
                 {
-                    AnimMgr.Add(gaugeDifficulty, $"<gauge ratio=\"{rating.Difficulty * .6f + .4f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-                }
+                    var rating = ratings.Get()[filterKey];
 
-                if (rating.Quality < 0)
-                {
-                    AnimMgr.Add(gaugeQuality, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-                }
-                else
-                {
-                    AnimMgr.Add(gaugeQuality, $"<gauge ratio=\"{rating.Quality * .6f + .4f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                    if (rating.Difficulty < 0)
+                    {
+                        AnimMgr.Add(gaugeDifficulty, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                    }
+                    else
+                    {
+                        AnimMgr.Add(gaugeDifficulty, $"<gauge ratio=\"{rating.Difficulty * .6f + .4f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                    }
+
+                    if (rating.Quality < 0)
+                    {
+                        AnimMgr.Add(gaugeQuality, "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                    }
+                    else
+                    {
+                        AnimMgr.Add(gaugeQuality, $"<gauge ratio=\"{rating.Quality * .6f + .4f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                    }
                 }
 
                 var quadStar = (frame.GetFirstChild("QuadStar") as CMlQuad)!;
                 quadStar.Visible = stars.Get().ContainsKey(filterKey);
+
+                var validationKey = ConstructValidationFilterKey(carName);
+
+                var labelSkillpoints = (frame.GetFirstChild("LabelSkillpoints") as CMlLabel);
+                var labelActivityPoints = (frame.GetFirstChild("LabelActivityPoints") as CMlLabel);
+
+                if (labelSkillpoints is not null)
+                {
+                    if (Skillpoints.ContainsKey(validationKey))
+                    {
+                        var skillpoints = Skillpoints[validationKey];
+                        labelSkillpoints.SetText(FormatNumberSpace(skillpoints));
+                        labelSkillpoints.Show();
+                    }
+                    else
+                    {
+                        labelSkillpoints.Hide();
+                    }
+                }
+
+                if (labelActivityPoints is not null)
+                {
+                    if (ActivityPoints.ContainsKey(validationKey))
+                    {
+                        var activityPoints = ActivityPoints[validationKey];
+                        labelActivityPoints.SetText(FormatNumberSpace(activityPoints));
+                        labelActivityPoints.Show();
+                    }
+                    else
+                    {
+                        labelActivityPoints.Hide();
+                    }
+                }
             }
 
             PrevRatingsUpdatedAt = ratingsUpdatedAt.Get();

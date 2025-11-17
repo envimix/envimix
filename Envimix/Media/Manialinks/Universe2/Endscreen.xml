@@ -1,22 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-	<framemodel id="FramemodelRecord">
-		<label pos="0 0" z-index="0" size="27.5 5" text="01" textsize="3" textfont="RajdhaniMono" id="LabelRank" valign="center2"/>
-		<label pos="7.5 0" z-index="0" size="27.5 5" text="0:05.000" textsize="3" textfont="RajdhaniMono" id="LABEL_RECORD" valign="center2"/>
-		<frame pos="28 0" clip="1" clipsizen="22 5" clipposn="10 0">
-			<label z-index="0" size="100 5" text="$o$i$nBIGBANG111222222222" textsize="2.5" textfont="Oswald" valign="center2" halign="left" id="LABEL_NICKNAME"/>
-		</frame>
-	</framemodel>
-	<frame z-index="100">
+    <framemodel id="FramemodelRecord">
+        <quad id="QuadHighlight" pos="25 0.3" z-index="-1" size="68 5.75" bgcolor="FFF" valign="center" halign="center" opacity="0.2" style="Bgs1" substyle="BgMetalBar" />
+        <label pos="-5.5 0" z-index="0" size="27.5 5" text="01" textsize="3" textfont="RajdhaniMono" id="LabelRank" valign="center2"/>
+        <label pos="1 0" z-index="0" size="27.5 5" text="2:00:05.000" textsize="3" textfont="RajdhaniMono" id="LabelRecord" valign="center2"/>
+        <frame pos="27 0" clip="1" clipsizen="28 5" clipposn="14 0">
+            <label z-index="0" size="100 5" text="$o$i$nBIGBANG111222222222" textsize="2.5" textfont="Oswald" valign="center2" halign="left" id="LabelNickname"/>
+        </frame>
+    </framemodel>
+    <frame z-index="100">
         <quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur"/>
-		<frame id="FrameEndscreenInfo">
-            <frame pos="-30 50" clip="1" clipsizen="139 30" clipposn="0 0.5">
+        <frame id="FrameEndscreenInfo">
+            <frame pos="-35 50" clip="1" clipsizen="139.3 45" clipposn="0 0.5">
                 <frame id="FrameTime">
-                    <quad z-index="-2" size="139 30" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
-                    <label pos="0 -1.2" z-index="0" size="110 20" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="20" id="LabelTime"/>
+                    <frame pos="0 19" clip="1" clipsizen="61 8" clipposn="0 1">
+                        <frame id="FrameEvent">
+                            <quad z-index="-2" size="60 7" valign="center" halign="center" style="Bgs1" substyle="BgCardList" />
+                            <label pos="0 -0.3" z-index="0" size="50 6" text="New personal best!" halign="center" valign="center2" textfont="RajdhaniMono" id="LabelEvent" textprefix="$t" textsize="2" />
+                        </frame>
+                    </frame>
+                    <quad z-index="-2" size="139 30" valign="center" halign="center" style="Bgs1" substyle="BgCardList" />
+                    <label pos="0 -1.2" z-index="0" size="110 20" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="20" id="LabelTime" />
+                    <frame pos="58 -11" id="FrameDelta">
+                        <quad z-index="0" size="20 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" id="QuadDelta" colorize="03F" opacity="0.8" />
+                        <label z-index="1" size="20 5" text="-0.000" halign="center" valign="center2" textfont="RajdhaniMono" id="LabelDelta" textsize="1.5" pos="0 -0.3" />
+                    </frame>
                 </frame>
             </frame>
-            <frame pos="-30 35" clip="1" clipsizen="139 80" clipposn="0 -40">
+            <frame pos="-35 35" clip="1" clipsizen="139.3 80" clipposn="0 -40">
                 <frame id="FrameScore">
                     <quad z-index="-2" size="139 78" halign="center" style="Bgs1" substyle="BgCardList" pos="0 -1"/>
                     <frame pos="-65 -5.5" id="FrameLabelMapName" clip="1" clipposn="41 -5" clipsizen="80 12">
@@ -43,8 +54,10 @@
                             <label pos="0 -5.5" z-index="0" size="50 10" text="Activity points" textprefix="$t" textfont="Oswald" textsize="6" valign="center" />
                         </frame>
                         <frame pos="57.5 -15">
-                            <label pos="0 5.5" z-index="0" size="50 10" text="0" textfont="RajdhaniMono" textsize="8" valign="center" halign="right" textcolor="0F0" />
-                            <label pos="0 -5" z-index="0" size="50 10" text="0" textfont="RajdhaniMono" textsize="8" valign="center" halign="right" textcolor="0FF" />
+                            <label id="LabelSkillpoints" pos="0 5.5" z-index="0" size="50 10" text="0" textfont="RajdhaniMono" textsize="8" valign="center" halign="right" textcolor="0F0" />
+                            <label id="LabelActivityPoints" pos="0 -5" z-index="0" size="50 10" text="0" textfont="RajdhaniMono" textsize="8" valign="center" halign="right" textcolor="0FF" />
+                            <label id="LabelSkillpointsDelta" pos="-10 5" z-index="0" size="20 5" text="+1 000" valign="center" halign="right" textfont="RajdhaniMono"/>
+                            <label id="LabelActivityPointsDelta" pos="-10 -5.5" z-index="0" size="20 5" text="+1 000" valign="center" halign="right" textfont="RajdhaniMono"/>
                         </frame>
                     </frame>
 
@@ -69,18 +82,18 @@
                     </frame>
                 </frame>
             </frame>
-            <frame pos="70 65" clip="1" clipsizen="60 110" clipposn="0 -54">
-                <frame id="FrameLeaderboard">
-                    <quad z-index="-2" size="59 109" halign="center" style="Bgs1" substyle="BgCardList"/>
+            <frame pos="70 65" clip="1" clipsizen="71 110" clipposn="0 -54">
+                <frame id="FrameLeaderboardInfo">
+                    <quad z-index="-2" size="69 109" halign="center" style="Bgs1" substyle="BgCardList"/>
                     <label pos="0 -8" z-index="0" size="50 10" textprefix="$t$o" text="Leaderboard" halign="center" textfont="Oswald" valign="center" textsize="4"/>
                     <frame pos="0 -17" id="FRAME_PANEL2_ZONE">
-                        <quad pos="0 0" z-index="0" size="55 7" style="Bgs1" substyle="BgCard3" halign="center" valign="center" opacity=".25"/>
-                        <quad pos="0.1 -0.1" z-index="1" size="55 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QUAD_ZONE"/>
-                        <label pos="0 0.2" z-index="2" size="55 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LABEL_ZONE" translate="1" textprefix="$t"/>
+                        <quad pos="0 0" z-index="0" size="62 7" style="Bgs1" substyle="BgCard3" halign="center" valign="center" opacity=".25"/>
+                        <quad pos="0.1 -0.1" z-index="1" size="62 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QUAD_ZONE"/>
+                        <label pos="0 0.2" z-index="2" size="62 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LABEL_ZONE" translate="1" textprefix="$t"/>
                     </frame>
                     <quad pos="0 -60" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QuadLoadingLeaderboard"/>
-                    <frame pos="-25 -60" hidden="1">
-                        <frame id="FrameLeaderboard">
+                    <frame pos="-25 -60" id="FrameLeaderboard">
+                        <frame id="FrameLeaderboardContents">
                             <frameinstance modelid="FramemodelRecord" pos="0 35"/>
                             <frameinstance modelid="FramemodelRecord" pos="0 30"/>
                             <frameinstance modelid="FramemodelRecord" pos="0 25"/>
@@ -97,20 +110,20 @@
                             <frameinstance modelid="FramemodelRecord" pos="0 -30"/>
                             <frameinstance modelid="FramemodelRecord" pos="0 -35"/>
                         </frame>
-                        <frameinstance modelid="FramemodelRecord" pos="0 -43"/>
+                        <frameinstance modelid="FramemodelRecord" id="FramePersonalRecord" pos="0 -43"/>
                     </frame>
                 </frame>
             </frame>
-            <frame pos="0 -55" clip="1" clipsizen="200 20">
+            <frame pos="0 -55" clip="1" clipsizen="210 20">
                 <frame id="FrameContinue">
-                    <quad z-index="-2" size="199 20" valign="center" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" scriptevents="1" id="QuadContinue" opacity="0.75"/>
+                    <quad z-index="-2" size="209 20" valign="center" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" scriptevents="1" id="QuadContinue" opacity="0.75"/>
                     <label pos="0 -.7" z-index="0" size="110 10" text="Continue" halign="center" valign="center2" textfont="RajdhaniMono" textsize="9" textprefix="$t" translate="1"/>
                 </frame>
             </frame>
-		</frame>
-		<frame z-index="2" id="FRAME_TOOLTIP" hidden="1">
-			<quad pos="0 0" z-index="-1" size="43.5 6" bgcolor="FFFA" style="Bgs1" substyle="BgCardOnline" colorize="000"/>
-			<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.gg/v6TW88m" valign="center2" textsize="1.5" textfont="BiryaniDemiBold"/>
-		</frame>
-	</frame>
+        </frame>
+        <frame z-index="2" id="FRAME_TOOLTIP" hidden="1">
+            <quad pos="0 0" z-index="-1" size="43.5 6" bgcolor="FFFA" style="Bgs1" substyle="BgCardOnline" colorize="000"/>
+            <label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.gg/v6TW88m" valign="center2" textsize="1.5" textfont="BiryaniDemiBold"/>
+        </frame>
+    </frame>
 </manialink>

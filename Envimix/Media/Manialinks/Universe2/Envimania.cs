@@ -48,6 +48,7 @@ public class Envimania : CTmMlScriptIngame, IContext
         public bool Verified;
         public bool Projected;
         public string GhostUrl;
+        public string DrivenAt;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -63,6 +64,9 @@ public class Envimania : CTmMlScriptIngame, IContext
         public SEnvimaniaRecordsFilter Filter;
         public string Zone;
         public ImmutableArray<SEnvimaniaRecord> Records;
+        public ImmutableArray<SEnvimaniaRecord> Validation;
+        public ImmutableArray<int> Skillpoints;
+        public string TitlePackReleaseTimestamp;
     }
 
     [ManialinkControl] public required CMlFrame FrameEnvimania;

@@ -50,6 +50,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public int ManiaPlanetAuthReceivedAt = -1;
 
     [Local(LocalFor.LocalUser)] public string TitleRelease { get; set; } = "";
+    [Local(LocalFor.LocalUser)] public string TitleKey { get; set; } = "";
 
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
@@ -101,18 +102,17 @@ public class MainMenu : CManiaAppTitle, IContext
 
         var releaseReceivedAt = -1;
         TitleRelease = "";
-        var titleKey = "";
         var released = false;
 
-        while (TitleRelease == "" || TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) < 0 || titleKey == "")
+        while (TitleRelease == "" || TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) < 0 || TitleKey == "")
         {
             // this is some REAL maniascript bullshit bug right here
-            if (TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && titleKey != "")
+            if (TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && TitleKey != "")
             {
                 break;
             }
 
-            if (!released && TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && titleKey == "")
+            if (!released && TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && TitleKey == "")
             {
                 Log("Title has been released!");
                 released = true;
@@ -158,7 +158,7 @@ public class MainMenu : CManiaAppTitle, IContext
                     }
 
                     TitleRelease = releaseInfo.ReleasedAt!;
-                    titleKey = releaseInfo.Key!;
+                    TitleKey = releaseInfo.Key!;
 
                     var expectation = "";
                     if (released)
@@ -190,7 +190,7 @@ public class MainMenu : CManiaAppTitle, IContext
             Http.Destroy(titleReleaseRequest);
         }
 
-        if (titleKey != "OEQCw9quJuaDak8Mz1KJTNIvXCzX")
+        if (TitleKey != "OEQCw9quJuaDak8Mz1KJTNIvXCzX")
         {
             Assert(false, "HELLO HACKER! Invalid title key.");
         }
@@ -262,7 +262,13 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         CheckToken();
-        TryOpenRequestedMap();
+
+        // so that there's a chance to refresh the token before trying to open the next map
+        // must run after CheckToken()
+        if (!ManiaPlanetAuthenticationRequested && Now - ManiaPlanetAuthReceivedAt < 1800000 && UserTokenRequest is null)
+        {
+            TryOpenRequestedMap();
+        }
     }
 
     private void RequestUserToken()
@@ -392,7 +398,8 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         // Periodické obnovení uživatelského tokenu (bez ztráty session)
-        if (UserTokenReceived != -1 && Now - UserTokenReceived >= 1200000)
+        // (20 min - 30 min, po 30 min už se refreshuje celej maniaplanet token)
+        if (UserTokenReceived != -1 && Now - UserTokenReceived >= 1200000 && Now - UserTokenReceived < 1800000 && UserTokenRequest is null)
         {
             Log("Running user token refresh...");
             ResetUserTokenState();

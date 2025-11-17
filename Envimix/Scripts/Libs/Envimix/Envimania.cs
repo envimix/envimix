@@ -1,4 +1,6 @@
-﻿namespace Envimix.Scripts.Libs.Envimix;
+﻿using System.Collections.Immutable;
+
+namespace Envimix.Scripts.Libs.Envimix;
 
 public static class Envimania
 {
@@ -52,6 +54,7 @@ public static class Envimania
         public bool Verified;
         public bool Projected;
         public string GhostUrl;
+        public string DrivenAt;
     }
 
     public struct SRatingServerRequest
@@ -66,5 +69,23 @@ public static class Envimania
     {
         public string Login;
         public string Nickname;
+    }
+
+    public struct SEnvimaniaRecordsFilter
+    {
+        public string Car;
+        public int Gravity;
+        public int Laps;
+        public string Type;
+    }
+
+    public struct SEnvimaniaRecordsResponse
+    {
+        public SEnvimaniaRecordsFilter Filter;
+        public string Zone;
+        public ImmutableArray<SEnvimaniaRecord> Records;
+        public ImmutableArray<SEnvimaniaRecord> Validation;
+        public ImmutableArray<int> Skillpoints;
+        public string TitlePackReleaseTimestamp;
     }
 }

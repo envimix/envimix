@@ -364,27 +364,28 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         {
             (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
             (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
-            return;
-        }
-
-        var rating = Ratings[filterKey];
-
-        if (rating.Difficulty < 0)
-        {
-            AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
         }
         else
         {
-            AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Difficulty * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-        }
+            var rating = Ratings[filterKey];
 
-        if (rating.Quality < 0)
-        {
-            AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-        }
-        else
-        {
-            AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Quality * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            if (rating.Difficulty < 0)
+            {
+                AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+            else
+            {
+                AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Difficulty * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+
+            if (rating.Quality < 0)
+            {
+                AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+            else
+            {
+                AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Quality * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
         }
 
         var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);

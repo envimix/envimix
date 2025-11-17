@@ -1,4 +1,6 @@
-﻿namespace Envimix.Media.Manialinks.Universe2;
+﻿using System.Collections.Immutable;
+
+namespace Envimix.Media.Manialinks.Universe2;
 
 public class Endscreen : CTmMlScriptIngame, IContext
 {
@@ -37,12 +39,58 @@ public class Endscreen : CTmMlScriptIngame, IContext
         public int Code;
     }
 
+    public struct SUserInfo
+    {
+        public string Login;
+        public string Nickname;
+        public string Zone;
+        public string AvatarUrl;
+        public string Language;
+        public string Description;
+        public Vec3 Color;
+        public string SteamUserId;
+        public int FameStars;
+        public float LadderPoints;
+    }
+
+    public struct SEnvimaniaRecord
+    {
+        public SUserInfo User;
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+        public bool Verified;
+        public bool Projected;
+        public string GhostUrl;
+        public string DrivenAt;
+    }
+
+    public struct SEnvimaniaRecordsFilter
+    {
+        public string Car;
+        public int Gravity;
+        public int Laps;
+        public string Type;
+    }
+
+    public struct SEnvimaniaRecordsResponse
+    {
+        public SEnvimaniaRecordsFilter Filter;
+        public string Zone;
+        public ImmutableArray<SEnvimaniaRecord> Records;
+        public ImmutableArray<SEnvimaniaRecord> Validation;
+        public ImmutableArray<int> Skillpoints;
+        public string TitlePackReleaseTimestamp;
+    }
+
     [ManialinkControl] public required CMlFrame FrameEndscreenInfo;
     [ManialinkControl] public required CMlQuad QuadBlur;
     [ManialinkControl] public required CMlQuad QuadContinue;
     [ManialinkControl] public required CMlFrame FrameTime;
     [ManialinkControl] public required CMlFrame FrameScore;
-    [ManialinkControl] public required CMlFrame FrameLeaderboard;
+    [ManialinkControl] public required CMlFrame FrameLeaderboardInfo;
     [ManialinkControl] public required CMlFrame FrameContinue;
     [ManialinkControl] public required CMlFrame FrameLabelMapName;
     [ManialinkControl] public required CMlFrame FrameLabelCar;
@@ -50,6 +98,19 @@ public class Endscreen : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelEnvironment;
     [ManialinkControl] public required CMlQuad QuadEnvironment;
     [ManialinkControl] public required CMlLabel LabelTime;
+    [ManialinkControl] public required CMlFrame FrameLeaderboard;
+    [ManialinkControl] public required CMlFrame FrameLeaderboardContents;
+    [ManialinkControl] public required CMlQuad QuadLoadingLeaderboard;
+    [ManialinkControl] public required CMlFrame FramePersonalRecord;
+    [ManialinkControl] public required CMlFrame FrameEvent;
+    [ManialinkControl] public required CMlLabel LabelEvent;
+    [ManialinkControl] public required CMlFrame FrameDelta;
+    [ManialinkControl] public required CMlQuad QuadDelta;
+    [ManialinkControl] public required CMlLabel LabelDelta;
+    [ManialinkControl] public required CMlLabel LabelSkillpoints;
+    [ManialinkControl] public required CMlLabel LabelActivityPoints;
+    [ManialinkControl] public required CMlLabel LabelSkillpointsDelta;
+    [ManialinkControl] public required CMlLabel LabelActivityPointsDelta;
 
     [ManialinkControl] public required CMlLabel LabelDiscordName;
     [ManialinkControl] public required CMlFrame FrameDiscord;
@@ -69,6 +130,20 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
     [Netread] public bool GhostToUpload { get; set; }
 
+    [Netread] public SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
+    [Netread] public int EndscreenRecordsResponseReceivedAt { get; set; }
+    public int PreviousEndscreenRecordsResponseReceivedAt;
+    public string EventText = "";
+    public bool IsPb;
+    public int ExpectedSkillpoints;
+    public int ExpectedActivityPoints;
+    public int CurrentSkillpoints;
+    public int CurrentActivityPoints;
+    public int StartPointChangeAt = -1;
+
+    [Netread] public required Dictionary<string, int> Skillpoints { get; set; }
+    [Netread] public required Dictionary<string, int> ActivityPoints { get; set; }
+
     public Endscreen()
     {
         RaceEvent += (e) =>
@@ -80,9 +155,47 @@ public class Endscreen : CTmMlScriptIngame, IContext
                     {
                         FinishedAt = Now;
                         LabelTime.SetText(TimeToTextWithMilli(e.RaceTime));
+
+                        if (e.Player.Score.BestRace.Checkpoints.Count <= 0)
+                        {
+                            IsPb = true;
+                            EventText = "First personal best!";
+                            FrameDelta.Hide();
+                        }
+                        else
+                        {
+                            var diff = e.RaceTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInRace];
+                            var formattedDiff = TextLib.FormatReal(diff / 1000f, 3, false, false);
+
+                            if (diff > 0)
+                            {
+                                IsPb = false;
+                                EventText = "";
+                                LabelDelta.SetText($"+{formattedDiff}");
+                                QuadDelta.Colorize = new Vec3(1, 0.1, 0);
+                            }
+                            else if (diff < 0)
+                            {
+                                IsPb = true;
+                                EventText = "New personal best!";
+                                LabelDelta.SetText(formattedDiff);
+                                QuadDelta.Colorize = new Vec3(0, 0.1, 1);
+                            }
+                            else
+                            {
+                                IsPb = false;
+                                EventText = "Perfect tie!";
+                                LabelDelta.SetText(formattedDiff);
+                                QuadDelta.Colorize = new Vec3(1, 0, 1);
+                            }
+
+                            FrameDelta.Show();
+                        }
+
+                        LabelSkillpointsDelta.Hide();
+                        LabelActivityPointsDelta.Hide();
+
                         ShowEndscreen();
-                        
-                        // show full endscreen in 2 seconds, hide the other UI after the 2 seconds, move blur background from bottom to top for interesting effect
                     }
                     break;
                 case CTmRaceClientEvent.EType.Respawn:
@@ -161,6 +274,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
     {
         HideEndscreen();
         FrameEndscreenInfo.Hide();
+        SetLeaderboardLoadingState();
         SetSlidingText(FrameLabelMapName, Map.MapInfo.Name);
         LabelAuthor.Value = Map.MapInfo.AuthorNickName;
         LabelEnvironment.Value = Map.CollectionName;
@@ -171,6 +285,12 @@ public class Endscreen : CTmMlScriptIngame, IContext
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
 
         Wait(() => GetPlayer() is not null);
+    }
+
+    private void SetLeaderboardLoadingState()
+    {
+        FrameLeaderboard.Hide();
+        QuadLoadingLeaderboard.Show();
     }
 
     public void Loop()
@@ -192,6 +312,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
         {
             PreviousCar = car.Get();
             SetSlidingText(FrameLabelCar, car.Get());
+            SetLeaderboardLoadingState();
+            SetPoints(car.Get());
         }
 
         foreach (var control in Page.GetClassChildren_Result)
@@ -220,7 +342,95 @@ public class Endscreen : CTmMlScriptIngame, IContext
             WidgetRequest = null;
         }
 
+        if (EndscreenRecordsResponseReceivedAt != PreviousEndscreenRecordsResponseReceivedAt)
+        {
+            UpdateLeaderboard();
+            PreviousEndscreenRecordsResponseReceivedAt = EndscreenRecordsResponseReceivedAt;
+        }
+
         AnimateWidget();
+        AnimatePoints();
+    }
+
+    private string FormatNumberSpace(int number)
+    {
+        var txt = TextLib.ToText(number);
+        if (number < 0)
+        {
+            txt = TextLib.SubText(txt, 1, TextLib.Length(txt) - 1);
+        }
+        var result = "";
+        var len = TextLib.Length(txt);
+        var count = 0;
+
+        for (var i = 0; i < len; i++)
+        {
+            result = $"{TextLib.SubText(txt, len - 1 - i, 1)}{result}";
+            count += 1;
+
+            if (count == 3 && i < len - 1)
+            {
+                result = $" {result}";
+                count = 0;
+            }
+        }
+
+        if (number < 0)
+        {
+            result = $"-{result}";
+        }
+
+        return result;
+    }
+
+    private int GetLaps()
+    {
+        if (!MapIsLapRace)
+        {
+            return 1;
+        }
+
+        if (NbLaps == -1)
+        {
+            return Map.TMObjective_NbLaps;
+        }
+
+        return NbLaps;
+    }
+
+    string ConstructValidationFilterKey(string car)
+    {
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car}_{gravity.Get()}_{GetLaps()}";
+    }
+
+    private void SetPoints(string car)
+    {
+        var validationFilterKey = ConstructValidationFilterKey(car);
+
+        if (Skillpoints.ContainsKey(validationFilterKey))
+        {
+            CurrentSkillpoints = Skillpoints[validationFilterKey];
+        }
+        else
+        {
+            CurrentSkillpoints = 0;
+        }
+
+        if (ActivityPoints.ContainsKey(validationFilterKey))
+        {
+            CurrentActivityPoints = ActivityPoints[validationFilterKey];
+        }
+        else
+        {
+            CurrentActivityPoints = 0;
+        }
+
+        ExpectedSkillpoints = CurrentSkillpoints;
+        ExpectedActivityPoints = CurrentActivityPoints;
+        LabelSkillpoints.SetText(FormatNumberSpace(CurrentSkillpoints));
+        LabelActivityPoints.SetText(FormatNumberSpace(CurrentActivityPoints));
     }
 
     void ShowEndscreen()
@@ -231,7 +441,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
         AnimMgr.Add(QuadBlur, "<quad scale=\"1\" hidden=\"0\" />", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameTime, "<frame pos=\"0 0\" />", Now + 200, 600, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameScore, "<frame pos=\"0 0\" />", Now + 200, 500, CAnimManager.EAnimManagerEasing.QuadOut);
-        AnimMgr.Add(FrameLeaderboard, "<frame pos=\"0 0\" />", Now + 200, 400, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameLeaderboardInfo, "<frame pos=\"0 0\" />", Now + 200, 400, CAnimManager.EAnimManagerEasing.QuadOut);
         FrameContinue.RelativeScale = 1;
         AnimMgr.Add(FrameContinue, "<frame pos=\"0 0\" />", Now + 600, 500, CAnimManager.EAnimManagerEasing.QuadOut);
 
@@ -245,8 +455,11 @@ public class Endscreen : CTmMlScriptIngame, IContext
         AnimMgr.Add(FrameEndscreenInfo, "<frame pos=\"-10 0\" scale=\"0.2\" hidden=\"1\" />", 250, CAnimManager.EAnimManagerEasing.QuadIn);
         AnimMgr.Add(FrameTime, "<frame pos=\"140 0\" />", 250, CAnimManager.EAnimManagerEasing.QuadIn);
         AnimMgr.Add(FrameScore, "<frame pos=\"140 0\" />", 250, CAnimManager.EAnimManagerEasing.QuadIn);
-        AnimMgr.Add(FrameLeaderboard, "<frame pos=\"-60 0\" />", 250, CAnimManager.EAnimManagerEasing.QuadIn);
+        AnimMgr.Add(FrameLeaderboardInfo, "<frame pos=\"-70 0\" />", 250, CAnimManager.EAnimManagerEasing.QuadIn);
         AnimMgr.Add(FrameContinue, "<frame pos=\"0 21\" scale=\"0\" />", 250, CAnimManager.EAnimManagerEasing.QuadIn);
+        AnimMgr.Add(FrameEvent, "<frame pos=\"0 -8\" />", 250, CAnimManager.EAnimManagerEasing.QuadIn);
+
+        EventText = "";
     }
 
     private void Continue()
@@ -259,6 +472,190 @@ public class Endscreen : CTmMlScriptIngame, IContext
         FinishedAt = -1;
         SendCustomEvent("EndscreenContinue", new[] { "" });
         HideEndscreen();
+    }
+
+    private void UpdateLeaderboard()
+    {
+        QuadLoadingLeaderboard.Hide();
+        FrameLeaderboard.Show();
+
+        var rankIndex = 0;
+        var prevTime = -1;
+        var rankOffset = 0;
+
+        var pbIsWorldRecord = false;
+
+        foreach (var control in FrameLeaderboardContents.Controls)
+        {
+            if (control is not CMlFrame frame)
+            {
+                continue;
+            }
+
+            if (EndscreenRecordsResponse.Records.Length <= rankIndex)
+            {
+                frame.Hide();
+                continue;
+            }
+
+            var record = EndscreenRecordsResponse.Records[rankIndex];
+
+            var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
+            var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
+            var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            var quadHighlight = (frame.GetFirstChild("QuadHighlight") as CMlQuad)!;
+
+            if (prevTime == record.Time)
+            {
+                rankOffset += 1;
+            }
+            else
+            {
+                prevTime = record.Time;
+            }
+
+            labelRank.SetText(TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2));
+            labelRecord.SetText(TimeToTextWithMilli(record.Time));
+            labelNickname.SetText(record.User.Nickname);
+
+            frame.Show();
+
+            if (record.User.Login == GetPlayer().User.Login)
+            {
+                if (rankIndex == 0)
+                {
+                    pbIsWorldRecord = true;
+                }
+
+                quadHighlight.Show();
+                if (IsPb)
+                {
+                    quadHighlight.Opacity = 0.6f;
+                    AnimMgr.Add(quadHighlight, "<quad opacity=\"0.2\" />", 200, CAnimManager.EAnimManagerEasing.QuadInOut);
+                }
+            }
+            else
+            {
+                quadHighlight.Hide();
+            }
+
+            rankIndex += 1;
+        }
+
+        var pbTime = GetPlayer().Score.BestRace.Time;
+
+        var pbCounting = true;
+        var pbRankCounter = 0;
+        var pbSkillpointRankCounter = 0;
+        var totalRecCount = 0;
+
+        for (var i = 0; i < EndscreenRecordsResponse.Skillpoints.Length / 2; i++)
+        {
+            var time = EndscreenRecordsResponse.Skillpoints[i * 2];
+            var count = EndscreenRecordsResponse.Skillpoints[i * 2 + 1];
+
+            totalRecCount += count;
+
+            if (pbCounting)
+            {
+                pbSkillpointRankCounter += count;
+            }
+
+            // should be just ==, however in cases where some offline recs are not synced with envimania, this works better
+            if (time >= pbTime)
+            {
+                pbCounting = false;
+                continue;
+            }
+
+            if (pbCounting)
+            {
+                pbRankCounter += count;
+            }
+        }
+
+        var labelPbRank = (FramePersonalRecord.GetFirstChild("LabelRank") as CMlLabel)!;
+        var labelPbRecord = (FramePersonalRecord.GetFirstChild("LabelRecord") as CMlLabel)!;
+        var labelPbNickname = (FramePersonalRecord.GetFirstChild("LabelNickname") as CMlLabel)!;
+        var quadPbHighlight = (FramePersonalRecord.GetFirstChild("QuadHighlight") as CMlQuad)!;
+        quadPbHighlight.Opacity = 0.2f;
+
+        labelPbRank.SetText(TextLib.FormatInteger(pbRankCounter + 1, 2));
+        labelPbRecord.SetText(TimeToTextWithMilli(pbTime));
+        labelPbNickname.SetText(GetPlayer().User.Name);
+
+        var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
+        int ceilingSkillpoints;
+        if (skillpointsReal == MathLib.TruncInteger(skillpointsReal))
+        {
+            ceilingSkillpoints = MathLib.TruncInteger(skillpointsReal);
+        }
+        else
+        {
+            ceilingSkillpoints = MathLib.CeilingInteger(skillpointsReal);
+        }
+        Log($"Skillpoints calculation: ({totalRecCount} - {pbSkillpointRankCounter}) * 100 / {pbSkillpointRankCounter} = {skillpointsReal} (ceiling: {ceilingSkillpoints})");
+
+        var wr = pbTime;
+        if (EndscreenRecordsResponse.Records.Length > 0)
+        {
+            wr = EndscreenRecordsResponse.Records[0].Time;
+        }
+        var wrPb = wr * 1f / pbTime;
+        var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
+        var activityPoints = MathLib.NearestInteger(activityPointsReal);
+
+        Log($"Activity points calculation: 1000 * exp({totalRecCount} * ({wr} / {pbTime} - 1)) = {activityPointsReal} (nearest: {activityPoints})");
+
+        if (EndscreenRecordsResponse.Validation.Length > 0)
+        {
+            var validation = EndscreenRecordsResponse.Validation[0];
+            if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && EndscreenRecordsResponse.TitlePackReleaseTimestamp != "")
+            {
+                var validationTimestampInSeconds = validation.DrivenAt;
+                var titlePackReleaseTimestampInSeconds = EndscreenRecordsResponse.TitlePackReleaseTimestamp;
+                var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
+                var extraActivityPointsReal = 10 + validationAge / 86400f * 10;
+                var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
+                Log($"Extra activity points calculation: 10 + truncate(({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400) * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
+                activityPoints += extraActivityPointsInt;
+            }
+        }
+
+        ExpectedSkillpoints = ceilingSkillpoints;
+        ExpectedActivityPoints = activityPoints;
+
+        StartPointChangeAt = Now;
+
+        // somehow this function runs while endscreen is not visible
+        // if less than 10 points difference, don't play sound, it will be played during loop
+        if (FrameEndscreenInfo.Visible && (MathLib.Abs(ExpectedSkillpoints - CurrentSkillpoints) > 10 || MathLib.Abs(ExpectedActivityPoints - CurrentActivityPoints) > 10))
+        {
+            for (var i = 0; i < 10; i++)
+            {
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
+            }
+        }
+
+        if (IsPb && pbIsWorldRecord)
+        {
+            EventText = "New world record!";
+
+            if (EndscreenRecordsResponse.Validation.Length > 0)
+            {
+                var validation = EndscreenRecordsResponse.Validation[0];
+                if (validation.User.Login == GetPlayer().User.Login && validation.Time == pbTime)
+                {
+                    EventText = "New validation!";
+                }
+            }
+        }
+
+        if (EventText != "")
+        {
+            LabelEvent.SetText(EventText);
+            AnimMgr.Add(FrameEvent, "<frame pos=\"0 0\" />", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
     }
 
     private void SetSlidingText(CMlFrame frame, string value)
@@ -459,5 +856,95 @@ public class Endscreen : CTmMlScriptIngame, IContext
         }
 
         return Final;
+    }
+
+    public int PrevSkillpointsInAnim;
+    public int PrevActivityPointsInAnim;
+
+    private void AnimatePoints()
+    {
+        var duration = 1000;
+
+        if (StartPointChangeAt == -1)
+        {
+            return;
+        }
+
+        var time = Now - StartPointChangeAt;
+
+        var skillpointsDiff = ExpectedSkillpoints - CurrentSkillpoints;
+        var activityPointsDiff = ExpectedActivityPoints - CurrentActivityPoints;
+
+        var skillpoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentSkillpoints), MathLib.ToReal(skillpointsDiff), duration));
+        var activityPoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentActivityPoints), MathLib.ToReal(activityPointsDiff), duration));
+
+        LabelSkillpoints.SetText(FormatNumberSpace(skillpoints));
+        LabelActivityPoints.SetText(FormatNumberSpace(activityPoints));
+
+        if (FrameEndscreenInfo.Visible)
+        {
+            if (MathLib.Abs(ExpectedSkillpoints - CurrentSkillpoints) > 10 || MathLib.Abs(ExpectedActivityPoints - CurrentActivityPoints) > 10)
+            {
+                var playSound = false;
+                if (skillpoints != PrevSkillpointsInAnim)
+                {
+                    PrevSkillpointsInAnim = skillpoints;
+                    playSound = true;
+                }
+                if (activityPoints != PrevActivityPointsInAnim)
+                {
+                    PrevActivityPointsInAnim = activityPoints;
+                    playSound = true;
+                }
+                if (playSound)
+                {
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f);
+                }
+            }
+        }
+
+        var noPointDiff = skillpointsDiff == 0 && activityPointsDiff == 0;
+
+        if (time < duration && !noPointDiff)
+        {
+            return;
+        }
+
+        StartPointChangeAt = -1;
+        skillpoints = ExpectedSkillpoints;
+        activityPoints = ExpectedActivityPoints;
+        CurrentSkillpoints = skillpoints;
+        CurrentActivityPoints = activityPoints;
+
+        if (skillpointsDiff < 0)
+        {
+            LabelSkillpointsDelta.SetText(FormatNumberSpace(skillpointsDiff));
+        }
+        else
+        {
+            LabelSkillpointsDelta.SetText($"+{FormatNumberSpace(skillpointsDiff)}");
+        }
+
+        if (activityPointsDiff < 0)
+        {
+            LabelActivityPointsDelta.SetText(FormatNumberSpace(activityPointsDiff));
+        }
+        else
+        {
+            LabelActivityPointsDelta.SetText($"+{FormatNumberSpace(activityPointsDiff)}");
+        }
+
+        LabelSkillpointsDelta.RelativePosition_V3.X = -LabelSkillpoints.ComputeWidth(LabelSkillpoints.Value) - 3;
+        LabelActivityPointsDelta.RelativePosition_V3.X = -LabelActivityPoints.ComputeWidth(LabelActivityPoints.Value) - 3;
+
+        LabelSkillpointsDelta.RelativeScale = 0.7f;
+        LabelActivityPointsDelta.RelativeScale = 0.7f;
+        AnimMgr.Add(LabelSkillpointsDelta, "<label hidden=\"0\" scale=\"1\" />", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(LabelActivityPointsDelta, "<label hidden=\"0\" scale=\"1\" />", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+
+        if (FrameEndscreenInfo.Visible && (skillpointsDiff > 0 || activityPointsDiff > 0))
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, 2, 1f);
+        }
     }
 }

@@ -60,24 +60,9 @@ public class Envimix : UniverseModeBase
         public IList<Envimania.SFilteredRating> Ratings;
     }
 
-    public struct SEnvimaniaRecordsFilter
-    {
-        public string Car;
-        public int Gravity;
-        public int Laps;
-        public string Type;
-    }
-
-    public struct SEnvimaniaRecordsResponse
-    {
-        public SEnvimaniaRecordsFilter Filter;
-        public string Zone;
-        public ImmutableArray<Envimania.SEnvimaniaRecord> Records;
-    }
-
     public struct SEnvimaniaSessionRecordResponse
     {
-        public ImmutableArray<SEnvimaniaRecordsResponse> UpdatedRecords;
+        public ImmutableArray<Envimania.SEnvimaniaRecordsResponse> UpdatedRecords;
     }
 
     public struct SChatMessage
@@ -455,7 +440,7 @@ public class Envimix : UniverseModeBase
         Log(nameof(Envimix), $"Starting map {TextLib.StripFormatting(Map.MapInfo.Name)}...");
 
         // Reset Envimania records
-        var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+        var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
         envimaniaRecords.Get().Clear();
         EnvimaniaFinishedRecordsRequests.Clear();
         Ratings.Clear();
@@ -568,8 +553,8 @@ public class Envimix : UniverseModeBase
     public CHttpRequest? EnvimaniaCloseRequest;
 
     public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
-    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
-    public required Dictionary<string, SEnvimaniaRecordsFilter> EnvimaniaFinishedRecordsRequests;
+    public required Dictionary<string, Envimania.SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
+    public required Dictionary<string, Envimania.SEnvimaniaRecordsFilter> EnvimaniaFinishedRecordsRequests;
     public int EnvimaniaRecordsRequestsLastCheck;
     public CHttpRequest? EnvimaniaRecordsRequest;
 
@@ -645,12 +630,12 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
-    public static string ConstructRecordsFilterKey(SEnvimaniaRecordsFilter filter)
+    public static string ConstructRecordsFilterKey(Envimania.SEnvimaniaRecordsFilter filter)
     {
         return $"{filter.Car}_{filter.Gravity}_{filter.Laps}_{filter.Type}";
     }
 
-    public static string ConstructValidationFilterKey(SEnvimaniaRecordsFilter filter)
+    public static string ConstructValidationFilterKey(Envimania.SEnvimaniaRecordsFilter filter)
     {
         return $"{filter.Car}_{filter.Gravity}_{filter.Laps}";
     }
@@ -719,7 +704,7 @@ public class Envimix : UniverseModeBase
     /// <param name="gravity"></param>
     public bool RequestEnvimaniaRecords(string carName, int gravity, int laps)
     {
-        SEnvimaniaRecordsFilter filter = new()
+        Envimania.SEnvimaniaRecordsFilter filter = new()
         {
             Car = carName,
             Gravity = gravity,
@@ -964,7 +949,7 @@ public class Envimix : UniverseModeBase
                     foreach (var updatedRecords in response.UpdatedRecords)
                     {
                         var filterKey = ConstructRecordsFilterKey(updatedRecords.Filter);
-                        var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                        var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
                         envimaniaRecords.Get()[filterKey] = updatedRecords;
                         EnvimaniaFinishedRecordsRequests[filterKey] = updatedRecords.Filter;
                         EnvimaniaRecordsUpdatedAt = Now;
@@ -1064,11 +1049,11 @@ public class Envimix : UniverseModeBase
             {
                 Log(nameof(Envimix), $"Records retrieved (200, {filter.Car}, G: {filter.Gravity}, Type: Time).");
 
-                SEnvimaniaRecordsResponse response = new();
+                Envimania.SEnvimaniaRecordsResponse response = new();
 
                 if (response.FromJson(recsRequest.Result))
                 {
-                    var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                    var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
                     envimaniaRecords.Get()[filterKey] = response;
 
                     EnvimaniaStatusMessage = "";
@@ -1182,7 +1167,7 @@ public class Envimix : UniverseModeBase
 
                 // "Client-sided" leaderboard before the server responds for smoother experience
 
-                SEnvimaniaRecordsFilter filter = new()
+                Envimania.SEnvimaniaRecordsFilter filter = new()
                 {
                     Car = car.Get(),
                     Gravity = gravity,
@@ -1190,10 +1175,10 @@ public class Envimix : UniverseModeBase
                     Type = "Time" // TODO: Add support for other types
                 };
 
-                var envimaniaRecords = Netwrite<Dictionary<string, SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
 
                 // Use struct with no records as "client-side" default
-                SEnvimaniaRecordsResponse recResponse = new()
+                Envimania.SEnvimaniaRecordsResponse recResponse = new()
                 {
                     Filter = filter
                 };
