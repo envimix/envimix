@@ -159,7 +159,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
                         if (e.Player.Score.BestRace.Checkpoints.Count <= 0)
                         {
                             IsPb = true;
-                            EventText = "First personal best!";
+                            EventText = "Your first finish!";
                             FrameDelta.Hide();
                         }
                         else
