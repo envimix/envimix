@@ -98,6 +98,8 @@ public class EnvimixSolo : Envimix
     [Netwrite] public Envimania.SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
     [Netwrite] public int EndscreenRecordsResponseReceivedAt { get; set; }
 
+    public string ScoreContextPrefix = "";
+
     public override void OnServerInit()
     {
         ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixSingleplayerClient.Script.txt";
@@ -110,6 +112,8 @@ public class EnvimixSolo : Envimix
         Outro = false;
         OutroGhostMaxFinishLength = 1500;
         RatingOpen = false;
+
+        ScoreContextPrefix = "Test";
     }
 
     public override void OnMapLoad()
@@ -300,7 +304,7 @@ public class EnvimixSolo : Envimix
                     // currently validation key, should be something else, but it is needed to retrieve the validation for extra activity points anyway
                     // so wtf if this mess either way
                     var key = $"{car}_0_{GetLaps()}";
-                    var pbTime = ScoreMgr.Map_GetRecord(null, Map.MapInfo.MapUid, "Test" + car);
+                    var pbTime = ScoreMgr.Map_GetRecord(null, Map.MapInfo.MapUid, $"{ScoreContextPrefix}{car}");
 
                     if (pbTime != -1 && mapInfoResponse.Skillpoints!.ContainsKey(key))
                     {
@@ -446,7 +450,7 @@ public class EnvimixSolo : Envimix
             // alternatively, fetch personal best from envimix webapi
 
             var key = ConstructFilterKey(car);
-            var task = ScoreMgr.Map_GetRecordGhost(null, Map.MapInfo.MapUid, "Test" + car);
+            var task = ScoreMgr.Map_GetRecordGhost(null, Map.MapInfo.MapUid, $"{ScoreContextPrefix}{car}");
 
             if (task is null)
             {
@@ -646,7 +650,7 @@ public class EnvimixSolo : Envimix
         UploadGhost(ghost);
 
         var car = Netwrite<string>.For(player);
-        NewRecordTask = ScoreMgr.Map_SetNewRecord(null, Map.MapInfo.MapUid, $"Test{car.Get()}", ghost);
+        NewRecordTask = ScoreMgr.Map_SetNewRecord(null, Map.MapInfo.MapUid, $"{ScoreContextPrefix}{car.Get()}", ghost);
 
         NewPersonalBest = false;
     }
