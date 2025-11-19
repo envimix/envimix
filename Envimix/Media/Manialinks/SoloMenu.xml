@@ -52,21 +52,22 @@
             <quad z-index="0" size="29 6" style="Bgs1" substyle="BgCardList" halign="center" />
             <label id="LabelPersonalBest" pos="0 -2.7" z-index="1" size="30 6" text="-:--.---" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" />
         </frame>
-        <quad pos="21 -20" z-index="0" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING"/>
+        <quad id="QuadLoadingLeaderboard" pos="21 -20" z-index="0" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" hidden="1" />
+        <label id="LabelConfirm" pos="21 -20" z-index="0" size="40 5" text="...confirm map to load..." halign="center" valign="center" textsize="2" textfont="BiryaniDemiBold"/>
     </framemodel>
     <frame clip="1" clipsizen="320 130" clipposn="0 25">
         <frame pos="0 80" id="FrameCampaignOverview">
             <frame pos="53 7">
                 <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>
-                <label pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0F0"/>
+                <label id="LabelSkillpoints" pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0F0"/>
             </frame>
             <frame pos="84 7">
                 <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>
-                <label pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0FF"/>
+                <label id="LabelActivityPoints" pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0FF"/>
             </frame>
             <frame pos="155 7">
                 <quad z-index="0" size="70 6" style="Bgs1" substyle="BgCardList" halign="right"/>
-                <label id="LabelCompletionPercentage" pos="-35 -2.7" z-index="1" size="70 6" text="Envimix $ff0Turbo$g completion: $o0%" halign="center" valign="center" textfont="Oswald" textprefix="$t" textsize="2"/>
+                <label id="LabelCompletionPercentage" pos="-35 -2.7" z-index="1" size="70 6" text="Envimix $ff0Turbo$g completion: $o0%" halign="center" valign="center" textfont="OswaldMono" textprefix="$t" textsize="2"/>
             </frame>
             <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>
             <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>
@@ -153,8 +154,21 @@
                             <label pos="0 -45" z-index="0" size="20 4" text="BayCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
                             <label pos="0 -50" z-index="0" size="20 4" text="CoastCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
                         </frame>
-                        <frameinstance modelid="FramemodelRating" pos="2.5 -4.75" />
-                        <frameinstance modelid="FramemodelRating" pos="37.5 -4.75" />
+                        <frameinstance id="FrameDifficultyRatings" modelid="FramemodelRating" pos="2.5 -4.75" />
+                        <frameinstance id="FrameQualityRatings" modelid="FramemodelRating" pos="37.5 -4.75" />
+                        <frame id="FrameStars" pos="40 -4.5" z-index="1">
+                            <quad pos="0 0" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -5" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -10" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -15" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -20" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -25" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -30" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -35" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -40" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -45" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 -50" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                        </frame>
                     </frame>
                     <frame pos="100 0">
                         <frame id="FrameCars">

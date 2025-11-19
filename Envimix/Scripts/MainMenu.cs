@@ -59,6 +59,33 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Version;
     }
 
+    public struct SRating
+    {
+        public float Difficulty;
+        public float Quality;
+    }
+
+    public struct SStar
+    {
+        public string Login;
+        public string Nickname;
+    }
+
+    public struct SValidationInfo
+    {
+        public string Login;
+        public string Nickname;
+        public string DrivenAt;
+    }
+
+    public struct STitleStats
+    {
+        public Dictionary<string, Dictionary<string, SRating>> Ratings;
+        public Dictionary<string, Dictionary<string, SStar>> Stars;
+        public Dictionary<string, Dictionary<string, SValidationInfo>> Validations;
+        public Dictionary<string, Dictionary<string, IList<int>>> Skillpoints;
+    }
+
     public bool ManiaPlanetAuthenticationRequested;
     public required string ManiaPlanetAuthenticationToken;
     public CHttpRequest? UserTokenRequest;
@@ -74,6 +101,10 @@ public class MainMenu : CManiaAppTitle, IContext
 
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
+
     public CUILayer MainMenuLayer;
     public CUILayer SoloMenuLayer;
     public CUILayer LoadingLayer;
@@ -82,11 +113,19 @@ public class MainMenu : CManiaAppTitle, IContext
     public CHttpRequest? SubmitMapsRequest;
     public CHttpRequest? SubmitTitleRequest;
     public CHttpRequest? TotdRequest;
+    public CHttpRequest? StatsRequest;
+    public Dictionary<string, Dictionary<string, CHttpRequest>> LeaderboardRequests;
+
+    public string ScoreContextPrefix = "Test";
+
+    public ImmutableArray<string> Cars;
 
     public const string EnvimixWebAPI = "https://api.envimix.gbx.tools";
 
     public void Main()
     {        
+        Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
+        
         ImmutableArray<string> allowedLogins = new()
         {
             "bigbang1112",
@@ -233,11 +272,6 @@ public class MainMenu : CManiaAppTitle, IContext
         RequestTotd();
     }
 
-    private void RequestTotd()
-    {
-        TotdRequest = Http.CreateGet($"{EnvimixWebAPI}/totd/{LoadedTitle.TitleId}");
-    }
-
     private static SUserInfo CreateUserInfo(CUser user)
     {
         SUserInfo userInfo = new()
@@ -259,6 +293,12 @@ public class MainMenu : CManiaAppTitle, IContext
 
     public void Loop()
     {
+        // antilag weirdness when needing to request multiple leaderboards
+        // events cannot use yield inside, so we collect lb request and process it after event loop
+        var lbRequestMapUid = "";
+        var lbRequestLaps = 0;
+        ImmutableArray<string> lbRequestCars = new();
+
         foreach (var e in PendingEvents)
         {
             switch (e.Type)
@@ -296,9 +336,22 @@ public class MainMenu : CManiaAppTitle, IContext
                         case "Totd":
                             RequestTotd();
                             break;
+                        case "Stats":
+                            RequestStats();
+                            break;
+                        case "LoadLeaderboards":
+                            lbRequestMapUid = e.CustomEventData[0];
+                            lbRequestLaps = TextLib.ToInteger(e.CustomEventData[1]);
+                            lbRequestCars.FromJson(e.CustomEventData[2]);
+                            break;
                     }
                     break;
             }
+        }
+
+        if (lbRequestMapUid != "")
+        {
+            RequestLeaderboards(lbRequestMapUid, lbRequestLaps, lbRequestCars);
         }
 
         CheckToken();
@@ -348,9 +401,72 @@ public class MainMenu : CManiaAppTitle, IContext
             else
             {
                 Log($"TOTD request failed ({TotdRequest.StatusCode}).");
+                // TODO: retry?
             }
             Http.Destroy(TotdRequest);
             TotdRequest = null;
+        }
+
+        if (StatsRequest is not null && StatsRequest.IsCompleted)
+        {
+            if (StatsRequest.StatusCode == 200)
+            {
+                Log("Stats received (200).");
+
+                STitleStats stats = new();
+                stats.FromJson(StatsRequest.Result);
+
+                ProcessTitleStats(stats);
+            }
+            else
+            {
+                Log($"Stats request failed ({StatsRequest.StatusCode}).");
+            }
+            Http.Destroy(StatsRequest);
+            StatsRequest = null;
+        }
+
+        ImmutableArray<string> mapUidsToRemove = new();
+
+        foreach (var (mapUid, requests) in LeaderboardRequests)
+        {
+            ImmutableArray<string> lbRequestsToRemove = new();
+
+            foreach (var (car, request) in requests)
+            {
+                if (!request.IsCompleted)
+                {
+                    continue;
+                }
+
+                if (request.StatusCode == 200)
+                {
+                    Log($"Leaderboard from map {mapUid} for car {car} received (200).");
+                    LayerCustomEvent(SoloMenuLayer, "LeaderboardData", new[] { mapUid, car, request.Result });
+                }
+                else
+                {
+                    Log($"Leaderboard request from map {mapUid} for car {car} failed ({request.StatusCode}).");
+                }
+
+                Http.Destroy(request);
+                lbRequestsToRemove.Add(car);
+            }
+
+            foreach (var car in lbRequestsToRemove)
+            {
+                LeaderboardRequests[mapUid].Remove(car);
+            }
+
+            if (LeaderboardRequests.Count == 0)
+            {
+                mapUidsToRemove.Add(mapUid);
+            }
+        }
+
+        foreach (var mapUid in mapUidsToRemove)
+        {
+            LeaderboardRequests.Remove(mapUid);
         }
     }
 
@@ -426,6 +542,7 @@ public class MainMenu : CManiaAppTitle, IContext
             {
                 if (UserTokenRequest.StatusCode == 429)
                 {
+                    // should retry much later lol, weird to implement here though
                     Log("User token request rate limited (429). Retry in 10 seconds.");
                 }
                 else
@@ -601,5 +718,173 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         SubmitMapsRequest = Http.CreatePost($"{EnvimixWebAPI}/maps", request.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+    }
+
+    private void RequestTotd()
+    {
+        TotdRequest = Http.CreateGet($"{EnvimixWebAPI}/totd/{LoadedTitle.TitleId}");
+    }
+
+    private void RequestStats()
+    {
+        StatsRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats");
+    }
+
+    private static int GetLaps(CMapInfo mapInfo)
+    {
+        if (!mapInfo.TMObjective_IsLapRace)
+        {
+            return 1;
+        }
+
+        return mapInfo.TMObjective_NbLaps;
+    }
+
+    private void ProcessTitleStats(STitleStats stats)
+    {
+        TitleRatings = stats.Ratings;
+        TitleStars = stats.Stars;
+        TitleValidations = stats.Validations;
+
+        if (DataFileMgr.Campaigns.Count == 0)
+        {
+            return;
+        }
+
+        var campaign = DataFileMgr.Campaigns[0];
+        var mapInfos = new Dictionary<string, CMapInfo>();
+
+        foreach (var mapGroup in campaign.MapGroups)
+        {
+            foreach (var mapInfo in mapGroup.MapInfos)
+            {
+                mapInfos[mapInfo.MapUid] = mapInfo;
+            }
+        }
+
+        var skillpointsTotal = 0;
+        var activityPointsTotal = 0;
+
+        foreach (var (mapUid, skillpointsByCombination) in stats.Skillpoints)
+        {
+            if (!mapInfos.ContainsKey(mapUid))
+            {
+                continue;
+            }
+
+            var mapInfo = mapInfos[mapUid];
+
+            var hasValidation = stats.Validations.ContainsKey(mapUid);
+
+            foreach (var car in Cars)
+            {
+                var pbTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, $"{ScoreContextPrefix}{car}");
+
+                var skillpointsAndValidationKey = $"{car}_0_{GetLaps(mapInfo)}";
+
+                if (pbTime == -1 || !skillpointsByCombination.ContainsKey(skillpointsAndValidationKey))
+                {
+                    continue;
+                }
+
+                var skillpoints = skillpointsByCombination[skillpointsAndValidationKey];
+
+                var pbCounting = true;
+                var pbRankCounter = 0;
+                var pbSkillpointRankCounter = 0;
+                var totalRecCount = 0;
+
+                for (var i = 0; i < skillpoints.Count / 2; i++)
+                {
+                    var time = skillpoints[i * 2];
+                    var count = skillpoints[i * 2 + 1];
+
+                    totalRecCount += count;
+
+                    if (pbCounting)
+                    {
+                        pbSkillpointRankCounter += count;
+                    }
+
+                    // should be just ==, however in cases where some offline recs are not synced with envimania, this works better
+                    if (time >= pbTime)
+                    {
+                        pbCounting = false;
+                        continue;
+                    }
+
+                    if (pbCounting)
+                    {
+                        pbRankCounter += count;
+                    }
+                }
+
+                var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
+
+                int ceilingSkillpoints;
+                if (skillpointsReal == MathLib.TruncInteger(skillpointsReal))
+                {
+                    ceilingSkillpoints = MathLib.TruncInteger(skillpointsReal);
+                }
+                else
+                {
+                    ceilingSkillpoints = MathLib.CeilingInteger(skillpointsReal);
+                }
+
+                skillpointsTotal += ceilingSkillpoints;
+
+                var wr = pbTime;
+                if (skillpoints.Count > 0)
+                {
+                    wr = skillpoints[0]; // first from time+count pair
+                }
+                var wrPb = wr * 1f / pbTime;
+                var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
+                var activityPoints = MathLib.NearestInteger(activityPointsReal);
+
+                if (hasValidation && stats.Validations[mapUid].ContainsKey(skillpointsAndValidationKey))
+                {
+                    var validation = stats.Validations[mapUid][skillpointsAndValidationKey];
+
+                    if (validation.Login == LocalUser.Login && validation.DrivenAt != "" && TitleRelease != "")
+                    {
+                        var validationTimestampInSeconds = validation.DrivenAt;
+                        var titlePackReleaseTimestampInSeconds = TitleRelease;
+                        var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
+                        var extraActivityPointsReal = 10 + validationAge / 86400f * 10;
+                        var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
+                        activityPoints += extraActivityPointsInt;
+                    }
+                }
+
+                activityPointsTotal += activityPoints;
+            }
+        }
+
+        LayerCustomEvent(SoloMenuLayer, "SetPoints", new[] { skillpointsTotal.ToString(), activityPointsTotal.ToString() });
+    }
+
+    private void RequestLeaderboards(string mapUid, int laps, ImmutableArray<string> cars)
+    {
+        foreach (var car in cars)
+        {
+            if (car == "")
+            {
+                continue;
+            }
+
+            if (LeaderboardRequests.ContainsKey(mapUid) && LeaderboardRequests[mapUid].ContainsKey(car))
+            {
+                Http.Destroy(LeaderboardRequests[mapUid][car]);
+            }
+
+            if (!LeaderboardRequests.ContainsKey(mapUid))
+            {
+                LeaderboardRequests[mapUid] = new();
+            }
+
+            LeaderboardRequests[mapUid][car] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{mapUid}/{car}?gravity=0&laps={laps}");
+            Yield(); // requesting more than 2 at once creates some lag
+        }
     }
 }

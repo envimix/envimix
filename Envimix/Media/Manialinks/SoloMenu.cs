@@ -4,6 +4,71 @@ namespace Envimix.Media.Manialinks;
 
 public class SoloMenu : CManiaAppTitleLayer, IContext
 {
+    public struct SRating
+    {
+        public float Difficulty;
+        public float Quality;
+    }
+
+    public struct SStar
+    {
+        public string Login;
+        public string Nickname;
+    }
+
+    public struct SValidationInfo
+    {
+        public string Login;
+        public string Nickname;
+        public string DrivenAt;
+    }
+
+    public struct SEnvimaniaRecordsFilter
+    {
+        public string Car;
+        public int Gravity;
+        public int Laps;
+        public string Type;
+    }
+
+    public struct SUserInfo
+    {
+        public string Login;
+        public string Nickname;
+        public string Zone;
+        public string AvatarUrl;
+        public string Language;
+        public string Description;
+        public Vec3 Color;
+        public string SteamUserId;
+        public int FameStars;
+        public float LadderPoints;
+    }
+
+    public struct SEnvimaniaRecord
+    {
+        public SUserInfo User;
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+        public bool Verified;
+        public bool Projected;
+        public string GhostUrl;
+        public string DrivenAt;
+    }
+
+    public struct SEnvimaniaRecordsResponse
+    {
+        public SEnvimaniaRecordsFilter Filter;
+        public string Zone;
+        public ImmutableArray<SEnvimaniaRecord> Records;
+        public ImmutableArray<SEnvimaniaRecord> Validation;
+        public ImmutableArray<int> Skillpoints;
+        public string TitlePackReleaseTimestamp;
+    }
+
     [ManialinkControl] public required CMlQuad QuadBack;
     [ManialinkControl] public required CMlFrame FrameCars;
     [ManialinkControl] public required CMlFrame FrameValidations;
@@ -16,7 +81,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelSelectedMapName;
     [ManialinkControl] public required CMlQuad QuadPlay;
     [ManialinkControl] public required CMlQuad QuadExplore;
+    [ManialinkControl] public required CMlLabel LabelSkillpoints;
+    [ManialinkControl] public required CMlLabel LabelActivityPoints;
     [ManialinkControl] public required CMlLabel LabelCompletionPercentage;
+    [ManialinkControl] public required CMlFrame FrameDifficultyRatings;
+    [ManialinkControl] public required CMlFrame FrameQualityRatings;
+    [ManialinkControl] public required CMlFrame FrameStars;
 
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
@@ -26,11 +96,27 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public int MapGroupNum = -1;
     public int MapInfoNum = -1;
     public int MapSelectedAt = -1;
-    public int PersonalPerformanceAt = -1;
+    public int StatsAt = -1;
+    public int StatsLocalAt = -1;
+    public int StatsReceivedAt = -1;
+
+    public int CurrentSkillpoints;
+    public int CurrentActivityPoints;
+    public float CurrentCompletionPercentage;
+    public int ExpectedSkillpoints;
+    public int ExpectedActivityPoints;
+    public float ExpectedCompletionPercentage;
 
     public string ScoreContextPrefix = "Test";
 
     public bool IsTMUF;
+
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
+
+    public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
+    public Dictionary<string, int> LeaderboardRequestTimestamps;
 
     public SoloMenu()
     {
@@ -79,6 +165,33 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     HideCampaignOverviewFrame();
                     HideMapOverviewFrame();
                     break;
+                case "SetPoints":
+                    ExpectedSkillpoints = TextLib.ToInteger(data[0]);
+                    ExpectedActivityPoints = TextLib.ToInteger(data[1]);
+                    StatsReceivedAt = Now;
+
+                    if (EnableMenuNavigationInputs && (ExpectedSkillpoints > CurrentSkillpoints || ExpectedActivityPoints > CurrentActivityPoints))
+                    {
+                        for (var i = 0; i < 10; i++)
+                        {
+                            Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
+                        }
+                    }
+
+                    // weird to call it at SetPoints, but it allows updating the solo menu stats when nothing is clicked
+                    if (DataFileMgr.Campaigns.Count > 0 && MapGroupNum != -1 && MapInfoNum != -1)
+                    {
+                        UpdateStats(DataFileMgr.Campaigns[0].MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
+                    }
+                    break;
+                case "LeaderboardData":
+                    var mapUid = data[0];
+                    var car = data[1];
+                    var recordsJson = data[2];
+                    SEnvimaniaRecordsResponse response = new();
+                    response.FromJson(recordsJson);
+                    ProcessLeaderboardData(mapUid, car, response);
+                    break;
             }
         };
 
@@ -118,8 +231,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
         FunnyCars = new() { "HighlandsCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
 
-        EnableMenuNavigationInputs = true;
-
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
 
         SwitchCars(false);
@@ -136,10 +247,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
         }
 
-        // Update personal performance every minute
-        if (PersonalPerformanceAt == -1 || (Now - PersonalPerformanceAt) > 60000)
+        // Update stats every minute
+        if (StatsAt == -1 || (Now - StatsAt) > 60000)
         {
-            Log("Updating personal performance...");
+            Log("Updating stats...");
 
             var finishedEnvimixCount = 0;
             var totalEnvimixCount = 0;
@@ -178,14 +289,65 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 }
             }
 
-            // TODO animate the percentage
-            var percentage = finishedEnvimixCount * 1f / totalEnvimixCount * 100;
+            LoadLeaderboards(false);
+
+            SendCustomEvent("Stats", new[] { "" });
+
+            ExpectedCompletionPercentage = finishedEnvimixCount * 1f / totalEnvimixCount * 100;
+            StatsAt = Now;
+            StatsLocalAt = Now;
+        }
+
+        // TODO animate the percentage
+        //var percentageText = TextLib.FormatReal(ExpectedCompletionPercentage, 4, false, true);
+        //LabelCompletionPercentage.SetText($"Envimix $ff0Turbo$g completion: $o{percentageText}%");
+
+        if (StatsLocalAt != -1)
+        {
+            var duration = 1000;
+            var time = Now - StatsLocalAt;
+
+            var percentageDiff = ExpectedCompletionPercentage - CurrentCompletionPercentage;
+            var percentage = AnimLib.EaseOutQuad(time, CurrentCompletionPercentage, percentageDiff, duration);
+
             var percentageText = TextLib.FormatReal(percentage, 4, false, true);
-            LabelCompletionPercentage.SetText($"Envimix $ff0Turbo$g completion: $o{percentageText}%");
 
-            // TODO request online performance
+            LabelCompletionPercentage.Value = $"Envimix $ff0Turbo$g completion: $o{percentageText}%";
 
-            PersonalPerformanceAt = Now;
+            if (time >= duration)
+            {
+                StatsLocalAt = -1;
+                CurrentCompletionPercentage = ExpectedCompletionPercentage;
+            }
+        }
+
+        if (StatsReceivedAt != -1)
+        {
+            var duration = 1000;
+            var time = Now - StatsReceivedAt;
+
+            var skillpointsDiff = ExpectedSkillpoints - CurrentSkillpoints;
+            var activityPointsDiff = ExpectedActivityPoints - CurrentActivityPoints;
+
+            var skillpoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentSkillpoints), MathLib.ToReal(skillpointsDiff), duration));
+            var activityPoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentActivityPoints), MathLib.ToReal(activityPointsDiff), duration));
+
+            LabelSkillpoints.Value = FormatNumberSpace(skillpoints);
+            LabelActivityPoints.Value = FormatNumberSpace(activityPoints);
+
+            var noPointDiff = skillpointsDiff == 0 && activityPointsDiff == 0;
+
+            if (time >= duration || noPointDiff)
+            {
+                StatsReceivedAt = -1;
+                CurrentSkillpoints = ExpectedSkillpoints;
+                CurrentActivityPoints = ExpectedActivityPoints;
+            }
+        }
+
+        if (Period > 30)
+        {
+            Log(Period);
         }
     }
 
@@ -195,6 +357,37 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         if (TextLib.Length(TextLib.Split(".", formatted)[1]) > 3)
             return TextLib.SubString(formatted, 0, TextLib.Length(formatted) - 1);
         return formatted;
+    }
+
+    private string FormatNumberSpace(int number)
+    {
+        var txt = TextLib.ToText(number);
+        if (number < 0)
+        {
+            txt = TextLib.SubText(txt, 1, TextLib.Length(txt) - 1);
+        }
+        var result = "";
+        var len = TextLib.Length(txt);
+        var count = 0;
+
+        for (var i = 0; i < len; i++)
+        {
+            result = $"{TextLib.SubText(txt, len - 1 - i, 1)}{result}";
+            count += 1;
+
+            if (count == 3 && i < len - 1)
+            {
+                result = $" {result}";
+                count = 0;
+            }
+        }
+
+        if (number < 0)
+        {
+            result = $"-{result}";
+        }
+
+        return result;
     }
 
     private void ShowCampaignOverviewFrame()
@@ -219,6 +412,65 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         AnimMgr.Add(FrameMapOverview, "<frame pos=\"-155 10\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
     }
 
+    private static int GetLaps(CMapInfo mapInfo)
+    {
+        if (!mapInfo.TMObjective_IsLapRace)
+        {
+            return 1;
+        }
+
+        return mapInfo.TMObjective_NbLaps;
+    }
+
+    private void ResetPBs()
+    {
+        foreach (var control in FrameLeaderboards.Controls)
+        {
+            if (control is not CMlFrame frameLeaderboard)
+            {
+                continue;
+            }
+            var labelPersonalBest = (frameLeaderboard.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
+            labelPersonalBest.SetText("--:--.---");
+        }
+    }
+
+    private void ResetValidators()
+    {
+        foreach (var control in FrameValidations.Controls)
+        {
+            control.Hide();
+        }
+    }
+
+    private void ResetRatings()
+    {
+        foreach (var control in FrameDifficultyRatings.Controls)
+        {
+            if (control is not CMlGauge gaugeDifficulty)
+            {
+                continue;
+            }
+            gaugeDifficulty.Ratio = 0;
+        }
+        foreach (var control in FrameQualityRatings.Controls)
+        {
+            if (control is not CMlGauge gaugeQuality)
+            {
+                continue;
+            }
+            gaugeQuality.Ratio = 0;
+        }
+    }
+
+    private void ResetStars()
+    {
+        foreach (var control in FrameStars.Controls)
+        {
+            control.Hide();
+        }
+    }
+
     private void UpdatePBs(CMapInfo mapInfo, ImmutableArray<string> cars)
     {
         var carIndex = 0;
@@ -229,6 +481,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
+            // if the car is not supposed to be there, the carName is empty string, so this is safe
             var carName = cars[carIndex];
 
             var labelPersonalBest = (frameLeaderboard.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
@@ -246,6 +499,308 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             carIndex += 1;
         }
+    }
+
+    private void UpdateValidators(CMapInfo mapInfo, ImmutableArray<string> cars)
+    {
+        var carIndex = 0;
+        foreach (var control in FrameValidations.Controls)
+        {
+            if (control is not CMlLabel labelValidation)
+            {
+                continue;
+            }
+
+            // if the car is not supposed to be there, the carName is empty string, so this is safe
+            var carName = cars[carIndex];
+
+            labelValidation.Show();
+
+            if (carName == "")
+            {
+                labelValidation.SetText("$888...send us suggestions!");
+                carIndex += 1;
+                continue;
+            }
+
+            var validationFilterKey = $"{carName}_0_{GetLaps(mapInfo)}";
+
+            if (!TitleValidations.ContainsKey(mapInfo.MapUid) || !TitleValidations[mapInfo.MapUid].ContainsKey(validationFilterKey))
+            {
+                labelValidation.SetText("$888you can validate this!");
+                carIndex += 1;
+                continue;
+            }
+
+            var validation = TitleValidations[mapInfo.MapUid][validationFilterKey];
+            labelValidation.SetText($"validated by {validation.Nickname}");
+            carIndex += 1;
+        }
+    }
+
+    private void UpdateRatings(CMapInfo mapInfo)
+    {
+        ImmutableArray<string> allCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
+
+        var carIndex = 0;
+        foreach (var car in allCars)
+        {
+            var difficultyGauge = (FrameDifficultyRatings.Controls[carIndex] as CMlGauge)!;
+            var qualityGauge = (FrameQualityRatings.Controls[carIndex] as CMlGauge)!;
+
+            var filterKey = $"{car}_0_Time";
+
+            if (TitleRatings.ContainsKey(mapInfo.MapUid) && TitleRatings[mapInfo.MapUid].ContainsKey(filterKey))
+            {
+                var rating = TitleRatings[mapInfo.MapUid][filterKey];
+                difficultyGauge.Ratio = rating.Difficulty;
+                qualityGauge.Ratio = rating.Quality;
+            }
+            else
+            {
+                difficultyGauge.Ratio = 0;
+                qualityGauge.Ratio = 0;
+            }
+
+            carIndex += 1;
+        }
+    }
+
+    private void UpdateStars(CMapInfo mapInfo)
+    {
+        ImmutableArray<string> allCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
+        
+        var carIndex = 0;
+        
+        foreach (var car in allCars)
+        {
+            var controlStar = FrameStars.Controls[carIndex];
+
+            var filterKey = $"{car}_0_Time";
+
+            if (TitleStars.ContainsKey(mapInfo.MapUid) && TitleStars[mapInfo.MapUid].ContainsKey(filterKey))
+            {
+                var star = TitleStars[mapInfo.MapUid][filterKey];
+                controlStar.Show();
+            }
+            else
+            {
+                controlStar.Hide();
+            }
+
+            carIndex += 1;
+        }
+    }
+
+    private void UpdateStats(CMapInfo selectedMapInfo)
+    {
+        if (IsTMUF)
+        {
+            UpdatePBs(selectedMapInfo, TMUFCars);
+            UpdateValidators(selectedMapInfo, TMUFCars);
+        }
+        else
+        {
+            UpdatePBs(selectedMapInfo, TM2Cars);
+            UpdateValidators(selectedMapInfo, TM2Cars);
+        }
+
+        UpdateRatings(selectedMapInfo);
+        UpdateStars(selectedMapInfo);
+    }
+
+    private void UpdateLeaderboards()
+    {
+        if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1)
+        {
+            return;
+        }
+
+        Campaign = DataFileMgr.Campaigns[0];
+        var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+
+        ImmutableArray<string> cars = new();
+        if (IsTMUF)
+        {
+            cars = TMUFCars;
+        }
+        else
+        {
+            cars = TM2Cars;
+        }
+
+        var carIndex = 0;
+        foreach (var control in FrameLeaderboards.Controls)
+        {
+            if (control is not CMlFrame frameLeaderboard)
+            {
+                continue;
+            }
+
+            // if the car is not supposed to be there, the carName is empty string, so this is safe
+            var carName = cars[carIndex];
+
+            var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
+            var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
+            var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+
+            labelConfirm.Hide();
+
+            carIndex += 1;
+
+            if (!Leaderboards.ContainsKey(selectedMapInfo.MapUid) || !Leaderboards[selectedMapInfo.MapUid].ContainsKey(carName))
+            {
+                // check for any error
+                continue;
+            }
+
+            var lb = Leaderboards[selectedMapInfo.MapUid][carName];
+
+            quadLoadingLeaderboard.Hide();
+
+            if (lb.Records.Length == 0)
+            {
+                var labelYouCouldBeHere = (frameRecords.Controls[0] as CMlLabel)!;
+                labelYouCouldBeHere.SetText("01 -:--.---  $i$888you could be here!");
+                labelYouCouldBeHere.Show();
+
+                for (var i = 1; i < frameRecords.Controls.Count; i++)
+                {
+                    frameRecords.Controls[i].Hide();
+                }
+                continue;
+            }
+
+            var rankIndex = 0;
+            var prevTime = -1;
+            var rankOffset = 0;
+
+            foreach (var controlRec in frameRecords.Controls)
+            {
+                if (lb.Records.Length <= rankIndex)
+                {
+                    controlRec.Hide();
+                    continue;
+                }
+
+                var record = lb.Records[rankIndex];
+
+                if (prevTime == record.Time)
+                {
+                    rankOffset += 1;
+                }
+                else
+                {
+                    prevTime = record.Time;
+                }
+
+                var labelRec = (controlRec as CMlLabel)!;
+                labelRec.SetText($"{TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2)} {TimeToTextWithMilli(record.Time)}  {record.User.Nickname}");
+                labelRec.Show();
+
+                rankIndex += 1;
+            }
+        }
+    }
+
+    private void LoadLeaderboards(bool showLoader)
+    {
+        if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1)
+        {
+            return;
+        }
+
+        Campaign = DataFileMgr.Campaigns[0];
+        var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+
+        var mapUid = selectedMapInfo.MapUid;
+        var laps = GetLaps(selectedMapInfo);
+
+        ImmutableArray<string> cars = new();
+        ImmutableArray<string> carsToRequest = new();
+
+        if (IsTMUF)
+        {
+            cars = TMUFCars;
+            carsToRequest = TMUFCars;
+        }
+        else
+        {
+            cars = TM2Cars;
+            carsToRequest = TM2Cars;
+        }
+
+        ImmutableArray<string> carsToNotRequest = new();
+
+        foreach (var car in carsToRequest)
+        {
+            var timestampKey = $"{mapUid}_{car}_{laps}";
+
+            if (LeaderboardRequestTimestamps.ContainsKey(timestampKey) && Now - LeaderboardRequestTimestamps[timestampKey] < 50000)
+            {
+                carsToNotRequest.Add(car);
+            }
+            else
+            {
+                LeaderboardRequestTimestamps[timestampKey] = Now;
+            }
+        }
+
+        foreach (var car in carsToNotRequest)
+        {
+            carsToRequest.Remove(car);
+        }
+
+        if (carsToRequest.Length == 0)
+        {
+            UpdateLeaderboards();
+            return;
+        }
+
+        if (showLoader)
+        {
+            var carIndex = 0;
+            foreach (var control in FrameLeaderboards.Controls)
+            {
+                if (control is not CMlFrame frameLeaderboard)
+                {
+                    continue;
+                }
+
+                var carName = cars[carIndex];
+                if (!carsToRequest.Contains(carName))
+                {
+                    continue;
+                }
+
+                var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
+                var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+                var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
+
+                quadLoadingLeaderboard.Show();
+                labelConfirm.Hide();
+
+                foreach (var controlRec in frameRecords.Controls)
+                {
+                    controlRec.Hide();
+                }
+
+                carIndex += 1;
+            }
+        }
+
+        SendCustomEvent("LoadLeaderboards", new[] { mapUid, laps.ToString(), carsToRequest.ToJson() });
+    }
+
+    private void ProcessLeaderboardData(string mapUid, string car, SEnvimaniaRecordsResponse response)
+    {
+        if (!Leaderboards.ContainsKey(mapUid))
+        {
+            Leaderboards[mapUid] = new();
+        }
+
+        Leaderboards[mapUid][car] = response;
+        UpdateLeaderboards();
     }
 
     private void SwitchCars(bool isTMUF)
@@ -301,8 +856,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
             else
             {
-                labelValidation.SetText("$888you can validate this!");
-                labelValidation.Hide(); // show after loading
+                labelValidation.Hide();
                 frameLeaderboard.Show();
             }
 
@@ -318,16 +872,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         if (MapGroupNum != -1 && MapInfoNum != -1)
         {
-            var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+            UpdateStats(Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
+        }
 
-            if (IsTMUF)
-            {
-                UpdatePBs(selectedMapInfo, TMUFCars);
-            }
-            else
-            {
-                UpdatePBs(selectedMapInfo, TM2Cars);
-            }
+        if (MapSelectedAt != -1)
+        {
+            LoadLeaderboards(true);
         }
     }
 
@@ -422,19 +972,40 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             LabelSelectedMapName.SetText(TextLib.FormatInteger(selectedNum + 1, 3));
             QuadPlay.Visible = true;
 
-            if (IsTMUF)
-            {
-                UpdatePBs(selectedMapInfo, TMUFCars);
-            }
-            else
-            {
-                UpdatePBs(selectedMapInfo, TM2Cars);
-            }
+            UpdateStats(selectedMapInfo);
         }
         else
         {
             LabelSelectedMapName.SetText("...");
             QuadPlay.Visible = false;
+
+            ResetPBs();
+            ResetValidators();
+            ResetRatings();
+            ResetStars();
+        }
+    }
+
+    private void UnloadLeaderboards()
+    {
+        foreach (var control in FrameLeaderboards.Controls)
+        {
+            if (control is not CMlFrame frameLeaderboard)
+            {
+                continue;
+            }
+
+            var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
+            var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+            var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
+
+            quadLoadingLeaderboard.Hide();
+            labelConfirm.Show();
+
+            foreach (var controlRec in frameRecords.Controls)
+            {
+                controlRec.Hide();
+            }
         }
     }
 
@@ -463,6 +1034,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 MapSelectedAt = -1;
                 SetupCampaign();
+                UnloadLeaderboards();
             }
             return;
         }
@@ -472,6 +1044,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         MapSelectedAt = Now;
 
         SetupCampaign();
+        LoadLeaderboards(true);
     }
 
     private void MapSelect(CMlControl control)
