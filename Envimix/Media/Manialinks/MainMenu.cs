@@ -154,6 +154,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
         if (TotdInfo.NextAt != "" && TimeLib.Compare(TotdInfo.NextAt, TimeLib.GetCurrent()) <= 0)
         {
+            TotdInfo.NextAt = "";
+
             QuadTotdLoading.Show();
             FrameTotd.Hide();
             SendCustomEvent("Totd", new[] { "" });
@@ -164,11 +166,11 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     {
         if (TotdInfo.NextAt == "")
         {
-            LabelTotdNextAt.Value = "N/A";
+            LabelTotdNextAt.Value = "";
         }
         else
         {
-            LabelTotdNextAt.Value = $"ends in {TimeLib.FormatDelta(TimeLib.GetCurrent(), TotdInfo.NextAt, TimeLib.EDurationFormats.Full)}";
+            LabelTotdNextAt.Value = $"$AAAends in {TimeLib.FormatDelta(TimeLib.GetCurrent(), TotdInfo.NextAt, TimeLib.EDurationFormats.Full)}";
         }
     }
 
