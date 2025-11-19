@@ -298,10 +298,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             StatsLocalAt = Now;
         }
 
-        // TODO animate the percentage
-        //var percentageText = TextLib.FormatReal(ExpectedCompletionPercentage, 4, false, true);
-        //LabelCompletionPercentage.SetText($"Envimix $ff0Turbo$g completion: $o{percentageText}%");
-
         if (StatsLocalAt != -1)
         {
             var duration = 1000;
@@ -343,11 +339,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 CurrentSkillpoints = ExpectedSkillpoints;
                 CurrentActivityPoints = ExpectedActivityPoints;
             }
-        }
-
-        if (Period > 30)
-        {
-            Log(Period);
         }
     }
 
