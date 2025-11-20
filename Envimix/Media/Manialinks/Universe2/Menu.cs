@@ -1777,7 +1777,7 @@ public class Menu : CTmMlScriptIngame, IContext
             PreviousMapUid = Map.MapInfo.MapUid;
         }
 
-        MoveSlidingText(FrameLabelMapName, 10, -0.01f);
+        MoveSlidingText(FrameLabelMapName, 10, 0.01f);
 
         if (Map.MapInfo.AuthorNickName != PreviousMapAuthor)
         {
