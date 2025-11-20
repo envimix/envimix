@@ -9,6 +9,8 @@
 			<quad id="QuadSteerLeft" pos="0 7.25" z-index="0" size="30 0.75" halign="right" valign="bottom" style="Bgs1" substyle="BgWindow4"/>
 			<quad id="QuadSteerRight" pos="0 7.25" z-index="0" size="30 0.75" halign="left" valign="bottom" style="Bgs1" substyle="BgWindow4"/>
 			<quad id="QuadBrake" pos="0 -7.5" z-index="1" size="59.5 1" halign="center" valign="bottom" opacity="0" style="Bgs1" substyle="BgMetalBar" colorize="F00"/>
+            <quad id="QuadUnderwater" z-index="2" size="59 14" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" colorize="08F" opacity="0" />
+            <label id="LabelUnderwaterTime" pos="28.5 -5" z-index="3" size="55 10" text="0:00.000" valign="center2" textfont="OswaldMono" textsize="0.8" hidden="1" halign="right"/>
 		</frame>
 		<frame id="FrameCheckpoint" pos="-45 5" clip="1" clipsizen="40 15">
 			<quad z-index="0" size="30 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>

@@ -42,6 +42,8 @@ public class Dashboard : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelSteepnessZeroMinusOne;
     [ManialinkControl] public required CMlFrame FrameSteepnessZeroOne;
     [ManialinkControl] public required CMlLabel LabelSteepnessZeroOne;
+    [ManialinkControl] public required CMlQuad QuadUnderwater;
+    [ManialinkControl] public required CMlLabel LabelUnderwaterTime;
 
     [Netread(NetFor.Teams0)] public int FinishedAt { get; set; }
     [Netread(NetFor.Teams0)] public bool Outro { get; set; }
@@ -311,7 +313,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
         }
 
         LabelTime.SetText(TimeToTextWithMilli(PlayerTime - IndependantLapsOffset));
-        LabelSpeed.SetText(GetOwner().DisplaySpeed.ToString());
+        LabelSpeed.SetText(MathLib.NearestInteger(MathLib.Abs(GetOwner().Speed * 3.6f)).ToString());
         LabelSpeed.RelativeScale = rpmRatio * 0.2f + 0.9f;
         LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o{TextLib.FormatReal(GetOwner().Distance - DistanceOffset, 2, false, false)}$tm";
 
@@ -404,6 +406,18 @@ public class Dashboard : CTmMlScriptIngame, IContext
 
             FrameSteepnessZeroOne.Visible = true;
             FrameSteepnessZeroMinusOne.Visible = false;
+        }
+
+        if (GetOwner().InWaterDuration > 0)
+        {
+            QuadUnderwater.Opacity = (MathLib.Sin(GetOwner().InWaterDuration / 100f + 180) + 1) / 2 * 0.2f + 0.1f;
+            LabelUnderwaterTime.Value = TimeToTextWithMilli(GetOwner().InWaterDuration);
+            LabelUnderwaterTime.Visible = true;
+        }
+        else
+        {
+            QuadUnderwater.Opacity = 0;
+            LabelUnderwaterTime.Visible = false;
         }
     }
 }
