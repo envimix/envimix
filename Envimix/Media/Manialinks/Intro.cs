@@ -7,8 +7,11 @@ public class Intro : CManiaAppTitleLayer, IContext
 
     public int StartedAt;
 
+    [Local(LocalFor.LocalUser)] public bool IntroEnded { get; set; }
+
     public void Main()
     {
+        IntroEnded = false;
         StartedAt = Now;
 
         QuadTitleLogo.Opacity = 0;
@@ -27,7 +30,7 @@ public class Intro : CManiaAppTitleLayer, IContext
     {
         if (StartedAt != -1 && Now - StartedAt > 2000)
         {
-            SendCustomEvent("IntroEnded", new[] { "" });
+            IntroEnded = true;
             StartedAt = -1;
         }
     }

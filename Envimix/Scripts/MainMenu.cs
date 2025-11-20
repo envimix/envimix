@@ -105,6 +105,8 @@ public class MainMenu : CManiaAppTitle, IContext
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
 
+    [Local(LocalFor.LocalUser)] public bool IntroEnded { get; set; }
+
     public CUILayer MainMenuLayer;
     public CUILayer SoloMenuLayer;
     public CUILayer LoadingLayer;
@@ -166,6 +168,7 @@ public class MainMenu : CManiaAppTitle, IContext
         var releaseReceivedAt = -1;
         TitleRelease = "";
         var released = false;
+        var countdownShown = false;
 
         while (TitleRelease == "" || TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) < 0 || TitleKey == "")
         {
@@ -192,16 +195,10 @@ public class MainMenu : CManiaAppTitle, IContext
             if (releaseReceivedAt != -1 && Now - releaseReceivedAt < waitTime)
             {
                 Yield();
-                foreach (var e in PendingEvents)
-                {
-                    if (e.Type == CManiaAppEvent.EType.LayerCustomEvent)
+                if (!countdownShown && IntroEnded)
                     {
-                        if (e.CustomEventLayer == introLayer && e.CustomEventType == "IntroEnded")
-                        {
                             LayerCustomEvent(ReleaseLayer, "Show", new[] { "" });
-                            break;
-                        }
-                    }
+                    countdownShown = true;
                 }
                 CheckToken();
                 continue;
