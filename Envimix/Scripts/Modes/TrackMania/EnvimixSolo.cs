@@ -19,6 +19,7 @@ public class EnvimixSolo : Envimix
     {
         public string Id;
         public string DisplayName;
+        public string ReleasedAt;
     }
 
     public struct SMapInfoResponse
@@ -369,10 +370,10 @@ public class EnvimixSolo : Envimix
                         if (mapInfoResponse.Validations.ContainsKey(key))
                         {
                             var validation = mapInfoResponse.Validations[key];
-                            if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && EndscreenRecordsResponse.TitlePackReleaseTimestamp != "")
+                            if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && mapInfoResponse.TitlePack.ReleasedAt != "")
                             {
                                 var validationTimestampInSeconds = validation.DrivenAt;
-                                var titlePackReleaseTimestampInSeconds = EndscreenRecordsResponse.TitlePackReleaseTimestamp;
+                                var titlePackReleaseTimestampInSeconds = mapInfoResponse.TitlePack.ReleasedAt;
                                 var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
                                 var extraActivityPointsReal = 10 + validationAge / 86400f * 10;
                                 var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
