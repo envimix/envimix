@@ -66,7 +66,7 @@ public static class Loading
             "TIP: TrafficCar is a very fast car which has a lower gravity similar to ValleyCar. If a combination is possible with ValleyCar, then it is certainly possible with TrafficCar.",
             "FUN FACT: TrafficCar doesn't have an official car model. The one commonly used is based off Sommer SportCar, designed by Stéphane Sommer for the Valley environment and ported in by puriPictures.",
             "FUN FACT: Activity points are based on the WR/PB scoring formula invented by Poutrel.",
-            "TIP: Activity points are tolerant to subtle differences on the leaderboard. If youre close to WR, you will get similar amount of activity points as the WR.",
+            "TIP: Activity points are tolerant to subtle differences on the leaderboard. If you're close to WR, you will get similar amount of activity points as the WR.",
             "TIP: Activity points are valuable on combinations with less records, while skillpoints are more valuable on combinations with many records.",
             "TIP: By validating maps, you receive extra activity points. The bonus becomes bigger with the age of the title pack. But be careful, someone who doesn't care about the points can grab your desired validation if you wait for too long.",
             "TIP: Think of the difficulty/quality rating bar as more filled => more difficult/superior.",
