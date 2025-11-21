@@ -141,7 +141,7 @@
                     <frame>
                         <label pos="20 0" z-index="0" size="30 4" text="Difficulty" textsize="2.5" valign="center2" textfont="RajdhaniMono" halign="center" textprefix="$t"/>
                         <label pos="55 0" z-index="0" size="30 4" text="Quality" textsize="2.5" valign="center2" textfont="RajdhaniMono" halign="center" textprefix="$t"/>
-                        <frame pos="0 -5">
+                        <frame pos="0 -5" id="FrameRatingsCars">
                             <label pos="0 0" z-index="0" size="20 4" text="CanyonCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
                             <label pos="0 -5" z-index="0" size="20 4" text="StadiumCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>
                             <label pos="0 -10" z-index="0" size="20 4" text="ValleyCar" textsize="2" valign="center2" textfont="RajdhaniMono" halign="right"/>

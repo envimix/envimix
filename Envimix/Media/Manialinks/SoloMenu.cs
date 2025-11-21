@@ -87,6 +87,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameDifficultyRatings;
     [ManialinkControl] public required CMlFrame FrameQualityRatings;
     [ManialinkControl] public required CMlFrame FrameStars;
+    [ManialinkControl] public required CMlFrame FrameRatingsCars;
 
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
@@ -443,6 +444,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
             gaugeDifficulty.Ratio = 0;
+            gaugeDifficulty.Color = new Vec3(1, 0, 0);
         }
         foreach (var control in FrameQualityRatings.Controls)
         {
@@ -451,6 +453,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
             gaugeQuality.Ratio = 0;
+            gaugeQuality.Color = new Vec3(1, 0, 0);
         }
     }
 
@@ -514,6 +517,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
+            // hacky but it works for TMT
+            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
+                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
+                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
+                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+            {
+                labelValidation.SetText($"validated by {mapInfo.AuthorNickName}");
+                carIndex += 1;
+                continue;
+            }
+
             var validationFilterKey = $"{carName}_0_{GetLaps(mapInfo)}";
 
             if (!TitleValidations.ContainsKey(mapInfo.MapUid) || !TitleValidations[mapInfo.MapUid].ContainsKey(validationFilterKey))
@@ -538,6 +552,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             var difficultyGauge = (FrameDifficultyRatings.Controls[carIndex] as CMlGauge)!;
             var qualityGauge = (FrameQualityRatings.Controls[carIndex] as CMlGauge)!;
+            var carLabel = (FrameRatingsCars.Controls[carIndex] as CMlLabel)!;
 
             var filterKey = $"{car}_0_Time";
 
@@ -551,6 +566,34 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 difficultyGauge.Ratio = 0;
                 qualityGauge.Ratio = 0;
+            }
+
+            // hacky but it works for TMT
+            if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
+                || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
+                || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
+                || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
+            {
+                difficultyGauge.Color = new Vec3(1, 1, 1);
+                qualityGauge.Color = new Vec3(1, 1, 1);
+                carLabel.TextColor = new Vec3(1, 1, 1);
+                carIndex += 1;
+                continue;
+            }
+
+            var validationFilterKey = $"{car}_0_{GetLaps(mapInfo)}";
+
+            if (!TitleValidations.ContainsKey(mapInfo.MapUid) || !TitleValidations[mapInfo.MapUid].ContainsKey(validationFilterKey))
+            {
+                difficultyGauge.Color = new Vec3(1, 0, 0);
+                qualityGauge.Color = new Vec3(1, 0, 0);
+                carLabel.TextColor = new Vec3(1, 0, 0);
+            }
+            else
+            {
+                difficultyGauge.Color = new Vec3(1, 1, 1);
+                qualityGauge.Color = new Vec3(1, 1, 1);
+                carLabel.TextColor = new Vec3(1, 1, 1);
             }
 
             carIndex += 1;

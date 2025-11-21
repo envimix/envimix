@@ -2242,6 +2242,9 @@ public class Menu : CTmMlScriptIngame, IContext
             PrevRatingEnabled = RatingEnabled;
         }
 
+        var validations = Netread<Dictionary<string, SEnvimaniaRecord>>.For(Teams[0]);
+        var validationsUpdatedAt = Netread<int>.For(Teams[0]);
+
         var ratingsUpdatedAt = Netread<int>.For(Teams[0]);
 
         if (ratingsUpdatedAt.Get() != PrevRatingsUpdatedAt)
@@ -2258,6 +2261,21 @@ public class Menu : CTmMlScriptIngame, IContext
                 var gaugeQuality = (frame.GetFirstChild("GaugeQuality") as CMlGauge)!;
 
                 var carName = frame.DataAttributeGet("car");
+
+                var validationKey = ConstructValidationFilterKey(carName);
+
+                // if validated or is the default car
+                if (validations.Get().ContainsKey(validationKey) || MapPlayerModelName == carName)
+                {
+                    gaugeDifficulty.Color = new Vec3(1, 1, 1);
+                    gaugeQuality.Color = new Vec3(1, 1, 1);
+                }
+                else
+                {
+                    // otherwise use the impossible red color
+                    gaugeDifficulty.Color = new Vec3(1, 0, 0);
+                    gaugeQuality.Color = new Vec3(1, 0, 0);
+                }
 
                 var filterKey = ConstructRatingFilterKey(carName);
 
@@ -2291,8 +2309,6 @@ public class Menu : CTmMlScriptIngame, IContext
 
                 var quadStar = (frame.GetFirstChild("QuadStar") as CMlQuad)!;
                 quadStar.Visible = stars.Get().ContainsKey(filterKey);
-
-                var validationKey = ConstructValidationFilterKey(carName);
 
                 var labelSkillpoints = (frame.GetFirstChild("LabelSkillpoints") as CMlLabel);
                 var labelActivityPoints = (frame.GetFirstChild("LabelActivityPoints") as CMlLabel);
@@ -2334,9 +2350,6 @@ public class Menu : CTmMlScriptIngame, IContext
             LabelModeHelpName.Value = Playground.ServerInfo.ModeName;
             LabelModeHelpDescription.Value = ModeHelp;
         }
-
-        var validations = Netread<Dictionary<string, SEnvimaniaRecord>>.For(Teams[0]);
-        var validationsUpdatedAt = Netread<int>.For(Teams[0]);
 
         /*if (validationsUpdatedAt.Get() != PrevValidationsUpdatedAt)
         {
