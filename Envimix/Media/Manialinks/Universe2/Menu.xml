@@ -141,7 +141,7 @@
 					<label pos="-35 -5.25" z-index="1" size="70 10" textprefix="  $t" text="Exit" valign="center2" textfont="RajdhaniMono" translate="1"/>
 				</frame>
 				<frame pos="40 50" clip="1" clipsizen="51 22" clipposn="25 0">
-					<frame pos="5 0" id="FrameGravity">
+					<frame pos="5 0" id="FrameGravity" hidden="1">
 						<quad z-index="-2" size="50 20" style="Bgs1" substyle="BgCardList" halign="right" valign="center"/>
 						<quad z-index="-1" size="45 20" style="Bgs1" substyle="BgCardList" halign="right" valign="center" pos="-5 0" opacity=".25"/>
 						<quad id="QuadGravityButton" z-index="0" size="5 20" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" halign="right" valign="center" scriptevents="1" opacity=".75"/>
