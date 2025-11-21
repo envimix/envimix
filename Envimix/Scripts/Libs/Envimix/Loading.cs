@@ -83,7 +83,7 @@ public static class Loading
             "FUN FACT: This is the first title pack fully written in C# (translated to ManiaScript using ManiaScriptSharp)."
         };
 
-        var randomIndex = MathLib.Rand(0, tips.Length);
+        var randomIndex = MathLib.Rand(0, tips.Length - 1);
         return tips[randomIndex];
     }
 
