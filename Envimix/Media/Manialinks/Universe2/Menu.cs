@@ -2345,7 +2345,11 @@ public class Menu : CTmMlScriptIngame, IContext
 
         var currentFilterKey = ConstructValidationFilterKey(car.Get());
 
-        if (validations.Get().ContainsKey(currentFilterKey))
+        if (car.Get() == MapPlayerModelName)
+        {
+            LabelValidator.Value = Map.MapInfo.AuthorNickName;
+        }
+        else if (validations.Get().ContainsKey(currentFilterKey))
         {
             LabelValidator.Value = validations.Get()[currentFilterKey].User.Nickname;
         }
