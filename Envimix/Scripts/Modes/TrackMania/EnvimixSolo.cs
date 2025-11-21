@@ -307,6 +307,11 @@ public class EnvimixSolo : Envimix
                     var key = $"{car}_0_{GetLaps()}";
                     var pbTime = ScoreMgr.Map_GetRecord(null, Map.MapInfo.MapUid, $"{ScoreContextPrefix}{car}");
 
+                    if (!EnableDefaultCar && pbTime != -1 && MapPlayerModelName != car)
+                    {
+                        OverrideEnableDefaultCar = true;
+                    }
+
                     if (pbTime != -1 && mapInfoResponse.Skillpoints!.ContainsKey(key))
                     {
                         var times = mapInfoResponse.Skillpoints[key];

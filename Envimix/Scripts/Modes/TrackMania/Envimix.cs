@@ -146,6 +146,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public required int RatingsUpdatedAt { get; set; }
     [Netwrite] public required Dictionary<string, Envimania.SEnvimaniaRecord> Validations { get; set; }
     [Netwrite] public required int ValidationsUpdatedAt { get; set; }
+    [Netwrite] public required bool OverrideEnableDefaultCar { get; set; }
 
     [Netwrite] public int FinishedAt { get; set; }
 
@@ -1541,7 +1542,7 @@ public class Envimix : UniverseModeBase
 
             spawned = false;
         }
-        else if (!EnableDefaultCar && ItemCars[carName] == GetDefaultCar())
+        else if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[carName] == GetDefaultCar())
         {
             player.RaceStartTime = -1;
             spawned = false;
@@ -1635,7 +1636,7 @@ public class Envimix : UniverseModeBase
             Log(nameof(Envimix), $"{player.User.Name} spawned");
         }*/
 
-        if (!EnableDefaultCar && ItemCars[car.Get()] == GetDefaultCar())
+        if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[car.Get()] == GetDefaultCar())
         {
             NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
         }
@@ -1935,7 +1936,7 @@ public class Envimix : UniverseModeBase
 
     private void UpdateDefaultCarAvailability()
     {
-        if (EnableDefaultCar)
+        if (EnableDefaultCar || OverrideEnableDefaultCar)
         {
             return;
         }

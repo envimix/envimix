@@ -205,6 +205,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netwrite(NetFor.UI)] public int ClientGravity { get; set; }
     [Netwrite(NetFor.UI)] public IList<string> LocalReplayFiles { get; set; }
     [Netread] public bool EnableDefaultCar { get; set; }
+    [Netread] public bool OverrideEnableDefaultCar { get; set; }
     [Netread] public string MapPlayerModelName { get; set; }
     [Netread] public int CutOffTimeLimit { get; set; }
     [Netread] public ImmutableArray<string> DisplayedCars { get; set; }
@@ -455,7 +456,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            if (EnableDefaultCar)
+            if (EnableDefaultCar || OverrideEnableDefaultCar)
             {
                 labelVehicle.Opacity = 1;
                 labelDefault.Opacity = 1;
@@ -1517,7 +1518,7 @@ public class Menu : CTmMlScriptIngame, IContext
             FrameButtonAdvancedOptions.RelativePosition_V3.Y = 10;
         }
 
-        PreviousEnableDefaultCar = EnableDefaultCar;
+        PreviousEnableDefaultCar = EnableDefaultCar || OverrideEnableDefaultCar;
 
         FrameButtonSpectator.DataAttributeSet("checked", IsSpectatorClient.ToString());
 
@@ -1730,10 +1731,10 @@ public class Menu : CTmMlScriptIngame, IContext
             LabelArrow.TextColor = new Vec3(1,1,1);
         }
 
-        if (EnableDefaultCar != PreviousEnableDefaultCar)
+        if ((EnableDefaultCar || OverrideEnableDefaultCar) != PreviousEnableDefaultCar)
         {
             UpdateVehicles();
-            PreviousEnableDefaultCar = EnableDefaultCar;
+            PreviousEnableDefaultCar = EnableDefaultCar || OverrideEnableDefaultCar;
         }
 
         /*if(UI.UISequence != PreviousUISequence) {
