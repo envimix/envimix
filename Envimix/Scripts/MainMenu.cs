@@ -816,6 +816,10 @@ public class MainMenu : CManiaAppTitle, IContext
                     }
                 }
 
+                if (pbSkillpointRankCounter == 0)
+                {
+                    pbSkillpointRankCounter = 1; // avoid div by 0
+                }
                 var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
 
                 int ceilingSkillpoints;
