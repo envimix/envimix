@@ -43,6 +43,7 @@ public class MainMenu : CManiaAppTitle, IContext
     {
         public string Name;
         public string Uid;
+        public string Collection;
         public int Order;
     }
 
@@ -707,6 +708,7 @@ public class MainMenu : CManiaAppTitle, IContext
                 {
                     Name = map.Name,
                     Uid = map.MapUid,
+                    Collection = map.CollectionName,
                     Order = order
                 };
                 request.Maps!.Add(mapInfo);

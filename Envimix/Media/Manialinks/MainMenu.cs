@@ -6,6 +6,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     {
         public string Name;
         public string Uid;
+        public string Collection;
         public int Order;
     }
 
@@ -181,8 +182,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         QuadTotdThumbnail.ChangeImageUrl($"file://Thumbnails/MapUid/{TotdInfo.Map.Uid}");
         LabelTotdName.SetText(TotdInfo.Map.Name);
 
-        var environment = "";
-        foreach (var campaign in DataFileMgr.Campaigns)
+        var environment = TotdInfo.Map.Collection;
+        /*foreach (var campaign in DataFileMgr.Campaigns)
         {
             foreach (var group in campaign.MapGroups)
             {
@@ -205,7 +206,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
             {
                 break;
             }
-        }
+        }*/
 
         LabelTotdEnv.SetText(environment);
 

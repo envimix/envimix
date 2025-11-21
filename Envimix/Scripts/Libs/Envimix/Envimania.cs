@@ -8,6 +8,7 @@ public static class Envimania
     {
         public string Name;
         public string Uid;
+        public string Collection;
     }
 
     public struct SRating

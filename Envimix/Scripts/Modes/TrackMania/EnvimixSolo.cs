@@ -26,6 +26,7 @@ public class EnvimixSolo : Envimix
     {
         public string Name;
         public string Uid;
+        public string Collection;
         public STitleDto TitlePack;
         public ImmutableArray<Envimania.SFilteredRating> Ratings;
         public IList<Envimania.SFilteredRating> UserRatings;
@@ -859,7 +860,8 @@ public class EnvimixSolo : Envimix
             Envimania.SMapInfo mapInfo = new()
             {
                 Name = Map.MapInfo.Name,
-                Uid = Map.MapInfo.MapUid
+                Uid = Map.MapInfo.MapUid,
+                Collection = Map.MapInfo.CollectionName,
             };
 
             // transform server request to client request because I cant be bothered with this shit xdd

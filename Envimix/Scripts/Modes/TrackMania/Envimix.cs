@@ -576,6 +576,7 @@ public class Envimix : UniverseModeBase
         Envimania.SMapInfo mapInfo = new()
         {
             Name = Map.MapInfo.Name,
+            Collection = Map.MapInfo.CollectionName,
             Uid = Map.MapInfo.MapUid
         };
 
