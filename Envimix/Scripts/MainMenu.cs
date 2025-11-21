@@ -196,8 +196,8 @@ public class MainMenu : CManiaAppTitle, IContext
             {
                 Yield();
                 if (!countdownShown && IntroEnded)
-                    {
-                            LayerCustomEvent(ReleaseLayer, "Show", new[] { "" });
+                {
+                    LayerCustomEvent(ReleaseLayer, "Show", new[] { "" });
                     countdownShown = true;
                 }
                 CheckToken();
