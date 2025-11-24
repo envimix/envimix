@@ -385,9 +385,9 @@ public class EnvimixSolo : Envimix
                                 var validationTimestampInSeconds = validation.DrivenAt;
                                 var titlePackReleaseTimestampInSeconds = mapInfoResponse.TitlePack.ReleasedAt;
                                 var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
-                                var extraActivityPointsReal = 10 + validationAge / 86400f * 10;
+                                var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
                                 var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
-                                Log(nameof(EnvimixSolo), $"Extra activity points calculation for {car}: 10 + ({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400 * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
+                                Log(nameof(EnvimixSolo), $"Extra activity points calculation for {car}: 100 + ({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400 * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
                                 activityPointsInt += extraActivityPointsInt;
                             }
                         }

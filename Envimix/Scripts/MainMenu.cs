@@ -854,7 +854,7 @@ public class MainMenu : CManiaAppTitle, IContext
                         var validationTimestampInSeconds = validation.DrivenAt;
                         var titlePackReleaseTimestampInSeconds = TitleRelease;
                         var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
-                        var extraActivityPointsReal = 10 + validationAge / 86400f * 10;
+                        var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
                         var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
                         activityPoints += extraActivityPointsInt;
                     }

@@ -619,9 +619,9 @@ public class Endscreen : CTmMlScriptIngame, IContext
                 var validationTimestampInSeconds = validation.DrivenAt;
                 var titlePackReleaseTimestampInSeconds = EndscreenRecordsResponse.TitlePackReleaseTimestamp;
                 var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
-                var extraActivityPointsReal = 10 + validationAge / 86400f * 10;
+                var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
                 var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
-                Log($"Extra activity points calculation: 10 + truncate(({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400) * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
+                Log($"Extra activity points calculation: 100 + truncate(({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400) * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
                 activityPoints += extraActivityPointsInt;
             }
         }
