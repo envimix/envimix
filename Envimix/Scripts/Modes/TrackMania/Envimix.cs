@@ -1619,7 +1619,7 @@ public class Envimix : UniverseModeBase
         SetValidClientCar(player, clientCar.Get());
     }
 
-    public bool TrySpawnEnvimixPlayer(CTmPlayer player, int raceStartTime)
+    public bool TrySpawnEnvimixPlayer(CTmPlayer player, int raceStartTime, string disabledCarMessage)
     {
         if (player is null)
         {
@@ -1639,7 +1639,7 @@ public class Envimix : UniverseModeBase
 
         if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[car.Get()] == GetDefaultCar())
         {
-            NoticeMessage(UIManager.GetUI(player), "Default car is currently disabled.\n$ff0Please select another car.");
+            NoticeMessage(UIManager.GetUI(player), $"{disabledCarMessage}\n$ff0Please select another car.");
         }
         else if (CarSelectionMode)
         {
@@ -1651,6 +1651,21 @@ public class Envimix : UniverseModeBase
         }
 
         return spawned;
+    }
+
+    public bool TrySpawnEnvimixPlayer(CTmPlayer player, int raceStartTime)
+    {
+        return TrySpawnEnvimixPlayer(player, raceStartTime, "Default car is currently disabled.");
+    }
+
+    public bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen, string disabledCarMessage)
+    {
+        if (frozen)
+        {
+            return TrySpawnEnvimixPlayer(player, -2, disabledCarMessage);
+        }
+
+        return TrySpawnEnvimixPlayer(player, -1, disabledCarMessage);
     }
 
     public bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen)

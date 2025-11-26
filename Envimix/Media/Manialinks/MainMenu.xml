@@ -11,9 +11,10 @@
                 <label pos="0 -7.75" z-index="1" size="55 10" text="Play Solo" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t"/>
             </frame>
             <frame pos="0 -41">
-                <quad size="65 8" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" />
-                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258"/>
-                <label pos="0 -4.25" z-index="1" size="55 8" text="Leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+                <quad size="65 8" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="333" opacity=".9" />
+                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" hidden="1"/>
+                <label pos="0 -4.25" z-index="1" size="55 8" text="Leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
+                <label pos="25 -3.2" z-index="2" size="20 5" text="coming soon!" halign="center" textsize="0.1" rot="-15" opacity="0.5"/>
             </frame>
             <frame pos="0 -52">
                 <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.9"/>
@@ -54,6 +55,7 @@
             <quad pos="35 -2.5" z-index="1" size="28 8" style="TitleLogos" substyle="Author" valign="center" halign="right"/>
             <label id="LabelBuild" pos="-32 -2.75" z-index="1" size="20 5" text="unknown build" valign="center" textsize="1" textfont="Oswald"/>
         </frame>
+        <label pos="37.5 -90" z-index="0" size="50 5" text="Support me on Ko-fi" style="TextButtonBig" scriptevents="1" valign="center2" textcolor="F42" textemboss="1" url="https://ko-fi.com/bigbang1112"  rot="90" textsize="0.5"/>
         <label id="LabelSubmitTitle" pos="-54 -107" z-index="-1" size="20 5" text="Submit title pack" halign="center" style="CardButtonSmall" scriptevents="1" />
         <label id="LabelSubmitCampaignMaps" pos="-54 -113" z-index="-1" size="20 5" text="Submit campaign maps" halign="center" style="CardButtonSmall" scriptevents="1" />
     </frame>

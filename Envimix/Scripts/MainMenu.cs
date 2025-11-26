@@ -251,7 +251,7 @@ public class MainMenu : CManiaAppTitle, IContext
             Http.Destroy(titleReleaseRequest);
         }
 
-        if (TitleKey != "OEQCw9quJuaDak8Mz1KJTNIvXCzX")
+        if (TitleKey != "DN26KJfJRZPLVlKvSSWX3TQfWv7Rr9")
         {
             Assert(false, "HELLO HACKER! Invalid title key.");
         }

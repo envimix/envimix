@@ -100,7 +100,8 @@ public class EnvimixSolo : Envimix
     [Netwrite] public Envimania.SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
     [Netwrite] public int EndscreenRecordsResponseReceivedAt { get; set; }
 
-    public string ScoreContextPrefix = "";
+    public const string ScoreContextPrefix = "Test";
+    public const string DisabledCarMessage = "Default car is disabled until completing a different car.";
 
     public override void OnServerInit()
     {
@@ -122,7 +123,7 @@ public class EnvimixSolo : Envimix
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load
 
-        if (TitleKey != "OEQCw9quJuaDak8Mz1KJTNIvXCzX")
+        if (TitleKey != "DN26KJfJRZPLVlKvSSWX3TQfWv7Rr9")
         {
             return;
         }
@@ -518,15 +519,15 @@ public class EnvimixSolo : Envimix
 
         if (frozen)
         {
-            spawned = TrySpawnEnvimixPlayer(player, frozen);
+            spawned = TrySpawnEnvimixPlayer(player, frozen, DisabledCarMessage);
         }
         else if (CustomCountdown < 0)
         {
-            spawned = TrySpawnEnvimixPlayer(player, -1);
+            spawned = TrySpawnEnvimixPlayer(player, -1, DisabledCarMessage);
         }
         else
         {
-            spawned = TrySpawnEnvimixPlayer(player, Now + CustomCountdown);
+            spawned = TrySpawnEnvimixPlayer(player, Now + CustomCountdown, DisabledCarMessage);
         }
 
         SpawnPersonalGhost(player);

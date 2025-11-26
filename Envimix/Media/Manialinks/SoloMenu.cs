@@ -294,7 +294,15 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             SendCustomEvent("Stats", new[] { "" });
 
-            ExpectedCompletionPercentage = finishedEnvimixCount * 1f / totalEnvimixCount * 100;
+            if (totalEnvimixCount == 0)
+            {
+                ExpectedCompletionPercentage = 0;
+            }
+            else
+            {
+                ExpectedCompletionPercentage = finishedEnvimixCount * 1f / totalEnvimixCount * 100;
+            }
+
             StatsAt = Now;
             StatsLocalAt = Now;
         }
