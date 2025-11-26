@@ -933,6 +933,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         Campaign = DataFileMgr.Campaigns[0];
 
         var selectedNum = -1;
+        var totalMapCounter = 0;
 
         for (int i = 0; i < FrameCampaign.Controls.Count; i++)
         {
@@ -985,7 +986,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     quadMapThumbnail.ChangeImageUrl($"file://Thumbnails/MapUid/{mapInfo.MapUid}");
                     quadMapThumbnail.Show();
 
-                    labelMapName.SetText(TextLib.FormatInteger(mapCounter + 1, 3));
+                    labelMapName.SetText(TextLib.FormatInteger(totalMapCounter + 1, 3));
                     labelMapName.Show();
 
                     quadMapButton.DataAttributeSet("MapGroupNum", i.ToString());
@@ -997,13 +998,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                     if (hovered)
                     {
-                        selectedNum = mapCounter;
+                        selectedNum = totalMapCounter;
                     }
 
                     quadMapName.Show();
                     labelSkillpoints.Hide();
 
                     mapCounter += 1;
+                    totalMapCounter += 1;
                 }
             }
         }

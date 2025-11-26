@@ -61,6 +61,8 @@ public class EnvimixSolo : Envimix
     [Setting(As = "Custom countdown")]
     public int CustomCountdown = -1;
 
+    [Setting] public new bool ExploreMode = false;
+
     public Dictionary<Ident, string> LocalGhostsTaskFiles;
     public IList<CTaskResult_GhostList> LocalGhostsTasks;
     public Dictionary<string, IList<CGhost>> LocalGhosts;
@@ -115,8 +117,6 @@ public class EnvimixSolo : Envimix
         Outro = false;
         OutroGhostMaxFinishLength = 1500;
         RatingOpen = false;
-
-        ScoreContextPrefix = "Test";
     }
 
     public override void OnMapLoad()
@@ -139,7 +139,10 @@ public class EnvimixSolo : Envimix
 
     public override void OnMapStart()
     {
-        RequestMapVisit();
+        if (!ExploreMode)
+        {
+            RequestMapVisit();
+        }
     }
 
     public override void OnUIEvent(CUIConfigEvent e)

@@ -8,7 +8,7 @@ public class EnvimixExplore : CTmMapType, IContext
     {
         StartTest += () =>
         {
-            TestMapWithMode("Scripts/Modes/TrackMania/EnvimixSolo.Script.txt", "<mode_script_settings><setting name=\"S_MenuAsNormalLayer\" type=\"boolean\" value=\"1\" /><setting name=\"S_CustomCountdown\" type=\"integer\" value=\"0\" /><setting name=\"S_EnableDefaultCar\" type=\"boolean\" value=\"1\"/></mode_script_settings>");
+            TestMapWithMode("Scripts/Modes/TrackMania/EnvimixSolo.Script.txt", "<mode_script_settings><setting name=\"S_MenuAsNormalLayer\" type=\"boolean\" value=\"1\" /><setting name=\"S_CustomCountdown\" type=\"integer\" value=\"0\" /><setting name=\"S_EnableDefaultCar\" type=\"boolean\" value=\"1\"/><setting name=\"S_ExploreMode\" type=\"boolean\" value=\"1\"/></mode_script_settings>");
             LayerCustomEvent(ExploreLayer, "StartTest", new[] { "" });
         };
     }
