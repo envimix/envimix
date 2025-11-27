@@ -14,6 +14,34 @@ public class Rating : CTmMlScriptIngame, IContext
         public string Nickname;
     }
 
+    public struct SUserInfo
+    {
+        public string Login;
+        public string Nickname;
+        public string Zone;
+        public string AvatarUrl;
+        public string Language;
+        public string Description;
+        public Vec3 Color;
+        public string SteamUserId;
+        public int FameStars;
+        public float LadderPoints;
+    }
+
+    public struct SEnvimaniaRecord
+    {
+        public SUserInfo User;
+        public int Time;
+        public int Score;
+        public int NbRespawns;
+        public float Distance;
+        public float Speed;
+        public bool Verified;
+        public bool Projected;
+        public string GhostUrl;
+        public string DrivenAt;
+    }
+
     public bool PreviousVisible;
     public int VisibleTime = -1;
     public string PreviousCar = "";
@@ -33,6 +61,7 @@ public class Rating : CTmMlScriptIngame, IContext
 
     [Netread] public int FinishedAt { get; set; }
     [Netread] public bool Outro { get; set; }
+    [Netread] public string MapPlayerModelName { get; set; }
 
     public bool MenuOpen;
 
@@ -80,6 +109,29 @@ public class Rating : CTmMlScriptIngame, IContext
         var gravity = Netread<int>.For(GetPlayer());
 
         return $"{car.Get()}_{gravity.Get()}_Time";
+    }
+
+    int GetLaps()
+    {
+        if (!MapIsLapRace)
+        {
+            return 1;
+        }
+
+        if (NbLaps == -1)
+        {
+            return Map.TMObjective_NbLaps;
+        }
+
+        return NbLaps;
+    }
+
+    string ConstructValidationFilterKey()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var gravity = Netread<int>.For(GetPlayer());
+
+        return $"{car.Get()}_{gravity.Get()}_{GetLaps()}";
     }
 
     string GetCar()
@@ -138,6 +190,26 @@ public class Rating : CTmMlScriptIngame, IContext
         else
         {
             QuadStar.Visible = false;
+        }
+
+        var validations = Netread<Dictionary<string, SEnvimaniaRecord>>.For(Teams[0]);
+
+
+        var validationKey = ConstructValidationFilterKey();
+
+        var car = Netread<string>.For(GetPlayer());
+
+        // if validated or is the default car
+        if (validations.Get().ContainsKey(validationKey) || MapPlayerModelName == car.Get())
+        {
+            GaugeDifficulty.Color = new Vec3(1, 1, 1);
+            GaugeQuality.Color = new Vec3(1, 1, 1);
+        }
+        else
+        {
+            // otherwise use the impossible red color
+            GaugeDifficulty.Color = new Vec3(1, 0, 0);
+            GaugeQuality.Color = new Vec3(1, 0, 0);
         }
     }
 
