@@ -307,10 +307,17 @@ public class EnvimixSolo : Envimix
 
                 foreach (var car in DisplayedCars)
                 {
+                    var scoreContext = $"{ScoreContextPrefix}{car}";
+
+                    if (MapPlayerModelName == car)
+                    {
+                        scoreContext = ScoreContextPrefix;
+                    }
+
                     // currently validation key, should be something else, but it is needed to retrieve the validation for extra activity points anyway
                     // so wtf if this mess either way
                     var key = $"{car}_0_{GetLaps()}";
-                    var pbTime = ScoreMgr.Map_GetRecord(null, Map.MapInfo.MapUid, $"{ScoreContextPrefix}{car}");
+                    var pbTime = ScoreMgr.Map_GetRecord(null, Map.MapInfo.MapUid, scoreContext);
 
                     if (!EnableDefaultCar && pbTime != -1 && MapPlayerModelName != car)
                     {
@@ -464,8 +471,15 @@ public class EnvimixSolo : Envimix
         {
             // alternatively, fetch personal best from envimix webapi
 
+            var scoreContext = $"{ScoreContextPrefix}{car}";
+
+            if (MapPlayerModelName == car)
+            {
+                scoreContext = ScoreContextPrefix;
+            }
+
             var key = ConstructFilterKey(car);
-            var task = ScoreMgr.Map_GetRecordGhost(null, Map.MapInfo.MapUid, $"{ScoreContextPrefix}{car}");
+            var task = ScoreMgr.Map_GetRecordGhost(null, Map.MapInfo.MapUid, scoreContext);
 
             if (task is null)
             {
@@ -665,7 +679,15 @@ public class EnvimixSolo : Envimix
         UploadGhost(ghost);
 
         var car = Netwrite<string>.For(player);
-        NewRecordTask = ScoreMgr.Map_SetNewRecord(null, Map.MapInfo.MapUid, $"{ScoreContextPrefix}{car.Get()}", ghost);
+
+        var scoreContext = $"{ScoreContextPrefix}{car.Get()}";
+
+        if (MapPlayerModelName == car.Get())
+        {
+            scoreContext = ScoreContextPrefix;
+        }
+
+        NewRecordTask = ScoreMgr.Map_SetNewRecord(null, Map.MapInfo.MapUid, scoreContext, ghost);
 
         NewPersonalBest = false;
     }

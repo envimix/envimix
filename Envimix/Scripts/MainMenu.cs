@@ -128,37 +128,20 @@ public class MainMenu : CManiaAppTitle, IContext
     public void Main()
     {        
         Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
-        
-        ImmutableArray<string> allowedLogins = new()
-        {
-            "bigbang1112",
-            "poutrel",
-            "riolu",
-            "dragontm",
-            "mystixor",
-            "spookykoala2113",
-            "ajsasflaym",
-            "arkes910",
-            "ydoowoody",
-            "hot_wheeler",
-            "totokill13",
-            "tushy444trackmaniagamer",
-            "naruto42",
-            "trysketuri",
-            "hetna"
-        };
-
-        if (!allowedLogins.Contains(LocalUser.Login))
-        {
-            while (true)
-            {
-                Menu_Quit();
-                Yield();
-            }
-        }
 
         ManiaPlanetAuthenticationRequested = true;
         Authentication_GetToken(null, "Envimix");
+
+        var preloadLayer = UILayerCreate();
+        preloadLayer.ManialinkPage = "file://Media/Manialinks/PreloadThumbnails.xml";
+
+        Yield();
+        while (preloadLayer.IsLocalPageScriptRunning)
+        {
+            Yield();
+        }
+
+        UILayerDestroy(preloadLayer);
 
         var introLayer = UILayerCreate();
         introLayer.ManialinkPage = "file://Media/Manialinks/Intro.xml";
@@ -205,7 +188,13 @@ public class MainMenu : CManiaAppTitle, IContext
                 continue;
             }
 
-            var titleReleaseRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/release");
+            var headers = "";
+            if (EnvimixTurboUserToken != "")
+            {
+                headers = $"Authorization: Bearer {EnvimixTurboUserToken}";
+            }
+
+            var titleReleaseRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/release", false, headers);
             Wait(() => titleReleaseRequest.IsCompleted);
 
             if (titleReleaseRequest.StatusCode == 200)
@@ -777,7 +766,18 @@ public class MainMenu : CManiaAppTitle, IContext
 
             foreach (var car in Cars)
             {
-                var pbTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, $"{ScoreContextPrefix}{car}");
+                var scoreContext = $"{ScoreContextPrefix}{car}";
+
+                // hacky but it works for TMT
+                if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
+                    || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
+                    || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
+                    || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
+                {
+                    scoreContext = ScoreContextPrefix;
+                }
+
+                var pbTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
 
                 var skillpointsAndValidationKey = $"{car}_0_{GetLaps(mapInfo)}";
 

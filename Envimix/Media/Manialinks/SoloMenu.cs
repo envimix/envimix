@@ -262,7 +262,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 {
                     foreach (var mapInfo in mapGroup.MapInfos)
                     {
-                        // a bit of a hack but clientside on turbo maps it works - if current car context is environment car, skip
+                        if (campaign.ScoreContext == ScoreContextPrefix)
+                        {
+                            continue;
+                        }
+
+                        // a bit of a hack but clientside on turbo maps it works - ensures no false positives
                         if (mapInfo.CollectionName == "Canyon" && campaign.ScoreContext == ScoreContextPrefix + "CanyonCar")
                         {
                             continue;
@@ -315,7 +320,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var percentageDiff = ExpectedCompletionPercentage - CurrentCompletionPercentage;
             var percentage = AnimLib.EaseOutQuad(time, CurrentCompletionPercentage, percentageDiff, duration);
 
-            var percentageText = TextLib.FormatReal(percentage, 4, false, true);
+            var percentageText = TextLib.FormatReal(percentage, 2, false, true);
 
             LabelCompletionPercentage.Value = $"Envimix $ff0Turbo$g completion: $o{percentageText}%";
 
@@ -486,9 +491,20 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             // if the car is not supposed to be there, the carName is empty string, so this is safe
             var carName = cars[carIndex];
 
+            var scoreContext = $"{ScoreContextPrefix}{carName}";
+
+            // hacky but it works for TMT
+            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
+                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
+                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
+                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+            {
+                scoreContext = ScoreContextPrefix;
+            }
+
             var labelPersonalBest = (frameLeaderboard.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
 
-            var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, $"{ScoreContextPrefix}{carName}");
+            var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
 
             if (time == -1)
             {
