@@ -70,7 +70,7 @@ public static class Loading
             "TIP: Activity points are valuable on combinations with less records, while skillpoints are more valuable on combinations with many records.",
             "TIP: By validating maps, you receive extra activity points. The bonus becomes bigger with the age of the title pack. But be careful, someone who doesn't care about the points can grab your desired validation if you wait for too long.",
             "TIP: Think of the difficulty/quality rating bar as more filled => more difficult/superior.",
-            "TIP: Skillpoints are rank-based. Just move up the leaderboard to recieve exponentially more skillpoints. Improvement without a new rank doesn't count!",
+            "TIP: Skillpoints are rank-based. Just move up the leaderboard to receive exponentially more skillpoints. Improvement without a new rank doesn't count!",
             "FUN FACT: Trackmania Turbo envimix is directly possible without this ManiaPlanet port, however, the leaderboard features are limited and TMUF cars are not possible without the GameData exploit.",
             "FUN FACT: Envimix is a slightly incorrect naming of the project. It's a signature name taken from TMUF environment mixing map bases that were a lot popular outside of TMUnlimiter. Carmix would be the correct challenge name, especially with the latest TM2020 updates.",
             "TIP: All combinations are playable! The maps are validated using the default car and the gamemode just changes the car on the fly. Validate them yourself!",
