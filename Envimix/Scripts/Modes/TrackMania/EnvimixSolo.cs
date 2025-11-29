@@ -425,7 +425,8 @@ public class EnvimixSolo : Envimix
             {
                 Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (status code: {MapInfoRequest.StatusCode})");
 
-                if (MapInfoFailedAt == "" && MapInfoRequest.StatusCode is 401 or 403)
+                // avoid force quit in endscreen (FinishedAt == -1) to the user can save a replay
+                if (FinishedAt == -1 && MapInfoRequest.StatusCode is 401 or 403)
                 {
                     forceQuit = true;
                 }
