@@ -102,7 +102,7 @@ public class EnvimixSolo : Envimix
     [Netwrite] public Envimania.SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
     [Netwrite] public int EndscreenRecordsResponseReceivedAt { get; set; }
 
-    public const string ScoreContextPrefix = "Test";
+    public const string ScoreContextPrefix = "";
     public const string DisabledCarMessage = "Default car is disabled until completing a different car.";
 
     public override void OnServerInit()
@@ -122,11 +122,6 @@ public class EnvimixSolo : Envimix
     public override void OnMapLoad()
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load
-
-        if (TitleKey != "DN26KJfJRZPLVlKvSSWX3TQfWv7Rr9")
-        {
-            return;
-        }
 
         RemoveAllGhosts();
 
