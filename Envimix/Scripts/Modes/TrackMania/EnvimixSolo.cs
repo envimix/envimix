@@ -101,6 +101,7 @@ public class EnvimixSolo : Envimix
 
     [Netwrite] public Envimania.SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
     [Netwrite] public int EndscreenRecordsResponseReceivedAt { get; set; }
+    [Netwrite] public bool ForceQuit { get; set; }
 
     public const string ScoreContextPrefix = "";
     public const string DisabledCarMessage = "Default car is disabled until completing a different car.";
@@ -271,6 +272,8 @@ public class EnvimixSolo : Envimix
 
         if (MapInfoRequest is not null && MapInfoRequest.IsCompleted)
         {
+            var forceQuit = false;
+
             if (MapInfoRequest.StatusCode == 200)
             {
                 SMapInfoResponse mapInfoResponse = new();
@@ -421,10 +424,23 @@ public class EnvimixSolo : Envimix
             else
             {
                 Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (status code: {MapInfoRequest.StatusCode})");
+
+                if (MapInfoFailedAt == "" && MapInfoRequest.StatusCode is 401 or 403)
+                {
+                    forceQuit = true;
+                }
+
                 MapInfoFailedAt = TimeLib.GetCurrent();
             }
             Http.Destroy(MapInfoRequest);
             MapInfoRequest = null;
+
+            // quit like this so that the http request is destroyed and wont cause an overflow
+            if (forceQuit)
+            {
+                Log(nameof(EnvimixSolo), "Forcing quit due to authorization failure to ensure safe runs.");
+                ForceQuit = true;
+            }
         }
 
         if (MapInfoFailedAt != "" && TimeLib.GetDelta(TimeLib.GetCurrent(), MapInfoFailedAt) > 5)

@@ -2387,5 +2387,11 @@ public class Menu : CTmMlScriptIngame, IContext
             }
             PrevGhostToUpload = GhostToUpload;
         }
+
+        var forceQuit = Netread<bool>.For(Playground.Teams[0]);
+        if (forceQuit.Get())
+        {
+            CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Quit);
+        }
     }
 }
