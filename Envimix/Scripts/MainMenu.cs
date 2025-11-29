@@ -119,7 +119,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public CHttpRequest? StatsRequest;
     public Dictionary<string, Dictionary<string, CHttpRequest>> LeaderboardRequests;
 
-    public string ScoreContextPrefix = "Test";
+    public string ScoreContextPrefix = "";
 
     public ImmutableArray<string> Cars;
 
@@ -238,11 +238,6 @@ public class MainMenu : CManiaAppTitle, IContext
                 Sleep(10000);
             }
             Http.Destroy(titleReleaseRequest);
-        }
-
-        if (TitleKey != "DN26KJfJRZPLVlKvSSWX3TQfWv7Rr9")
-        {
-            Assert(false, "HELLO HACKER! Invalid title key.");
         }
 
         LayerCustomEvent(ReleaseLayer, "Hide", new[] { "" });
@@ -474,7 +469,6 @@ public class MainMenu : CManiaAppTitle, IContext
     {
         UserTokenRequestTimeout = -1;
         UserTokenFirstRequestTimeout = -1;
-        EnvimixTurboUserToken = "";
         UserTokenReceived = -1;
     }
 

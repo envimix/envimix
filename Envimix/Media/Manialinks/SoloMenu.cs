@@ -108,7 +108,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public int ExpectedActivityPoints;
     public float ExpectedCompletionPercentage;
 
-    public string ScoreContextPrefix = "Test";
+    public string ScoreContextPrefix = "";
 
     public bool IsTMUF;
 
