@@ -32,6 +32,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadTotdLoading;
     [ManialinkControl] public required CMlFrame FrameTotd;
     [ManialinkControl] public required CMlQuad QuadTotd;
+    [ManialinkControl] public required CMlLabel LabelRestoreValidations;
 
     public STotdInfo TotdInfo;
 
@@ -72,6 +73,11 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         LabelSubmitTitle.MouseClick += () =>
         {
             SendCustomEvent("SubmitTitle", new[] { "" });
+        };
+
+        LabelRestoreValidations.MouseClick += () =>
+        {
+            SendCustomEvent("RestoreValidations", new[] { "" });
         };
 
         QuadTotd.MouseClick += () =>
@@ -117,6 +123,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     {
         LabelSubmitCampaignMaps.Hide();
         LabelSubmitTitle.Hide();
+        LabelRestoreValidations.Hide();
 
         EnableMenuNavigationInputs = true;
 
@@ -136,11 +143,13 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             LabelSubmitCampaignMaps.Visible = true;
             LabelSubmitTitle.Visible = true;
+            LabelRestoreValidations.Visible = true;
         }
         else
         {
             LabelSubmitCampaignMaps.Visible = false;
             LabelSubmitTitle.Visible = false;
+            LabelRestoreValidations.Visible = false;
         }
 
         foreach (var control in Page.GetClassChildren_Result)

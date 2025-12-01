@@ -56,6 +56,7 @@
             <label id="LabelBuild" pos="-32 -2.75" z-index="1" size="20 5" text="unknown build" valign="center" textsize="1" textfont="Oswald"/>
         </frame>
         <label pos="37.5 -90" z-index="0" size="50 5" text="Support me on Ko-fi" style="TextButtonBig" scriptevents="1" valign="center2" textcolor="F42" textemboss="1" url="https://ko-fi.com/bigbang1112"  rot="90" textsize="0.5"/>
+        <label id="LabelRestoreValidations" pos="-54 -101" z-index="-1" size="20 5" text="Restore validations" halign="center" style="CardButtonSmall" scriptevents="1" />
         <label id="LabelSubmitTitle" pos="-54 -107" z-index="-1" size="20 5" text="Submit title pack" halign="center" style="CardButtonSmall" scriptevents="1" />
         <label id="LabelSubmitCampaignMaps" pos="-54 -113" z-index="-1" size="20 5" text="Submit campaign maps" halign="center" style="CardButtonSmall" scriptevents="1" />
     </frame>

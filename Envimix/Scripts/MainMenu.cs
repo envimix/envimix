@@ -118,6 +118,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public CHttpRequest? TotdRequest;
     public CHttpRequest? StatsRequest;
     public Dictionary<string, Dictionary<string, CHttpRequest>> LeaderboardRequests;
+    public CHttpRequest? RestoreValidationsRequest;
 
     public string ScoreContextPrefix = "";
 
@@ -321,6 +322,9 @@ public class MainMenu : CManiaAppTitle, IContext
                         case "Stats":
                             RequestStats();
                             break;
+                        case "RestoreValidations":
+                            RestoreValidations();
+                            break;
                         case "LoadLeaderboards":
                             lbRequestMapUid = e.CustomEventData[0];
                             lbRequestLaps = TextLib.ToInteger(e.CustomEventData[1]);
@@ -406,6 +410,20 @@ public class MainMenu : CManiaAppTitle, IContext
             }
             Http.Destroy(StatsRequest);
             StatsRequest = null;
+        }
+
+        if (RestoreValidationsRequest is not null && RestoreValidationsRequest.IsCompleted)
+        {
+            if (RestoreValidationsRequest.StatusCode == 200)
+            {
+                Log("Restoring validations began (200).");
+            }
+            else
+            {
+                Log($"Restoring validations request failed ({RestoreValidationsRequest.StatusCode}).");
+            }
+            Http.Destroy(RestoreValidationsRequest);
+            RestoreValidationsRequest = null;
         }
 
         ImmutableArray<string> mapUidsToRemove = new();
@@ -710,6 +728,11 @@ public class MainMenu : CManiaAppTitle, IContext
     private void RequestStats()
     {
         StatsRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats");
+    }
+
+    private void RestoreValidations()
+    {
+        RestoreValidationsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/restore-validations", "", $"Authorization: Bearer {EnvimixTurboUserToken}");
     }
 
     private static int GetLaps(CMapInfo mapInfo)
