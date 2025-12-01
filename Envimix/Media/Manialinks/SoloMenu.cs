@@ -669,7 +669,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void UpdateLeaderboards()
     {
-        if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1)
+        if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1 || MapSelectedAt == -1)
         {
             return;
         }
