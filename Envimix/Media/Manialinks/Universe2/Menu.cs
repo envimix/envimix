@@ -685,15 +685,26 @@ public class Menu : CTmMlScriptIngame, IContext
             case "QuadGhost":
                 var file = control.Parent.DataAttributeGet("file");
                 var gindex = control.Parent.DataAttributeGet("gindex");
-
-                if (file is "")
-                {
-                    file = control.Parent.DataAttributeGet("url");
-                }
+                var url = control.Parent.DataAttributeGet("url");
 
                 (control as CMlQuad)!.StyleSelected = false;
 
-                if (file is not "")
+                if (url is not "")
+                {
+                    if (SelectedGhosts.ContainsKey(url))
+                    {
+                        SelectedGhosts.Remove(url);
+                        SendCustomEvent("RemoveOnlineGhost", new[] { url });
+                    }
+                    else
+                    {
+                        SelectedGhosts[url] = true;
+                        SendCustomEvent("AddOnlineGhost", new[] { url });
+                    }
+
+                    (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(url);
+                }
+                else
                 {
                     if (SelectedGhosts.ContainsKey(file))
                     {
@@ -1082,7 +1093,14 @@ public class Menu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonExit)
                         {
-                            NavFocusedControl = QuadButtonServerSettings;
+                            if (IsSolo())
+                            {
+                                NavFocusedControl = QuadButtonAdvanced;
+                            }
+                            else
+                            {
+                                NavFocusedControl = QuadButtonServerSettings;
+                            }
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonManageServer)
@@ -1174,7 +1192,14 @@ public class Menu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonAdvanced)
                         {
-                            NavFocusedControl = QuadButtonManageServer;
+                            if (IsSolo())
+                            {
+                                NavFocusedControl = QuadButtonExit;
+                            }
+                            else
+                            {
+                                NavFocusedControl = QuadButtonManageServer;
+                            }
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonSkin)
@@ -1219,7 +1244,17 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         QuadLoading.Hide();
 
-        if (LocalGhostMetadata.Count == 0)
+        ImmutableArray<SGhostMetadata> filteredLocalGhosts = new();
+        var car = Netread<string>.For(GetPlayer());
+        foreach (var metadata in LocalGhostMetadata)
+        {
+            if (TextLib.Find(car.Get(), metadata.FileName, false, false))
+            {
+                filteredLocalGhosts.Add(metadata);
+            }
+        }
+
+        if (filteredLocalGhosts.Length == 0)
         {
             LabelLoadingResult.SetText("No ghosts found");
         }
@@ -1232,13 +1267,13 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
 
-            if (i >= LocalGhostMetadata.Count)
+            if (i >= filteredLocalGhosts.Length)
             {
                 frame.Hide();
                 continue;
             }
 
-            var metadata = LocalGhostMetadata[i];
+            var metadata = filteredLocalGhosts[i];
 
             frame.DataAttributeSet("file", metadata.FileName);
             frame.DataAttributeSet("url", "");
@@ -1773,7 +1808,7 @@ public class Menu : CTmMlScriptIngame, IContext
             }
             else
             {
-                SetSlidingText(FrameLabelMapType, "$aaaNON-ENVIMIX MAP");
+                SetSlidingText(FrameLabelMapType, "$aaaRACE MAP");
             }
             PreviousMapUid = Map.MapInfo.MapUid;
         }

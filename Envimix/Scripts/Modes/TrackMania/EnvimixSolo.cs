@@ -66,6 +66,11 @@ public class EnvimixSolo : Envimix
     public Dictionary<Ident, string> LocalGhostsTaskFiles;
     public IList<CTaskResult_GhostList> LocalGhostsTasks;
     public Dictionary<string, IList<CGhost>> LocalGhosts;
+
+    public Dictionary<Ident, string> OnlineGhostsTaskUrls;
+    public IList<CTaskResult_Ghost> OnlineGhostsTasks;
+    public Dictionary<string, CGhost> OnlineGhosts;
+
     public Dictionary<CGhost, Ident> SpawnedGhosts;
     public Dictionary<CGhost, Ident> SpawnedPersonalGhosts;
 
@@ -469,6 +474,7 @@ public class EnvimixSolo : Envimix
 
         CheckForPersonalGhosts();
         CheckForLocalGhosts();
+        CheckForOnlineGhosts();
         CheckPersonalRatings();
     }
 
@@ -653,6 +659,37 @@ public class EnvimixSolo : Envimix
                     Log(nameof(EnvimixSolo), $"Ghost '{replayFileNameRemove}' (#{ghostIndexRemove}) is missing but shouldn't be.");
                 }
 
+                break;
+            case "AddOnlineGhost":
+                var replayUrlAdd = e.CustomEventData[0];
+
+                if (OnlineGhosts.ContainsKey(replayUrlAdd))
+                {
+                    var ghost = OnlineGhosts[replayUrlAdd];
+                    SpawnedGhosts[ghost] = RaceGhost_Add(ghost, DisplayAsPlayerBest: false);
+                    Log(nameof(EnvimixSolo), $"Online ghost from '{OnlineGhosts[replayUrlAdd].Nickname}' is already downloaded.");
+                }
+                else
+                {
+                    var onlineGhostTask = DataFileMgr.Ghost_Download(replayUrlAdd, replayUrlAdd);
+                    OnlineGhostsTasks.Add(onlineGhostTask);
+                    OnlineGhostsTaskUrls[onlineGhostTask.Id] = replayUrlAdd;
+                }
+                break;
+            case "RemoveOnlineGhost":
+                var replayUrlRemove = e.CustomEventData[0];
+                var onlineGhostToRemove = OnlineGhosts[replayUrlRemove];
+
+                if (SpawnedGhosts.ContainsKey(onlineGhostToRemove))
+                {
+                    RaceGhost_Remove(SpawnedGhosts[onlineGhostToRemove]);
+                    SpawnedGhosts.Remove(onlineGhostToRemove);
+                    Log(nameof(EnvimixSolo), $"Online ghost from '{onlineGhostToRemove.Nickname}' removed.");
+                }
+                else
+                {
+                    Log(nameof(EnvimixSolo), $"Online ghost from '{onlineGhostToRemove.Nickname}' is missing but shouldn't be.");
+                }
                 break;
             case "OpenRating":
                 RatingOpen = true;
@@ -842,6 +879,36 @@ public class EnvimixSolo : Envimix
         if (completedGhostTasks.Length > 0)
         {
             completedGhostTasks.Clear();
+        }
+    }
+
+    private void CheckForOnlineGhosts()
+    {
+        ImmutableArray<CTaskResult_Ghost> completedGhostTasks = new();
+
+        foreach (var ghostTask in OnlineGhostsTasks)
+        {
+            if (ghostTask.IsProcessing)
+            {
+                continue;
+            }
+
+            if (ghostTask.HasSucceeded && ghostTask.Ghost is not null)
+            {
+                var ghost = ghostTask.Ghost;
+                SpawnedGhosts[ghost] = RaceGhost_Add(ghost, DisplayAsPlayerBest: false);
+                OnlineGhosts[OnlineGhostsTaskUrls[ghostTask.Id]] = ghost;
+
+                Log(nameof(EnvimixSolo), $"Online ghost from '{ghost.Nickname}' downloaded and spawned.");
+            }
+
+            completedGhostTasks.Add(ghostTask);
+            OnlineGhostsTaskUrls.Remove(ghostTask.Id);
+        }
+
+        foreach (var ghostTask in completedGhostTasks)
+        {
+            OnlineGhostsTasks.Remove(ghostTask);
         }
     }
 
