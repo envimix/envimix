@@ -131,11 +131,14 @@ public class EnvimixSolo : Envimix
 
         RemoveAllGhosts();
 
-        CanListenToUIEvents = true;
-
         PrespawnEnvimixPlayers();
 
         RequestPersonalGhosts();
+    }
+
+    public override void OnGameStart()
+    {
+        CanListenToUIEvents = true;
     }
 
     public override void OnMapStart()
