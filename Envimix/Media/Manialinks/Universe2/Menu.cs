@@ -1248,7 +1248,18 @@ public class Menu : CTmMlScriptIngame, IContext
         var car = Netread<string>.For(GetPlayer());
         foreach (var metadata in LocalGhostMetadata)
         {
-            if (TextLib.Find(car.Get(), metadata.FileName, false, false))
+            var carNameInFileName = "";
+
+            foreach (var displayedCar in DisplayedCars)
+            {
+                if (TextLib.Find(displayedCar, metadata.FileName, false, false))
+                {
+                    carNameInFileName = displayedCar;
+                    break;
+                }
+            }
+
+            if (carNameInFileName == "" || carNameInFileName == car.Get())
             {
                 filteredLocalGhosts.Add(metadata);
             }
