@@ -803,6 +803,13 @@ public class EnvimixSolo : Envimix
         ReplaySaved = false;
         RemoveAllGhosts();
 
+        // spawn all online and local ghosts again
+        foreach (var (ghost, spawnIdent) in SpawnedGhosts)
+        {
+            SpawnedGhosts.Clear();
+            SpawnedGhosts[ghost] = RaceGhost_Add(ghost, DisplayAsPlayerBest: false);
+        }
+
         ui.UISequence = CUIConfig.EUISequence.Playing;
     }
 
