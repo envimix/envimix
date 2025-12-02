@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <framemodel id="FramemodelRecord">
+        <quad id="QuadHighlight" pos="25 0.3" z-index="-1" size="68 5.75" valign="center" halign="center" opacity="0.2" style="Bgs1" substyle="BgMetalBar" />
+        <label pos="-5.5 0" z-index="0" size="27.5 5" text="01" textsize="3" textfont="RajdhaniMono" id="LabelRank" valign="center2" />
+        <label pos="24 0" z-index="0" size="27.5 5" text="1 000 000" textsize="3" textfont="RajdhaniMono" id="LabelRecord" valign="center2" textcolor="0F0" halign="right"/>
+        <frame pos="27 0" clip="1" clipsizen="28 5" clipposn="14 0">
+            <label z-index="0" size="100 5" text="$o$i$nBIGBANG111222222222" textsize="2.5" textfont="Oswald" valign="center2" halign="left" id="LabelNickname" />
+        </frame>
+    </framemodel>
+    <frame id="FrameCategory">
+        <frame pos="-110 75">
+            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
+            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadDefaultCarLeaderboards" hidden="1"/>
+            <label pos="0 -4.25" z-index="1" size="55 8" text="Global leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" textcolor="AAA"/>
+            <label pos="20 3" z-index="3" size="20 5" text="coming soon!" textsize="1" halign="center" valign="center" textemboss="1" rot="-5" textcolor="AAA"/>
+        </frame>
+        <frame pos="-50 75">
+            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
+            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadEnvimixLeaderboards" styleselected="1"/>
+            <label pos="0 -4.25" z-index="1" size="55 8" text="Envimix leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+        </frame>
+        <frame pos="10 75">
+            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
+            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadDefaultCarLeaderboards" hidden="1"/>
+            <label pos="0 -4.25" z-index="1" size="55 8" text="Default Car leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" textcolor="AAA"/>
+            <label pos="20 3" z-index="3" size="20 5" text="coming soon!" textsize="1" halign="center" valign="center" textemboss="1" rot="-5" textcolor="AAA"/>
+        </frame>
+    </frame>
+    <frame id="FrameCompletion" pos="-105 65">
+        <quad z-index="-2" size="69 134" halign="center" style="Bgs1" substyle="BgCardList" />
+        <quad z-index="-2" size="69 134" halign="center" style="Bgs1" substyle="BgCardList" />
+        <label pos="0 -7.9" z-index="0" size="60 10" textprefix="$t$o" text="Completion" halign="center" textfont="Oswald" valign="center" textsize="4" />
+        <frame pos="0 -17" id="FramePanelZone">
+            <quad pos="0 0" z-index="0" size="62 7" style="Bgs1" substyle="BgCard3" halign="center" valign="center" opacity=".25" />
+            <quad pos="0.1 -0.1" z-index="1" size="62 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QuadZone" />
+            <label pos="0 0.2" z-index="2" size="62 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LabelZone" translate="1" textprefix="$t" />
+        </frame>
+        <frame pos="-25 -60">
+            <frame id="FrameCompletionPlayers">
+                <frameinstance modelid="FramemodelRecord" pos="0 35" />
+                <frameinstance modelid="FramemodelRecord" pos="0 30" />
+                <frameinstance modelid="FramemodelRecord" pos="0 25" />
+                <frameinstance modelid="FramemodelRecord" pos="0 20" />
+                <frameinstance modelid="FramemodelRecord" pos="0 15" />
+                <frameinstance modelid="FramemodelRecord" pos="0 10" />
+                <frameinstance modelid="FramemodelRecord" pos="0 5" />
+                <frameinstance modelid="FramemodelRecord" pos="0 0" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -5" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -10" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -15" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -20" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -25" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -30" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -35" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -40" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -45" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -50" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -55" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -60" />
+            </frame>
+            <frameinstance modelid="FramemodelRecord" id="FramePersonalCompletion" pos="0 -70" />
+        </frame>
+    </frame>
+    <frame id="FrameMostSkillpoints" pos="-35 65">
+        <quad z-index="-2" size="69 134" halign="center" style="Bgs1" substyle="BgCardList" />
+        <quad z-index="-2" size="69 134" halign="center" style="Bgs1" substyle="BgCardList" />
+        <label pos="0 -8" z-index="0" size="60 10" textprefix="$t$o" text="Most skillpoints" halign="center" textfont="Oswald" valign="center" textsize="4" />
+        <frame pos="0 -17" id="FramePanelZone">
+            <quad pos="0 0" z-index="0" size="62 7" style="Bgs1" substyle="BgCard3" halign="center" valign="center" opacity=".25" />
+            <quad pos="0.1 -0.1" z-index="1" size="62 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QuadZone" />
+            <label pos="0 0.2" z-index="2" size="62 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LabelZone" translate="1" textprefix="$t" />
+        </frame>
+        <frame pos="-25 -60">
+            <frame id="FrameMostSkillpointsPlayers">
+                <frameinstance modelid="FramemodelRecord" pos="0 35" />
+                <frameinstance modelid="FramemodelRecord" pos="0 30" />
+                <frameinstance modelid="FramemodelRecord" pos="0 25" />
+                <frameinstance modelid="FramemodelRecord" pos="0 20" />
+                <frameinstance modelid="FramemodelRecord" pos="0 15" />
+                <frameinstance modelid="FramemodelRecord" pos="0 10" />
+                <frameinstance modelid="FramemodelRecord" pos="0 5" />
+                <frameinstance modelid="FramemodelRecord" pos="0 0" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -5" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -10" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -15" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -20" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -25" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -30" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -35" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -40" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -45" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -50" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -55" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -60" />
+            </frame>
+            <frameinstance modelid="FramemodelRecord" id="FramePersonalSkillpoints" pos="0 -70" />
+        </frame>
+    </frame>
+    <frame id="FrameMostActivityPoints" pos="35 65">
+        <quad z-index="-2" size="69 134" halign="center" style="Bgs1" substyle="BgCardList" />
+        <quad z-index="-2" size="69 134" halign="center" style="Bgs1" substyle="BgCardList" />
+        <label pos="0 -8" z-index="0" size="60 10" textprefix="$t$o" text="Most activity points" halign="center" textfont="Oswald" valign="center" textsize="4" />
+        <frame pos="0 -17" id="FramePanelZone">
+            <quad pos="0 0" z-index="0" size="62 7" style="Bgs1" substyle="BgCard3" halign="center" valign="center" opacity=".25" />
+            <quad pos="0.1 -0.1" z-index="1" size="62 7" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" modulatecolor="8BF" opacity=".5" id="QuadZone" />
+            <label pos="0 0.2" z-index="2" size="62 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LabelZone" translate="1" textprefix="$t" />
+        </frame>
+        <frame pos="-25 -60">
+            <frame id="FrameMostActivityPointsPlayers">
+                <frameinstance modelid="FramemodelRecord" pos="0 35" />
+                <frameinstance modelid="FramemodelRecord" pos="0 30" />
+                <frameinstance modelid="FramemodelRecord" pos="0 25" />
+                <frameinstance modelid="FramemodelRecord" pos="0 20" />
+                <frameinstance modelid="FramemodelRecord" pos="0 15" />
+                <frameinstance modelid="FramemodelRecord" pos="0 10" />
+                <frameinstance modelid="FramemodelRecord" pos="0 5" />
+                <frameinstance modelid="FramemodelRecord" pos="0 0" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -5" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -10" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -15" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -20" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -25" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -30" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -35" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -40" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -45" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -50" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -55" />
+                <frameinstance modelid="FramemodelRecord" pos="0 -60" />
+            </frame>
+            <frameinstance modelid="FramemodelRecord" id="FramePersonalActivityPoints" pos="0 -70" />
+        </frame>
+    </frame>
+    
+    <frame pos="105 65" id="FrameOverallCompletion">
+        <quad z-index="-2" size="69 32" halign="center" style="Bgs1" substyle="BgCardList" />
+        <quad z-index="-2" size="69 32" halign="center" style="Bgs1" substyle="BgCardList" />
+        <label pos="0 -8" z-index="0" size="60 10" textprefix="$t$o" text="Overall completion" halign="center" textfont="Oswald" valign="center" textsize="4" />
+        <label id="LabelOverallCompletion" pos="-1 -22.5" z-index="0" size="60 15" text="0.00%" halign="center" textsize="10" textfont="RajdhaniMono" valign="center2"/>
+    </frame>
+
+    <frame pos="130 -50" id="FrameQuit">
+        <quad size="20 20" style="Bgs1" substyle="BgTitle" halign="center" opacity="0.7" colorize="F00" z-index="1"/>
+        <quad size="20 20" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="F00" id="QuadQuit"/>
+        <label pos="0 -11.5" z-index="2" size="20 20" text="" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="8" textprefix="$t"/>
+    </frame>
+</manialink>

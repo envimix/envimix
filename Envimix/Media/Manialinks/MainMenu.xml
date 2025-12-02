@@ -11,10 +11,9 @@
                 <label pos="0 -7.75" z-index="1" size="55 10" text="Play Solo" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t"/>
             </frame>
             <frame pos="0 -41">
-                <quad size="65 8" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="333" opacity=".9" />
-                <quad size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" hidden="1"/>
-                <label pos="0 -4.25" z-index="1" size="55 8" text="Leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
-                <label pos="25 -3.2" z-index="2" size="20 5" text="coming soon!" halign="center" textsize="0.1" rot="-15" opacity="0.5"/>
+                <quad size="65 8" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" />
+                <quad id="QuadLeaderboards" size="65 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258"/>
+                <label pos="0 -4.25" z-index="1" size="55 8" text="Leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
             </frame>
             <frame pos="0 -52">
                 <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.9"/>

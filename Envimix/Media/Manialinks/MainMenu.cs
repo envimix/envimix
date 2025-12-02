@@ -33,6 +33,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameTotd;
     [ManialinkControl] public required CMlQuad QuadTotd;
     [ManialinkControl] public required CMlLabel LabelRestoreValidations;
+    [ManialinkControl] public required CMlQuad QuadLeaderboards;
 
     public STotdInfo TotdInfo;
 
@@ -63,6 +64,11 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         QuadQuit.MouseClick += () =>
         {
             ParentApp.Menu_Quit();
+        };
+
+        QuadLeaderboards.MouseClick += () =>
+        {
+            SendCustomEvent("Leaderboards", new[] { "" });
         };
 
         LabelSubmitCampaignMaps.MouseClick += () =>

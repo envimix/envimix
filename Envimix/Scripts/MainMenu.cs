@@ -79,12 +79,30 @@ public class MainMenu : CManiaAppTitle, IContext
         public string DrivenAt;
     }
 
+    public struct SPlayerScore
+    {
+        public string PlayerLogin;
+        public string PlayerNickname;
+        public int Score;
+    }
+
+    public struct SPlayerCompletion
+    {
+        public string PlayerLogin;
+        public string PlayerNickname;
+        public float Score;
+    }
+
     public struct STitleStats
     {
         public Dictionary<string, Dictionary<string, SRating>> Ratings;
         public Dictionary<string, Dictionary<string, SStar>> Stars;
         public Dictionary<string, Dictionary<string, SValidationInfo>> Validations;
         public Dictionary<string, Dictionary<string, IList<int>>> Skillpoints;
+        public float EnvimixOverallCompletion;
+        public IList<SPlayerCompletion> EnvimixCompletion;
+        public IList<SPlayerScore> EnvimixMostSkillpoints;
+        public IList<SPlayerScore> EnvimixMostActivityPoints;
     }
 
     public bool ManiaPlanetAuthenticationRequested;
@@ -106,12 +124,17 @@ public class MainMenu : CManiaAppTitle, IContext
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
 
+    [Local(LocalFor.LocalUser)] public IList<SPlayerCompletion> EnvimixCompletion { get; set; }
+    [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostSkillpoints { get; set; }
+    [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostActivityPoints { get; set; }
+
     [Local(LocalFor.LocalUser)] public bool IntroEnded { get; set; }
 
     public CUILayer MainMenuLayer;
     public CUILayer SoloMenuLayer;
     public CUILayer LoadingLayer;
     public CUILayer ReleaseLayer;
+    public CUILayer LeaderboardsLayer;
 
     public CHttpRequest? SubmitMapsRequest;
     public CHttpRequest? SubmitTitleRequest;
@@ -249,6 +272,9 @@ public class MainMenu : CManiaAppTitle, IContext
         SoloMenuLayer = UILayerCreate();
         SoloMenuLayer.ManialinkPage = "file://Media/Manialinks/SoloMenu.xml";
 
+        LeaderboardsLayer = UILayerCreate();
+        LeaderboardsLayer.ManialinkPage = "file://Media/Manialinks/Leaderboards.xml";
+
         LoadingLayer = UILayerCreate();
         LoadingLayer.Type = CUILayer.EUILayerType.LoadingScreen;
 
@@ -296,6 +322,9 @@ public class MainMenu : CManiaAppTitle, IContext
                             break;
                         case "MainMenu":
                             SwitchToMainMenu();
+                            break;
+                        case "Leaderboards":
+                            SwitchToLeaderboards();
                             break;
                         case "Quit":
                             Menu_Quit();
@@ -610,7 +639,15 @@ public class MainMenu : CManiaAppTitle, IContext
     {
         Log("Switching to Main Menu...");
         LayerCustomEvent(SoloMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(LeaderboardsLayer, "AnimateClose", new[] { "" });
         LayerCustomEvent(MainMenuLayer, "AnimateOpen", new[] { "" });
+    }
+
+    private void SwitchToLeaderboards()
+    {
+        Log("Switching to Leaderboards...");
+        LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(LeaderboardsLayer, "AnimateOpen", new[] { "" });
     }
 
     private void PlayMap(int mapGroupNum, int mapInfoNum)
@@ -751,6 +788,10 @@ public class MainMenu : CManiaAppTitle, IContext
         TitleStars = stats.Stars;
         TitleValidations = stats.Validations;
 
+        EnvimixCompletion = stats.EnvimixCompletion;
+        EnvimixMostSkillpoints = stats.EnvimixMostSkillpoints;
+        EnvimixMostActivityPoints = stats.EnvimixMostActivityPoints;
+
         if (DataFileMgr.Campaigns.Count == 0)
         {
             return;
@@ -882,6 +923,7 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         LayerCustomEvent(SoloMenuLayer, "SetPoints", new[] { skillpointsTotal.ToString(), activityPointsTotal.ToString() });
+        LayerCustomEvent(LeaderboardsLayer, "SetLeaderboards", new[] { stats.EnvimixOverallCompletion.ToString() });
     }
 
     private void RequestLeaderboards(string mapUid, int laps, ImmutableArray<string> cars)
