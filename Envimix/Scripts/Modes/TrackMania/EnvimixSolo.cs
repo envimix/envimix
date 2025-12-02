@@ -129,7 +129,7 @@ public class EnvimixSolo : Envimix
     {
         Wait(() => Players.Count > 0); // Sync the player, as it's not available right after map load
 
-        RemoveAllGhosts();
+        RaceGhost_RemoveAll();
 
         PrespawnEnvimixPlayers();
 
@@ -744,12 +744,6 @@ public class EnvimixSolo : Envimix
         NewPersonalBest = false;
     }
 
-    public void RemoveAllGhosts()
-    {
-        RaceGhost_RemoveAll();
-        SpawnedPersonalGhosts.Clear();
-    }
-
     private void SwitchToOutro(CUIConfig ui)
     {
         if (FinishedAt == -1)
@@ -781,7 +775,9 @@ public class EnvimixSolo : Envimix
         ui.UISequence = CUIConfig.EUISequence.EndRound;
 
         UnspawnAllPlayers();
-        RemoveAllGhosts();
+
+        SpawnedPersonalGhosts.Clear();
+        RaceGhost_RemoveAll();
 
         OutroGhostViewInst = RaceGhost_Add(OutroGhost, false);
         OutroGhostEndTime = Now + 2500 + OutroGhost!.Result.Time;
@@ -801,12 +797,11 @@ public class EnvimixSolo : Envimix
 
         Outro = false;
         ReplaySaved = false;
-        RemoveAllGhosts();
+        RaceGhost_RemoveAll();
 
         // spawn all online and local ghosts again
         foreach (var (ghost, spawnIdent) in SpawnedGhosts)
         {
-            SpawnedGhosts.Clear();
             SpawnedGhosts[ghost] = RaceGhost_Add(ghost, DisplayAsPlayerBest: false);
         }
 
