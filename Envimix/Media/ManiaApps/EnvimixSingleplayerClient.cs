@@ -14,6 +14,8 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
     public CUILayer LayerMenu;
     public CUILayer LayerMenuFake;
     public CUILayer LayerOutro;
+    public CUILayer LayerRating;
+    public CUILayer LayerMultilap;
 
     public EnvimixSingleplayerClient()
     {
@@ -64,7 +66,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
 
                         if (IsMenuAsNormalLayer())
                         {
-                            var layersToToggle = new[] { LayerDashboard, LayerMap, LayerScore };
+                            var layersToToggle = new[] { LayerDashboard, LayerMap, LayerScore, LayerRating, LayerMultilap };
                             foreach (var layer in layersToToggle)
                             {
                                 LayerCustomEvent(layer, "MenuOpen", new[] { e.CustomEventData[0] });
@@ -111,9 +113,9 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         LayerScore = CreateLayer("Score", CUILayer.EUILayerType.Normal);
         CreateLayer("Endscreen", CUILayer.EUILayerType.Normal);
         CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
-        CreateLayer("Rating", CUILayer.EUILayerType.Normal);
+        LayerRating = CreateLayer("Rating", CUILayer.EUILayerType.Normal);
         CreateLayer("RatingSolo", CUILayer.EUILayerType.Normal);
-        CreateLayer("Multilap", CUILayer.EUILayerType.Normal);
+        LayerMultilap = CreateLayer("Multilap", CUILayer.EUILayerType.Normal);
         LayerOutro = CreateLayer("Outro", CUILayer.EUILayerType.Normal);
         LayerOutro.IsVisible = false;
 

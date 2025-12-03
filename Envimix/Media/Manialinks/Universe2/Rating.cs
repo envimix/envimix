@@ -71,6 +71,16 @@ public class Rating : CTmMlScriptIngame, IContext
         {
             SendCustomEvent("OpenRating", new[] {""});
         };
+
+        PluginCustomEvent += (eventName, eventParams) =>
+        {
+            switch (eventName)
+            {
+                case "MenuOpen":
+                    MenuOpen = eventParams.Length > 0 && eventParams[0] == "True";
+                    break;
+            }
+        };
     }
 
     bool IsExplore()

@@ -13,8 +13,6 @@ public class Multilap : CTmMlScriptIngame, IContext
     [Netread] public int FinishedAt { get; set; }
     [Netread] public bool Outro { get; set; }
 
-    public bool MenuOpen;
-
     bool IsExplore()
     {
         return CurrentServerModeName is "";
@@ -24,7 +22,7 @@ public class Multilap : CTmMlScriptIngame, IContext
     {
         if (IsExplore())
         {
-            return !MenuOpen;
+            return false;
         }
 
         return !IsInGameMenuDisplayed && MapIsLapRace && FinishedAt == -1 && !Outro;
@@ -46,6 +44,8 @@ public class Multilap : CTmMlScriptIngame, IContext
 
         FrameMultilap.Visible = IsVisible();
         PreviousIsVisible = IsVisible();
+
+        Wait(() => GetPlayer() is not null);
     }
 
     public void Loop()
