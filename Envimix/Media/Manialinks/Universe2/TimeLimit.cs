@@ -47,7 +47,7 @@ public class TimeLimit : CMlScriptIngame, IContext
                 AnimMgr.Add(LabelTimeLimit, "<label opacity=\"0\"/>", Duration: 100, CAnimManager.EAnimManagerEasing.QuadOut);
                 AnimMgr.AddChain(frame.Controls[0], "<quad size=\"42.5 10\"/>", Duration: 300, CAnimManager.EAnimManagerEasing.QuadOut);
                 AnimMgr.AddChain(frame.Controls[1], "<quad size=\"42 9.75\"/>", Duration: 300, CAnimManager.EAnimManagerEasing.QuadOut);
-                AnimMgr.AddChain(LabelTimeLimit, "<label opacity=\"1\"/>", Duration: 300, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.AddChain(LabelTimeLimit, "<label opacity=\"1\"/>", Duration: 300, CAnimManager.EAnimManagerEasing.QuadIn);
             }
 
             PreviousIsVisible = IsVisible();

@@ -31,12 +31,6 @@
 				<label id="LabelCar2" z-index="0" size="90 9" textsize="6" textfont="Oswald" halign="right" pos="0 -2" textprefix="$o"/>
 			</frame>
 		</frame>
-		<frame id="FrameLaps" pos="-27.5 -39" hidden="1">
-			<frame id="FrameLapsBg" pos="27.5 0">
-				<quad z-index="0" size="20 6" valign="center" halign="right" style="Bgs1" substyle="BgCardList"/>
-			</frame>
-			<label id="LabelLaps" z-index="3" size="20 5" textsize="2" textfont="RajdhaniMono" textprefix=" 1/1" valign="center" halign="center" pos="17.5 0.4" textemboss="1"/>
-		</frame>
 	</frame>
 	<quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" scriptevents="1" hidden="1"/>
 	<frame id="FrameSpecials" z-index="10">

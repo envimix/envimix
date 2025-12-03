@@ -113,6 +113,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         CreateLayer("MusicPlayer", CUILayer.EUILayerType.Normal);
         CreateLayer("Rating", CUILayer.EUILayerType.Normal);
         CreateLayer("RatingSolo", CUILayer.EUILayerType.Normal);
+        CreateLayer("Multilap", CUILayer.EUILayerType.Normal);
         LayerOutro = CreateLayer("Outro", CUILayer.EUILayerType.Normal);
         LayerOutro.IsVisible = false;
 
