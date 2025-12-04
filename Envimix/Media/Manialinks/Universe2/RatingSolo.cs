@@ -80,6 +80,9 @@ public class RatingSolo : CTmMlScriptIngame, IContext
     public float HoldsScrollbarMouseY;
     public CHttpRequest? StarRequest;
 
+    public ImmutableArray<string> Difficulties;
+    public ImmutableArray<string> Qualities;
+
     public RatingSolo()
     {
         MenuNavigation += (action) =>
@@ -217,6 +220,40 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         return Stars.ContainsKey(ConstructRatingFilterKey());
     }
 
+    static ImmutableArray<string> GetDifficultyNames()
+    {
+        return new()
+        {
+            "Very easy",
+            "Easy",
+            "Simple",
+            "Intermediate",
+            "Advanced",
+            "Hard",
+            "Very hard",
+            "Complicated",
+            "Extreme",
+            "Nearly impossible"
+        };
+    }
+
+    static ImmutableArray<string> GetQualityNames()
+    {
+        return new()
+        {
+            "The worst",
+            "Bad",
+            "Weird",
+            "Alright",
+            "Not bad",
+            "Good",
+            "Enjoyable",
+            "Great",
+            "Very fun",
+            "Incredible"
+        };
+    }
+
     public void Main()
     {
         PreviousIsVisible = IsVisible();
@@ -239,6 +276,9 @@ public class RatingSolo : CTmMlScriptIngame, IContext
 
         var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
         QuadStar.Visible = envimixTurboUserIsAdmin.Get();
+
+        Difficulties = GetDifficultyNames();
+        Qualities = GetQualityNames();
     }
 
     public void Loop()
@@ -355,10 +395,12 @@ public class RatingSolo : CTmMlScriptIngame, IContext
                     if (frame.ControlId == "FrameDifficulty")
                     {
                         Difficulty = realValue;
+                        (frame.GetFirstChild("LabelRateName") as CMlLabel)!.SetText(Difficulties[MathLib.FloorInteger(Difficulty * (Difficulties.Length - 1))]);
                     }
                     else if (frame.ControlId == "FrameQuality")
                     {
                         Quality = realValue;
+                        (frame.GetFirstChild("LabelRateName") as CMlLabel)!.SetText(Qualities[MathLib.FloorInteger(Quality * (Qualities.Length - 1))]);
                     }
 
                     //var gauge = (frame.GetFirstChild("GaugeRating") as CMlGauge)!;
@@ -475,7 +517,7 @@ public class RatingSolo : CTmMlScriptIngame, IContext
 
     private void ClearPersonalRating(CMlFrame frame)
     {
-        frame.GetFirstChild("LabelRateName").Hide();
+        //frame.GetFirstChild("LabelRateName").Hide();
 
         if (frame.ControlId == "FrameDifficulty")
         {
@@ -493,7 +535,8 @@ public class RatingSolo : CTmMlScriptIngame, IContext
 
         if (value < 0)
         {
-            frame.GetFirstChild("LabelRateName").Show();
+            //frame.GetFirstChild("LabelRateName").Show();
+            (frame.GetFirstChild("LabelRateName") as CMlLabel)!.SetText("Click to rate");
 
             if (frame.ControlId == "FrameDifficulty")
             {
@@ -509,6 +552,15 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         else
         {
             ClearPersonalRating(frame);
+
+            if (frame.ControlId == "FrameDifficulty")
+            {
+                (frame.GetFirstChild("LabelRateName") as CMlLabel)!.SetText(Difficulties[MathLib.FloorInteger(value * (Difficulties.Length - 1))]);
+            }
+            else if (frame.ControlId == "FrameQuality")
+            {
+                (frame.GetFirstChild("LabelRateName") as CMlLabel)!.SetText(Qualities[MathLib.FloorInteger(value * (Qualities.Length - 1))]);
+            }
 
             draggable.RelativePosition_V3.X = value * 56 - 28;
             draggable.Show();
