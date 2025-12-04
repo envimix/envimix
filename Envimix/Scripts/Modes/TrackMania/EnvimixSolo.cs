@@ -68,7 +68,7 @@ public class EnvimixSolo : Envimix
     public Dictionary<string, IList<CGhost>> LocalGhosts;
 
     public Dictionary<Ident, string> OnlineGhostsTaskUrls;
-    public IList<CTaskResult_Ghost> OnlineGhostsTasks;
+    public Dictionary<string, CTaskResult_Ghost> OnlineGhostsTasks;
     public Dictionary<string, CGhost> OnlineGhosts;
 
     public Dictionary<CGhost, Ident> SpawnedGhosts;
@@ -670,29 +670,50 @@ public class EnvimixSolo : Envimix
                 {
                     var ghost = OnlineGhosts[replayUrlAdd];
                     SpawnedGhosts[ghost] = RaceGhost_Add(ghost, DisplayAsPlayerBest: false);
-                    Log(nameof(EnvimixSolo), $"Online ghost from '{OnlineGhosts[replayUrlAdd].Nickname}' is already downloaded.");
+                    Log(nameof(EnvimixSolo), $"Online ghost from '{ghost.Nickname}' is already downloaded.");
                 }
                 else
                 {
+                    Log(nameof(EnvimixSolo), "Downloading online ghost...");
                     var onlineGhostTask = DataFileMgr.Ghost_Download(replayUrlAdd, replayUrlAdd);
-                    OnlineGhostsTasks.Add(onlineGhostTask);
+                    OnlineGhostsTasks[replayUrlAdd] = onlineGhostTask;
                     OnlineGhostsTaskUrls[onlineGhostTask.Id] = replayUrlAdd;
                 }
                 break;
             case "RemoveOnlineGhost":
                 var replayUrlRemove = e.CustomEventData[0];
-                var onlineGhostToRemove = OnlineGhosts[replayUrlRemove];
-
-                if (SpawnedGhosts.ContainsKey(onlineGhostToRemove))
+                if (OnlineGhosts.ContainsKey(replayUrlRemove))
                 {
-                    RaceGhost_Remove(SpawnedGhosts[onlineGhostToRemove]);
-                    SpawnedGhosts.Remove(onlineGhostToRemove);
-                    Log(nameof(EnvimixSolo), $"Online ghost from '{onlineGhostToRemove.Nickname}' removed.");
+                    var onlineGhostToRemove = OnlineGhosts[replayUrlRemove];
+
+                    if (SpawnedGhosts.ContainsKey(onlineGhostToRemove))
+                    {
+                        RaceGhost_Remove(SpawnedGhosts[onlineGhostToRemove]);
+                        SpawnedGhosts.Remove(onlineGhostToRemove);
+                        Log(nameof(EnvimixSolo), $"Online ghost from '{onlineGhostToRemove.Nickname}' removed.");
+                    }
+                    else
+                    {
+                        Log(nameof(EnvimixSolo), $"Online ghost from '{onlineGhostToRemove.Nickname}' is missing but shouldn't be.");
+                    }
                 }
                 else
                 {
-                    Log(nameof(EnvimixSolo), $"Online ghost from '{onlineGhostToRemove.Nickname}' is missing but shouldn't be.");
+                    // cancel download if in progress
+                    if (OnlineGhostsTasks.ContainsKey(replayUrlRemove))
+                    {
+                        var onlineGhostTaskToCancel = OnlineGhostsTasks[replayUrlRemove];
+                        OnlineGhostsTaskUrls.Remove(onlineGhostTaskToCancel.Id);
+                        DataFileMgr.TaskResult_Release(onlineGhostTaskToCancel.Id);
+                        OnlineGhostsTasks.Remove(replayUrlRemove);
+                        Log(nameof(EnvimixSolo), $"Online ghost download has been cancelled.");
+                    }
+                    else
+                    {
+                        Log(nameof(EnvimixSolo), $"Online ghost from '{replayUrlRemove}' is missing but shouldn't be.");
+                    }
                 }
+
                 break;
             case "OpenRating":
                 RatingOpen = true;
@@ -889,9 +910,9 @@ public class EnvimixSolo : Envimix
 
     private void CheckForOnlineGhosts()
     {
-        ImmutableArray<CTaskResult_Ghost> completedGhostTasks = new();
+        ImmutableArray<string> completedGhostUrls = new();
 
-        foreach (var ghostTask in OnlineGhostsTasks)
+        foreach (var (url, ghostTask) in OnlineGhostsTasks)
         {
             if (ghostTask.IsProcessing)
             {
@@ -907,13 +928,13 @@ public class EnvimixSolo : Envimix
                 Log(nameof(EnvimixSolo), $"Online ghost from '{ghost.Nickname}' downloaded and spawned.");
             }
 
-            completedGhostTasks.Add(ghostTask);
+            completedGhostUrls.Add(url);
             OnlineGhostsTaskUrls.Remove(ghostTask.Id);
         }
 
-        foreach (var ghostTask in completedGhostTasks)
+        foreach (var ghostUrl in completedGhostUrls)
         {
-            OnlineGhostsTasks.Remove(ghostTask);
+            OnlineGhostsTasks.Remove(ghostUrl);
         }
     }
 
