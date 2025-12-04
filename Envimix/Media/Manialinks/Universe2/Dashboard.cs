@@ -313,7 +313,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
         }
 
         LabelTime.SetText(TimeToTextWithMilli(PlayerTime - IndependantLapsOffset));
-        LabelSpeed.SetText(MathLib.NearestInteger(MathLib.Abs(GetOwner().Speed * 3.6f)).ToString());
+        LabelSpeed.SetText(GetOwner().DisplaySpeed.ToString());
         LabelSpeed.RelativeScale = rpmRatio * 0.2f + 0.9f;
         LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o{TextLib.FormatReal(GetOwner().Distance - DistanceOffset, 2, false, false)}$tm";
 
