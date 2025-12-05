@@ -500,7 +500,6 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
             var record = EndscreenRecordsResponse.Records[rankIndex];
 
-            var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
             var quadHighlight = (frame.GetFirstChild("QuadHighlight") as CMlQuad)!;
@@ -515,9 +514,9 @@ public class Endscreen : CTmMlScriptIngame, IContext
                 rankOffset = 0;
             }
 
-            labelRank.SetText(TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2));
-            labelRecord.SetText(TimeToTextWithMilli(record.Time));
+            labelRecord.SetText($"{TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2)}  {TimeToTextWithMilli(record.Time)}");
             labelNickname.SetText(record.User.Nickname);
+            labelNickname.RelativePosition_V3.X = labelRecord.ComputeWidth(labelRecord.Value) - 3f;
 
             frame.Show();
 
@@ -575,15 +574,14 @@ public class Endscreen : CTmMlScriptIngame, IContext
             }
         }
 
-        var labelPbRank = (FramePersonalRecord.GetFirstChild("LabelRank") as CMlLabel)!;
         var labelPbRecord = (FramePersonalRecord.GetFirstChild("LabelRecord") as CMlLabel)!;
         var labelPbNickname = (FramePersonalRecord.GetFirstChild("LabelNickname") as CMlLabel)!;
         var quadPbHighlight = (FramePersonalRecord.GetFirstChild("QuadHighlight") as CMlQuad)!;
         quadPbHighlight.Opacity = 0.2f;
 
-        labelPbRank.SetText(TextLib.FormatInteger(pbRankCounter + 1, 2));
-        labelPbRecord.SetText(TimeToTextWithMilli(pbTime));
+        labelPbRecord.SetText($"{TextLib.FormatInteger(pbRankCounter + 1, 2)}  {TimeToTextWithMilli(pbTime)}");
         labelPbNickname.SetText(GetPlayer().User.Name);
+        labelPbNickname.RelativePosition_V3.X = labelPbRecord.ComputeWidth(labelPbRecord.Value) - 3f;
 
         if (pbSkillpointRankCounter == 0)
         {
