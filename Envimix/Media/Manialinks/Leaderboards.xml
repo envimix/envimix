@@ -10,21 +10,21 @@
     </framemodel>
     <frame id="FrameCategory">
         <frame pos="-110 75">
-            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
-            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadDefaultCarLeaderboards" hidden="1"/>
-            <label pos="0 -4.25" z-index="1" size="55 8" text="Global leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" textcolor="AAA"/>
-            <label pos="20 3" z-index="3" size="20 5" text="coming soon!" textsize="1" halign="center" valign="center" textemboss="1" rot="-5" textcolor="AAA"/>
+            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9" />
+            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadEnvimixLeaderboards" styleselected="1" />
+            <label pos="0 -4.25" z-index="1" size="55 8" text="Envimix leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
         </frame>
         <frame pos="-50 75">
-            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
-            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadEnvimixLeaderboards" styleselected="1"/>
-            <label pos="0 -4.25" z-index="1" size="55 8" text="Envimix leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
+            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9" />
+            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadDefaultCarLeaderboards" hidden="1" />
+            <label pos="0 -4.25" z-index="1" size="55 8" text="Default Car leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" textcolor="AAA" />
+            <label pos="20 3" z-index="3" size="20 5" text="coming soon!" textsize="1" halign="center" valign="center" textemboss="1" rot="-5" textcolor="AAA" />
         </frame>
         <frame pos="10 75">
-            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9"/>
-            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadDefaultCarLeaderboards" hidden="1"/>
-            <label pos="0 -4.25" z-index="1" size="55 8" text="Default Car leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" textcolor="AAA"/>
-            <label pos="20 3" z-index="3" size="20 5" text="coming soon!" textsize="1" halign="center" valign="center" textemboss="1" rot="-5" textcolor="AAA"/>
+            <quad size="59 8" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".9" />
+            <quad size="59 7.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="5AF" id="QuadDefaultCarLeaderboards" hidden="1" />
+            <label pos="0 -4.25" z-index="1" size="55 8" text="Global leaderboards" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" textcolor="AAA" />
+            <label pos="20 3" z-index="3" size="20 5" text="coming soon!" textsize="1" halign="center" valign="center" textemboss="1" rot="-5" textcolor="AAA" />
         </frame>
     </frame>
     <frame id="FrameCompletion" pos="-105 65">
