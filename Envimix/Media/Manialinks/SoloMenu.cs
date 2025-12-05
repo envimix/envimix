@@ -72,6 +72,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadBack;
     [ManialinkControl] public required CMlFrame FrameCars;
     [ManialinkControl] public required CMlFrame FrameValidations;
+    [ManialinkControl] public required CMlFrame FrameRanks;
     [ManialinkControl] public required CMlFrame FrameLeaderboards;
     [ManialinkControl] public required CMlQuad QuadTM2Cars;
     [ManialinkControl] public required CMlQuad QuadTMUFCars;
@@ -116,6 +117,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }
 
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
@@ -573,6 +575,50 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    // this currently makes the UI too laggy, wait until the stats endpoint refactor
+    private void UpdateRanks(CMapInfo mapInfo, ImmutableArray<string> cars)
+    {
+        var carIndex = 0;
+
+        foreach (var control in FrameRanks.Controls)
+        {
+            if (control is not CMlLabel labelRank)
+            {
+                continue;
+            }
+
+            var carName = cars[carIndex];
+            var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, $"{ScoreContextPrefix}{carName}");
+
+            var filterKey = $"{carName}_0_{GetLaps(mapInfo)}";
+            if (!TitleSkillpoints.ContainsKey(mapInfo.MapUid) || !TitleSkillpoints[mapInfo.MapUid].ContainsKey(filterKey))
+            {
+                labelRank.SetText("?/?");
+                carIndex += 1;
+                continue;
+            }
+
+            var skillpointsList = TitleSkillpoints[mapInfo.MapUid][filterKey];
+
+            var totalCount = 0;
+            for (var i = 0; i < skillpointsList.Count / 2; i++)
+            {
+                var time = skillpointsList[i * 2];
+                var count = skillpointsList[i * 2 + 1];
+                totalCount += count;
+            }
+
+            if (playerTime == -1)
+            {
+                labelRank.SetText($"-/{totalCount}");
+                carIndex += 1;
+                continue;
+            }
+
+            carIndex += 1;
+        }
+    }
+
     private void UpdateRatings(CMapInfo mapInfo)
     {
         ImmutableArray<string> allCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
@@ -662,11 +708,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             UpdatePBs(selectedMapInfo, TMUFCars);
             UpdateValidators(selectedMapInfo, TMUFCars);
+            //UpdateRanks(selectedMapInfo, TMUFCars);
         }
         else
         {
             UpdatePBs(selectedMapInfo, TM2Cars);
             UpdateValidators(selectedMapInfo, TM2Cars);
+            //UpdateRanks(selectedMapInfo, TM2Cars);
         }
 
         UpdateRatings(selectedMapInfo);
@@ -912,17 +960,20 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             var labelValidation = (FrameValidations.Controls[i] as CMlLabel)!;
             var frameLeaderboard = (FrameLeaderboards.Controls[i] as CMlFrame)!;
+            var labelRank = (FrameRanks.Controls[i] as CMlLabel)!;
 
             if (missingCar)
             {
                 labelValidation.SetText("$888...send us suggestions!");
                 labelValidation.Show();
                 frameLeaderboard.Hide();
+                labelRank.Hide();
             }
             else
             {
                 labelValidation.Hide();
                 frameLeaderboard.Show();
+                labelRank.Show();
             }
 
             labelCar.Show();

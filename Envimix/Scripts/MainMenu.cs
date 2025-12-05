@@ -123,6 +123,7 @@ public class MainMenu : CManiaAppTitle, IContext
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }
 
     [Local(LocalFor.LocalUser)] public IList<SPlayerCompletion> EnvimixCompletion { get; set; }
     [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostSkillpoints { get; set; }
@@ -795,6 +796,7 @@ public class MainMenu : CManiaAppTitle, IContext
         TitleRatings = stats.Ratings;
         TitleStars = stats.Stars;
         TitleValidations = stats.Validations;
+        TitleSkillpoints = stats.Skillpoints;
 
         EnvimixCompletion = stats.EnvimixCompletion;
         EnvimixMostSkillpoints = stats.EnvimixMostSkillpoints;

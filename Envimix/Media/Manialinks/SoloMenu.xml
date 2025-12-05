@@ -185,6 +185,14 @@
                             <label pos="157.5 0" z-index="0" size="45 5" text="TrafficCar" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
                             <label pos="202.5 0" z-index="0" size="45 5" text="HighlandsCar?" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
                         </frame>
+                        <frame id="FrameRanks" hidden="1">
+                            <label pos="19 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
+                            <label pos="64 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
+                            <label pos="109 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
+                            <label pos="154 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
+                            <label pos="199 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
+                            <label pos="244 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
+                        </frame>
                         <frame id="FrameValidations" pos="0 -5">
                             <label pos="-22.5 0" z-index="0" size="44 5" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
                             <label pos="22.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
