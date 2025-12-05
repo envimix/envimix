@@ -276,6 +276,10 @@ public class Outro : CTmMlScriptIngame, IContext
     private void Continue()
     {
         SendCustomEvent("OutroContinue", new[] { "" });
+
+        // reset button to Continue state
+        SelectedButton = QuadContinue;
+        SelectedButton.StyleSelected = true;
     }
 
     private void PreviousCar()

@@ -2,7 +2,7 @@
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
     <framemodel id="FramemodelRating">
         <frame pos="0 2.5" z-index="1">
-            <quad id="QuadGlow" z-index="0" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.5" />
+            <quad id="QuadGlow" z-index="0" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.3" />
             <quad id="QuadBox" z-index="1" size="60 5" halign="center" valign="center" style="Bgs1InRace" substyle="BgCardList" scriptevents="1" opacity=".25" />
             <quad id="QuadBlink" hidden="1" z-index="2" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" opacity="0.1" />
             <label id="LabelRateName" z-index="3" size="40 5" text="Rating is currently disabled" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3" />
