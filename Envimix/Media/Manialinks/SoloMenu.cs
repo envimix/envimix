@@ -756,6 +756,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 else
                 {
                     prevTime = record.Time;
+                    rankOffset = 0;
                 }
 
                 var labelRec = (controlRec as CMlLabel)!;

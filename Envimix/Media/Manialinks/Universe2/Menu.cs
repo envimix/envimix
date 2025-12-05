@@ -1408,6 +1408,8 @@ public class Menu : CTmMlScriptIngame, IContext
             LabelLoadingResult.SetText("");
         }
 
+        var prevTime = -1;
+        var rankOffset = 0;
         for (var i = 0; i < FrameGhosts.Controls.Count; i++)
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
@@ -1431,10 +1433,21 @@ public class Menu : CTmMlScriptIngame, IContext
             var labelAutosave = (frame.GetFirstChild("LabelAutosave") as CMlLabel)!;
             var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
 
+            var time = response.Records[i].Time;
+            if (time == prevTime)
+            {
+                rankOffset += 1;
+            }
+            else
+            {
+                prevTime = time;
+                rankOffset = 0;
+            }
+
             labelRank.Show();
-            labelRank.SetText(TextLib.FormatInteger(i + 1, 2));
+            labelRank.SetText(TextLib.FormatInteger(i + 1 - rankOffset, 2));
             labelNickname.SetText(response.Records[i].User.Nickname);
-            labelTime.SetText(TimeToTextWithMilli(response.Records[i].Time));
+            labelTime.SetText(TimeToTextWithMilli(time));
             labelAutosave.Hide();
 
             quadGhost.StyleSelected = SelectedGhosts.ContainsKey(ghostUrl);

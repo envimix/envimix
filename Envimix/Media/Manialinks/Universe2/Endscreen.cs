@@ -512,6 +512,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
             else
             {
                 prevTime = record.Time;
+                rankOffset = 0;
             }
 
             labelRank.SetText(TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2));
