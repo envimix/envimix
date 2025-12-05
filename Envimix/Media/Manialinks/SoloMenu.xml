@@ -35,17 +35,17 @@
         <gauge pos="0 -50" z-index="0" size="35 8" drawbg="0" valign="center"/>
     </framemodel>
     <framemodel id="FramemodelLeaderboard">
-        <frame id="FrameRecords">
-            <label size="45 5" text="01 -:--.---  $i$888you could be here!" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -5" size="44 5" text="02 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -10" size="44 5" text="03 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -15" size="44 5" text="04 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -20" size="44 5" text="05 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -25" size="44 5" text="06 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -30" size="44 5" text="07 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -35" size="44 5" text="08 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -40" size="44 5" text="09 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
-            <label pos="0 -45" size="44 5" text="10 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+        <frame id="FrameRecords" clip="1" clipsizen="44 50" clipposn="21 -22">
+            <label size="300 5" text="01 -:--.---  $i$888you could be here!" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -5" size="300 5" text="02 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -10" size="300 5" text="03 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -15" size="300 5" text="04 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -20" size="300 5" text="05 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -25" size="300 5" text="06 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -30" size="300 5" text="07 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -35" size="300 5" text="08 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -40" size="300 5" text="09 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
+            <label pos="0 -45" size="300 5" text="10 8:00:00.000  BigBang1112" textfont="OswaldMono" textsize="2.2" valign="center2" hidden="1"/>
         </frame>
         <frame id="FramePersonalBest" pos="21.5 -52.5" scale="1.5">
             <quad z-index="0" size="29 6" style="Bgs1" substyle="BgCardList" halign="center"/>
@@ -186,12 +186,12 @@
                             <label pos="202.5 0" z-index="0" size="45 5" text="HighlandsCar?" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
                         </frame>
                         <frame id="FrameValidations" pos="0 -5">
-                            <label pos="-22.5 0" z-index="0" size="45 5" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="22.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="67.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="112.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="157.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="202.5 0" z-index="0" size="45 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="-22.5 0" z-index="0" size="44 5" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="22.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="67.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="112.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="157.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="202.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
                         </frame>
                         <frame id="FrameLeaderboards" pos="0 -10.25">
                             <frameinstance modelid="FramemodelLeaderboard" pos="-22.5 0" />
