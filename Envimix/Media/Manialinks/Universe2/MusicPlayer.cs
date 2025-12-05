@@ -3,6 +3,7 @@
 public class MusicPlayer : CTmMlScriptIngame, IContext
 {
     public int LatestCheckpointForPlayers = -1;
+    public int LastVoicePlayedAt = -1;
 
     public MusicPlayer()
     {
@@ -28,6 +29,21 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                         }
                         else if (e.IsEndLap)
                         {
+                            if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112" && (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000))
+                            {
+                                var laps = e.Player.CurrentNbLaps + 1;
+                                var lapsToGo = NbLaps - e.Player.CurrentNbLaps;
+                                if (laps == NbLaps)
+                                {
+                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-lap-final.wav", 1);
+                                    LastVoicePlayedAt = Now;
+                                }
+                                else if (lapsToGo > 0 && lapsToGo <= 5)
+                                {
+                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-lap-{lapsToGo}.wav", 1);
+                                    LastVoicePlayedAt = Now;
+                                }
+                            }
                             //M_LapTrackNeeded = True;
                         }
                         else
@@ -49,7 +65,7 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
 
                             if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
                             {
-                                if (MathLib.Rand(0, 5) == 0)
+                                if (MathLib.Rand(0, 5) == 0 && (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000))
                                 {
                                     if (difference > 0)
                                     {
@@ -59,6 +75,7 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                                     {
                                         Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-yes-{MathLib.Rand(1, 23)}.wav", 1);
                                     }
+                                    LastVoicePlayedAt = Now;
                                 }
                             }
 
@@ -67,6 +84,16 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                                 LatestCheckpointForPlayers = e.CheckpointInRace;
                                 Music.NextVariant();
                             }*/
+                        }
+                        break;
+                    case CTmRaceClientEvent.EType.Impact:
+                        if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
+                        {
+                            if (MathLib.Rand(0, 3) == 0 && (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000))
+                            {
+                                Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-carhit-{MathLib.Rand(1, 16)}.wav", 1);
+                                LastVoicePlayedAt = Now;
+                            }
                         }
                         break;
                 }
