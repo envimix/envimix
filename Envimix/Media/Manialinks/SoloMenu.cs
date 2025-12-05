@@ -88,6 +88,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameQualityRatings;
     [ManialinkControl] public required CMlFrame FrameStars;
     [ManialinkControl] public required CMlFrame FrameRatingsCars;
+    [ManialinkControl] public required CMlQuad QuadQuickplay;
 
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
@@ -150,6 +151,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 ExploreSelectedMap();
             }
+        };
+
+        QuadQuickplay.MouseClick += () =>
+        {
+            SendCustomEvent("Quickplay", new[] { "" });
         };
 
         PluginCustomEvent += (type, data) =>

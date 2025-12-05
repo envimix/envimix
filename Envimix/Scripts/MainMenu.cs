@@ -359,6 +359,9 @@ public class MainMenu : CManiaAppTitle, IContext
                             lbRequestLaps = TextLib.ToInteger(e.CustomEventData[1]);
                             lbRequestCars.FromJson(e.CustomEventData[2]);
                             break;
+                        case "Quickplay":
+                            Quickplay();
+                            break;
                     }
                     break;
             }
@@ -650,6 +653,14 @@ public class MainMenu : CManiaAppTitle, IContext
         LayerCustomEvent(LeaderboardsLayer, "AnimateOpen", new[] { "" });
     }
 
+    private void PlayMap(CCampaign campaign, CMapInfo mapInfo)
+    {
+        LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+
+        Wait(() => TitleControl.IsReady);
+        TitleControl.PlayCampaign(campaign, mapInfo, "Modes/TrackMania/EnvimixSolo.Script.txt", "");
+    }
+
     private void PlayMap(int mapGroupNum, int mapInfoNum)
     {
         if (DataFileMgr.Campaigns.Count == 0)
@@ -660,10 +671,7 @@ public class MainMenu : CManiaAppTitle, IContext
         var campaign = DataFileMgr.Campaigns[0];
         var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
 
-        LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
-
-        Wait(() => TitleControl.IsReady);
-        TitleControl.PlayCampaign(campaign, mapInfo, "Modes/TrackMania/EnvimixSolo.Script.txt", "");
+        PlayMap(campaign, mapInfo);
     }
 
     private void ExploreMap(int mapGroupNum, int mapInfoNum)
@@ -948,5 +956,34 @@ public class MainMenu : CManiaAppTitle, IContext
             LeaderboardRequests[mapUid][car] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{mapUid}/{car}?gravity=0&laps={laps}");
             Yield(); // requesting more than 2 at once creates some lag
         }
+    }
+
+    private void Quickplay()
+    {
+        if (DataFileMgr.Campaigns.Count == 0)
+        {
+            return;
+        }
+
+        var campaign = DataFileMgr.Campaigns[0];
+        ImmutableArray<CMapInfo> mapInfos = new();
+
+        foreach (var mapGroup in campaign.MapGroups)
+        {
+            foreach (var mapInfo in mapGroup.MapInfos)
+            {
+                mapInfos.Add(mapInfo);
+            }
+        }
+
+        if (mapInfos.Length == 0)
+        {
+            return;
+        }
+
+        var randomIndex = MathLib.Rand(0, mapInfos.Length - 1);
+        var mapToPlay = mapInfos[randomIndex];
+
+        PlayMap(campaign, mapToPlay);
     }
 }
