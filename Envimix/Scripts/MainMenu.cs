@@ -321,6 +321,18 @@ public class MainMenu : CManiaAppTitle, IContext
                             LayerCustomEvent(SoloMenuLayer, "AnimateOpen", new[] { "" });
                             LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
                             break;
+                        case "MenuLocal":
+                            LoadingLayer.IsVisible = false;
+                            Menu_Local();
+                            break;
+                        case "MenuInternet":
+                            LoadingLayer.IsVisible = false;
+                            Menu_Internet();
+                            break;
+                        case "MenuEditor":
+                            LoadingLayer.IsVisible = false;
+                            Menu_Editor();
+                            break;
                         case "MainMenu":
                             SwitchToMainMenu();
                             break;
@@ -657,6 +669,7 @@ public class MainMenu : CManiaAppTitle, IContext
     private void PlayMap(CCampaign campaign, CMapInfo mapInfo)
     {
         LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+        LoadingLayer.IsVisible = true;
 
         Wait(() => TitleControl.IsReady);
         TitleControl.PlayCampaign(campaign, mapInfo, "Modes/TrackMania/EnvimixSolo.Script.txt", "");
@@ -686,6 +699,7 @@ public class MainMenu : CManiaAppTitle, IContext
         var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
 
         LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+        LoadingLayer.IsVisible = true;
 
         Wait(() => TitleControl.IsReady);
         Log("Exploring map: " + mapInfo.FileName);

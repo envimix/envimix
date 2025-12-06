@@ -48,17 +48,17 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
         QuadLocal.MouseClick += () =>
         {
-            ParentApp.Menu_Local();
+            SendCustomEvent("MenuLocal", new[] { "" });
         };
 
         QuadInternet.MouseClick += () =>
         {
-            ParentApp.Menu_Internet();
+            SendCustomEvent("MenuInternet", new[] { "" });
         };
 
         QuadEditor.MouseClick += () =>
         {
-            ParentApp.Menu_Editor();
+            SendCustomEvent("MenuEditor", new[] { "" });
         };
 
         QuadQuit.MouseClick += () =>
