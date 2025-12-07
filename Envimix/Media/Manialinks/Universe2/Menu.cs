@@ -189,8 +189,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public IList<CReplayInfo> LocalReplays;
     public CTaskResult_ReplayList? LocalReplaysTask;
     public IList<string> Zones;
-    public int CurrentZoneIndex = -1;
-    public int PreviousZoneIndex = -1;
+    public int CurrentZoneIndex = 0;
     public int PrevLocalGhostMetadataUpdatedAt = -1;
     public required Dictionary<string, bool> SelectedGhosts;
     public int PrevRatingsUpdatedAt;
@@ -1360,6 +1359,11 @@ public class Menu : CTmMlScriptIngame, IContext
 
     private void UpdateRecords()
     {
+        if (Zones.Count == 0)
+        {
+            CurrentZoneIndex = -1;
+        }
+
         if (CurrentZoneIndex == -1)
         {
             LabelGhostSelection.SetText("Local");
