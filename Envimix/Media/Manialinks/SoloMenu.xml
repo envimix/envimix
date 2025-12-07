@@ -81,10 +81,10 @@
             <quad pos="-38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/ValleyBg.png"/>
             <quad pos="38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/LagoonBg.png"/>
             <quad pos="115.5 0" z-index="1" size="78 40" halign="center" image="file://Media/Images/Menu/StadiumBg.png"/>
-            <label pos="-115 -6.5" z-index="2" size="75 8" text="Canyon Grand Drift" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
-            <label pos="-38.25 -6.5" z-index="2" size="75 8" text="Down &amp; Dirty Valley" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
-            <label pos="38.25 -6.5" z-index="2" size="75 8" text="Rollercoaster Lagoon" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
-            <label pos="115 -6.5" z-index="2" size="75 8" text="International Stadium" halign="center" valign="center" textsize="3" style="TextTitle3" textemboss="1"/>
+            <label pos="-115 -6.5" z-index="2" size="75 8" text="Canyon Grand Drift" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
+            <label pos="-38.25 -6.5" z-index="2" size="75 8" text="Down &amp; Dirty Valley" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
+            <label pos="38.25 -6.5" z-index="2" size="75 8" text="Rollercoaster Lagoon" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
+            <label pos="115 -6.5" z-index="2" size="75 8" text="International Stadium" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
             <frame z-index="2" pos="0 -13" clip="1" clipsizen="309 106" clipposn="0 -53.25" scroll="1" scrollgrid="0 11" scrollmax="0 58.75" id="FrameCampaign">
                 <frame>
                     <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75"/>
