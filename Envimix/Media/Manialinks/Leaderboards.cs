@@ -110,7 +110,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     private void UpdateLeaderboards()
     {
-        var compIndex = 0;
+        var completionOffsetX = 0f;
+        var index = 0;
         foreach (var control in FrameCompletionPlayers.Controls)
         {
             if (control is not CMlFrame frame)
@@ -118,28 +119,39 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (compIndex >= EnvimixCompletion.Count)
+            if (index >= EnvimixCompletion.Count)
             {
                 frame.Hide();
                 continue;
             }
 
-            var playerCompletion = EnvimixCompletion[compIndex];
-            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(compIndex + 1, 2));
-            (frame.GetFirstChild("LabelNickname") as CMlLabel)!.SetText(playerCompletion.PlayerNickname);
+            var playerCompletion = EnvimixCompletion[index];
+            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(index + 1, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(1, 1, 1);
             labelRecord.SetText($"{TextLib.FormatReal(playerCompletion.Score * 100, 2, false, false)}%");
+            
+            if (index == 0)
+            {
+                completionOffsetX = labelRecord.ComputeWidth(labelRecord.Value);
+            }
+
+            labelRecord.RelativePosition_V3.X = completionOffsetX + 2.5;
+
+            var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            labelNickname.SetText(playerCompletion.PlayerNickname);
+            labelNickname.RelativePosition_V3.X = completionOffsetX + 5;
 
             frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerCompletion.PlayerLogin;
 
             frame.Show();
 
-            compIndex += 1;
+            index += 1;
         }
 
-        var spIndex = 0;
+        var skillpointsOffsetX = 0f;
+        index = 0;
         foreach (var control in FrameMostSkillpointsPlayers.Controls)
         {
             if (control is not CMlFrame frame)
@@ -147,28 +159,39 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (spIndex >= EnvimixMostSkillpoints.Count)
+            if (index >= EnvimixMostSkillpoints.Count)
             {
                 frame.Hide();
                 continue;
             }
 
-            var playerScore = EnvimixMostSkillpoints[spIndex];
-            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(spIndex + 1, 2));
-            (frame.GetFirstChild("LabelNickname") as CMlLabel)!.SetText(playerScore.PlayerNickname);
+            var playerScore = EnvimixMostSkillpoints[index];
+            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(index + 1, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(0, 1, 0);
             labelRecord.SetText(FormatNumberSpace(playerScore.Score));
 
+            if (index == 0)
+            {
+                skillpointsOffsetX = labelRecord.ComputeWidth(labelRecord.Value);
+            }
+
+            labelRecord.RelativePosition_V3.X = skillpointsOffsetX + 2.5;
+
+            var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            labelNickname.SetText(playerScore.PlayerNickname);
+            labelNickname.RelativePosition_V3.X = skillpointsOffsetX + 5;
+
             frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerScore.PlayerLogin;
 
             frame.Show();
 
-            spIndex += 1;
+            index += 1;
         }
 
-        var apIndex = 0;
+        var activityPointsOffsetX = 0f;
+        index = 0;
         foreach (var control in FrameMostActivityPointsPlayers.Controls)
         {
             if (control is not CMlFrame frame)
@@ -176,44 +199,66 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (apIndex >= EnvimixMostSkillpoints.Count)
+            if (index >= EnvimixMostSkillpoints.Count)
             {
                 frame.Hide();
                 continue;
             }
 
-            var playerScore = EnvimixMostActivityPoints[apIndex];
-            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(apIndex + 1, 2));
-            (frame.GetFirstChild("LabelNickname") as CMlLabel)!.SetText(playerScore.PlayerNickname);
+            var playerScore = EnvimixMostActivityPoints[index];
+            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(index + 1, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(0, 1, 1);
             labelRecord.SetText(FormatNumberSpace(playerScore.Score));
 
+            if (index == 0)
+            {
+                activityPointsOffsetX = labelRecord.ComputeWidth(labelRecord.Value);
+            }
+
+            labelRecord.RelativePosition_V3.X = activityPointsOffsetX + 2.5;
+
+            var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
+            labelNickname.SetText(playerScore.PlayerNickname);
+            labelNickname.RelativePosition_V3.X = activityPointsOffsetX + 5;
+
             frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerScore.PlayerLogin;
 
             frame.Show();
 
-            apIndex += 1;
+            index += 1;
         }
 
-        (FramePersonalCompletion.GetFirstChild("LabelRank") as CMlLabel)!.SetText("--");
-        var labelPersonalCompletionRecord = (FramePersonalCompletion.GetFirstChild("LabelRecord") as CMlLabel)!;
-        labelPersonalCompletionRecord.TextColor = new Vec3(1, 1, 1);
-        labelPersonalCompletionRecord.SetText("TBD");
-        (FramePersonalCompletion.GetFirstChild("LabelNickname") as CMlLabel)!.SetText(LocalUser.Name);
+        var labelPersonalRank = (FramePersonalCompletion.GetFirstChild("LabelRank") as CMlLabel)!;
+        labelPersonalRank.SetText("--");
+        var labelPersonalRecord = (FramePersonalCompletion.GetFirstChild("LabelRecord") as CMlLabel)!;
+        labelPersonalRecord.TextColor = new Vec3(1, 1, 1);
+        labelPersonalRecord.SetText("TBD");
+        labelPersonalRecord.RelativePosition_V3.X = completionOffsetX + 2.5;
+        var labelPersonalNickname = (FramePersonalCompletion.GetFirstChild("LabelNickname") as CMlLabel)!;
+        labelPersonalNickname.SetText(LocalUser.Name);
+        labelPersonalNickname.RelativePosition_V3.X = completionOffsetX + 5;
 
-        (FramePersonalSkillpoints.GetFirstChild("LabelRank") as CMlLabel)!.SetText("--");
-        var labelPersonalSkillpointsRecord = (FramePersonalSkillpoints.GetFirstChild("LabelRecord") as CMlLabel)!;
-        labelPersonalSkillpointsRecord.TextColor = new Vec3(0, 1, 0);
-        labelPersonalSkillpointsRecord.SetText("TBD");
-        (FramePersonalSkillpoints.GetFirstChild("LabelNickname") as CMlLabel)!.SetText(LocalUser.Name);
+        labelPersonalRank = (FramePersonalSkillpoints.GetFirstChild("LabelRank") as CMlLabel)!;
+        labelPersonalRank.SetText("--");
+        labelPersonalRecord = (FramePersonalSkillpoints.GetFirstChild("LabelRecord") as CMlLabel)!;
+        labelPersonalRecord.TextColor = new Vec3(0, 1, 0);
+        labelPersonalRecord.SetText("TBD");
+        labelPersonalRecord.RelativePosition_V3.X = skillpointsOffsetX + 2.5;
+        labelPersonalNickname = (FramePersonalSkillpoints.GetFirstChild("LabelNickname") as CMlLabel)!;
+        labelPersonalNickname.SetText(LocalUser.Name);
+        labelPersonalNickname.RelativePosition_V3.X = skillpointsOffsetX + 5;
 
-        (FramePersonalActivityPoints.GetFirstChild("LabelRank") as CMlLabel)!.SetText("--");
-        var labelPersonalActivityPointsRecord = (FramePersonalActivityPoints.GetFirstChild("LabelRecord") as CMlLabel)!;
-        labelPersonalActivityPointsRecord.TextColor = new Vec3(0, 1, 1);
-        labelPersonalActivityPointsRecord.SetText("TBD");
-        (FramePersonalActivityPoints.GetFirstChild("LabelNickname") as CMlLabel)!.SetText(LocalUser.Name);
+        labelPersonalRank = (FramePersonalActivityPoints.GetFirstChild("LabelRank") as CMlLabel)!;
+        labelPersonalRank.SetText("--");
+        labelPersonalRecord = (FramePersonalActivityPoints.GetFirstChild("LabelRecord") as CMlLabel)!;
+        labelPersonalRecord.TextColor = new Vec3(0, 1, 1);
+        labelPersonalRecord.SetText("TBD");
+        labelPersonalRecord.RelativePosition_V3.X = activityPointsOffsetX + 2.5;
+        labelPersonalNickname = (FramePersonalActivityPoints.GetFirstChild("LabelNickname") as CMlLabel)!;
+        labelPersonalNickname.SetText(LocalUser.Name);
+        labelPersonalNickname.RelativePosition_V3.X = activityPointsOffsetX + 5;
     }
 
     private void Show()
