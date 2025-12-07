@@ -89,7 +89,7 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                     case CTmRaceClientEvent.EType.Impact:
                         if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
                         {
-                            if (MathLib.Rand(0, 3) == 0 && (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000))
+                            if (MathLib.Rand(0, 5) == 0 && (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000))
                             {
                                 Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-carhit-{MathLib.Rand(1, 16)}.wav", 1);
                                 LastVoicePlayedAt = Now;
