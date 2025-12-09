@@ -185,7 +185,7 @@
                             <label pos="157.5 0" z-index="0" size="45 5" text="TrafficCar" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
                             <label pos="202.5 0" z-index="0" size="45 5" text="HighlandsCar?" textsize="2.5" valign="center2" textfont="RajdhaniMono"/>
                         </frame>
-                        <frame id="FrameRanks" hidden="1">
+                        <frame id="FrameRanks">
                             <label pos="19 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
                             <label pos="64 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
                             <label pos="109 -0.1" z-index="0" size="45 5" text="?/?" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>

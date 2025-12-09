@@ -4,23 +4,25 @@ namespace Envimix.Media.Manialinks;
 
 public class SoloMenu : CManiaAppTitleLayer, IContext
 {
-    public struct SRating
+    public struct STitleUserInfo
     {
-        public float Difficulty;
-        public float Quality;
+        public string N;
+        public string Z;
+    }
+
+    public struct SCombinationStat
+    {
+        public string VL;
+        public string VD;
+        public float D;
+        public float Q;
+        public IList<int> S;
     }
 
     public struct SStar
     {
         public string Login;
         public string Nickname;
-    }
-
-    public struct SValidationInfo
-    {
-        public string Login;
-        public string Nickname;
-        public string DrivenAt;
     }
 
     public struct SEnvimaniaRecordsFilter
@@ -114,13 +116,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     public bool IsTMUF;
 
-    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
+    /*[Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
-    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }
+    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }*/
 
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
+
+    public Dictionary<string, Dictionary<string, SStar>> TitleStars;
+    public Dictionary<string, Dictionary<string, SCombinationStat>> TitleCombinations;
+    public Dictionary<string, STitleUserInfo> SoloUserInfos;
 
     public SoloMenu()
     {
@@ -186,6 +192,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                             Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
                         }
                     }
+
+                    var titleStars = Local<Dictionary<string, Dictionary<string, SStar>>>.For(Page);
+                    var soloUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(Page);
+                    var titleCombinations = Local<Dictionary<string, Dictionary<string, SCombinationStat>>>.For(Page);
+                    TitleStars = titleStars.Get();
+                    SoloUserInfos = soloUserInfos.Get();
+                    TitleCombinations = titleCombinations.Get();
 
                     // weird to call it at SetPoints, but it allows updating the solo menu stats when nothing is clicked
                     if (DataFileMgr.Campaigns.Count > 0 && MapGroupNum != -1 && MapInfoNum != -1)
@@ -560,22 +573,26 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            var validationFilterKey = $"{carName}_0_{GetLaps(mapInfo)}";
+            var combinationKey = $"{carName}_0";
 
-            if (!TitleValidations.ContainsKey(mapInfo.MapUid) || !TitleValidations[mapInfo.MapUid].ContainsKey(validationFilterKey))
+            if (!TitleCombinations.ContainsKey(mapInfo.MapUid) || !TitleCombinations[mapInfo.MapUid].ContainsKey(combinationKey))
             {
                 labelValidation.SetText("$888you can validate this!");
                 carIndex += 1;
                 continue;
             }
 
-            var validation = TitleValidations[mapInfo.MapUid][validationFilterKey];
-            labelValidation.SetText($"validated by {validation.Nickname}");
+            var combination = TitleCombinations[mapInfo.MapUid][combinationKey];
+            var validationNickname = combination.VL;
+            if (SoloUserInfos.ContainsKey(validationNickname))
+            {
+                validationNickname = SoloUserInfos[validationNickname].N;
+            }
+            labelValidation.SetText($"validated by {validationNickname}");
             carIndex += 1;
         }
     }
 
-    // this currently makes the UI too laggy, wait until the stats endpoint refactor
     private void UpdateRanks(CMapInfo mapInfo, ImmutableArray<string> cars)
     {
         var carIndex = 0;
@@ -588,31 +605,53 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
 
             var carName = cars[carIndex];
-            var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, $"{ScoreContextPrefix}{carName}");
 
-            var filterKey = $"{carName}_0_{GetLaps(mapInfo)}";
-            if (!TitleSkillpoints.ContainsKey(mapInfo.MapUid) || !TitleSkillpoints[mapInfo.MapUid].ContainsKey(filterKey))
+            var scoreContext = $"{ScoreContextPrefix}{carName}";
+
+            // hacky but it works for TMT
+            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
+                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
+                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
+                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+            {
+                scoreContext = ScoreContextPrefix;
+            }
+
+            var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
+
+            var combinationKey = $"{carName}_0";
+
+            if (!TitleCombinations.ContainsKey(mapInfo.MapUid) || !TitleCombinations[mapInfo.MapUid].ContainsKey(combinationKey))
             {
                 labelRank.SetText("?/?");
                 carIndex += 1;
                 continue;
             }
 
-            var skillpointsList = TitleSkillpoints[mapInfo.MapUid][filterKey];
+            var skillpointsList = TitleCombinations[mapInfo.MapUid][combinationKey].S;
 
+            var rank = 1;
             var totalCount = 0;
             for (var i = 0; i < skillpointsList.Count / 2; i++)
             {
                 var time = skillpointsList[i * 2];
                 var count = skillpointsList[i * 2 + 1];
                 totalCount += count;
+
+                if (time < playerTime)
+                {
+                    rank += count;
+                    continue;
+                }
             }
 
             if (playerTime == -1)
             {
                 labelRank.SetText($"-/{totalCount}");
-                carIndex += 1;
-                continue;
+            }
+            else
+            {
+                labelRank.SetText($"{rank}/{totalCount}");
             }
 
             carIndex += 1;
@@ -630,46 +669,54 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var qualityGauge = (FrameQualityRatings.Controls[carIndex] as CMlGauge)!;
             var carLabel = (FrameRatingsCars.Controls[carIndex] as CMlLabel)!;
 
-            var filterKey = $"{car}_0_Time";
+            // hacky but it works for TMT
+            var isDefaultCar = (mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
+                || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
+                || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
+                || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar");
 
-            if (TitleRatings.ContainsKey(mapInfo.MapUid) && TitleRatings[mapInfo.MapUid].ContainsKey(filterKey))
+            var combinationKey = $"{car}_0";
+
+            if (TitleCombinations.ContainsKey(mapInfo.MapUid) && TitleCombinations[mapInfo.MapUid].ContainsKey(combinationKey))
             {
-                var rating = TitleRatings[mapInfo.MapUid][filterKey];
-                difficultyGauge.Ratio = rating.Difficulty;
-                qualityGauge.Ratio = rating.Quality;
+                var combination = TitleCombinations[mapInfo.MapUid][combinationKey];
+                if (combination.D < 0)
+                {
+                    difficultyGauge.Ratio = 0;
+                }
+                else
+                {
+                    difficultyGauge.Ratio = combination.D;
+                }
+                if (combination.Q < 0)
+                {
+                    qualityGauge.Ratio = 0;
+                }
+                else
+                {
+                    qualityGauge.Ratio = combination.Q;
+                }
+                difficultyGauge.Color = new Vec3(1, 1, 1);
+                qualityGauge.Color = new Vec3(1, 1, 1);
+                carLabel.TextColor = new Vec3(1, 1, 1);
             }
             else
             {
                 difficultyGauge.Ratio = 0;
                 qualityGauge.Ratio = 0;
-            }
 
-            // hacky but it works for TMT
-            if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
-                || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
-                || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
-                || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
-            {
-                difficultyGauge.Color = new Vec3(1, 1, 1);
-                qualityGauge.Color = new Vec3(1, 1, 1);
-                carLabel.TextColor = new Vec3(1, 1, 1);
-                carIndex += 1;
-                continue;
-            }
-
-            var validationFilterKey = $"{car}_0_{GetLaps(mapInfo)}";
-
-            if (!TitleValidations.ContainsKey(mapInfo.MapUid) || !TitleValidations[mapInfo.MapUid].ContainsKey(validationFilterKey))
-            {
-                difficultyGauge.Color = new Vec3(1, 0, 0);
-                qualityGauge.Color = new Vec3(1, 0, 0);
-                carLabel.TextColor = new Vec3(1, 0, 0);
-            }
-            else
-            {
-                difficultyGauge.Color = new Vec3(1, 1, 1);
-                qualityGauge.Color = new Vec3(1, 1, 1);
-                carLabel.TextColor = new Vec3(1, 1, 1);
+                if (isDefaultCar)
+                {
+                    difficultyGauge.Color = new Vec3(1, 1, 1);
+                    qualityGauge.Color = new Vec3(1, 1, 1);
+                    carLabel.TextColor = new Vec3(1, 1, 1);
+                }
+                else
+                {
+                    difficultyGauge.Color = new Vec3(1, 0, 0);
+                    qualityGauge.Color = new Vec3(1, 0, 0);
+                    carLabel.TextColor = new Vec3(1, 0, 0);
+                }
             }
 
             carIndex += 1;
@@ -678,6 +725,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void UpdateStars(CMapInfo mapInfo)
     {
+
         ImmutableArray<string> allCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
         
         var carIndex = 0;
@@ -708,13 +756,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             UpdatePBs(selectedMapInfo, TMUFCars);
             UpdateValidators(selectedMapInfo, TMUFCars);
-            //UpdateRanks(selectedMapInfo, TMUFCars);
+            UpdateRanks(selectedMapInfo, TMUFCars);
         }
         else
         {
             UpdatePBs(selectedMapInfo, TM2Cars);
             UpdateValidators(selectedMapInfo, TM2Cars);
-            //UpdateRanks(selectedMapInfo, TM2Cars);
+            UpdateRanks(selectedMapInfo, TM2Cars);
         }
 
         UpdateRatings(selectedMapInfo);

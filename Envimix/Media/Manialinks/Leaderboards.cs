@@ -4,16 +4,20 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 {
     public struct SPlayerScore
     {
-        public string PlayerLogin;
-        public string PlayerNickname;
-        public int Score;
+        public string L;
+        public int S;
     }
 
     public struct SPlayerCompletion
     {
-        public string PlayerLogin;
-        public string PlayerNickname;
-        public float Score;
+        public string L;
+        public float S;
+    }
+
+    public struct STitleUserInfo
+    {
+        public string N;
+        public string Z;
     }
 
     [ManialinkControl] public required CMlFrame FrameCompletion;
@@ -33,12 +37,20 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FramePersonalSkillpoints;
     [ManialinkControl] public required CMlFrame FramePersonalActivityPoints;
 
-    public int OpenedAt = -1;
-    public float EnvimixOverallCompletion;
+    [ManialinkControl] public required CMlQuad QuadEnvimixLeaderboards;
+    [ManialinkControl] public required CMlQuad QuadDefaultCarLeaderboards;
+    [ManialinkControl] public required CMlQuad QuadGlobalLeaderboards;
 
-    [Local(LocalFor.LocalUser)] public IList<SPlayerCompletion> EnvimixCompletion { get; set; }
+    public int OpenedAt = -1;
+    public float EnvimixCompletionPercentage;
+    public float DefaultCarCompletionPercentage;
+    public float GlobalCompletionPercentage;
+
+    public CMlQuad SelectedLeaderboards;
+
+    /*[Local(LocalFor.LocalUser)] public IList<SPlayerCompletion> EnvimixCompletion { get; set; }
     [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostSkillpoints { get; set; }
-    [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostActivityPoints { get; set; }
+    [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostActivityPoints { get; set; }*/
 
     public Leaderboards()
     {
@@ -60,7 +72,9 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     Hide();
                     break;
                 case "SetLeaderboards":
-                    EnvimixOverallCompletion = TextLib.ToReal(data[0]);
+                    EnvimixCompletionPercentage = TextLib.ToReal(data[0]);
+                    DefaultCarCompletionPercentage = TextLib.ToReal(data[1]);
+                    GlobalCompletionPercentage = TextLib.ToReal(data[2]);
                     UpdateLeaderboards();
                     break;
             }
@@ -75,9 +89,27 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     break;
             }
         };
+
+        QuadEnvimixLeaderboards.MouseClick += () =>
+        {
+            SelectedLeaderboards = QuadEnvimixLeaderboards;
+            UpdateLeaderboards();
+        };
+
+        QuadDefaultCarLeaderboards.MouseClick += () =>
+        {
+            SelectedLeaderboards = QuadDefaultCarLeaderboards;
+            UpdateLeaderboards();
+        };
+
+        QuadGlobalLeaderboards.MouseClick += () =>
+        {
+            SelectedLeaderboards = QuadGlobalLeaderboards;
+            UpdateLeaderboards();
+        };
     }
 
-    private string FormatNumberSpace(int number)
+    private static string FormatNumberSpace(int number)
     {
         var txt = TextLib.ToText(number);
         if (number < 0)
@@ -110,6 +142,37 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     private void UpdateLeaderboards()
     {
+        QuadEnvimixLeaderboards.StyleSelected = SelectedLeaderboards == QuadEnvimixLeaderboards;
+        QuadDefaultCarLeaderboards.StyleSelected = SelectedLeaderboards == QuadDefaultCarLeaderboards;
+        QuadGlobalLeaderboards.StyleSelected = SelectedLeaderboards == QuadGlobalLeaderboards;
+
+        var leaderboardsUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(Page);
+
+        var envimixCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+        var envimixMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+        var envimixMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+
+        var defaultCarCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+        var defaultCarMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+        var defaultCarMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+
+        var globalCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+        var globalMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+        var globalMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+
+        IList<SPlayerCompletion> completionLeaderboard;
+        if (SelectedLeaderboards == QuadEnvimixLeaderboards)
+        {
+            completionLeaderboard = envimixCompletion.Get();
+        }
+        else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
+        {
+            completionLeaderboard = defaultCarCompletion.Get();
+        }
+        else
+        {
+            completionLeaderboard = globalCompletion.Get();
+        }
         var completionOffsetX = 0f;
         var index = 0;
         foreach (var control in FrameCompletionPlayers.Controls)
@@ -119,18 +182,18 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (index >= EnvimixCompletion.Count)
+            if (index >= completionLeaderboard.Count)
             {
                 frame.Hide();
                 continue;
             }
 
-            var playerCompletion = EnvimixCompletion[index];
+            var playerCompletion = completionLeaderboard[index];
             (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(index + 1, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(1, 1, 1);
-            labelRecord.SetText($"{TextLib.FormatReal(playerCompletion.Score * 100, 2, false, false)}%");
+            labelRecord.SetText($"{TextLib.FormatReal(playerCompletion.S * 100, 2, false, false)}%");
             
             if (index == 0)
             {
@@ -139,17 +202,37 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
             labelRecord.RelativePosition_V3.X = completionOffsetX + 2.5;
 
+            var nickname = playerCompletion.L;
+            if (leaderboardsUserInfos.Get().ContainsKey(playerCompletion.L))
+            {
+                nickname = leaderboardsUserInfos.Get()[playerCompletion.L].N;
+            }
+
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
-            labelNickname.SetText(playerCompletion.PlayerNickname);
+            labelNickname.SetText(nickname);
             labelNickname.RelativePosition_V3.X = completionOffsetX + 5;
 
-            frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerCompletion.PlayerLogin;
+            frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerCompletion.L;
 
             frame.Show();
 
             index += 1;
         }
 
+
+        IList<SPlayerScore> skillpointsLeaderboard;
+        if (SelectedLeaderboards == QuadEnvimixLeaderboards)
+        {
+            skillpointsLeaderboard = envimixMostSkillpoints.Get();
+        }
+        else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
+        {
+            skillpointsLeaderboard = defaultCarMostSkillpoints.Get();
+        }
+        else
+        {
+            skillpointsLeaderboard = globalMostSkillpoints.Get();
+        }
         var skillpointsOffsetX = 0f;
         index = 0;
         foreach (var control in FrameMostSkillpointsPlayers.Controls)
@@ -159,18 +242,18 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (index >= EnvimixMostSkillpoints.Count)
+            if (index >= skillpointsLeaderboard.Count)
             {
                 frame.Hide();
                 continue;
             }
 
-            var playerScore = EnvimixMostSkillpoints[index];
+            var playerScore = skillpointsLeaderboard[index];
             (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(index + 1, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(0, 1, 0);
-            labelRecord.SetText(FormatNumberSpace(playerScore.Score));
+            labelRecord.SetText(FormatNumberSpace(playerScore.S));
 
             if (index == 0)
             {
@@ -179,17 +262,36 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
             labelRecord.RelativePosition_V3.X = skillpointsOffsetX + 2.5;
 
+            var nickname = playerScore.L;
+            if (leaderboardsUserInfos.Get().ContainsKey(playerScore.L))
+            {
+                nickname = leaderboardsUserInfos.Get()[playerScore.L].N;
+            }
+
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
-            labelNickname.SetText(playerScore.PlayerNickname);
+            labelNickname.SetText(nickname);
             labelNickname.RelativePosition_V3.X = skillpointsOffsetX + 5;
 
-            frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerScore.PlayerLogin;
+            frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerScore.L;
 
             frame.Show();
 
             index += 1;
         }
 
+        IList<SPlayerScore> activityPointsLeaderboard;
+        if (SelectedLeaderboards == QuadEnvimixLeaderboards)
+        {
+            activityPointsLeaderboard = envimixMostActivityPoints.Get();
+        }
+        else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
+        {
+            activityPointsLeaderboard = defaultCarMostActivityPoints.Get();
+        }
+        else
+        {
+            activityPointsLeaderboard = globalMostActivityPoints.Get();
+        }
         var activityPointsOffsetX = 0f;
         index = 0;
         foreach (var control in FrameMostActivityPointsPlayers.Controls)
@@ -199,18 +301,18 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (index >= EnvimixMostSkillpoints.Count)
+            if (index >= activityPointsLeaderboard.Count)
             {
                 frame.Hide();
                 continue;
             }
 
-            var playerScore = EnvimixMostActivityPoints[index];
+            var playerScore = activityPointsLeaderboard[index];
             (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(index + 1, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(0, 1, 1);
-            labelRecord.SetText(FormatNumberSpace(playerScore.Score));
+            labelRecord.SetText(FormatNumberSpace(playerScore.S));
 
             if (index == 0)
             {
@@ -219,42 +321,123 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
             labelRecord.RelativePosition_V3.X = activityPointsOffsetX + 2.5;
 
+            var nickname = playerScore.L;
+            if (leaderboardsUserInfos.Get().ContainsKey(playerScore.L))
+            {
+                nickname = leaderboardsUserInfos.Get()[playerScore.L].N;
+            }
+
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
-            labelNickname.SetText(playerScore.PlayerNickname);
+            labelNickname.SetText(nickname);
             labelNickname.RelativePosition_V3.X = activityPointsOffsetX + 5;
 
-            frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerScore.PlayerLogin;
+            frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerScore.L;
 
             frame.Show();
 
             index += 1;
         }
 
+        var completionRank = 0;
+        var completionScore = -1f;
+        foreach (var player in completionLeaderboard)
+        {
+            completionRank += 1;
+            if (player.L == LocalUser.Login)
+            {
+                completionScore = player.S;
+                break;
+            }
+        }
         var labelPersonalRank = (FramePersonalCompletion.GetFirstChild("LabelRank") as CMlLabel)!;
-        labelPersonalRank.SetText("--");
+        if (completionScore == -1f)
+        {
+            labelPersonalRank.SetText("--");
+        }
+        else
+        {
+            labelPersonalRank.SetText(TextLib.FormatInteger(completionRank, 2));
+        }
         var labelPersonalRecord = (FramePersonalCompletion.GetFirstChild("LabelRecord") as CMlLabel)!;
         labelPersonalRecord.TextColor = new Vec3(1, 1, 1);
-        labelPersonalRecord.SetText("TBD");
+        if (completionScore == -1f)
+        {
+            labelPersonalRecord.SetText("-");
+        }
+        else
+        {
+            labelPersonalRecord.SetText($"{TextLib.FormatReal(completionScore * 100, 2, false, false)}%");
+        }
         labelPersonalRecord.RelativePosition_V3.X = completionOffsetX + 2.5;
         var labelPersonalNickname = (FramePersonalCompletion.GetFirstChild("LabelNickname") as CMlLabel)!;
         labelPersonalNickname.SetText(LocalUser.Name);
         labelPersonalNickname.RelativePosition_V3.X = completionOffsetX + 5;
 
+        completionRank = 0;
+        var pointsScore = -1;
+        foreach (var player in skillpointsLeaderboard)
+        {
+            completionRank += 1;
+            if (player.L == LocalUser.Login)
+            {
+                pointsScore = player.S;
+                break;
+            }
+        }
         labelPersonalRank = (FramePersonalSkillpoints.GetFirstChild("LabelRank") as CMlLabel)!;
-        labelPersonalRank.SetText("--");
+        if (pointsScore == -1)
+        {
+            labelPersonalRank.SetText("--");
+        }
+        else
+        {
+            labelPersonalRank.SetText(TextLib.FormatInteger(completionRank, 2));
+        }
         labelPersonalRecord = (FramePersonalSkillpoints.GetFirstChild("LabelRecord") as CMlLabel)!;
         labelPersonalRecord.TextColor = new Vec3(0, 1, 0);
-        labelPersonalRecord.SetText("TBD");
+        if (pointsScore == -1)
+        {
+            labelPersonalRecord.SetText("-");
+        }
+        else
+        {
+            labelPersonalRecord.SetText(FormatNumberSpace(pointsScore));
+        }
         labelPersonalRecord.RelativePosition_V3.X = skillpointsOffsetX + 2.5;
         labelPersonalNickname = (FramePersonalSkillpoints.GetFirstChild("LabelNickname") as CMlLabel)!;
         labelPersonalNickname.SetText(LocalUser.Name);
         labelPersonalNickname.RelativePosition_V3.X = skillpointsOffsetX + 5;
 
+        completionRank = 0;
+        pointsScore = -1;
+        foreach (var player in activityPointsLeaderboard)
+        {
+            completionRank += 1;
+            if (player.L == LocalUser.Login)
+            {
+                pointsScore = player.S;
+                break;
+            }
+        }
         labelPersonalRank = (FramePersonalActivityPoints.GetFirstChild("LabelRank") as CMlLabel)!;
-        labelPersonalRank.SetText("--");
+        if (pointsScore == -1)
+        {
+            labelPersonalRank.SetText("--");
+        }
+        else
+        {
+            labelPersonalRank.SetText(TextLib.FormatInteger(completionRank, 2));
+        }
         labelPersonalRecord = (FramePersonalActivityPoints.GetFirstChild("LabelRecord") as CMlLabel)!;
         labelPersonalRecord.TextColor = new Vec3(0, 1, 1);
-        labelPersonalRecord.SetText("TBD");
+        if (pointsScore == -1)
+        {
+            labelPersonalRecord.SetText("-");
+        }
+        else
+        {
+            labelPersonalRecord.SetText(FormatNumberSpace(pointsScore));
+        }
         labelPersonalRecord.RelativePosition_V3.X = activityPointsOffsetX + 2.5;
         labelPersonalNickname = (FramePersonalActivityPoints.GetFirstChild("LabelNickname") as CMlLabel)!;
         labelPersonalNickname.SetText(LocalUser.Name);
@@ -307,6 +490,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         FrameQuit.RelativePosition_V3.Y = -90;
         FrameQuit.Visible = false;
 
+        SelectedLeaderboards = QuadEnvimixLeaderboards;
+
         UpdateLeaderboards();
     }
 
@@ -314,7 +499,21 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
     {
         if (OpenedAt != -1)
         {
-            var animatedOverallCompletion = AnimLib.EaseOutQuad(Now - OpenedAt, 0, EnvimixOverallCompletion * 100, 1000);
+            float percentage;
+            if (SelectedLeaderboards == QuadEnvimixLeaderboards)
+            {
+                percentage = EnvimixCompletionPercentage;
+            }
+            else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
+            {
+                percentage = DefaultCarCompletionPercentage;
+            }
+            else
+            {
+                percentage = GlobalCompletionPercentage;
+            }
+
+            var animatedOverallCompletion = AnimLib.EaseOutQuad(Now - OpenedAt, 0, percentage * 100, 1000);
             LabelOverallCompletion.Value = $"{TextLib.FormatReal(animatedOverallCompletion, 2, false, false)}%";
         }
     }

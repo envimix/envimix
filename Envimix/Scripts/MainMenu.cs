@@ -81,28 +81,48 @@ public class MainMenu : CManiaAppTitle, IContext
 
     public struct SPlayerScore
     {
-        public string PlayerLogin;
-        public string PlayerNickname;
-        public int Score;
+        public string L;
+        public int S;
     }
 
     public struct SPlayerCompletion
     {
-        public string PlayerLogin;
-        public string PlayerNickname;
-        public float Score;
+        public string L;
+        public float S;
+    }
+
+    public struct SCombinationStat
+    {
+        public string VL;
+        public string VD;
+        public float D;
+        public float Q;
+        public IList<int> S;
+    }
+
+    public struct STitleUserInfo
+    {
+        public string N;
+        public string Z;
     }
 
     public struct STitleStats
     {
-        public Dictionary<string, Dictionary<string, SRating>> Ratings;
+        public float EnvimixCompletionPercentage;
+        public float DefaultCarCompletionPercentage;
+        public float GlobalCompletionPercentage;
+        public Dictionary<string, STitleUserInfo> Players;
+        public Dictionary<string, Dictionary<string, SCombinationStat>> Combinations;
         public Dictionary<string, Dictionary<string, SStar>> Stars;
-        public Dictionary<string, Dictionary<string, SValidationInfo>> Validations;
-        public Dictionary<string, Dictionary<string, IList<int>>> Skillpoints;
-        public float EnvimixOverallCompletion;
-        public IList<SPlayerCompletion> EnvimixCompletion;
         public IList<SPlayerScore> EnvimixMostSkillpoints;
         public IList<SPlayerScore> EnvimixMostActivityPoints;
+        public IList<SPlayerCompletion> EnvimixCompletion;
+        public IList<SPlayerScore> DefaultCarMostSkillpoints;
+        public IList<SPlayerScore> DefaultCarMostActivityPoints;
+        public IList<SPlayerCompletion> DefaultCarCompletion;
+        public IList<SPlayerScore> GlobalMostSkillpoints;
+        public IList<SPlayerScore> GlobalMostActivityPoints;
+        public IList<SPlayerCompletion> GlobalCompletion;
     }
 
     public bool ManiaPlanetAuthenticationRequested;
@@ -120,14 +140,13 @@ public class MainMenu : CManiaAppTitle, IContext
 
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
-    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
-    [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
+    /*[Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SRating>> TitleRatings { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }
 
     [Local(LocalFor.LocalUser)] public IList<SPlayerCompletion> EnvimixCompletion { get; set; }
     [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostSkillpoints { get; set; }
-    [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostActivityPoints { get; set; }
+    [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostActivityPoints { get; set; }*/
 
     [Local(LocalFor.LocalUser)] public bool IntroEnded { get; set; }
 
@@ -812,14 +831,41 @@ public class MainMenu : CManiaAppTitle, IContext
 
     private void ProcessTitleStats(STitleStats stats)
     {
-        TitleRatings = stats.Ratings;
-        TitleStars = stats.Stars;
-        TitleValidations = stats.Validations;
-        TitleSkillpoints = stats.Skillpoints;
+        var titleStars = Local<Dictionary<string, Dictionary<string, SStar>>>.For(SoloMenuLayer.LocalPage);
+        titleStars.Set(stats.Stars);
 
-        EnvimixCompletion = stats.EnvimixCompletion;
-        EnvimixMostSkillpoints = stats.EnvimixMostSkillpoints;
-        EnvimixMostActivityPoints = stats.EnvimixMostActivityPoints;
+        var titleCombinations = Local<Dictionary<string, Dictionary<string, SCombinationStat>>>.For(SoloMenuLayer.LocalPage);
+        titleCombinations.Set(stats.Combinations);
+
+        var leaderboardsUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(LeaderboardsLayer.LocalPage);
+        leaderboardsUserInfos.Set(stats.Players);
+
+        var soloUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(SoloMenuLayer.LocalPage);
+        soloUserInfos.Set(stats.Players);
+
+        var envimixCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
+        var envimixMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+        var envimixMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+
+        var defaultCarCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+
+        var globalCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
+        var globalMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+        var globalMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+
+        envimixCompletion.Set(stats.EnvimixCompletion);
+        envimixMostSkillpoints.Set(stats.EnvimixMostSkillpoints);
+        envimixMostActivityPoints.Set(stats.EnvimixMostActivityPoints);
+
+        defaultCarCompletion.Set(stats.DefaultCarCompletion);
+        defaultCarMostSkillpoints.Set(stats.DefaultCarMostSkillpoints);
+        defaultCarMostActivityPoints.Set(stats.DefaultCarMostActivityPoints);
+
+        globalCompletion.Set(stats.GlobalCompletion);
+        globalMostSkillpoints.Set(stats.GlobalMostSkillpoints);
+        globalMostActivityPoints.Set(stats.GlobalMostActivityPoints);
 
         if (DataFileMgr.Campaigns.Count == 0)
         {
@@ -827,132 +873,119 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         var campaign = DataFileMgr.Campaigns[0];
-        var mapInfos = new Dictionary<string, CMapInfo>();
+
+        var skillpointsTotal = 0;
+        var activityPointsTotal = 0;
 
         foreach (var mapGroup in campaign.MapGroups)
         {
             foreach (var mapInfo in mapGroup.MapInfos)
             {
-                mapInfos[mapInfo.MapUid] = mapInfo;
-            }
-        }
-
-        var skillpointsTotal = 0;
-        var activityPointsTotal = 0;
-
-        foreach (var (mapUid, skillpointsByCombination) in stats.Skillpoints)
-        {
-            if (!mapInfos.ContainsKey(mapUid))
-            {
-                continue;
-            }
-
-            var mapInfo = mapInfos[mapUid];
-
-            var hasValidation = stats.Validations.ContainsKey(mapUid);
-
-            foreach (var car in Cars)
-            {
-                var scoreContext = $"{ScoreContextPrefix}{car}";
-
-                // hacky but it works for TMT
-                if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
-                    || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
-                    || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
-                    || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
+                foreach (var car in Cars)
                 {
-                    scoreContext = ScoreContextPrefix;
-                }
+                    var scoreContext = $"{ScoreContextPrefix}{car}";
 
-                var pbTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
-
-                var skillpointsAndValidationKey = $"{car}_0_{GetLaps(mapInfo)}";
-
-                if (pbTime == -1 || !skillpointsByCombination.ContainsKey(skillpointsAndValidationKey))
-                {
-                    continue;
-                }
-
-                var skillpoints = skillpointsByCombination[skillpointsAndValidationKey];
-
-                var pbCounting = true;
-                var pbRankCounter = 0;
-                var pbSkillpointRankCounter = 0;
-                var totalRecCount = 0;
-
-                for (var i = 0; i < skillpoints.Count / 2; i++)
-                {
-                    var time = skillpoints[i * 2];
-                    var count = skillpoints[i * 2 + 1];
-
-                    totalRecCount += count;
-
-                    if (pbCounting)
+                    // hacky but it works for TMT
+                    if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
+                        || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
+                        || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
+                        || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
                     {
-                        pbSkillpointRankCounter += count;
+                        scoreContext = ScoreContextPrefix;
                     }
 
-                    // should be just ==, however in cases where some offline recs are not synced with envimania, this works better
-                    if (time >= pbTime)
+                    var pbTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
+
+                    if (pbTime == -1)
                     {
-                        pbCounting = false;
                         continue;
                     }
 
-                    if (pbCounting)
+                    var combinationKey = $"{car}_0";
+
+                    if (!stats.Combinations.ContainsKey(mapInfo.MapUid) || !stats.Combinations[mapInfo.MapUid].ContainsKey(combinationKey))
                     {
-                        pbRankCounter += count;
+                        continue;
                     }
-                }
 
-                if (pbSkillpointRankCounter == 0)
-                {
-                    pbSkillpointRankCounter = 1; // avoid div by 0
-                }
-                var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
+                    var combination = stats.Combinations[mapInfo.MapUid][combinationKey];
+                    var skillpoints = combination.S;
 
-                int ceilingSkillpoints;
-                if (skillpointsReal == MathLib.TruncInteger(skillpointsReal))
-                {
-                    ceilingSkillpoints = MathLib.TruncInteger(skillpointsReal);
-                }
-                else
-                {
-                    ceilingSkillpoints = MathLib.CeilingInteger(skillpointsReal);
-                }
+                    var pbCounting = true;
+                    var pbRankCounter = 0;
+                    var pbSkillpointRankCounter = 0;
+                    var totalRecCount = 0;
 
-                skillpointsTotal += ceilingSkillpoints;
-
-                var wr = pbTime;
-                if (skillpoints.Count > 0)
-                {
-                    wr = skillpoints[0]; // first from time+count pair
-                }
-                var wrPb = wr * 1f / pbTime;
-                var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
-                var activityPoints = MathLib.NearestInteger(activityPointsReal);
-
-                if (hasValidation && stats.Validations[mapUid].ContainsKey(skillpointsAndValidationKey))
-                {
-                    var validation = stats.Validations[mapUid][skillpointsAndValidationKey];
-
-                    if (validation.Login == LocalUser.Login && validation.DrivenAt != "" && TitleRelease != "")
+                    for (var i = 0; i < skillpoints.Count / 2; i++)
                     {
-                        var validationTimestampInSeconds = validation.DrivenAt;
+                        var time = skillpoints[i * 2];
+                        var count = skillpoints[i * 2 + 1];
+
+                        totalRecCount += count;
+
+                        if (pbCounting)
+                        {
+                            pbSkillpointRankCounter += count;
+                        }
+
+                        // should be just ==, however in cases where some offline recs are not synced with envimania, this works better
+                        if (time >= pbTime)
+                        {
+                            pbCounting = false;
+                            continue;
+                        }
+
+                        if (pbCounting)
+                        {
+                            pbRankCounter += count;
+                        }
+                    }
+
+                    if (pbSkillpointRankCounter == 0)
+                    {
+                        pbSkillpointRankCounter = 1; // avoid div by 0
+                    }
+                    var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
+                    int ceilingSkillpoints;
+                    if (skillpointsReal == MathLib.TruncInteger(skillpointsReal))
+                    {
+                        ceilingSkillpoints = MathLib.TruncInteger(skillpointsReal);
+                    }
+                    else
+                    {
+                        ceilingSkillpoints = MathLib.CeilingInteger(skillpointsReal);
+                    }
+
+                    skillpointsTotal += ceilingSkillpoints;
+
+                    var wr = pbTime;
+                    if (skillpoints.Count > 0)
+                    {
+                        wr = skillpoints[0]; // first from time+count pair
+                    }
+                    var wrPb = wr * 1f / pbTime;
+                    var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
+                    var activityPoints = MathLib.NearestInteger(activityPointsReal);
+
+                    var validationLogin = combination.VL;
+                    var validationTimestampInSeconds = combination.VD;
+
+                    if (validationLogin == LocalUser.Login && validationTimestampInSeconds != "" && TitleRelease != "")
+                    {
                         var titlePackReleaseTimestampInSeconds = TitleRelease;
                         var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
                         var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
                         var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
                         activityPoints += extraActivityPointsInt;
                     }
-                }
 
-                activityPointsTotal += activityPoints;
+                    activityPointsTotal += activityPoints;
+                }
             }
         }
 
         LayerCustomEvent(SoloMenuLayer, "SetPoints", new[] { skillpointsTotal.ToString(), activityPointsTotal.ToString() });
-        LayerCustomEvent(LeaderboardsLayer, "SetLeaderboards", new[] { stats.EnvimixOverallCompletion.ToString() });
+        LayerCustomEvent(LeaderboardsLayer, "SetLeaderboards", new[] { stats.EnvimixCompletionPercentage.ToString(), stats.DefaultCarCompletionPercentage.ToString(), stats.GlobalCompletionPercentage.ToString() });
     }
 
     private void RequestLeaderboards(string mapUid, int laps, ImmutableArray<string> cars)
