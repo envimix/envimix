@@ -278,7 +278,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
         SetSlidingText(FrameLabelMapName, Map.MapInfo.Name);
         LabelAuthor.Value = Map.MapInfo.AuthorNickName;
         LabelEnvironment.Value = Map.CollectionName;
-        QuadEnvironment.ChangeImageUrl($"file://Media/Images/Environments/{Map.CollectionName}.png");
+        QuadEnvironment.ChangeImageUrl($"file://Media/Images/Environments/{Map.CollectionName}TMT.png");
 
         FrameDiscordUsers = new[] { FrameDiscordUser1, FrameDiscordUser2 };
 
