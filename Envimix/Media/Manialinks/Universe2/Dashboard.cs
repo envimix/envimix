@@ -262,22 +262,25 @@ public class Dashboard : CTmMlScriptIngame, IContext
         FrameCheckpointCounter.ClipWindowRelativePosition.Y = AnimLib.EaseOutQuad(Now - Start - 400, -6, 6, 500);
         FrameDistance.ClipWindowRelativePosition.Y = AnimLib.EaseOutQuad(Now - Start - 400, -6, 6, 500);
 
-        foreach (var control in FrameSteepness.Controls)
+        if (IsVisible())
         {
-            if (control is not CMlFrame frame)
+            foreach (var control in FrameSteepness.Controls)
             {
-                continue;
-            }
-
-            foreach (var control2 in frame.Controls)
-            {
-                if (control2 is CMlQuad quad)
+                if (control is not CMlFrame frame)
                 {
-                    quad.Opacity = AnimLib.EaseOutQuad(_T: Now - Start - 800, _Base: 0, _Change: 1, _Duration: 200);
+                    continue;
                 }
-                else if (control2 is CMlLabel label)
+
+                foreach (var control2 in frame.Controls)
                 {
-                    label.Opacity = AnimLib.EaseOutQuad(_T: Now - Start - 800, _Base: 0, _Change: 1, _Duration: 200);
+                    if (control2 is CMlQuad quad)
+                    {
+                        quad.Opacity = AnimLib.EaseOutQuad(_T: Now - Start - 800, _Base: 0, _Change: 1, _Duration: 200);
+                    }
+                    else if (control2 is CMlLabel label)
+                    {
+                        label.Opacity = AnimLib.EaseOutQuad(_T: Now - Start - 800, _Base: 0, _Change: 1, _Duration: 200);
+                    }
                 }
             }
         }
@@ -391,14 +394,6 @@ public class Dashboard : CTmMlScriptIngame, IContext
             QuadSpeedFreewheeling.Opacity = 0;
         }
 
-        if (GetOwner().AimPitch <= 0 && GetOwner().AimPitch >= -1)
-        {
-            FrameSteepnessZeroMinusOne.RelativeRotation = GetOwner().AimPitch * 90;
-            LabelSteepnessZeroMinusOne.Value = $"{MathLib.NearestInteger(-GetOwner().AimPitch * 90)}°";
-
-            FrameSteepnessZeroMinusOne.Visible = true;
-            FrameSteepnessZeroOne.Visible = false;
-        }
         if (GetOwner().AimPitch >= 0 && GetOwner().AimPitch <= 1)
         {
             FrameSteepnessZeroOne.RelativeRotation = GetOwner().AimPitch * 90;
@@ -406,6 +401,14 @@ public class Dashboard : CTmMlScriptIngame, IContext
 
             FrameSteepnessZeroOne.Visible = true;
             FrameSteepnessZeroMinusOne.Visible = false;
+        }
+        else if (GetOwner().AimPitch <= 0 && GetOwner().AimPitch >= -1)
+        {
+            FrameSteepnessZeroMinusOne.RelativeRotation = GetOwner().AimPitch * 90;
+            LabelSteepnessZeroMinusOne.Value = $"{MathLib.NearestInteger(-GetOwner().AimPitch * 90)}°";
+
+            FrameSteepnessZeroMinusOne.Visible = true;
+            FrameSteepnessZeroOne.Visible = false;
         }
 
         if (GetOwner().InWaterDuration > 0)
