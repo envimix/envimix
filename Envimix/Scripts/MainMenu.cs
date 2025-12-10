@@ -639,13 +639,13 @@ public class MainMenu : CManiaAppTitle, IContext
             }
             else if (response.Login != TextLib.ToLowerCase(LocalUser.Login))
             {
-                Log("User token creation failed (server login mismatch).");
+                Log($"User token creation failed (login mismatch, local: {LocalUser.Login} != server: {response.Login}).");
             }
             else
             {
                 if (response.Login != LocalUser.Login)
                 {
-                    Log($"Warning: login case mismatch (local: {LocalUser.Login}, server: {response.Login}), should be fine, but it's weird");
+                    Log($"Warning: login case mismatch (local: {LocalUser.Login} != server: {response.Login}), should be fine, but it's weird");
                 }
 
                 EnvimixTurboUserIsAdmin = response.IsAdmin;
@@ -817,16 +817,6 @@ public class MainMenu : CManiaAppTitle, IContext
     private void RestoreValidations()
     {
         RestoreValidationsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/restore-validations", "", $"Authorization: Bearer {EnvimixTurboUserToken}");
-    }
-
-    private static int GetLaps(CMapInfo mapInfo)
-    {
-        if (!mapInfo.TMObjective_IsLapRace)
-        {
-            return 1;
-        }
-
-        return mapInfo.TMObjective_NbLaps;
     }
 
     private void ProcessTitleStats(STitleStats stats)
