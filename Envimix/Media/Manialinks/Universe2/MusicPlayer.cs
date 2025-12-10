@@ -35,13 +35,21 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                                 var lapsToGo = NbLaps - e.Player.CurrentNbLaps;
                                 if (laps == NbLaps)
                                 {
-                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-lap-final.wav", 1);
-                                    LastVoicePlayedAt = Now;
+                                    var persistent_EnvimixVoiceOnWaypoint = Persistent<float>.For(LocalUser);
+                                    if (persistent_EnvimixVoiceOnWaypoint.Get() >= 0.01f)
+                                    {
+                                        Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-lap-final.wav", 1);
+                                        LastVoicePlayedAt = Now;
+                                    }
                                 }
                                 else if (lapsToGo > 0 && lapsToGo <= 5)
                                 {
-                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-lap-{lapsToGo}.wav", 1);
-                                    LastVoicePlayedAt = Now;
+                                    var persistent_EnvimixVoiceOnWaypoint = Persistent<float>.For(LocalUser);
+                                    if (persistent_EnvimixVoiceOnWaypoint.Get() >= 0.01f)
+                                    {
+                                        Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-lap-{lapsToGo}.wav", 1);
+                                        LastVoicePlayedAt = Now;
+                                    }
                                 }
                             }
                             //M_LapTrackNeeded = True;
@@ -65,17 +73,23 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
 
                             if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
                             {
-                                if (MathLib.Rand(0, 5) == 0 && (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000))
+                                if (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000)
                                 {
-                                    if (difference > 0)
+                                    var randomness = MathLib.Rand(0, 1f);
+
+                                    var persistent_EnvimixVoiceOnWaypoint = Persistent<float>.For(LocalUser);
+                                    if (randomness < persistent_EnvimixVoiceOnWaypoint.Get())
                                     {
-                                        Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-no-{MathLib.Rand(1, 38)}.wav", 1);
+                                        if (difference > 0)
+                                        {
+                                            Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-no-{MathLib.Rand(1, 38)}.wav", 1);
+                                        }
+                                        else
+                                        {
+                                            Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-yes-{MathLib.Rand(1, 23)}.wav", 1);
+                                        }
+                                        LastVoicePlayedAt = Now;
                                     }
-                                    else
-                                    {
-                                        Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-checkpoint-yes-{MathLib.Rand(1, 23)}.wav", 1);
-                                    }
-                                    LastVoicePlayedAt = Now;
                                 }
                             }
 
@@ -89,10 +103,16 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                     case CTmRaceClientEvent.EType.Impact:
                         if (LoadedTitle.TitleId == "Envimix_Turbo@bigbang1112")
                         {
-                            if (MathLib.Rand(0, 5) == 0 && (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000))
+                            if (LastVoicePlayedAt == -1 || Now - LastVoicePlayedAt > 3000)
                             {
-                                Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-carhit-{MathLib.Rand(1, 16)}.wav", 1);
-                                LastVoicePlayedAt = Now;
+                                var randomness = MathLib.Rand(0, 1f);
+
+                                var persistent_EnvimixVoiceOnImpact = Persistent<float>.For(LocalUser);
+                                if (randomness < persistent_EnvimixVoiceOnImpact.Get())
+                                {
+                                    Audio.PlaySoundEvent($"file://Media/Sounds/Voices/voice-carhit-{MathLib.Rand(1, 16)}.wav", 1);
+                                    LastVoicePlayedAt = Now;
+                                }
                             }
                         }
                         break;

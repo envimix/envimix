@@ -164,6 +164,9 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadButtonModeHelpClose;
     [ManialinkControl] public required CMlLabel LabelValidator;
     [ManialinkControl] public required CMlQuad QuadStarButton;
+    [ManialinkControl] public required CMlFrame FrameButtonScriptParameters;
+    [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnImpact;
+    [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnWaypoint;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -327,6 +330,38 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             AnimMgr.Add(QuadStarButton, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             Focus2();
+        };
+
+        QuadButtonEnableVoiceOnImpact.MouseClick += () =>
+        {
+            var persistent_EnvimixVoiceOnImpact = Persistent<float>.For(LocalUser);
+            var parent = QuadButtonEnableVoiceOnImpact.Parent;
+            if (persistent_EnvimixVoiceOnImpact.Get() < 0.01f)
+            {
+                persistent_EnvimixVoiceOnImpact.Set(0.1f);
+                (parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on impact";
+            }
+            else
+            {
+                persistent_EnvimixVoiceOnImpact.Set(0f);
+                (parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on impact";
+            }
+        };
+
+        QuadButtonEnableVoiceOnWaypoint.MouseClick += () =>
+        {
+            var persistent_EnvimixVoiceOnWaypoint = Persistent<float>.For(LocalUser);
+            var parent = QuadButtonEnableVoiceOnWaypoint.Parent;
+            if (persistent_EnvimixVoiceOnWaypoint.Get() < 0.01f)
+            {
+                persistent_EnvimixVoiceOnWaypoint.Set(0.15f);
+                (parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on waypoint";
+            }
+            else
+            {
+                persistent_EnvimixVoiceOnWaypoint.Set(0f);
+                (parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on waypoint";
+            }
         };
     }
 
@@ -1574,6 +1609,7 @@ public class Menu : CTmMlScriptIngame, IContext
         FrameSingleplayer.Visible = IsSolo();
         FrameButtonSpectator.Visible = !IsSolo();
         FrameButtonManageServer.Visible = !IsSolo();
+        FrameButtonScriptParameters.Visible = !IsSolo();
 
         if (IsSolo())
         {
@@ -1594,6 +1630,35 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             FrameButtonSpectator.DataAttributeSet("startanimate", "-1");
             (FrameButtonSpectator.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
+        }
+
+        var persistent_EnvimixVoiceOnImpact = Persistent<float>.For(LocalUser);
+        var persistent_EnvimixVoiceOnWaypoint = Persistent<float>.For(LocalUser);
+
+        var persistent_EnvimixVoiceSettingsIntialized = Persistent<bool>.For(LocalUser);
+        if (!persistent_EnvimixVoiceSettingsIntialized.Get())
+        {
+            persistent_EnvimixVoiceOnImpact.Set(0.1f);
+            persistent_EnvimixVoiceOnWaypoint.Set(0.15f);
+        }
+        persistent_EnvimixVoiceSettingsIntialized.Set(true);
+
+        if (persistent_EnvimixVoiceOnImpact.Get() < 0.01f)
+        {
+            (QuadButtonEnableVoiceOnImpact.Parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on impact";
+        }
+        else
+        {
+            (QuadButtonEnableVoiceOnImpact.Parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on impact";
+        }
+
+        if (persistent_EnvimixVoiceOnWaypoint.Get() < 0.01f)
+        {
+            (QuadButtonEnableVoiceOnWaypoint.Parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on waypoint";
+        }
+        else
+        {
+            (QuadButtonEnableVoiceOnWaypoint.Parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on waypoint";
         }
 
         UserShift = 0;
