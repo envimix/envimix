@@ -314,10 +314,12 @@ public class EnvimixSolo : Envimix
                 foreach (var car in DisplayedCars)
                 {
                     var scoreContext = $"{ScoreContextPrefix}{car}";
+                    var isDefaultCar = false;
 
                     if (MapPlayerModelName == car)
                     {
                         scoreContext = ScoreContextPrefix;
+                        isDefaultCar = true;
                     }
 
                     // currently validation key, should be something else, but it is needed to retrieve the validation for extra activity points anyway
@@ -394,7 +396,7 @@ public class EnvimixSolo : Envimix
 
                         Log(nameof(EnvimixSolo), $"Activity points calculation for {car}: 1000 * exp({totalRecCount} * ({wr} / {pbTime} - 1)) = {activityPointsReal} (nearest: {activityPointsInt})");
 
-                        if (mapInfoResponse.Validations.ContainsKey(key))
+                        if (!isDefaultCar && mapInfoResponse.Validations.ContainsKey(key))
                         {
                             var validation = mapInfoResponse.Validations[key];
                             if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && mapInfoResponse.TitlePack.ReleasedAt != "")

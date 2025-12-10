@@ -884,6 +884,7 @@ public class MainMenu : CManiaAppTitle, IContext
                 foreach (var car in Cars)
                 {
                     var scoreContext = $"{ScoreContextPrefix}{car}";
+                    var isDefaultCar = false;
 
                     // hacky but it works for TMT
                     if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
@@ -892,6 +893,7 @@ public class MainMenu : CManiaAppTitle, IContext
                         || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
                     {
                         scoreContext = ScoreContextPrefix;
+                        isDefaultCar = true;
                     }
 
                     var pbTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
@@ -970,7 +972,7 @@ public class MainMenu : CManiaAppTitle, IContext
                     var validationLogin = combination.VL;
                     var validationTimestampInSeconds = combination.VD;
 
-                    if (validationLogin == LocalUser.Login && validationTimestampInSeconds != "" && TitleRelease != "")
+                    if (!isDefaultCar && validationLogin == LocalUser.Login && validationTimestampInSeconds != "" && TitleRelease != "")
                     {
                         var titlePackReleaseTimestampInSeconds = TitleRelease;
                         var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);

@@ -144,6 +144,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
     [Netread] public required Dictionary<string, int> Skillpoints { get; set; }
     [Netread] public required Dictionary<string, int> ActivityPoints { get; set; }
 
+    [Netread] public string MapPlayerModelName { get; set; }
+
     public Endscreen()
     {
         RaceEvent += (e) =>
@@ -610,7 +612,9 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
         Log($"Activity points calculation: 1000 * exp({totalRecCount} * ({wr} / {pbTime} - 1)) = {activityPointsReal} (nearest: {activityPoints})");
 
-        if (EndscreenRecordsResponse.Validation.Length > 0)
+        var car = Netread<string>.For(GetPlayer());
+        var isDefaultCar = MapPlayerModelName == car.Get();
+        if (!isDefaultCar && EndscreenRecordsResponse.Validation.Length > 0)
         {
             var validation = EndscreenRecordsResponse.Validation[0];
             if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && EndscreenRecordsResponse.TitlePackReleaseTimestamp != "")
