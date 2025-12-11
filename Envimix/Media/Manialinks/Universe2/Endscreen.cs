@@ -141,6 +141,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
     public int CurrentActivityPoints;
     public int StartPointChangeAt = -1;
 
+    public CAudioSource AudioClick;
+
     [Netread] public required Dictionary<string, int> Skillpoints { get; set; }
     [Netread] public required Dictionary<string, int> ActivityPoints { get; set; }
 
@@ -285,6 +287,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
         FrameDiscordUsers = new[] { FrameDiscordUser1, FrameDiscordUser2 };
 
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
+
+        AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
 
         Wait(() => GetPlayer() is not null);
     }
@@ -470,6 +474,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
         {
             return;
         }
+
+        AudioClick.Play();
 
         FinishedAt = -1;
         SendCustomEvent("EndscreenContinue", new[] { "" });

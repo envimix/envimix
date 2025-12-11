@@ -70,6 +70,12 @@ public class Rating : CTmMlScriptIngame, IContext
         QuadRating.MouseClick += () =>
         {
             SendCustomEvent("OpenRating", new[] {""});
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadRating.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 3, 1);
         };
 
         PluginCustomEvent += (eventName, eventParams) =>

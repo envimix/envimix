@@ -242,11 +242,15 @@ public class Menu : CTmMlScriptIngame, IContext
         QuadButtonContinue.MouseOver += Focus2;
         QuadButtonSpectator.MouseOver += Focus2;
         QuadButtonSkin.MouseOver += Focus2;
+        QuadButtonSkinPlay.MouseOver += Focus2;
+        QuadButtonSkinBack.MouseOver += Focus2;
         QuadButtonAdvanced.MouseOver += Focus2;
         QuadButtonModeHelp.MouseOver += Focus3;
         QuadButtonServerSettings.MouseOver += Focus3;
         QuadButtonManageServer.MouseOver += Focus2;
         QuadButtonExit.MouseOver += Focus2;
+        QuadButtonAdvancedSettings.MouseOver += Focus2;
+        QuadButtonSettingsBack.MouseOver += Focus2;
 
         QuadButtonContinue.MouseClick += QUAD_BUTTON_CONTINUE;
         QuadButtonSpectator.MouseClick += QUAD_BUTTON_SPECTATOR;
@@ -346,6 +350,12 @@ public class Menu : CTmMlScriptIngame, IContext
                 persistent_EnvimixVoiceOnImpact.Set(0f);
                 (parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on impact";
             }
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadButtonEnableVoiceOnImpact.MouseOver += () =>
+        {
+            Focus3();
         };
 
         QuadButtonEnableVoiceOnWaypoint.MouseClick += () =>
@@ -362,6 +372,12 @@ public class Menu : CTmMlScriptIngame, IContext
                 persistent_EnvimixVoiceOnWaypoint.Set(0f);
                 (parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $tEnable voice on waypoint";
             }
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadButtonEnableVoiceOnWaypoint.MouseOver += () =>
+        {
+            Focus3();
         };
     }
 
@@ -609,6 +625,8 @@ public class Menu : CTmMlScriptIngame, IContext
                 var index = TextLib.ToInteger(control.Parent.DataAttributeGet("id"));
                 FrameVehicles.Scroll(new Vec2(0f, (index - PreviousVehicleIndex) * 1f));
 
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+
                 if (PreviousVehicleIndex - index == 0)
                 {
                     if (index < DisplayedCars.Length)
@@ -680,6 +698,8 @@ public class Menu : CTmMlScriptIngame, IContext
                 var Index = control.Parent.Parent.Controls.IndexOf(control.Parent) + SOffset - 1;
                 var CName = DisplayedCars[VehicleIndex];
 
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+
                 if (Index == -1)
                 {
                     var userSkins = UserSkins;
@@ -720,6 +740,8 @@ public class Menu : CTmMlScriptIngame, IContext
                 var file = control.Parent.DataAttributeGet("file");
                 var gindex = control.Parent.DataAttributeGet("gindex");
                 var url = control.Parent.DataAttributeGet("url");
+
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
 
                 (control as CMlQuad)!.StyleSelected = false;
 
@@ -785,10 +807,27 @@ public class Menu : CTmMlScriptIngame, IContext
         FrameTooltip.Show();
     }
 
+    private void Focus2()
+    {
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+    }
+
+    private void Focus3()
+    {
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 3, 1);
+    }
+
     private void Menu_MouseOver(CMlControl control, string controlId)
     {
+        if (controlId == "QuadSkin")
+        {
+            Focus3();
+            return;
+        }
+
         if (controlId == "QuadGhost")
         {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
             var file = control.Parent.DataAttributeGet("file");
 
             if (file is "")
@@ -823,16 +862,6 @@ public class Menu : CTmMlScriptIngame, IContext
     private void Menu_MouseOut(CMlControl control, string controlId)
     {
         FrameTooltip.Hide();
-    }
-
-    private void Focus2()
-    {
-        Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
-    }
-
-    private void Focus3()
-    {
-        Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 3, 1);
     }
 
 	private void SetSlidingText(CMlFrame frame, string value)

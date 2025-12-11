@@ -128,42 +128,86 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public Dictionary<string, Dictionary<string, SCombinationStat>> TitleCombinations;
     public Dictionary<string, STitleUserInfo> SoloUserInfos;
 
+    public CAudioSource AudioClick;
+
     public SoloMenu()
     {
         QuadBack.MouseClick += () =>
         {
             SendCustomEvent("MainMenu", new[] { "" });
+            AudioClick.Play();
+        };
+
+        QuadBack.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         QuadTM2Cars.MouseClick += () =>
         {
             SwitchCars(false);
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadTM2Cars.MouseOver += () =>
+        {
+            if (IsTMUF)
+            {
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+            }
         };
 
         QuadTMUFCars.MouseClick += () =>
         {
             SwitchCars(true);
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadTMUFCars.MouseOver += () =>
+        {
+            if (!IsTMUF)
+            {
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+            }
         };
 
         QuadPlay.MouseClick += () =>
         {
+            AudioClick.Play();
             if (MapGroupNum != -1 && MapInfoNum != -1)
             {
                 PlaySelectedMap();
             }
         };
 
+        QuadPlay.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+        };
+
         QuadExplore.MouseClick += () =>
         {
+            AudioClick.Play();
             if (MapGroupNum != -1 && MapInfoNum != -1)
             {
                 ExploreSelectedMap();
             }
         };
 
+        QuadExplore.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+        };
+
         QuadQuickplay.MouseClick += () =>
         {
+            AudioClick.Play();
             SendCustomEvent("Quickplay", new[] { "" });
+        };
+
+        QuadQuickplay.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
         };
 
         PluginCustomEvent += (type, data) =>
@@ -222,6 +266,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             if (controlId == "QuadMapButton")
             {
                 MapClick(control);
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             }
         };
 
@@ -230,6 +275,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             if (controlId == "QuadMapButton")
             {
                 MapSelect(control);
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
             }
         };
 
@@ -254,6 +300,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         FunnyCars = new() { "HighlandsCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
 
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
+
+        AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
 
         SwitchCars(false);
         SetupCampaign();

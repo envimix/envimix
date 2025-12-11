@@ -25,6 +25,8 @@ public class Outro : CTmMlScriptIngame, IContext
 
     public CMlQuad? SelectedButton;
 
+    public CAudioSource AudioClick;
+
     public Outro()
     {
         QuadSaveReplay.MouseClick += () =>
@@ -32,9 +34,19 @@ public class Outro : CTmMlScriptIngame, IContext
             SaveReplay();
         };
 
+        QuadSaveReplay.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+        };
+
         QuadPrevMap.MouseClick += () =>
         {
             PreviousMap();
+        };
+
+        QuadPrevMap.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
         };
 
         QuadPrevCar.MouseClick += () =>
@@ -42,9 +54,19 @@ public class Outro : CTmMlScriptIngame, IContext
             PreviousCar();
         };
 
+        QuadPrevCar.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+        };
+
         QuadContinue.MouseClick += () =>
         {
             Continue();
+        };
+
+        QuadContinue.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
         };
 
         QuadNextCar.MouseClick += () =>
@@ -52,14 +74,29 @@ public class Outro : CTmMlScriptIngame, IContext
             NextCar();
         };
 
+        QuadNextCar.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+        };
+
         QuadNextMap.MouseClick += () =>
         {
             NextMap();
         };
 
+        QuadNextMap.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+        };
+
         QuadExit.MouseClick += () =>
         {
             Exit();
+        };
+
+        QuadExit.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
         };
 
         PluginCustomEvent += (type, data) =>
@@ -212,6 +249,8 @@ public class Outro : CTmMlScriptIngame, IContext
         EnableMenuNavigationInputs = true;
 
         SelectedButton = QuadContinue;
+
+        AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
     }
 
     public void Loop()
@@ -234,6 +273,7 @@ public class Outro : CTmMlScriptIngame, IContext
     private void SaveReplay()
     {
         SendCustomEvent("SaveOutroReplay", new[] { "" });
+        AudioClick.Play();
     }
 
     private ImmutableArray<string> GetAllMaps()
@@ -255,6 +295,7 @@ public class Outro : CTmMlScriptIngame, IContext
 
     private void Exit()
     {
+        AudioClick.Play();
         Playground.QuitServer(true);
     }
 
@@ -276,6 +317,7 @@ public class Outro : CTmMlScriptIngame, IContext
     private void Continue()
     {
         SendCustomEvent("OutroContinue", new[] { "" });
+        AudioClick.Play();
 
         // reset button to Continue state
         SelectedButton = QuadContinue;

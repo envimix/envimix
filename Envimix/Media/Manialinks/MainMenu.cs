@@ -37,6 +37,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
     public STotdInfo TotdInfo;
 
+    public CAudioSource AudioClick;
+
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
     public MainMenu()
@@ -44,6 +46,12 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         QuadSolo.MouseClick += () =>
         {
             SendCustomEvent("MenuSolo", new[] {""});
+            AudioClick.Play();
+        };
+
+        QuadSolo.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
         };
 
         QuadLocal.MouseClick += () =>
@@ -51,9 +59,19 @@ public class MainMenu : CManiaAppTitleLayer, IContext
             SendCustomEvent("MenuLocal", new[] { "" });
         };
 
+        QuadLocal.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+        };
+
         QuadInternet.MouseClick += () =>
         {
             SendCustomEvent("MenuInternet", new[] { "" });
+        };
+
+        QuadInternet.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         QuadEditor.MouseClick += () =>
@@ -61,14 +79,31 @@ public class MainMenu : CManiaAppTitleLayer, IContext
             SendCustomEvent("MenuEditor", new[] { "" });
         };
 
+        QuadEditor.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
+        };
+
         QuadQuit.MouseClick += () =>
         {
+            AudioClick.Play();
             ParentApp.Menu_Quit();
+        };
+
+        QuadQuit.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         QuadLeaderboards.MouseClick += () =>
         {
             SendCustomEvent("Leaderboards", new[] { "" });
+            AudioClick.Play();
+        };
+
+        QuadLeaderboards.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
         };
 
         LabelSubmitCampaignMaps.MouseClick += () =>
@@ -88,10 +123,16 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
         QuadTotd.MouseClick += () =>
         {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             if (TotdInfo.Map.Uid != "")
             {
                 EnvimixOpenMapUid = TotdInfo.Map.Uid;
             }
+        };
+
+        QuadTotd.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         PluginCustomEvent += (type, data) =>
@@ -139,6 +180,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         LabelBuild.SetText(TextLib.Split(" ", LoadedTitle.TitleVersion)[0]);
 
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
+
+        AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
     }
 
     public void Loop()

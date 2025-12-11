@@ -48,6 +48,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     public CMlQuad SelectedLeaderboards;
 
+    public CAudioSource AudioClick;
+
     /*[Local(LocalFor.LocalUser)] public IList<SPlayerCompletion> EnvimixCompletion { get; set; }
     [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostSkillpoints { get; set; }
     [Local(LocalFor.LocalUser)] public IList<SPlayerScore> EnvimixMostActivityPoints { get; set; }*/
@@ -57,6 +59,12 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         QuadQuit.MouseClick += () =>
         {
             SendCustomEvent("MainMenu", new[] { "" });
+            AudioClick.Play();
+        };
+
+        QuadQuit.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         PluginCustomEvent += (type, data) =>
@@ -94,18 +102,36 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         {
             SelectedLeaderboards = QuadEnvimixLeaderboards;
             UpdateLeaderboards();
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadEnvimixLeaderboards.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         QuadDefaultCarLeaderboards.MouseClick += () =>
         {
             SelectedLeaderboards = QuadDefaultCarLeaderboards;
             UpdateLeaderboards();
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadDefaultCarLeaderboards.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         QuadGlobalLeaderboards.MouseClick += () =>
         {
             SelectedLeaderboards = QuadGlobalLeaderboards;
             UpdateLeaderboards();
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadGlobalLeaderboards.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
     }
 
@@ -491,6 +517,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         FrameQuit.Visible = false;
 
         SelectedLeaderboards = QuadEnvimixLeaderboards;
+
+        AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
 
         UpdateLeaderboards();
     }
