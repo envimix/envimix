@@ -119,6 +119,9 @@ public class Endscreen : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameDiscordUser2;
     [ManialinkControl] public required CMlQuad QuadButtonDiscord;
 
+    [ManialinkControl] public required CMlQuad QuadZone;
+    [ManialinkControl] public required CMlLabel LabelZone;
+
     public int FinishedAt;
     public string PreviousCar = "";
     public CHttpRequest? WidgetRequest;
@@ -127,6 +130,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
     public bool WidgetHover;
     public int WidgetCurrentMember;
     public IList<CMlFrame> FrameDiscordUsers;
+
+    public int ZoneIndex;
 
     [Netread] public bool GhostToUpload { get; set; }
 
@@ -244,6 +249,36 @@ public class Endscreen : CTmMlScriptIngame, IContext
                 Continue();
             }
         };
+
+        QuadZone.MouseClick += () =>
+        {
+            IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
+            if (zones.Count == 0)
+            {
+                ZoneIndex = 0;
+            }
+            else
+            {
+                ZoneIndex = (ZoneIndex + 1) % zones.Count;
+            }
+
+            var zone = "World";
+            if (zones.Count > 0)
+            {
+                zone = zones[ZoneIndex];
+            }
+
+            LabelZone.SetText("|Zone|" + zone);
+
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 1, 1);
+
+            UpdateLeaderboards(false);
+        };
+
+        QuadZone.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+        };
     }
 
     CTmMlPlayer GetPlayer()
@@ -350,7 +385,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
         if (EndscreenRecordsResponseReceivedAt != PreviousEndscreenRecordsResponseReceivedAt)
         {
-            UpdateLeaderboard();
+            UpdateLeaderboards(true);
             PreviousEndscreenRecordsResponseReceivedAt = EndscreenRecordsResponseReceivedAt;
         }
 
@@ -482,16 +517,44 @@ public class Endscreen : CTmMlScriptIngame, IContext
         HideEndscreen();
     }
 
-    private void UpdateLeaderboard()
+    private static string GetFullZone(IList<string> zones, int index)
+    {
+        var zone = zones[0];
+
+        for (var i = 0; i < zones.Count - 1; i++)
+        {
+            if (i == index)
+            {
+                break;
+            }
+
+            zone = $"{zone}|{zones[i + 1]}";
+        }
+
+        return zone;
+    }
+
+    private void UpdateLeaderboards(bool updateResults)
     {
         QuadLoadingLeaderboard.Hide();
         FrameLeaderboard.Show();
 
+        IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
+        var zone = "World";
+        if (zones.Count > 0)
+        {
+            zone = GetFullZone(zones, ZoneIndex);
+        }
+
+        var index = 0;
         var rankIndex = 0;
         var prevTime = -1;
         var rankOffset = 0;
 
         var pbIsWorldRecord = false;
+        var pbRankFromVisibleLb = 0;
+
+        var records = EndscreenRecordsResponse.Records;
 
         foreach (var control in FrameLeaderboardContents.Controls)
         {
@@ -500,13 +563,32 @@ public class Endscreen : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            if (EndscreenRecordsResponse.Records.Length <= rankIndex)
+            if (records.Length <= index)
             {
                 frame.Hide();
                 continue;
             }
 
-            var record = EndscreenRecordsResponse.Records[rankIndex];
+            var record = records[index];
+
+            if (zone != "World")
+            {
+                while (!TextLib.StartsWith(zone, record.User.Zone))
+                {
+                    index += 1;
+                    if (index >= records.Length)
+                    {
+                        frame.Hide();
+                        break;
+                    }
+                    record = records[index];
+                }
+
+                if (index >= records.Length)
+                {
+                    continue;
+                }
+            }
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
@@ -541,12 +623,14 @@ public class Endscreen : CTmMlScriptIngame, IContext
                     quadHighlight.Opacity = 0.6f;
                     AnimMgr.Add(quadHighlight, "<quad opacity=\"0.2\" />", 200, CAnimManager.EAnimManagerEasing.QuadInOut);
                 }
+                pbRankFromVisibleLb = rankIndex + 1 - rankOffset;
             }
             else
             {
                 quadHighlight.Hide();
             }
 
+            index += 1;
             rankIndex += 1;
         }
 
@@ -557,10 +641,12 @@ public class Endscreen : CTmMlScriptIngame, IContext
         var pbSkillpointRankCounter = 0;
         var totalRecCount = 0;
 
-        for (var i = 0; i < EndscreenRecordsResponse.Skillpoints.Length / 2; i++)
+        var skillpoints = EndscreenRecordsResponse.Skillpoints;
+
+        for (var i = 0; i < skillpoints.Length / 2; i++)
         {
-            var time = EndscreenRecordsResponse.Skillpoints[i * 2];
-            var count = EndscreenRecordsResponse.Skillpoints[i * 2 + 1];
+            var time = skillpoints[i * 2];
+            var count = skillpoints[i * 2 + 1];
 
             totalRecCount += count;
 
@@ -587,9 +673,25 @@ public class Endscreen : CTmMlScriptIngame, IContext
         var quadPbHighlight = (FramePersonalRecord.GetFirstChild("QuadHighlight") as CMlQuad)!;
         quadPbHighlight.Opacity = 0.2f;
 
-        labelPbRecord.SetText($"{TextLib.FormatInteger(pbRankCounter + 1, 2)}  {TimeToTextWithMilli(pbTime)}");
+        if (zone == "World")
+        {
+            labelPbRecord.SetText($"{TextLib.FormatInteger(pbRankCounter + 1, 2)}  {TimeToTextWithMilli(pbTime)}");
+        }
+        else if (pbRankFromVisibleLb == 0)
+        {
+            labelPbRecord.SetText($"??  {TimeToTextWithMilli(pbTime)}");
+        }
+        else
+        {
+            labelPbRecord.SetText($"{TextLib.FormatInteger(pbRankFromVisibleLb, 2)}  {TimeToTextWithMilli(pbTime)}");
+        }
         labelPbNickname.SetText(GetPlayer().User.Name);
         labelPbNickname.RelativePosition_V3.X = labelPbRecord.ComputeWidth(labelPbRecord.Value) - 3f;
+
+        if (!updateResults)
+        {
+            return;
+        }
 
         if (pbSkillpointRankCounter == 0)
         {
@@ -608,9 +710,9 @@ public class Endscreen : CTmMlScriptIngame, IContext
         Log($"Skillpoints calculation: ({totalRecCount} - {pbSkillpointRankCounter}) * 100 / {pbSkillpointRankCounter} = {skillpointsReal} (ceiling: {ceilingSkillpoints})");
 
         var wr = pbTime;
-        if (EndscreenRecordsResponse.Records.Length > 0)
+        if (records.Length > 0)
         {
-            wr = EndscreenRecordsResponse.Records[0].Time;
+            wr = records[0].Time;
         }
         var wrPb = wr * 1f / pbTime;
         var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
