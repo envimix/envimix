@@ -637,17 +637,12 @@ public class MainMenu : CManiaAppTitle, IContext
                 Log("User token creation failed (JSON issue).");
                 Log(UserTokenRequest.Result);
             }
-            else if (response.Login != TextLib.ToLowerCase(LocalUser.Login))
+            else if (response.Login != LocalUser.Login)
             {
                 Log($"User token creation failed (login mismatch, local: {LocalUser.Login} != server: {response.Login}).");
             }
             else
             {
-                if (response.Login != LocalUser.Login)
-                {
-                    Log($"Warning: login case mismatch (local: {LocalUser.Login} != server: {response.Login}), should be fine, but it's weird");
-                }
-
                 EnvimixTurboUserIsAdmin = response.IsAdmin;
                 if (response.IsAdmin)
                 {
