@@ -48,7 +48,7 @@ public class EnvimixSolo : Envimix
         public Envimania.SFilteredRating Rating;
     }
 
-    [Setting] public new bool EnableDefaultCar = false; // TODO: enable after finished envimix car run
+    [Setting] public new bool EnableDefaultCar = true;
     [Setting] public new bool EnableStadiumEnvimix = true;
     [Setting] public new bool EnableUnitedCars = true;
     [Setting] public new bool EnableTrafficCar = true;
