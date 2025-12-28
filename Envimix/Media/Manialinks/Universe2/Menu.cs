@@ -1536,14 +1536,22 @@ public class Menu : CTmMlScriptIngame, IContext
 
         var filter = GetFilter();
         var filterKey = ConstructFilterKey(filter);
-        var zone = GetFullZone();
+        string zone;
+        if (Zones.Count == 0)
+        {
+            zone = "World";
+        }
+        else
+        {
+            zone = GetFullZone();
+        }
 
         if ((!refresh && EnvimaniaFinishedRecordsRequests.ContainsKey(filterKey) && EnvimaniaFinishedRecordsRequests[filterKey].ContainsKey(zone)) || EnvimaniaRecordsRequests.ContainsKey(filterKey))
         {
             return false;
         }
 
-        Log($"Requesting Envimania records... ({filter.Car}, G: {filter.Gravity}, Type: Time, Zone: {GetFullZone()})");
+        Log($"Requesting Envimania records... ({filter.Car}, G: {filter.Gravity}, Type: Time, Zone: {zone})");
 
         EnvimaniaRecordsRequests[filterKey] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{Map.MapInfo.MapUid}/{filter.Car}?gravity={filter.Gravity}&laps={filter.Laps}&zone={zone}", UseCache: false, $"Authorization: Bearer {EnvimixTurboUserToken}");
         EnvimaniaUnfinishedRecordsRequests[filterKey] = filter;
