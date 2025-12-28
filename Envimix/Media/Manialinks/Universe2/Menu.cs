@@ -484,6 +484,7 @@ public class Menu : CTmMlScriptIngame, IContext
             var quadVehicle = (frame.GetFirstChild("QuadVehicle") as CMlQuad)!;
             var labelDefault = (frame.GetFirstChild("LabelDefault") as CMlLabel)!;
             var labelVehicle = (frame.GetFirstChild("LabelVehicle") as CMlLabel)!;
+            var quadVehicleIcon = (frame.GetFirstChild("QuadVehicleIcon") as CMlQuad)!;
 
             if ((DisplayedCars.Contains(GetCar()) || GetCar() == "") && i == VehicleIndex)
             {
@@ -502,6 +503,7 @@ public class Menu : CTmMlScriptIngame, IContext
             if (ItemCars[DisplayedCars[i]] != MapPlayerModelName)
             {
                 labelVehicle.Opacity = 1;
+                quadVehicleIcon.Opacity = 1;
                 labelDefault.Hide();
                 continue;
             }
@@ -510,11 +512,13 @@ public class Menu : CTmMlScriptIngame, IContext
             {
                 labelVehicle.Opacity = 1;
                 labelDefault.Opacity = 1;
+                quadVehicleIcon.Opacity = 1;
             }
             else
             {
                 labelVehicle.Opacity = 0.5f;
                 labelDefault.Opacity = 0.5f;
+                quadVehicleIcon.Opacity = 0.5f;
             }
 
             labelDefault.Show();
