@@ -1140,6 +1140,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     var quadMapName = (frameMap.GetFirstChild("QuadMapName") as CMlQuad)!;
                     var labelMapName = (frameMap.GetFirstChild("LabelMapName") as CMlLabel)!;
                     var labelSkillpoints = (frameMap.GetFirstChild("LabelSkillpoints") as CMlLabel)!;
+                    var labelLaps = (frameMap.GetFirstChild("LabelLaps") as CMlQuad)!;
 
                     if (mapGroup is null || mapCounter >= mapGroup.MapInfos.Count)
                     {
@@ -1148,6 +1149,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         quadMapName.Hide();
                         labelMapName.Hide();
                         labelSkillpoints.Hide();
+                        labelLaps.Hide();
                         continue;
                     }
 
@@ -1173,6 +1175,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                     quadMapName.Show();
                     labelSkillpoints.Hide();
+
+                    labelLaps.Visible = mapInfo.TMObjective_IsLapRace;
 
                     mapCounter += 1;
                     totalMapCounter += 1;

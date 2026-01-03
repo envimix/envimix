@@ -161,7 +161,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public CHttpRequest? TotdRequest;
     public CHttpRequest? StatsRequest;
     public Dictionary<string, Dictionary<string, CHttpRequest>> LeaderboardRequests;
-    public CHttpRequest? RestoreValidationsRequest;
+    public CHttpRequest? RestoreRecordsRequest;
 
     public string ScoreContextPrefix = "";
 
@@ -383,8 +383,8 @@ public class MainMenu : CManiaAppTitle, IContext
                         case "Stats":
                             RequestStats();
                             break;
-                        case "RestoreValidations":
-                            RestoreValidations();
+                        case "RestoreRecords":
+                            RestoreRecords();
                             break;
                         case "LoadLeaderboards":
                             lbRequestMapUid = e.CustomEventData[0];
@@ -476,18 +476,18 @@ public class MainMenu : CManiaAppTitle, IContext
             StatsRequest = null;
         }
 
-        if (RestoreValidationsRequest is not null && RestoreValidationsRequest.IsCompleted)
+        if (RestoreRecordsRequest is not null && RestoreRecordsRequest.IsCompleted)
         {
-            if (RestoreValidationsRequest.StatusCode == 200)
+            if (RestoreRecordsRequest.StatusCode == 200)
             {
-                Log("Restoring validations began (200).");
+                Log("Restoring records began (200).");
             }
             else
             {
-                Log($"Restoring validations request failed ({RestoreValidationsRequest.StatusCode}).");
+                Log($"Restoring records request failed ({RestoreRecordsRequest.StatusCode}).");
             }
-            Http.Destroy(RestoreValidationsRequest);
-            RestoreValidationsRequest = null;
+            Http.Destroy(RestoreRecordsRequest);
+            RestoreRecordsRequest = null;
         }
 
         ImmutableArray<string> mapUidsToRemove = new();
@@ -809,9 +809,9 @@ public class MainMenu : CManiaAppTitle, IContext
         StatsRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats");
     }
 
-    private void RestoreValidations()
+    private void RestoreRecords()
     {
-        RestoreValidationsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/restore-validations", "", $"Authorization: Bearer {EnvimixTurboUserToken}");
+        RestoreRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/restore-records", "", $"Authorization: Bearer {EnvimixTurboUserToken}");
     }
 
     private void ProcessTitleStats(STitleStats stats)
