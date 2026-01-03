@@ -32,7 +32,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadTotdLoading;
     [ManialinkControl] public required CMlFrame FrameTotd;
     [ManialinkControl] public required CMlQuad QuadTotd;
-    [ManialinkControl] public required CMlLabel LabelRestoreValidations;
+    [ManialinkControl] public required CMlLabel LabelRestoreRecords;
     [ManialinkControl] public required CMlQuad QuadLeaderboards;
 
     public STotdInfo TotdInfo;
@@ -116,9 +116,9 @@ public class MainMenu : CManiaAppTitleLayer, IContext
             SendCustomEvent("SubmitTitle", new[] { "" });
         };
 
-        LabelRestoreValidations.MouseClick += () =>
+        LabelRestoreRecords.MouseClick += () =>
         {
-            SendCustomEvent("RestoreValidations", new[] { "" });
+            SendCustomEvent("RestoreRecords", new[] { "" });
         };
 
         QuadTotd.MouseClick += () =>
@@ -170,7 +170,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     {
         LabelSubmitCampaignMaps.Hide();
         LabelSubmitTitle.Hide();
-        LabelRestoreValidations.Hide();
+        LabelRestoreRecords.Hide();
 
         EnableMenuNavigationInputs = true;
 
@@ -192,13 +192,13 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             LabelSubmitCampaignMaps.Visible = true;
             LabelSubmitTitle.Visible = true;
-            LabelRestoreValidations.Visible = true;
+            LabelRestoreRecords.Visible = true;
         }
         else
         {
             LabelSubmitCampaignMaps.Visible = false;
             LabelSubmitTitle.Visible = false;
-            LabelRestoreValidations.Visible = false;
+            LabelRestoreRecords.Visible = false;
         }
 
         foreach (var control in Page.GetClassChildren_Result)
