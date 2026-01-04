@@ -919,8 +919,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
             LabelDiscordName.Opacity = AnimLib.EaseOutQuad(time, 0, 1, 300) + AnimLib.EaseOutQuad(time - 2000, 0, -1, 300);
             LabelDiscordMemberCount.Opacity = AnimLib.EaseOutQuad(time - 2000 - 300, 0, 1, 300) + AnimLib.EaseOutQuad(time - 2000 - 2000 - 300, 0, -1, 300);
 
-            if (Widget.Members.Count > 1) LabelDiscordMemberCount.SetText($"$0f0• $fff{Widget.Members.Count} members online");
-            else if (Widget.Members.Count == 1) LabelDiscordMemberCount.SetText($"$0f0• $fff{Widget.Members.Count} member online");
+            if (Widget.PresenceCount > 1) LabelDiscordMemberCount.SetText($"$0f0• $fff{Widget.PresenceCount} members online");
+            else if (Widget.PresenceCount == 1) LabelDiscordMemberCount.SetText($"$0f0• $fff{Widget.PresenceCount} member online");
             else LabelDiscordMemberCount.SetText("$888• $fff0 members online");
 
             if (time > 4600) WidgetAt = Now;
