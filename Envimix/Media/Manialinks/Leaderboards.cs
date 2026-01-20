@@ -375,6 +375,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         var completionOffsetX = 0f;
         var index = 0;
         var rank = 1;
+        var prevCompletionScore = -1f;
+        var rankOffset = 0;
         foreach (var control in FrameCompletionPlayers.Controls)
         {
             if (control is not CMlFrame frame)
@@ -409,7 +411,17 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 }
             }
 
-            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank, 2));
+            if (prevCompletionScore == playerCompletion.S)
+            {
+                rankOffset += 1;
+            }
+            else
+            {
+                prevCompletionScore = playerCompletion.S;
+                rankOffset = 0;
+            }
+
+            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank - rankOffset, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(1, 1, 1);
@@ -564,6 +576,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         var skillpointsOffsetX = 0f;
         var index = 0;
         var rank = 1;
+        var prevSkillpointsScore = -1;
+        var rankOffset = 0;
         foreach (var control in FrameMostSkillpointsPlayers.Controls)
         {
             if (control is not CMlFrame frame)
@@ -598,7 +612,17 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 }
             }
 
-            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank, 2));
+            if (prevSkillpointsScore == playerScore.S)
+            {
+                rankOffset += 1;
+            }
+            else
+            {
+                prevSkillpointsScore = playerScore.S;
+                rankOffset = 0;
+            }
+
+            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank - rankOffset, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(0, 1, 0);
@@ -753,6 +777,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         var activityPointsOffsetX = 0f;
         var index = 0;
         var rank = 1;
+        var prevActivityPointsScore = -1;
+        var rankOffset = 0;
         foreach (var control in FrameMostActivityPointsPlayers.Controls)
         {
             if (control is not CMlFrame frame)
@@ -787,7 +813,17 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 }
             }
 
-            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank, 2));
+            if (prevActivityPointsScore == playerScore.S)
+            {
+                rankOffset += 1;
+            }
+            else
+            {
+                prevActivityPointsScore = playerScore.S;
+                rankOffset = 0;
+            }
+
+            (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank - rankOffset, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
             labelRecord.TextColor = new Vec3(0, 1, 1);
