@@ -1,4 +1,7 @@
-﻿namespace Envimix.Media.Manialinks;
+﻿
+using System.Collections.Immutable;
+
+namespace Envimix.Media.Manialinks;
 
 public class Leaderboards : CManiaAppTitleLayer, IContext
 {
@@ -18,6 +21,13 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
     {
         public string N;
         public string Z;
+    }
+
+    public struct SCombinationRecordCount
+    {
+        public int E;
+        public int D;
+        public int G;
     }
 
     [ManialinkControl] public required CMlFrame FrameCompletion;
@@ -41,12 +51,15 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadDefaultCarLeaderboards;
     [ManialinkControl] public required CMlQuad QuadGlobalLeaderboards;
 
+    [ManialinkControl] public required CMlFrame FrameCars;
+
     public int OpenedAt = -1;
     public float EnvimixCompletionPercentage;
     public float DefaultCarCompletionPercentage;
     public float GlobalCompletionPercentage;
 
     public CMlQuad SelectedLeaderboards;
+    public string SelectedCar;
 
     public CAudioSource AudioClick;
 
@@ -204,6 +217,22 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                         break;
                 }
             }
+
+            if (controlId == "QuadSelectCar")
+            {
+                var carName = control.DataAttributeGet("CarName");
+                if (SelectedCar == carName)
+                {
+                    SelectedCar = "";
+                }
+                else
+                {
+                    SelectedCar = carName;
+                }
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+
+                UpdateLeaderboards();
+            }
         };
 
         MouseOver += (control, controlId) =>
@@ -211,6 +240,10 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             if (controlId == "QuadZone")
             {
                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+            }
+            if (controlId == "QuadSelectCar")
+            {
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
             }
         };
     }
@@ -265,22 +298,72 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     private void UpdateCompletionLeaderboard(Dictionary<string, STitleUserInfo> leaderboardsUserInfos, IList<string> zones)
     {
-        var envimixCompletion = Local<IList<SPlayerCompletion>>.For(Page);
-        var defaultCarCompletion = Local<IList<SPlayerCompletion>>.For(Page);
-        var globalCompletion = Local<IList<SPlayerCompletion>>.For(Page);
-
         IList<SPlayerCompletion> completionLeaderboard;
         if (SelectedLeaderboards == QuadEnvimixLeaderboards)
         {
-            completionLeaderboard = envimixCompletion.Get();
+            if (SelectedCar == "")
+            {
+                var envimixCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+                completionLeaderboard = envimixCompletion.Get();
+            }
+            else
+            {
+                var envimixCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (envimixCombinationCompletion.Get().ContainsKey(carKey))
+                {
+                    completionLeaderboard = envimixCombinationCompletion.Get()[carKey];
+                }
+                else
+                {
+                    var envimixCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+                    completionLeaderboard = envimixCompletion.Get();
+                }
+            }
         }
         else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
         {
-            completionLeaderboard = defaultCarCompletion.Get();
+            if (SelectedCar == "")
+            {
+                var defaultCarCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+                completionLeaderboard = defaultCarCompletion.Get();
+            }
+            else
+            {
+                var defaultCarCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (defaultCarCombinationCompletion.Get().ContainsKey(carKey))
+                {
+                    completionLeaderboard = defaultCarCombinationCompletion.Get()[carKey];
+                }
+                else
+                {
+                    var defaultCarCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+                    completionLeaderboard = defaultCarCompletion.Get();
+                }
+            }
         }
         else
         {
-            completionLeaderboard = globalCompletion.Get();
+            if (SelectedCar == "")
+            {
+                var globalCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+                completionLeaderboard = globalCompletion.Get();
+            }
+            else
+            {
+                var globalCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (globalCombinationCompletion.Get().ContainsKey(carKey))
+                {
+                    completionLeaderboard = globalCombinationCompletion.Get()[carKey];
+                }
+                else
+                {
+                    var globalCompletion = Local<IList<SPlayerCompletion>>.For(Page);
+                    completionLeaderboard = globalCompletion.Get();
+                }
+            }
         }
 
         var completionZone = "World";
@@ -404,22 +487,72 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     private void UpdateSkillpointsLeaderboard(Dictionary<string, STitleUserInfo> leaderboardsUserInfos, IList<string> zones)
     {
-        var envimixMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
-        var defaultCarMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
-        var globalMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
-
         IList<SPlayerScore> skillpointsLeaderboard;
         if (SelectedLeaderboards == QuadEnvimixLeaderboards)
         {
-            skillpointsLeaderboard = envimixMostSkillpoints.Get();
+            if (SelectedCar == "")
+            {
+                var envimixMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+                skillpointsLeaderboard = envimixMostSkillpoints.Get();
+            }
+            else
+            {
+                var envimixCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (envimixCombinationMostSkillpoints.Get().ContainsKey(carKey))
+                {
+                    skillpointsLeaderboard = envimixCombinationMostSkillpoints.Get()[carKey];
+                }
+                else
+                {
+                    var envimixMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+                    skillpointsLeaderboard = envimixMostSkillpoints.Get();
+                }
+            }
         }
         else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
         {
-            skillpointsLeaderboard = defaultCarMostSkillpoints.Get();
+            if (SelectedCar == "")
+            {
+                var defaultCarMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+                skillpointsLeaderboard = defaultCarMostSkillpoints.Get();
+            }
+            else
+            {
+                var defaultCarCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (defaultCarCombinationMostSkillpoints.Get().ContainsKey(carKey))
+                {
+                    skillpointsLeaderboard = defaultCarCombinationMostSkillpoints.Get()[carKey];
+                }
+                else
+                {
+                    var defaultCarMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+                    skillpointsLeaderboard = defaultCarMostSkillpoints.Get();
+                }
+            }
         }
         else
         {
-            skillpointsLeaderboard = globalMostSkillpoints.Get();
+            if (SelectedCar == "")
+            {
+                var globalMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+                skillpointsLeaderboard = globalMostSkillpoints.Get();
+            }
+            else
+            {
+                var globalCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (globalCombinationMostSkillpoints.Get().ContainsKey(carKey))
+                {
+                    skillpointsLeaderboard = globalCombinationMostSkillpoints.Get()[carKey];
+                }
+                else
+                {
+                    var globalMostSkillpoints = Local<IList<SPlayerScore>>.For(Page);
+                    skillpointsLeaderboard = globalMostSkillpoints.Get();
+                }
+            }
         }
 
         var skillpointsZone = "World";
@@ -543,22 +676,72 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     private void UpdateActivityPointsLeaderboard(Dictionary<string, STitleUserInfo> leaderboardsUserInfos, IList<string> zones)
     {
-        var envimixMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
-        var defaultCarMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
-        var globalMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
-
         IList<SPlayerScore> activityPointsLeaderboard;
         if (SelectedLeaderboards == QuadEnvimixLeaderboards)
         {
-            activityPointsLeaderboard = envimixMostActivityPoints.Get();
+            if (SelectedCar == "")
+            {
+                var envimixMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+                activityPointsLeaderboard = envimixMostActivityPoints.Get();
+            }
+            else
+            {
+                var envimixCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (envimixCombinationMostActivityPoints.Get().ContainsKey(carKey))
+                {
+                    activityPointsLeaderboard = envimixCombinationMostActivityPoints.Get()[carKey];
+                }
+                else
+                {
+                    var envimixMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+                    activityPointsLeaderboard = envimixMostActivityPoints.Get();
+                }
+            }
         }
         else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
         {
-            activityPointsLeaderboard = defaultCarMostActivityPoints.Get();
+            if (SelectedCar == "")
+            {
+                var defaultCarMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+                activityPointsLeaderboard = defaultCarMostActivityPoints.Get();
+            }
+            else
+            {
+                var defaultCarCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (defaultCarCombinationMostActivityPoints.Get().ContainsKey(carKey))
+                {
+                    activityPointsLeaderboard = defaultCarCombinationMostActivityPoints.Get()[carKey];
+                }
+                else
+                {
+                    var defaultCarMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+                    activityPointsLeaderboard = defaultCarMostActivityPoints.Get();
+                }
+            }
         }
         else
         {
-            activityPointsLeaderboard = globalMostActivityPoints.Get();
+            if (SelectedCar == "")
+            {
+                var globalMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+                activityPointsLeaderboard = globalMostActivityPoints.Get();
+            }
+            else
+            {
+                var globalCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+                var carKey = $"{SelectedCar}_0";
+                if (globalCombinationMostActivityPoints.Get().ContainsKey(carKey))
+                {
+                    activityPointsLeaderboard = globalCombinationMostActivityPoints.Get()[carKey];
+                }
+                else
+                {
+                    var globalMostActivityPoints = Local<IList<SPlayerScore>>.For(Page);
+                    activityPointsLeaderboard = globalMostActivityPoints.Get();
+                }
+            }
         }
 
         var activityPointsZone = "World";
@@ -680,6 +863,173 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         labelPersonalNickname.RelativePosition_V3.X = activityPointsOffsetX + 5;
     }
 
+    public IList<string> CombinationRecordCountKeys;
+    public IList<SCombinationRecordCount> CombinationRecordCountValues;
+
+    private void UpdateCars()
+    {
+        var combinationRecordCount = Local<Dictionary<string, SCombinationRecordCount>>.For(Page);
+
+        CombinationRecordCountKeys.Clear();
+        CombinationRecordCountValues.Clear();
+        foreach (var (k, v) in combinationRecordCount.Get())
+        {
+            CombinationRecordCountKeys.Add(k);
+            CombinationRecordCountValues.Add(v);
+        }
+
+        // Sort by values[i].E
+        for (int i = 0; i < CombinationRecordCountValues.Count; i++)
+        {
+            for (int j = i + 1; j < CombinationRecordCountValues.Count; j++)
+            {
+                if ((SelectedLeaderboards == QuadEnvimixLeaderboards && CombinationRecordCountValues[j].E > CombinationRecordCountValues[i].E)
+                 || (SelectedLeaderboards == QuadDefaultCarLeaderboards && CombinationRecordCountValues[j].D > CombinationRecordCountValues[i].D)
+                 || (SelectedLeaderboards == QuadGlobalLeaderboards && CombinationRecordCountValues[j].G > CombinationRecordCountValues[i].G))
+                {
+                    // swap values
+                    var tempVal = CombinationRecordCountValues[i];
+                    CombinationRecordCountValues[i] = CombinationRecordCountValues[j];
+                    CombinationRecordCountValues[j] = tempVal;
+
+                    // swap corresponding keys
+                    var tempKey = CombinationRecordCountKeys[i];
+                    CombinationRecordCountKeys[i] = CombinationRecordCountKeys[j];
+                    CombinationRecordCountKeys[j] = tempKey;
+                }
+            }
+        }
+
+        Dictionary<string, IList<SPlayerScore>> skillpointsLeaderboard;
+        Dictionary<string, IList<SPlayerScore>> activityPointsLeaderboard;
+        if (SelectedLeaderboards == QuadEnvimixLeaderboards)
+        {
+            var envimixCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+            skillpointsLeaderboard = envimixCombinationMostSkillpoints.Get();
+            var envimixCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+            activityPointsLeaderboard = envimixCombinationMostActivityPoints.Get();
+        }
+        else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
+        {
+            var defaultCarCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+            skillpointsLeaderboard = defaultCarCombinationMostSkillpoints.Get();
+            var defaultCarCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+            activityPointsLeaderboard = defaultCarCombinationMostActivityPoints.Get();
+        }
+        else
+        {
+            var globalCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+            skillpointsLeaderboard = globalCombinationMostSkillpoints.Get();
+            var globalCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(Page);
+            activityPointsLeaderboard = globalCombinationMostActivityPoints.Get();
+        }
+
+        var baseRecordCount = -1;
+
+        for (var i = 0; i < FrameCars.Controls.Count; i++)
+        {
+            var frame = (FrameCars.Controls[i] as CMlFrame)!;
+            if (i >= CombinationRecordCountValues.Count)
+            {
+                frame.Hide();
+                continue;
+            }
+            var carKey = CombinationRecordCountKeys[i];
+            var recordCount = CombinationRecordCountValues[i];
+
+            if ((SelectedLeaderboards == QuadEnvimixLeaderboards && recordCount.E == 0)
+             || (SelectedLeaderboards == QuadDefaultCarLeaderboards && recordCount.D == 0)
+             || (SelectedLeaderboards == QuadGlobalLeaderboards && recordCount.G == 0))
+            {
+                AnimMgr.Flush(frame);
+                frame.RelativePosition_V3.X = 0;
+                frame.Hide();
+                continue;
+            }
+
+            var carSplit = TextLib.Split("_", carKey);
+            var carName = carSplit[0];
+
+            var labelCarName = (frame.GetFirstChild("LabelCarName") as CMlLabel)!;
+            labelCarName.SetText(carName);
+
+            var quadCar = (frame.GetFirstChild("QuadCar") as CMlQuad)!;
+            quadCar.ChangeImageUrl($"file://Media/Images/Cars/{carName}.png");
+
+            var labelSkillpoints = (frame.GetFirstChild("LabelSkillpoints") as CMlLabel)!;
+
+            if (skillpointsLeaderboard.ContainsKey(carKey))
+            {
+                foreach (var player in skillpointsLeaderboard[carKey])
+                {
+                    if (player.L == LocalUser.Login)
+                    {
+                        labelSkillpoints.SetText(FormatNumberSpace(player.S));
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                labelSkillpoints.SetText("0");
+            }
+
+            var labelActivityPoints = (frame.GetFirstChild("LabelActivityPoints") as CMlLabel)!;
+
+            if (activityPointsLeaderboard.ContainsKey(carKey))
+            {
+                foreach (var player in activityPointsLeaderboard[carKey])
+                {
+                    if (player.L == LocalUser.Login)
+                    {
+                        labelActivityPoints.SetText(FormatNumberSpace(player.S));
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                labelActivityPoints.SetText("0");
+            }
+
+            var quadSelectCar = (frame.GetFirstChild("QuadSelectCar") as CMlQuad)!;
+            quadSelectCar.StyleSelected = SelectedCar == carName;
+            quadSelectCar.DataAttributeSet("CarName", carName);
+
+            if (baseRecordCount == -1)
+            {
+                if (SelectedLeaderboards == QuadEnvimixLeaderboards)
+                {
+                    baseRecordCount = recordCount.E;
+                }
+                else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
+                {
+                    baseRecordCount = recordCount.D;
+                }
+                else
+                {
+                    baseRecordCount = recordCount.G;
+                }
+            }
+
+            var gaugePopularity = (frame.GetFirstChild("GaugePopularity") as CMlGauge)!;
+            if (SelectedLeaderboards == QuadEnvimixLeaderboards)
+            {
+                gaugePopularity.Ratio = recordCount.E * 0.98f / baseRecordCount;
+            }
+            else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
+            {
+                gaugePopularity.Ratio = recordCount.D * 0.98f / baseRecordCount;
+            }
+            else
+            {
+                gaugePopularity.Ratio = recordCount.G * 0.98f / baseRecordCount;
+            }
+
+            frame.Show();
+        }
+    }
+
     private void UpdateLeaderboards()
     {
         QuadEnvimixLeaderboards.StyleSelected = SelectedLeaderboards == QuadEnvimixLeaderboards;
@@ -692,6 +1042,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         UpdateCompletionLeaderboard(leaderboardsUserInfos.Get(), zones);
         UpdateSkillpointsLeaderboard(leaderboardsUserInfos.Get(), zones);
         UpdateActivityPointsLeaderboard(leaderboardsUserInfos.Get(), zones);
+        UpdateCars();
     }
 
     private void Show()
@@ -703,7 +1054,31 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         AnimMgr.Add(FrameMostActivityPoints, "<frame hidden=\"0\" pos=\"35 65\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
 
         AnimMgr.Add(FrameOverallCompletion, "<frame hidden=\"0\" pos=\"105 65\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
-        AnimMgr.Add(FrameQuit, "<frame hidden=\"0\" pos=\"130 -50\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameQuit, "<frame hidden=\"0\" pos=\"130 -60\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+
+        for (var i = 0; i < FrameCars.Controls.Count; i++)
+        {
+            var frame = (FrameCars.Controls[i] as CMlFrame)!;
+
+            AnimMgr.Flush(frame);
+
+            if (i >= CombinationRecordCountValues.Count)
+            {
+                frame.Hide();
+                continue;
+            }
+            var recordCount = CombinationRecordCountValues[i];
+
+            if ((SelectedLeaderboards == QuadEnvimixLeaderboards && recordCount.E == 0)
+             || (SelectedLeaderboards == QuadDefaultCarLeaderboards && recordCount.D == 0)
+             || (SelectedLeaderboards == QuadGlobalLeaderboards && recordCount.G == 0))
+            {
+                AnimMgr.Add(frame, $"<frame pos=\"0 {frame.RelativePosition_V3.Y}\"/>", Now + i * 100, 400, CAnimManager.EAnimManagerEasing.QuadOut);
+                continue;
+            }
+
+            AnimMgr.Add(frame, $"<frame hidden=\"0\" pos=\"0 {frame.RelativePosition_V3.Y}\"/>", Now + i * 100, 400, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
 
         OpenedAt = Now;
     }
@@ -718,6 +1093,12 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         AnimMgr.Add(FrameMostActivityPoints, "<frame hidden=\"1\" pos=\"-210 65\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameOverallCompletion, "<frame hidden=\"1\" pos=\"210 65\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameQuit, "<frame hidden=\"0\" pos=\"130 -90\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+
+        for (var i = 0; i < FrameCars.Controls.Count; i++)
+        {
+            var frame = (FrameCars.Controls[i] as CMlFrame)!;
+            AnimMgr.Add(frame, $"<frame hidden=\"1\" pos=\"100 {frame.RelativePosition_V3.Y}\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
     }
 
     public void Main()
@@ -739,6 +1120,13 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
         FrameQuit.RelativePosition_V3.Y = -90;
         FrameQuit.Visible = false;
+
+        foreach (var control in FrameCars.Controls)
+        {
+            var frame = (control as CMlFrame)!;
+            frame.RelativePosition_V3.X = 100;
+            frame.Visible = false;
+        }
 
         SelectedLeaderboards = QuadEnvimixLeaderboards;
 
