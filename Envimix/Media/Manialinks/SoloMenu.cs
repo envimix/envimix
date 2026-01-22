@@ -220,9 +220,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             if (SelectedCampaignQuad != QuadOfficialCampaign)
             {
+                MapGroupNum = -1;
+                MapInfoNum = -1;
+                MapSelectedAt = -1;
+
                 AudioClick.Play();
                 SelectedCampaignQuad = QuadOfficialCampaign;
                 SetupCampaign();
+                ResetPBs();
+                ResetValidators();
+                ResetRatings();
+                ResetStars();
+                UnloadLeaderboards();
 
                 var selectedCampaign = Local<string>.For(Page);
                 selectedCampaign.Set("");
@@ -233,9 +242,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             if (SelectedCampaignQuad != QuadVRCampaign)
             {
+                MapGroupNum = -1;
+                MapInfoNum = -1;
+                MapSelectedAt = -1;
+
                 AudioClick.Play();
                 SelectedCampaignQuad = QuadVRCampaign;
                 SetupCampaign();
+                ResetPBs();
+                ResetValidators();
+                ResetRatings();
+                ResetStars();
+                UnloadLeaderboards();
 
                 var selectedCampaign = Local<string>.For(Page);
                 selectedCampaign.Set("VR");
