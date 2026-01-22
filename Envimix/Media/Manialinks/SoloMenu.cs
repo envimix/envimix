@@ -96,6 +96,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
     public ImmutableArray<string> FunnyCars;
+    public ImmutableArray<string> AllCars;
 
     public CCampaign? Campaign;
     public int MapGroupNum = -1;
@@ -298,6 +299,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
         TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
         FunnyCars = new() { "HighlandsCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
+        AllCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
 
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
 
@@ -708,10 +710,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void UpdateRatings(CMapInfo mapInfo)
     {
-        ImmutableArray<string> allCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
-
         var carIndex = 0;
-        foreach (var car in allCars)
+        foreach (var car in AllCars)
         {
             var difficultyGauge = (FrameDifficultyRatings.Controls[carIndex] as CMlGauge)!;
             var qualityGauge = (FrameQualityRatings.Controls[carIndex] as CMlGauge)!;
@@ -773,12 +773,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void UpdateStars(CMapInfo mapInfo)
     {
-
-        ImmutableArray<string> allCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
-        
         var carIndex = 0;
         
-        foreach (var car in allCars)
+        foreach (var car in AllCars)
         {
             var controlStar = FrameStars.Controls[carIndex];
 
@@ -1140,7 +1137,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     var quadMapName = (frameMap.GetFirstChild("QuadMapName") as CMlQuad)!;
                     var labelMapName = (frameMap.GetFirstChild("LabelMapName") as CMlLabel)!;
                     var labelSkillpoints = (frameMap.GetFirstChild("LabelSkillpoints") as CMlLabel)!;
-                    var labelLaps = (frameMap.GetFirstChild("LabelLaps") as CMlQuad)!;
+                    var labelLaps = (frameMap.GetFirstChild("LabelLaps") as CMlLabel)!;
+                    var labelCompleted = (frameMap.GetFirstChild("LabelCompleted") as CMlLabel)!;
 
                     if (mapGroup is null || mapCounter >= mapGroup.MapInfos.Count)
                     {
@@ -1150,6 +1148,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         labelMapName.Hide();
                         labelSkillpoints.Hide();
                         labelLaps.Hide();
+                        labelCompleted.Hide();
                         continue;
                     }
 
@@ -1177,6 +1176,32 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     labelSkillpoints.Hide();
 
                     labelLaps.Visible = mapInfo.TMObjective_IsLapRace;
+
+                    var completed = true;
+
+                    foreach (var carName in AllCars)
+                    {
+                        var scoreContext = $"{ScoreContextPrefix}{carName}";
+
+                        // hacky but it works for TMT
+                        if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
+                            || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
+                            || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
+                            || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+                        {
+                            scoreContext = ScoreContextPrefix;
+                        }
+
+                        var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
+
+                        if (playerTime == -1)
+                        {
+                            completed = false;
+                            break;
+                        }
+                    }
+
+                    labelCompleted.Visible = completed;
 
                     mapCounter += 1;
                     totalMapCounter += 1;
