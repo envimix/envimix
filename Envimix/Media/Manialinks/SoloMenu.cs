@@ -231,6 +231,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 ResetValidators();
                 ResetRatings();
                 ResetStars();
+                ResetRanks();
                 UnloadLeaderboards();
 
                 var selectedCampaign = Local<string>.For(Page);
@@ -253,6 +254,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 ResetValidators();
                 ResetRatings();
                 ResetStars();
+                ResetRanks();
                 UnloadLeaderboards();
 
                 var selectedCampaign = Local<string>.For(Page);
@@ -603,6 +605,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    private void ResetRanks()
+    {
+        foreach (var control in FrameRanks.Controls)
+        {
+            if (control is not CMlLabel labelRank)
+            {
+                continue;
+            }
+            labelRank.SetText("-/-");
+        }
+    }
+
     private void UpdatePBs(CMapInfo mapInfo, ImmutableArray<string> cars)
     {
         var carIndex = 0;
@@ -727,7 +741,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             if (!TitleCombinations.ContainsKey(mapInfo.MapUid) || !TitleCombinations[mapInfo.MapUid].ContainsKey(combinationKey))
             {
-                labelRank.SetText("?/?");
+                labelRank.SetText("-/-");
                 carIndex += 1;
                 continue;
             }
