@@ -1236,7 +1236,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     quadMapName.Show();
                     labelSkillpoints.Hide();
 
-                    labelLaps.Visible = mapInfo.TMObjective_IsLapRace;
+                    labelLaps.Visible = mapInfo.TMObjective_IsLapRace && mapInfo.TMObjective_NbLaps > 1;
 
                     var completed = true;
 
