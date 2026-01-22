@@ -93,6 +93,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameRatingsCars;
     [ManialinkControl] public required CMlQuad QuadQuickplay;
 
+    [ManialinkControl] public required CMlQuad QuadOfficialCampaign;
+    [ManialinkControl] public required CMlQuad QuadVRCampaign;
+
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
     public ImmutableArray<string> FunnyCars;
@@ -130,6 +133,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public Dictionary<string, STitleUserInfo> SoloUserInfos;
 
     public CAudioSource AudioClick;
+
+    public CMlQuad SelectedCampaignQuad;
 
     public SoloMenu()
     {
@@ -211,6 +216,32 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
         };
 
+        QuadOfficialCampaign.MouseClick += () =>
+        {
+            if (SelectedCampaignQuad != QuadOfficialCampaign)
+            {
+                AudioClick.Play();
+                SelectedCampaignQuad = QuadOfficialCampaign;
+                SetupCampaign();
+
+                var selectedCampaign = Local<string>.For(Page);
+                selectedCampaign.Set("");
+            }
+        };
+
+        QuadVRCampaign.MouseClick += () =>
+        {
+            if (SelectedCampaignQuad != QuadVRCampaign)
+            {
+                AudioClick.Play();
+                SelectedCampaignQuad = QuadVRCampaign;
+                SetupCampaign();
+
+                var selectedCampaign = Local<string>.For(Page);
+                selectedCampaign.Set("VR");
+            }
+        };
+
         PluginCustomEvent += (type, data) =>
         {
             switch (type)
@@ -248,7 +279,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     // weird to call it at SetPoints, but it allows updating the solo menu stats when nothing is clicked
                     if (DataFileMgr.Campaigns.Count > 0 && MapGroupNum != -1 && MapInfoNum != -1)
                     {
-                        UpdateStats(DataFileMgr.Campaigns[0].MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
+                        UpdateStats(GetCampaignForMaps().MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
                     }
                     break;
                 case "LeaderboardData":
@@ -305,6 +336,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
 
+        SelectedCampaignQuad = QuadOfficialCampaign;
+
         SwitchCars(false);
         SetupCampaign();
     }
@@ -327,8 +360,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var finishedEnvimixCount = 0;
             var totalEnvimixCount = 0;
 
-            foreach (var campaign in DataFileMgr.Campaigns)
+            // takes the official campaign only
+            for (var i = 0; i < MathLib.Min(11, DataFileMgr.Campaigns.Count); i++)
             {
+                var campaign = DataFileMgr.Campaigns[i];
+
                 foreach (var mapGroup in campaign.MapGroups)
                 {
                     foreach (var mapInfo in mapGroup.MapInfos)
@@ -814,6 +850,21 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         UpdateStars(selectedMapInfo);
     }
 
+    private CCampaign GetCampaignForMaps()
+    {
+        if (SelectedCampaignQuad == QuadOfficialCampaign)
+        {
+            return DataFileMgr.Campaigns[0];
+        }
+
+        if (SelectedCampaignQuad == QuadVRCampaign)
+        {
+            return DataFileMgr.Campaigns[12];
+        }
+
+        return DataFileMgr.Campaigns[0];
+    }
+
     private void UpdateLeaderboards()
     {
         if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1 || MapSelectedAt == -1)
@@ -821,7 +872,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return;
         }
 
-        Campaign = DataFileMgr.Campaigns[0];
+        Campaign = GetCampaignForMaps();
         var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
 
         ImmutableArray<string> cars = new();
@@ -916,7 +967,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return;
         }
 
-        Campaign = DataFileMgr.Campaigns[0];
+        Campaign = GetCampaignForMaps();
         var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
 
         var mapUid = selectedMapInfo.MapUid;
@@ -1077,7 +1128,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return;
         }
 
-        Campaign = DataFileMgr.Campaigns[0];
+        Campaign = GetCampaignForMaps();
 
         if (MapGroupNum != -1 && MapInfoNum != -1)
         {
@@ -1097,7 +1148,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return;
         }
 
-        Campaign = DataFileMgr.Campaigns[0];
+        QuadOfficialCampaign.StyleSelected = SelectedCampaignQuad == QuadOfficialCampaign;
+        QuadVRCampaign.StyleSelected = SelectedCampaignQuad == QuadVRCampaign;
+
+        Campaign = GetCampaignForMaps();
 
         var selectedNum = -1;
         var totalMapCounter = 0;
@@ -1152,12 +1206,19 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         continue;
                     }
 
+                    var visualMapNumber = totalMapCounter;
+
+                    if (SelectedCampaignQuad == QuadVRCampaign)
+                    {
+                        visualMapNumber = visualMapNumber % 10;
+                    }
+
                     var mapInfo = mapGroup.MapInfos[mapCounter];
 
                     quadMapThumbnail.ChangeImageUrl($"file://Thumbnails/MapUid/{mapInfo.MapUid}");
                     quadMapThumbnail.Show();
 
-                    labelMapName.SetText(TextLib.FormatInteger(totalMapCounter + 1, 3));
+                    labelMapName.SetText(TextLib.FormatInteger(visualMapNumber + 1, 3));
                     labelMapName.Show();
 
                     quadMapButton.DataAttributeSet("MapGroupNum", i.ToString());
@@ -1169,7 +1230,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                     if (hovered)
                     {
-                        selectedNum = totalMapCounter;
+                        selectedNum = visualMapNumber;
                     }
 
                     quadMapName.Show();
