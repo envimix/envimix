@@ -6,7 +6,7 @@
         <quad id="QuadMapButton" size="15 15" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" z-index="2" scriptevents="1" opacity="0.5" hidden="1"/>
         <quad id="QuadMapName" size="7 5" halign="right" valign="bottom" bgcolor="222" opacity="0.9" z-index="2" pos="7 -7"/>
         <label id="LabelMapName" z-index="3" size="15 15" text="001" valign="bottom" textsize="2" textfont="OswaldMono" pos="6 -6.6" halign="right" hidden="1"/>
-        <label id="LabelSkillpoints" z-index="3" size="15 15" text="0" textsize="1" style="TextRaceChrono" pos="-6 6" textcolor="0F0" hidden="1"/>
+        <label id="LabelSkillpoints" z-index="1" size="15 15" text="0" textsize="1" style="TextRaceChrono" pos="-6 6" textcolor="0F0" hidden="1"/>
         <label id="LabelLaps" pos="4.5 5" z-index="1" size="20 5" text="$s🔁" textsize="1" halign="center" valign="center" />
         <label id="LabelCompleted" pos="-5 5" z-index="1" size="20 5" text="$s" textsize="1" halign="center" valign="center" />
     </framemodel>
@@ -103,6 +103,7 @@
                     <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                    <quad hidden="1" />
                 </frame>
                 <frame pos="0 -33">
                     <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="0F0"/>
@@ -110,6 +111,7 @@
                     <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                    <quad hidden="1" />
                 </frame>
                 <frame pos="0 -66">
                     <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="00F"/>
@@ -117,6 +119,7 @@
                     <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                    <quad hidden="1" />
                 </frame>
                 <frame pos="0 -99">
                     <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="F00"/>
@@ -124,6 +127,7 @@
                     <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                    <quad hidden="1" />
                 </frame>
                 <frame pos="0 -132">
                     <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="111"/>
@@ -131,6 +135,7 @@
                     <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
                     <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                    <quad hidden="1" />
                 </frame>
             </frame>
         </frame>
