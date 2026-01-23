@@ -2,7 +2,11 @@
 
 public class EnvimixExplore : CTmMapType, IContext
 {
+    [Setting] public string EnvimixWebAPI = "https://api.envimix.gbx.tools";
+
     public CUILayer ExploreLayer;
+
+    public CHttpRequest? VisitMapRequest;
 
     public EnvimixExplore()
     {
@@ -39,6 +43,31 @@ public class EnvimixExplore : CTmMapType, IContext
 
     public void Loop()
     {
+        var originalMapUid = Metadata<string>.For(Map);
+        if (VisitMapRequest is null && originalMapUid.Get() != "")
+        {
+            var envimixTurboUserToken = Local<string>.For(LocalUser);
+            VisitMapRequest = Http.CreatePost($"{EnvimixWebAPI}/maps/{originalMapUid.Get()}", "", $"Authorization: Bearer {envimixTurboUserToken.Get()}");
+        }
 
+        if (VisitMapRequest is not null && VisitMapRequest.IsCompleted)
+        {
+            var forceQuit = false;
+
+            if (VisitMapRequest.StatusCode != 200)
+            {
+                forceQuit = true;
+            }
+
+            Http.Destroy(VisitMapRequest);
+            VisitMapRequest = null;
+
+            // quit like this so that the http request is destroyed and wont cause an overflow
+            if (forceQuit)
+            {
+                Log("Forcing quit due to authorization failure.");
+                QuickQuit();
+            }
+        }
     }
 }

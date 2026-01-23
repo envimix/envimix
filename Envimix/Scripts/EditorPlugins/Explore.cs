@@ -3,17 +3,23 @@
 public class Explore : CMapEditorPlugin, IContext
 {
     [Setting]
-    public string NewMapName = "";
+    public string OriginalMapName = "";
+
+    [Setting]
+    public string OriginalMapUid = "";
 
     public void Main()
     {
-        if (NewMapName != "")
+        if (OriginalMapName != "")
         {
-            Map.MapName = NewMapName;
+            Map.MapName = OriginalMapName;
         }
 
         var exploreMapName = Metadata<string>.For(Map);
-        exploreMapName.Set(NewMapName);
+        exploreMapName.Set(OriginalMapName);
+
+        var originalMapUid = Metadata<string>.For(Map);
+        originalMapUid.Set(OriginalMapUid);
     }
 
     public void Loop()
