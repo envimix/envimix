@@ -756,7 +756,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
         {
             EventText = "New world record!";
 
-            if (EndscreenRecordsResponse.Validation.Length > 0)
+            if (EndscreenRecordsResponse.Validation.Length > 0 && !isDefaultCar)
             {
                 var validation = EndscreenRecordsResponse.Validation[0];
                 if (validation.User.Login == GetPlayer().User.Login && validation.Time == pbTime)
