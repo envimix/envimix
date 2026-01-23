@@ -99,6 +99,7 @@ public class EnvimixSolo : Envimix
     [Netwrite] public int LocalGhostMetadataUpdatedAt { get; set; }
     [Netwrite] public bool CanListenToUIEvents { get; set; }
     [Local(LocalFor.Users0)] public string EnvimixTurboUserToken { get; set; } = "";
+    [Local(LocalFor.Users0)] public string EnvimixTurboUserBanReason { get; set; } = "";
     [Local(LocalFor.Users0)] public string TitleKey { get; set; } = "";
 
     [Netwrite] public bool RatingOpen { get; set; }
@@ -475,6 +476,12 @@ public class EnvimixSolo : Envimix
             
             DataFileMgr.TaskResult_Release(SaveReplayTask.Id);
             SaveReplayTask = null;
+        }
+
+        if (EnvimixTurboUserBanReason != "")
+        {
+            Log(nameof(EnvimixSolo), "Forcing quit due to a ban.");
+            ForceQuit = true;
         }
 
         CheckForPersonalGhosts();

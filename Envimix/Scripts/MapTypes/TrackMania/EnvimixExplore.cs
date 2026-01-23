@@ -43,8 +43,15 @@ public class EnvimixExplore : CTmMapType, IContext
 
     public void Loop()
     {
+        var envimixTurboUserBanReason = Local<string>.For(LocalUser);
+        if (envimixTurboUserBanReason.Get() != "")
+        {
+            Log("Forcing quit due to a ban.");
+            QuickQuit();
+        }
+
         var originalMapUid = Metadata<string>.For(Map);
-        if (VisitMapRequest is null && originalMapUid.Get() != "")
+        if (VisitMapRequest is null && originalMapUid.Get() != "" && envimixTurboUserBanReason.Get() != "")
         {
             var envimixTurboUserToken = Local<string>.For(LocalUser);
             VisitMapRequest = Http.CreatePost($"{EnvimixWebAPI}/maps/{originalMapUid.Get()}", "", $"Authorization: Bearer {envimixTurboUserToken.Get()}");
