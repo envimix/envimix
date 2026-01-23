@@ -1207,90 +1207,90 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         var selectedNum = -1;
         var totalMapCounter = 0;
 
-        for (int i = 0; i < FrameCampaign.Controls.Count; i++)
+        if (!optimizedMode)
         {
-            var controlDifficulty = FrameCampaign.Controls[i];
-
-            if (controlDifficulty is not CMlFrame frameDifficulty)
+            for (int i = 0; i < FrameCampaign.Controls.Count; i++)
             {
-                continue;
-            }
+                var controlDifficulty = FrameCampaign.Controls[i];
 
-            CMapGroup? mapGroup = null;
-            if (i < Campaign.MapGroups.Count)
-            {
-                mapGroup = Campaign.MapGroups[i];
-            }
-
-            var mapCounter = 0;
-            foreach (var controlGroup in frameDifficulty.Controls)
-            {
-                if (controlGroup is not CMlFrame frameGroup)
+                if (controlDifficulty is not CMlFrame frameDifficulty)
                 {
                     continue;
                 }
 
-                foreach (var controlMap in frameGroup.Controls)
+                CMapGroup? mapGroup = null;
+                if (i < Campaign.MapGroups.Count)
                 {
-                    if (controlMap is not CMlFrame frameMap)
+                    mapGroup = Campaign.MapGroups[i];
+                }
+
+                var mapCounter = 0;
+                foreach (var controlGroup in frameDifficulty.Controls)
+                {
+                    if (controlGroup is not CMlFrame frameGroup)
                     {
                         continue;
                     }
 
-                    var quadMapThumbnail = (frameMap.GetFirstChild("QuadMapThumbnail") as CMlQuad)!;
-                    var quadMapButton = (frameMap.GetFirstChild("QuadMapButton") as CMlQuad)!;
-                    var quadMapName = (frameMap.GetFirstChild("QuadMapName") as CMlQuad)!;
-                    var labelMapName = (frameMap.GetFirstChild("LabelMapName") as CMlLabel)!;
-                    var labelSkillpoints = (frameMap.GetFirstChild("LabelSkillpoints") as CMlLabel)!;
-                    var labelLaps = (frameMap.GetFirstChild("LabelLaps") as CMlLabel)!;
-                    var labelCompleted = (frameMap.GetFirstChild("LabelCompleted") as CMlLabel)!;
-
-                    if (mapGroup is null || mapCounter >= mapGroup.MapInfos.Count)
+                    foreach (var controlMap in frameGroup.Controls)
                     {
-                        quadMapThumbnail.Hide();
-                        quadMapButton.Hide();
-                        quadMapName.Hide();
-                        labelMapName.Hide();
+                        if (controlMap is not CMlFrame frameMap)
+                        {
+                            continue;
+                        }
+
+                        var quadMapThumbnail = (frameMap.GetFirstChild("QuadMapThumbnail") as CMlQuad)!;
+                        var quadMapButton = (frameMap.GetFirstChild("QuadMapButton") as CMlQuad)!;
+                        var quadMapName = (frameMap.GetFirstChild("QuadMapName") as CMlQuad)!;
+                        var labelMapName = (frameMap.GetFirstChild("LabelMapName") as CMlLabel)!;
+                        var labelSkillpoints = (frameMap.GetFirstChild("LabelSkillpoints") as CMlLabel)!;
+                        var labelLaps = (frameMap.GetFirstChild("LabelLaps") as CMlLabel)!;
+                        var labelCompleted = (frameMap.GetFirstChild("LabelCompleted") as CMlLabel)!;
+
+                        if (mapGroup is null || mapCounter >= mapGroup.MapInfos.Count)
+                        {
+                            quadMapThumbnail.Hide();
+                            quadMapButton.Hide();
+                            quadMapName.Hide();
+                            labelMapName.Hide();
+                            labelSkillpoints.Hide();
+                            labelLaps.Hide();
+                            labelCompleted.Hide();
+                            continue;
+                        }
+
+                        var visualMapNumber = totalMapCounter;
+
+                        if (SelectedCampaignQuad == QuadVRCampaign)
+                        {
+                            visualMapNumber = visualMapNumber % 10;
+                        }
+
+                        var mapInfo = mapGroup.MapInfos[mapCounter];
+
+                        quadMapThumbnail.ChangeImageUrl($"file://Thumbnails/MapUid/{mapInfo.MapUid}");
+                        quadMapThumbnail.Show();
+
+                        labelMapName.SetText(TextLib.FormatInteger(visualMapNumber + 1, 3));
+                        labelMapName.Show();
+
+                        quadMapButton.DataAttributeSet("MapGroupNum", i.ToString());
+                        quadMapButton.DataAttributeSet("MapInfoNum", mapCounter.ToString());
+                        quadMapButton.Show();
+
+                        var hovered = MapGroupNum == i && MapInfoNum == mapCounter;
+                        quadMapButton.StyleSelected = MapSelectedAt != -1 && hovered;
+
+                        if (hovered)
+                        {
+                            selectedNum = visualMapNumber;
+                        }
+
+                        quadMapName.Show();
                         labelSkillpoints.Hide();
-                        labelLaps.Hide();
-                        labelCompleted.Hide();
-                        continue;
-                    }
 
-                    var visualMapNumber = totalMapCounter;
+                        labelLaps.Visible = mapInfo.TMObjective_IsLapRace && mapInfo.TMObjective_NbLaps > 1;
 
-                    if (SelectedCampaignQuad == QuadVRCampaign)
-                    {
-                        visualMapNumber = visualMapNumber % 10;
-                    }
-
-                    var mapInfo = mapGroup.MapInfos[mapCounter];
-
-                    quadMapThumbnail.ChangeImageUrl($"file://Thumbnails/MapUid/{mapInfo.MapUid}");
-                    quadMapThumbnail.Show();
-
-                    labelMapName.SetText(TextLib.FormatInteger(visualMapNumber + 1, 3));
-                    labelMapName.Show();
-
-                    quadMapButton.DataAttributeSet("MapGroupNum", i.ToString());
-                    quadMapButton.DataAttributeSet("MapInfoNum", mapCounter.ToString());
-                    quadMapButton.Show();
-
-                    var hovered = MapGroupNum == i && MapInfoNum == mapCounter;
-                    quadMapButton.StyleSelected = MapSelectedAt != -1 && hovered;
-
-                    if (hovered)
-                    {
-                        selectedNum = visualMapNumber;
-                    }
-
-                    quadMapName.Show();
-                    labelSkillpoints.Hide();
-
-                    labelLaps.Visible = mapInfo.TMObjective_IsLapRace && mapInfo.TMObjective_NbLaps > 1;
-
-                    if (!optimizedMode)
-                    {
                         var completed = true;
 
                         foreach (var carName in AllCars)
@@ -1321,10 +1321,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         }
 
                         labelCompleted.Visible = completed;
-                    }
 
-                    mapCounter += 1;
-                    totalMapCounter += 1;
+                        mapCounter += 1;
+                        totalMapCounter += 1;
+                    }
                 }
             }
         }
@@ -1332,6 +1332,21 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         if (MapGroupNum != -1 && MapInfoNum != -1)
         {
             var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+            if (optimizedMode)
+            {
+                var visualMapNumber = 0;
+                for (int i = 0; i < MapGroupNum; i++)
+                {
+                    visualMapNumber += Campaign.MapGroups[i].MapInfos.Count;
+                }
+                visualMapNumber += MapInfoNum;
+                if (SelectedCampaignQuad == QuadVRCampaign)
+                {
+                    visualMapNumber = visualMapNumber % 10;
+                }
+                selectedNum = visualMapNumber;
+            }
+
             LabelSelectedMapName.SetText(TextLib.FormatInteger(selectedNum + 1, 3));
             QuadPlay.Visible = true;
 
