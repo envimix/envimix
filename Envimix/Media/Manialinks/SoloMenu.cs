@@ -741,7 +741,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             if (!TitleCombinations.ContainsKey(mapInfo.MapUid) || !TitleCombinations[mapInfo.MapUid].ContainsKey(combinationKey))
             {
-                labelRank.SetText("-/-");
+                labelRank.SetText("-/0");
                 carIndex += 1;
                 continue;
             }
