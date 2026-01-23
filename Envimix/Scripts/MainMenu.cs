@@ -31,6 +31,7 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Login;
         public string Token;
         public bool IsAdmin;
+        public string BanReason;
     }
 
     public struct STitleReleaseInfo
@@ -45,6 +46,7 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Uid;
         public string Collection;
         public int Order;
+        public string Campaign;
     }
 
     public struct SSubmitMapsRequest
@@ -150,6 +152,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public int UserTokenReceived = -1;
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
     [Local(LocalFor.LocalUser)] public bool EnvimixTurboUserIsAdmin { get; set; }
+    [Local(LocalFor.LocalUser)] public string EnvimixTurboUserBanReason { get; set; } = "";
     public int ManiaPlanetAuthReceivedAt = -1;
 
     [Local(LocalFor.LocalUser)] public string TitleRelease { get; set; } = "";
@@ -651,10 +654,10 @@ public class MainMenu : CManiaAppTitle, IContext
             SAuthenticateUserReponse response = new();
             if (!response.FromJson(UserTokenRequest.Result))
             {
-                Log("User token creation failed (JSON issue).");
-                Log(UserTokenRequest.Result);
+                Log($"User token creation has a JSON issue.");
             }
-            else if (response.Login != LocalUser.Login)
+            
+            if (response.Login != LocalUser.Login)
             {
                 Log($"User token creation failed (login mismatch, local: {LocalUser.Login} != server: {response.Login}).");
             }
@@ -665,6 +668,8 @@ public class MainMenu : CManiaAppTitle, IContext
                 {
                     Log("Admin detected! Extra features have been enabled.");
                 }
+
+                EnvimixTurboUserBanReason = response.BanReason!;
 
                 EnvimixTurboUserToken = response.Token!;
                 if (UserTokenReceived == -1)
@@ -756,7 +761,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
         Wait(() => TitleControl.IsReady);
         Log("Exploring map: " + mapInfo.FileName);
-        TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_NewMapName\" type=\"text\" value=\"{mapInfo.Name}\"/></settings>");
+        TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_OriginalMapName\" type=\"text\" value=\"{mapInfo.Name}\"/><setting name=\"S_OriginalMapUid\" type=\"text\" value=\"{mapInfo.MapUid}\"/></settings>");
     }
 
     private void TryOpenRequestedMap()
@@ -813,19 +818,30 @@ public class MainMenu : CManiaAppTitle, IContext
             return;
         }
 
-        foreach (var campaign in DataFileMgr.Campaigns)
+        ImmutableArray<CCampaign> campaigns = new();
+        campaigns.Add(DataFileMgr.Campaigns[0]);
+        campaigns.Add(DataFileMgr.Campaigns[12]);
+
+        foreach (var campaign in campaigns)
         {
             var order = 0;
             foreach (var group in campaign.MapGroups)
             {
                 foreach (var map in group.MapInfos)
                 {
+                    var campaignName = "";
+                    if (campaign == DataFileMgr.Campaigns[12])
+                    {
+                        campaignName = "VR";
+                    }
+
                     SMapInfo mapInfo = new()
                     {
                         Name = map.Name,
                         Uid = map.MapUid,
                         Collection = map.CollectionName,
-                        Order = order
+                        Order = order,
+                        Campaign = campaignName
                     };
                     request.Maps!.Add(mapInfo);
                     order += 1;

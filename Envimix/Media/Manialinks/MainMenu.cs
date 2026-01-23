@@ -34,6 +34,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadTotd;
     [ManialinkControl] public required CMlLabel LabelRestoreRecords;
     [ManialinkControl] public required CMlQuad QuadLeaderboards;
+    [ManialinkControl] public required CMlLabel LabelBanReason;
 
     public STotdInfo TotdInfo;
 
@@ -219,6 +220,9 @@ public class MainMenu : CManiaAppTitleLayer, IContext
             FrameTotd.Hide();
             SendCustomEvent("Totd", new[] { "" });
         }
+
+        var envimixTurboUserBanReason = Local<string>.For(LocalUser);
+        LabelBanReason.Value = envimixTurboUserBanReason.Get();
     }
 
     private void SetNextAt()

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <label pos="-158 -89" size="160 5" text="" textsize="2" valign="bottom" textcolor="F00" textfont="Oswald" id="LabelBanReason"/>
     <frame pos="90 75" scale="1.2" id="FrameMainMenu">
         <quad z-index="0" size="70 120" style="Bgs1" substyle="BgCardList" halign="center"/>
         <quad z-index="0" size="70 120" style="Bgs1" substyle="BgCardList" halign="center"/>
