@@ -38,6 +38,7 @@ public class MainMenu : CManiaAppTitle, IContext
     {
         public string ReleasedAt;
         public string Key;
+        public Dictionary<string, string> CampaignsReleasedAt;
     }
 
     public struct SMapInfo
@@ -157,6 +158,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
     [Local(LocalFor.LocalUser)] public string TitleRelease { get; set; } = "";
     [Local(LocalFor.LocalUser)] public string TitleKey { get; set; } = "";
+    [Local(LocalFor.LocalUser)] public Dictionary<string, string> CampaignsReleasedAt { get; set; }
 
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
@@ -273,6 +275,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
                     TitleRelease = releaseInfo.ReleasedAt!;
                     TitleKey = releaseInfo.Key!;
+                    CampaignsReleasedAt = releaseInfo.CampaignsReleasedAt!;
 
                     var expectation = "";
                     if (released)
@@ -944,6 +947,16 @@ public class MainMenu : CManiaAppTitle, IContext
         {
             var campaign = DataFileMgr.Campaigns[i * 12];
 
+            var campaignReleaseAt = "";
+            if (i == 0)
+            {
+                campaignReleaseAt = TitleRelease;
+            }
+            else if (i == 1 && CampaignsReleasedAt.ContainsKey("VR"))
+            {
+                campaignReleaseAt = CampaignsReleasedAt["VR"];
+            }
+
             foreach (var mapGroup in campaign.MapGroups)
             {
                 foreach (var mapInfo in mapGroup.MapInfos)
@@ -1039,10 +1052,10 @@ public class MainMenu : CManiaAppTitle, IContext
                         var validationLogin = combination.VL;
                         var validationTimestampInSeconds = combination.VD;
 
-                        if (!isDefaultCar && validationLogin == LocalUser.Login && validationTimestampInSeconds != "" && TitleRelease != "")
+                        if (!isDefaultCar && validationLogin == LocalUser.Login && validationTimestampInSeconds != "" && campaignReleaseAt != "")
                         {
-                            var titlePackReleaseTimestampInSeconds = TitleRelease;
-                            var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
+                            var campaignReleaseTimestampInSeconds = campaignReleaseAt;
+                            var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, campaignReleaseTimestampInSeconds);
                             var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
                             var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
                             activityPoints += extraActivityPointsInt;

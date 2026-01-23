@@ -22,12 +22,19 @@ public class EnvimixSolo : Envimix
         public string ReleasedAt;
     }
 
+    public struct SCampaignDto
+    {
+        public string Name;
+        public string ReleasedAt;
+    }
+
     public struct SMapInfoResponse
     {
         public string Name;
         public string Uid;
         public string Collection;
         public STitleDto TitlePack;
+        public SCampaignDto Campaign;
         public ImmutableArray<Envimania.SFilteredRating> Ratings;
         public IList<Envimania.SFilteredRating> UserRatings;
         public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
@@ -400,14 +407,20 @@ public class EnvimixSolo : Envimix
                         if (!isDefaultCar && mapInfoResponse.Validations.ContainsKey(key))
                         {
                             var validation = mapInfoResponse.Validations[key];
-                            if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && mapInfoResponse.TitlePack.ReleasedAt != "")
+                            var releasedAt = mapInfoResponse.Campaign.ReleasedAt;
+                            if (releasedAt == "")
+                            {
+                                releasedAt = mapInfoResponse.TitlePack.ReleasedAt;
+                            }
+
+                            if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && releasedAt != "")
                             {
                                 var validationTimestampInSeconds = validation.DrivenAt;
-                                var titlePackReleaseTimestampInSeconds = mapInfoResponse.TitlePack.ReleasedAt;
-                                var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
+                                var campaignReleaseTimestampInSeconds = releasedAt;
+                                var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, campaignReleaseTimestampInSeconds);
                                 var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
                                 var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
-                                Log(nameof(EnvimixSolo), $"Extra activity points calculation for {car}: 100 + ({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400 * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
+                                Log(nameof(EnvimixSolo), $"Extra activity points calculation for {car}: 100 + ({validationTimestampInSeconds} - {campaignReleaseTimestampInSeconds}) / 86400 * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
                                 activityPointsInt += extraActivityPointsInt;
                             }
                         }

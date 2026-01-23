@@ -95,6 +95,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     [ManialinkControl] public required CMlQuad QuadOfficialCampaign;
     [ManialinkControl] public required CMlQuad QuadVRCampaign;
+    [ManialinkControl] public required CMlLabel LabelVRCampaign;
 
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
@@ -124,6 +125,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SStar>> TitleStars { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }*/
+    [Local(LocalFor.LocalUser)] public Dictionary<string, string> CampaignsReleasedAt { get; set; }
 
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
@@ -136,12 +138,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     public CMlQuad SelectedCampaignQuad;
 
+    public bool VRCampaignReleased;
+
     public SoloMenu()
     {
         QuadBack.MouseClick += () =>
         {
             SendCustomEvent("MainMenu", new[] { "" });
-            AudioClick.Play();
+            AudioPlayClick();
         };
 
         QuadBack.MouseOver += () =>
@@ -179,7 +183,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadPlay.MouseClick += () =>
         {
-            AudioClick.Play();
+            AudioPlayClick();
             if (MapGroupNum != -1 && MapInfoNum != -1)
             {
                 PlaySelectedMap();
@@ -193,7 +197,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadExplore.MouseClick += () =>
         {
-            AudioClick.Play();
+            AudioPlayClick();
             if (MapGroupNum != -1 && MapInfoNum != -1)
             {
                 ExploreSelectedMap();
@@ -207,7 +211,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadQuickplay.MouseClick += () =>
         {
-            AudioClick.Play();
+            AudioPlayClick();
             SendCustomEvent("Quickplay", new[] { "" });
         };
 
@@ -224,7 +228,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 MapInfoNum = -1;
                 MapSelectedAt = -1;
 
-                AudioClick.Play();
+                AudioPlayClick();
                 SelectedCampaignQuad = QuadOfficialCampaign;
                 SetupCampaign(false);
                 ResetPBs();
@@ -241,13 +245,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadVRCampaign.MouseClick += () =>
         {
-            if (SelectedCampaignQuad != QuadVRCampaign)
+            if (VRCampaignReleased && SelectedCampaignQuad != QuadVRCampaign)
             {
                 MapGroupNum = -1;
                 MapInfoNum = -1;
                 MapSelectedAt = -1;
 
-                AudioClick.Play();
+                AudioPlayClick();
                 SelectedCampaignQuad = QuadVRCampaign;
                 SetupCampaign(false);
                 ResetPBs();
@@ -349,7 +353,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
         TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
-        FunnyCars = new() { "HighlandsCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
+        FunnyCars = new() { "HighlandCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
         AllCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
 
         Page.GetClassChildren("LOADING", Page.MainFrame, true);
@@ -479,6 +483,21 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 StatsReceivedAt = -1;
                 CurrentSkillpoints = ExpectedSkillpoints;
                 CurrentActivityPoints = ExpectedActivityPoints;
+            }
+        }
+
+        if (CampaignsReleasedAt.ContainsKey("VR"))
+        {
+            var releasedAt = CampaignsReleasedAt["VR"];
+            
+            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
+            {
+                LabelVRCampaign.Value = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
+            }
+            else
+            {
+                LabelVRCampaign.Value = "VR campaign";
+                VRCampaignReleased = true;
             }
         }
     }
@@ -1397,5 +1416,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         MapInfoNum = TextLib.ToInteger(control.DataAttributeGet("MapInfoNum"));
 
         SetupCampaign(true);
+    }
+
+    private void AudioPlayClick()
+    {
+        AudioClick.Stop();
+        AudioClick.Play();
     }
 }
