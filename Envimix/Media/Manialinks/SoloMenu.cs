@@ -226,7 +226,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                 AudioClick.Play();
                 SelectedCampaignQuad = QuadOfficialCampaign;
-                SetupCampaign();
+                SetupCampaign(false);
                 ResetPBs();
                 ResetValidators();
                 ResetRatings();
@@ -249,7 +249,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                 AudioClick.Play();
                 SelectedCampaignQuad = QuadVRCampaign;
-                SetupCampaign();
+                SetupCampaign(false);
                 ResetPBs();
                 ResetValidators();
                 ResetRatings();
@@ -359,7 +359,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         SelectedCampaignQuad = QuadOfficialCampaign;
 
         SwitchCars(false);
-        SetupCampaign();
+        SetupCampaign(false);
     }
 
     public void Loop()
@@ -1173,7 +1173,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
-    private void SetupCampaign()
+    private void SetupCampaign(bool optimizedMode)
     {
         if (DataFileMgr.Campaigns.Count == 0)
         {
@@ -1270,31 +1270,34 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                     labelLaps.Visible = mapInfo.TMObjective_IsLapRace && mapInfo.TMObjective_NbLaps > 1;
 
-                    var completed = true;
-
-                    foreach (var carName in AllCars)
+                    if (!optimizedMode)
                     {
-                        var scoreContext = $"{ScoreContextPrefix}{carName}";
+                        var completed = true;
 
-                        // hacky but it works for TMT
-                        if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
-                            || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
-                            || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
-                            || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+                        foreach (var carName in AllCars)
                         {
-                            scoreContext = ScoreContextPrefix;
+                            var scoreContext = $"{ScoreContextPrefix}{carName}";
+
+                            // hacky but it works for TMT
+                            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
+                                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
+                                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
+                                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+                            {
+                                scoreContext = ScoreContextPrefix;
+                            }
+
+                            var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
+
+                            if (playerTime == -1)
+                            {
+                                completed = false;
+                                break;
+                            }
                         }
 
-                        var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
-
-                        if (playerTime == -1)
-                        {
-                            completed = false;
-                            break;
-                        }
+                        labelCompleted.Visible = completed;
                     }
-
-                    labelCompleted.Visible = completed;
 
                     mapCounter += 1;
                     totalMapCounter += 1;
@@ -1369,7 +1372,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             else
             {
                 MapSelectedAt = -1;
-                SetupCampaign();
+                SetupCampaign(false);
                 UnloadLeaderboards();
             }
             return;
@@ -1379,7 +1382,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         MapInfoNum = mapInfoNum;
         MapSelectedAt = Now;
 
-        SetupCampaign();
+        SetupCampaign(false);
         LoadLeaderboards(true);
     }
 
@@ -1393,6 +1396,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         MapGroupNum = TextLib.ToInteger(control.DataAttributeGet("MapGroupNum"));
         MapInfoNum = TextLib.ToInteger(control.DataAttributeGet("MapInfoNum"));
 
-        SetupCampaign();
+        SetupCampaign(true);
     }
 }
