@@ -1305,6 +1305,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                             {
                                 scoreContext = ScoreContextPrefix;
                             }
+                            else if (!TitleCombinations.ContainsKey(mapInfo.MapUid) || !TitleCombinations[mapInfo.MapUid].ContainsKey($"{carName}_0"))
+                            {
+                                // if envimix car doesnt have a validation, skip
+                                continue;
+                            }
 
                             var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
 
