@@ -177,6 +177,8 @@ public class MainMenu : CManiaAppTitle, IContext
     public CUILayer LoadingLayer;
     public CUILayer ReleaseLayer;
     public CUILayer LeaderboardsLayer;
+    public CUILayer LocalPlayMenuLayer;
+    public CUILayer EditorsMenuLayer;
 
     public CHttpRequest? SubmitMapsRequest;
     public CHttpRequest? SubmitTitleRequest;
@@ -266,32 +268,29 @@ public class MainMenu : CManiaAppTitle, IContext
             if (titleReleaseRequest.StatusCode == 200)
             {
                 STitleReleaseInfo releaseInfo = new();
-                if (releaseInfo.FromJson(titleReleaseRequest.Result))
+                if (!releaseInfo.FromJson(titleReleaseRequest.Result))
                 {
-                    if (TitleRelease != releaseInfo.ReleasedAt)
-                    {
-                        released = false;
-                    }
-
-                    TitleRelease = releaseInfo.ReleasedAt!;
-                    TitleKey = releaseInfo.Key!;
-                    CampaignsReleasedAt = releaseInfo.CampaignsReleasedAt!;
-
-                    var expectation = "";
-                    if (released)
-                    {
-                        expectation = " (expecting release sometime now)";
-                    }
-
-                    Log($"Title release info received. Release date: {TimeLib.FormatDate(TitleRelease, TimeLib.EDateFormats.Full)}{expectation}");
-
-                    releaseReceivedAt = Now;
+                    Log("Title release info JSON not parsed entirely, there could be some problems.");
                 }
-                else
+
+                if (TitleRelease != releaseInfo.ReleasedAt)
                 {
-                    Log("Failed to parse title release info. You can press ESC to escape.");
-                    Sleep(10000);
+                    released = false;
                 }
+
+                TitleRelease = releaseInfo.ReleasedAt!;
+                TitleKey = releaseInfo.Key!;
+                CampaignsReleasedAt = releaseInfo.CampaignsReleasedAt!;
+
+                var expectation = "";
+                if (released)
+                {
+                    expectation = " (expecting release sometime now)";
+                }
+
+                Log($"Title release info received. Release date: {TimeLib.FormatDate(TitleRelease, TimeLib.EDateFormats.Full)}{expectation}");
+
+                releaseReceivedAt = Now;
             }
             else if (titleReleaseRequest.StatusCode == 404)
             {
@@ -320,6 +319,12 @@ public class MainMenu : CManiaAppTitle, IContext
 
         LoadingLayer = UILayerCreate();
         LoadingLayer.Type = CUILayer.EUILayerType.LoadingScreen;
+
+        LocalPlayMenuLayer = UILayerCreate();
+        LocalPlayMenuLayer.ManialinkPage = "file://Media/Manialinks/LocalPlayMenu.xml";
+
+        EditorsMenuLayer = UILayerCreate();
+        EditorsMenuLayer.ManialinkPage = "file://Media/Manialinks/EditorsMenu.xml";
 
         RequestTotd();
     }
@@ -362,8 +367,14 @@ public class MainMenu : CManiaAppTitle, IContext
                             Log("Switching to Solo Menu...");
                             LayerCustomEvent(SoloMenuLayer, "AnimateOpen", new[] { "" });
                             LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
+                            LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+                            LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
                             break;
                         case "MenuLocal":
+                            LayerCustomEvent(LocalPlayMenuLayer, "AnimateOpen", new[] { "" });
+                            LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
+                            break;
+                        case "MenuLocalLegacy":
                             LoadingLayer.IsVisible = false;
                             Menu_Local();
                             break;
@@ -372,6 +383,10 @@ public class MainMenu : CManiaAppTitle, IContext
                             Menu_Internet();
                             break;
                         case "MenuEditor":
+                            LayerCustomEvent(EditorsMenuLayer, "AnimateOpen", new[] { "" });
+                            LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+                            break;
+                        case "MenuEditorLegacy":
                             LoadingLayer.IsVisible = false;
                             Menu_Editor();
                             break;
@@ -416,6 +431,10 @@ public class MainMenu : CManiaAppTitle, IContext
                             break;
                         case "Quickplay":
                             Quickplay();
+                            break;
+                        case "PlayLocalMap":
+                            var filePath = e.CustomEventData[0];
+                            PlayLocalMap(filePath);
                             break;
                     }
                     break;
@@ -708,15 +727,28 @@ public class MainMenu : CManiaAppTitle, IContext
         Log("Switching to Leaderboards...");
         LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
         LayerCustomEvent(LeaderboardsLayer, "AnimateOpen", new[] { "" });
+        LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
     }
+
+    public bool PlayMapInProgress;
 
     private void PlayMap(CCampaign campaign, CMapInfo mapInfo)
     {
+        if (PlayMapInProgress)
+        {
+            return;
+        }
+
+        PlayMapInProgress = true;
+
         LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
         LoadingLayer.IsVisible = true;
 
         Wait(() => TitleControl.IsReady);
-        TitleControl.PlayCampaign(campaign, mapInfo, "Modes/TrackMania/EnvimixSolo.Script.txt", "");
+        TitleControl.PlayCampaign(campaign, mapInfo, "", "");
+
+        PlayMapInProgress = false;
     }
 
     private CCampaign GetCampaignForMaps()
@@ -747,6 +779,40 @@ public class MainMenu : CManiaAppTitle, IContext
         var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
 
         PlayMap(campaign, mapInfo);
+    }
+
+    private void PlayLocalMap(string filePath)
+    {
+        if (PlayMapInProgress)
+        {
+            return;
+        }
+
+        PlayMapInProgress = true;
+
+        IList<string> splitPath = TextLib.Split("\\", filePath);
+        splitPath.RemoveAt(splitPath.Count - 1);
+        var joinedPath = TextLib.Join("\\", (string[])splitPath);
+
+        var mapInfoInList = DataFileMgr.Map_GetGameList(joinedPath, false);
+        Wait(() => !mapInfoInList.IsProcessing);
+
+        foreach (var mapInfo in mapInfoInList.MapInfos)
+        {
+            if (mapInfo.FileName == filePath)
+            {
+                LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+                LoadingLayer.IsVisible = true;
+
+                DataFileMgr.TaskResult_Release(mapInfoInList.Id);
+                break;
+            }
+        }
+
+        Wait(() => TitleControl.IsReady);
+        TitleControl.PlayMap(filePath, "", "");
+
+        PlayMapInProgress = false;
     }
 
     private void ExploreMap(int mapGroupNum, int mapInfoNum)

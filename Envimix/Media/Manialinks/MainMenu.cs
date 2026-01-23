@@ -48,6 +48,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             SendCustomEvent("MenuSolo", new[] {""});
             AudioClick.Play();
+            QuadLocal.StyleSelected = false;
+            QuadEditor.StyleSelected = false;
         };
 
         QuadSolo.MouseOver += () =>
@@ -57,7 +59,10 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
         QuadLocal.MouseClick += () =>
         {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             SendCustomEvent("MenuLocal", new[] { "" });
+            QuadLocal.StyleSelected = true;
+            QuadEditor.StyleSelected = false;
         };
 
         QuadLocal.MouseOver += () =>
@@ -68,6 +73,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         QuadInternet.MouseClick += () =>
         {
             SendCustomEvent("MenuInternet", new[] { "" });
+            //QuadLocal.StyleSelected = false;
         };
 
         QuadInternet.MouseOver += () =>
@@ -78,6 +84,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         QuadEditor.MouseClick += () =>
         {
             SendCustomEvent("MenuEditor", new[] { "" });
+            QuadLocal.StyleSelected = false;
+            QuadEditor.StyleSelected = true;
         };
 
         QuadEditor.MouseOver += () =>
@@ -100,6 +108,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             SendCustomEvent("Leaderboards", new[] { "" });
             AudioClick.Play();
+            QuadLocal.StyleSelected = false;
         };
 
         QuadLeaderboards.MouseOver += () =>

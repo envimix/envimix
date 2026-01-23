@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <framemodel id="FramemodelItem">
+        <quad size="115 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" />
+        <quad id="QuadItem" size="115 10" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+        <quad id="QuadIcon" pos="5 -5" z-index="1" size="7 7" halign="center" valign="center"/>
+        <label id="LabelMapName" pos="10.5 -5.3" z-index="1" size="90 5" text="A06" textfont="RajdhaniMono" valign="center2"/>
+        <quad id="QuadEnvironment" pos="109.5 -5" z-index="1" size="7 7" halign="center" valign="center" image="file://Media/Images/Environments/LagoonTMT.png"/>
+    </framemodel>
+    <frame pos="45 75" clip="1" clipsizen="180 153" clipposn="-90.5 -76">
+        <frame id="FrameLocalPlayMenu">
+            <quad z-index="0" size="180 135" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <quad z-index="0" size="180 135" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <frame z-index="1">
+                <frame pos="-150 -2.5">
+                    <quad z-index="0" size="55 55" halign="center" style="Bgs1" substyle="BgCardList" />
+                    <quad id="QuadPanelMapThumbnail" pos="0 -1" z-index="1" size="53 53" halign="center" />
+                    <quad pos="0 -57.5" z-index="0" size="55 55" halign="center" style="Bgs1" substyle="BgCardList" />
+                    <frame pos="0 -57.5" id="FramePanelMap" z-index="1">
+                        <quad id="QuadPanelMapEnvironment" pos="-22.5 -5" z-index="1" size="5 5" halign="center" image="file://Media/Images/Environments/CanyonTMT.png" valign="center" />
+                        <label id="LabelPanelMapName" pos="-18.5 -5.2" z-index="1" size="42 5" text="A01" textfont="RajdhaniMono" valign="center2" />
+                        <label id="LabelPanelAuthor" pos="-18.5 -9.5" z-index="1" size="42 5" text="Nadeo" textfont="RajdhaniMono" valign="center2" textprefix="by " textsize="1" />
+                        <quad pos="-22.5 -14.8" z-index="1" size="4 4" halign="center" style="Icons64x64_1" substyle="TrackInfo" valign="center" />
+                        <label id="LabelPanelCost" pos="-18.5 -15" z-index="1" size="42 5" text="300cc" textfont="RajdhaniMono" valign="center2" textsize="1" />
+                        <frame pos="-22.5 -22.5" z-index="1">
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/CanyonCar.png" valign="center" />
+                            <label id="LabelCanyonCarTime" pos="4.5 0" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/StadiumCar.png" valign="center" pos="0 -5.5" />
+                            <label id="LabelStadiumCarTime" pos="4.5 -5.5" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/ValleyCar.png" valign="center" pos="0 -11" />
+                            <label id="LabelValleyCarTime" pos="4.5 -11" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/LagoonCar.png" valign="center" pos="0 -16.5" />
+                            <label id="LabelLagoonCarTime" pos="4.5 -16.5" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/TrafficCar.png" valign="center" pos="0 -22" />
+                            <label id="LabelTrafficCarTime" pos="4.5 -22" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/DesertCar.png" valign="center" pos="25 0" />
+                            <label id="LabelDesertCarTime" pos="29.5 0" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/SnowCar.png" valign="center" pos="25 -5.5" />
+                            <label id="LabelSnowCarTime" pos="29.5 -5.5" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/RallyCar.png" valign="center" pos="25 -11" />
+                            <label id="LabelRallyCarTime" pos="29.5 -11" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/IslandCar.png" valign="center" pos="25 -16.5" />
+                            <label id="LabelIslandCarTime" pos="29.5 -16.5" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/BayCar.png" valign="center" pos="25 -22" />
+                            <label id="LabelBayCarTime" pos="29.5 -22" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                            <quad size="5 5" halign="center" image="file://Media/Images/Cars/CoastCar.png" valign="center" pos="25 -27.5" />
+                            <label id="LabelCoastCarTime" pos="29.5 -27.5" z-index="0" size="20 5" text="-:--.---" valign="center2" textsize="1" textfont="RajdhaniMono" />
+                        </frame>
+                    </frame>
+                </frame>
+                <frame pos="-150 -117.5">
+                    <quad id="QuadPlayMapBase" size="55 15" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" colorize="111" />
+                    <quad id="QuadPlayMap" hidden="1" size="55 14.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" />
+                    <label pos="0 -7.75" z-index="1" size="55 10" text="Play Map" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" textprefix="$t" />
+                </frame>
+                <frame>
+                    <frame pos="-5 -2.5">
+                        <quad size="2.5 130" style="Bgs1" substyle="BgCardList" />
+                        <quad size="2.5 10" style="Bgs1" substyle="BgWindow4" z-index="1" opacity="0.8" id="QuadScroller" scriptevents="1"/>
+                    </frame>
+                    <frame pos="-120 -2.5" z-index="1" id="FrameMapListScrollable" scroll="1" scrollgrid="0 10" scrollmax="0 120" clip="1" clipposn="59 -65" clipsizen="116 130">
+                        <frame id="FrameMapList">
+                            <frameinstance modelid="FramemodelItem" pos="0 0" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -10" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -20" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -30" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -40" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -50" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -60" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -70" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -80" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -90" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -100" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -110" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -120" />
+                        </frame>
+                    </frame>
+                </frame>
+            </frame>
+            <quad z-index="0" pos="0 -136" size="180 16" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <quad z-index="0" pos="0 -136" size="180 16" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <frame z-index="1" pos="0 -144">
+                <frame pos="-155 5">
+                    <quad size="40 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center"/>
+                    <quad id="QuadLegacyMenu" halign="center" size="40 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+                    <label pos="0 -5.3" z-index="1" size="90 5" text="LEGACY MENU" textfont="RajdhaniMono" valign="center2" halign="center"/>
+                </frame>
+                <quad pos="-9 0" size="14 14" style="UIConstruction_Buttons" substyle="Reload" halign="center" valign="center" scriptevents="1" id="QuadRefresh"/>
+            </frame>
+        </frame>
+    </frame>
+</manialink>

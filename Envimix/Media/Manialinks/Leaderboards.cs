@@ -1,7 +1,4 @@
-﻿
-using System.Collections.Immutable;
-
-namespace Envimix.Media.Manialinks;
+﻿namespace Envimix.Media.Manialinks;
 
 public class Leaderboards : CManiaAppTitleLayer, IContext
 {
