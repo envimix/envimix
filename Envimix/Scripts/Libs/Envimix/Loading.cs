@@ -135,5 +135,31 @@ public static class Loading
         loadingManialink = $"{loadingManialink}</manialink>";
 
         return loadingManialink;
-	}
+    }
+
+    public static string GetLoadingManialink(string mapUid, string currentLocalDateText)
+    {
+        var opacities = GetTimeOpacities(currentLocalDateText);
+
+        var loadingManialink = "<manialink version=\"3\" name=\"Loading\">";
+        loadingManialink = $"{loadingManialink}<frame z-index=\"0\">";
+        loadingManialink = $"{loadingManialink}    <quad pos=\"0 0\" z-index=\"-2\" size=\"320 180\" bgcolor=\"111E\" halign=\"center\" valign=\"center\"/>";
+        loadingManialink = $"{loadingManialink}    <frame pos=\"60\">";
+        loadingManialink = $"{loadingManialink}        <frame pos=\"0 5\">";
+        loadingManialink = $"{loadingManialink}            <quad pos=\"0 0\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" valign=\"center\"/>";
+        loadingManialink = $"{loadingManialink}            <quad pos=\"0.5 -0.5\" z-index=\"0\" size=\"88 12.675\" image=\"file://Media/Images/EnvimixSmall.png\" halign=\"center\" modulatecolor=\"222\" valign=\"center\"/>";
+        loadingManialink = $"{loadingManialink}        </frame>";
+        loadingManialink = $"{loadingManialink}        <label pos=\"25 -5\" z-index=\"0\" size=\"30 5\" text=\"LOADING...\" halign=\"center\" textemboss=\"1\" textfont=\"BiryaniDemiBold\"/>";
+        loadingManialink = $"{loadingManialink}    </frame>";
+        loadingManialink = $"{loadingManialink}    <frame>";
+        loadingManialink = $"{loadingManialink}        <quad pos=\"-80 0\" z-index=\"-1\" size=\"55 55\" halign=\"center\" valign=\"center\" style=\"Bgs1\" substyle=\"BgButtonGlow\" opacity=\".5\"/>";
+        loadingManialink = $"{loadingManialink}        <quad pos=\"-80 0\" z-index=\"0\" size=\"50 50\" bgcolor=\"000\" halign=\"center\" valign=\"center\" image=\"file://Thumbnails/MapUid/{mapUid}\"/>";
+        loadingManialink = $"{loadingManialink}        <quad pos=\"-80 0\" z-index=\"1\" size=\"51 51\" halign=\"center\" valign=\"center\" style=\"Bgs1\" substyle=\"BgColorContour\"/>";
+        loadingManialink = $"{loadingManialink}    </frame>";
+        loadingManialink = $"{loadingManialink}    <label pos=\"0 -50\" z-index=\"0\" size=\"210 20\" text=\"{GetTip()}\" halign=\"center\" autonewline=\"1\" textsize=\"2\" textfont=\"BiryaniDemiBold\"/>";
+        loadingManialink = $"{loadingManialink}</frame>";
+        loadingManialink = $"{loadingManialink}</manialink>";
+
+        return loadingManialink;
+    }
 }

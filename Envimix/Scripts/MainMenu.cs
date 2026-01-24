@@ -433,8 +433,13 @@ public class MainMenu : CManiaAppTitle, IContext
                             Quickplay();
                             break;
                         case "PlayLocalMap":
-                            var filePath = e.CustomEventData[0];
-                            PlayLocalMap(filePath);
+                            PlayLocalMap(e.CustomEventData[0]);
+                            break;
+                        case "EditReplay":
+                            EditReplay(e.CustomEventData[0]);
+                            break;
+                        case "InterfaceDesigner":
+                            TitleControl.OpenEditor(CTitleControl.EEditorType.InterfaceDesigner);
                             break;
                     }
                     break;
@@ -745,8 +750,10 @@ public class MainMenu : CManiaAppTitle, IContext
         LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
         LoadingLayer.IsVisible = true;
 
-        Wait(() => TitleControl.IsReady);
-        TitleControl.PlayCampaign(campaign, mapInfo, "", "");
+        if (TitleControl.IsReady)
+        {
+            TitleControl.PlayCampaign(campaign, mapInfo, "", "");
+        }
 
         PlayMapInProgress = false;
     }
@@ -809,8 +816,77 @@ public class MainMenu : CManiaAppTitle, IContext
             }
         }
 
-        Wait(() => TitleControl.IsReady);
-        TitleControl.PlayMap(filePath, "", "");
+        if (TitleControl.IsReady)
+        {
+            TitleControl.PlayMap(filePath, "", "");
+        }
+
+        PlayMapInProgress = false;
+    }
+
+    private void EditReplay(string filePath)
+    {
+        if (PlayMapInProgress)
+        {
+            return;
+        }
+
+        PlayMapInProgress = true;
+
+        IList<string> splitPath = TextLib.Split("\\", filePath);
+        splitPath.RemoveAt(splitPath.Count - 1);
+        var joinedPath = TextLib.Join("\\", (string[])splitPath);
+
+        var replayInfoInList = DataFileMgr.Replay_GetGameList(joinedPath, false);
+        Wait(() => !replayInfoInList.IsProcessing);
+
+        var mapFound = false;
+        foreach (var replayInfo in replayInfoInList.ReplayInfos)
+        {
+            if (replayInfo.FileName == filePath)
+            {
+                foreach (var mapInfo in DataFileMgr.Campaigns)
+                {
+                    foreach (var mapGroup in mapInfo.MapGroups)
+                    {
+                        foreach (var map in mapGroup.MapInfos)
+                        {
+                            if (map.MapUid == replayInfo.MapUid)
+                            {
+                                LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(map, System.CurrentLocalDateText);
+                                LoadingLayer.IsVisible = true;
+                                mapFound = true;
+                                break;
+                            }
+                        }
+
+                        if (mapFound)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (mapFound)
+                    {
+                        break;
+                    }
+                }
+
+                if (!mapFound)
+                {
+                    LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(replayInfo.MapUid, System.CurrentLocalDateText);
+                    LoadingLayer.IsVisible = true;
+                }
+
+                DataFileMgr.TaskResult_Release(replayInfoInList.Id);
+                break;
+            }
+        }
+
+        if (TitleControl.IsReady)
+        {
+            TitleControl.EditReplay(new[] { filePath });
+        }
 
         PlayMapInProgress = false;
     }
