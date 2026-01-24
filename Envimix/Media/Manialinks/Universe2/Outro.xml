@@ -3,6 +3,7 @@
     <label id="LabelMapName" z-index="0" size="90 12" textsize="6" textfont="Oswald" halign="right" pos="156 86.5"/>
     <label id="LabelMapAuthor" z-index="0" size="90 12" textsize="2" textfont="Oswald" halign="right" pos="155.5 79" textprefix="by "/>
     <frame pos="-120 -81">
+        <label id="LabelReplaySavedAs" pos="0 15" z-index="-1" size="65 5" halign="center" textsize="1.5" textprefix="Saved as " textfont="Oswald" textcolor="FF0" textemboss="1"/>
         <quad id="QuadSaveReplayBg" size="65 12.5" halign="center" style="Bgs1InRace" substyle="BgCard" modulatecolor="036" opacity=".9" valign="center" />
         <quad id="QuadSaveReplay" size="65 12.25" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" valign="center" pos="0 -0.125" colorize="258" />
         <label pos="0 -0.5" z-index="1" size="55 10" text="Save replay" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="5" textprefix="$t" />

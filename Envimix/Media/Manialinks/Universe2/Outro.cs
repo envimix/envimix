@@ -16,6 +16,8 @@ public class Outro : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelMapName;
     [ManialinkControl] public required CMlLabel LabelMapAuthor;
 
+    [ManialinkControl] public required CMlLabel LabelReplaySavedAs;
+
     [Netread] public ImmutableArray<string> DisplayedCars { get; set; }
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
 
@@ -121,7 +123,10 @@ public class Outro : CTmMlScriptIngame, IContext
                     SelectedButton.StyleSelected = false;
                     if (SelectedButton == QuadSaveReplay)
                     {
-                        SaveReplay();
+                        if (!ReplaySaved)
+                        {
+                            SaveReplay();
+                        }
                     }
                     else if (SelectedButton == QuadPrevMap)
                     {
@@ -168,7 +173,14 @@ public class Outro : CTmMlScriptIngame, IContext
                     }
                     else if (SelectedButton == QuadPrevMap)
                     {
-                        SelectedButton = QuadSaveReplay;
+                        if (ReplaySaved)
+                        {
+                            SelectedButton = QuadExit;
+                        }
+                        else
+                        {
+                            SelectedButton = QuadSaveReplay;
+                        }
                     }
                     else if (SelectedButton == QuadSaveReplay)
                     {
@@ -213,7 +225,14 @@ public class Outro : CTmMlScriptIngame, IContext
                     }
                     else if (SelectedButton == QuadExit)
                     {
-                        SelectedButton = QuadSaveReplay;
+                        if (ReplaySaved)
+                        {
+                            SelectedButton = QuadPrevMap;
+                        }
+                        else
+                        {
+                            SelectedButton = QuadSaveReplay;
+                        }
                     }
                     else if (SelectedButton == QuadSaveReplay)
                     {
@@ -250,8 +269,13 @@ public class Outro : CTmMlScriptIngame, IContext
 
         SelectedButton = QuadContinue;
 
+        LabelReplaySavedAs.Opacity = 0;
+
         AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
     }
+
+    public bool SavingReplay;
+    public string PrevReplaySavedAs = "";
 
     public void Loop()
     {
@@ -268,10 +292,29 @@ public class Outro : CTmMlScriptIngame, IContext
             QuadSaveReplayBg.ModulateColor = new Vec3(0, 0.1875f, 0.375f);
             QuadSaveReplay.Visible = true;
         }
+
+        if (SavingReplay)
+        {
+            var replaySavedAs = Netread<string>.For(UI);
+            if (replaySavedAs.Get() != PrevReplaySavedAs)
+            {
+                PrevReplaySavedAs = replaySavedAs.Get();
+                if (replaySavedAs.Get() != "")
+                {
+                    LabelReplaySavedAs.RelativePosition_V3.Y = 9;
+                    LabelReplaySavedAs.Opacity = 0;
+                    LabelReplaySavedAs.Value = replaySavedAs.Get();
+                    AnimMgr.Add(LabelReplaySavedAs, "<label pos=\"0 15\" opacity=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+                    AnimMgr.AddChain(LabelReplaySavedAs, "<label opacity=\"0\"/>", 750, CAnimManager.EAnimManagerEasing.QuadOut);
+                    SavingReplay = false;
+                }
+            }
+        }
     }
 
     private void SaveReplay()
     {
+        SavingReplay = true;
         SendCustomEvent("SaveOutroReplay", new[] { "" });
         AudioClick.Play();
     }

@@ -131,6 +131,7 @@ public class EnvimixSolo : Envimix
         Outro = false;
         OutroGhostMaxFinishLength = 1500;
         RatingOpen = false;
+        ReplaySaved = false;
     }
 
     public override void OnMapLoad()
@@ -753,7 +754,10 @@ public class EnvimixSolo : Envimix
                     var car = Netwrite<string>.For(GetPlayer());
                     var fileNameSupportedTime = TextLib.Replace(TextLib.Replace(TimeToTextWithMilli(OutroGhost.Result.Time), ":", "'"), ".", "''");
                     var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{car.Get()}_({fileNameSupportedTime})";
-                    SaveReplayTask = DataFileMgr.Replay_Save($"Replays/{replayPath}.Replay.Gbx", Map, OutroGhost);
+                    var fullReplayPath = $"Replays/{replayPath}.Replay.Gbx";
+                    SaveReplayTask = DataFileMgr.Replay_Save(fullReplayPath, Map, OutroGhost);
+                    var replaySavedAs = Netwrite<string>.For(e.UI);
+                    replaySavedAs.Set(fullReplayPath);
                 }
                 break;
         }
