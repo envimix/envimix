@@ -80,7 +80,10 @@ public static class Loading
             "TIP: Completion percentage and Track of the Day finishes don't count towards the activity points.",
             "FUN FACT: Item set includes two non-functioning helicopter rotors, one of which represents a simulation of a humongous tornado hitting the Stadium buildings.",
             "FUN FACT: Several ingame UI pieces are taken straight from the Challenge title pack project.",
-            "FUN FACT: This is the first title pack fully written in C# (translated to ManiaScript using ManiaScriptSharp)."
+            "FUN FACT: This is the first title pack fully written in C# (translated to ManiaScript using ManiaScriptSharp).",
+            "FUN FACT: If you see a vistamix somewhere, that's not us. :P",
+            "TIP: To stay sane, prefer not calling Canyon 'Red Island', Valley 'Green Coast', and Lagoon 'Blue Bay'. Keep those Sunrise environments in their homes.",
+            "TIP: Give yourself a rest after doing a hard validation. We don't want you burned out!",
         };
 
         var randomIndex = MathLib.Rand(0, tips.Length - 1);
