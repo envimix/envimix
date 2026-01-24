@@ -753,7 +753,7 @@ public class EnvimixSolo : Envimix
                 {
                     var car = Netwrite<string>.For(GetPlayer());
                     var fileNameSupportedTime = TextLib.Replace(TextLib.Replace(TimeToTextWithMilli(OutroGhost.Result.Time), ":", "'"), ".", "''");
-                    var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{car.Get()}_({fileNameSupportedTime})";
+                    var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{car.Get()}_{TextLib.StripFormatting(GetPlayer().User.Name)}_({fileNameSupportedTime})";
                     var fullReplayPath = $"Replays/{replayPath}.Replay.Gbx";
                     SaveReplayTask = DataFileMgr.Replay_Save(fullReplayPath, Map, OutroGhost);
                     var replaySavedAs = Netwrite<string>.For(e.UI);
