@@ -145,6 +145,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
     public int CurrentSkillpoints;
     public int CurrentActivityPoints;
     public int StartPointChangeAt = -1;
+    public int BestTime = -1;
 
     public CAudioSource AudioClick;
 
@@ -165,7 +166,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
                         FinishedAt = Now;
                         LabelTime.SetText(TimeToTextWithMilli(e.RaceTime));
 
-                        if (e.Player.Score.BestRace.Checkpoints.Count <= 0)
+                        if (BestTime < 0)
                         {
                             IsPb = true;
                             EventText = "Your first finish!";
@@ -173,7 +174,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
                         }
                         else
                         {
-                            var diff = e.RaceTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInRace];
+                            var diff = e.RaceTime - BestTime;
                             var formattedDiff = TextLib.FormatReal(diff / 1000f, 3, false, false);
 
                             if (diff > 0)
@@ -208,6 +209,14 @@ public class Endscreen : CTmMlScriptIngame, IContext
                     }
                     break;
                 case CTmRaceClientEvent.EType.Respawn:
+                    if (e.Player.Score.BestRace.Checkpoints.Count > 0)
+                    {
+                        BestTime = e.Player.Score.BestRace.Checkpoints[e.Player.Score.BestRace.Checkpoints.Count - 1];
+                    }
+                    else
+                    {
+                        BestTime = -1;
+                    }
                     break;
             }
         };
