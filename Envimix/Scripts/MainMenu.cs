@@ -1239,6 +1239,23 @@ public class MainMenu : CManiaAppTitle, IContext
 
     private void Quickplay()
     {
+        if (MathLib.Rand(0, 50) == 0)
+        {
+            Log("Going to a mysterious place...");
+            var xml = "<?xml version='1.0' encoding='utf-8' ?>";
+            xml = $"{xml}<maniacode noconfirmation=\"1\">";
+            xml = $"{xml}<play_map><name>0</name><url>https://api.envimix.gbx.tools/maps/qlLsZ8gthEsvOcfugdadY4DqWU8/download</url></play_map>";
+            xml = $"{xml}</maniacode>";
+            LoadingLayer.ManialinkPage = Loading.GetLoadingManialink("qlLsZ8gthEsvOcfugdadY4DqWU8", System.CurrentLocalDateText);
+            LoadingLayer.IsVisible = true;
+            Audio.PlaySoundEvent("file://Media/Sounds/Voices/CleanSweep.wav", 1);
+            if (TitleControl.IsReady)
+            {
+                TitleControl.ProcessManiaCodeXml(xml);
+            }
+            return;
+        }
+
         if (DataFileMgr.Campaigns.Count == 0)
         {
             return;
