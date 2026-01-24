@@ -386,7 +386,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var totalEnvimixCount = 0;
 
             // takes the official campaign only
-            for (var i = 0; i < MathLib.Min(11, DataFileMgr.Campaigns.Count); i++)
+            for (var i = 0; i < MathLib.Min(12, DataFileMgr.Campaigns.Count); i++)
             {
                 var campaign = DataFileMgr.Campaigns[i];
 
