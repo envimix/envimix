@@ -118,9 +118,9 @@
 						<label id="LabelLoadingResult" text="" pos="0 -29.75" z-index="0" size="65 50" halign="center" valign="center" textfont="RajdhaniMono" textsize="2"/>
 						<frame pos="35.5 -5">
 							<quad z-index="0" size="2 55.25" style="Bgs1" substyle="BgCardList" opacity=".5" scriptevents="1" id="QUAD_SCROLLBAR_BACKGROUND"/>
-							<quad z-index="1" size="1 20" style="Bgs1" substyle="BgWindow4" opacity="1" halign="center" pos="1 0" scriptevents="1" id="QUAD_SCROLLBAR" hidden="1"/>
+							<quad z-index="1" size="2 20" style="Bgs1" substyle="BgWindow4" opacity=".75" halign="center" pos="1 0" scriptevents="1" id="QuadRecordsScrollbar" hidden="0"/>
 						</frame>
-						<frame pos="0 -8" id="FrameOuterGhosts" clip="1" clipsizen="78 56" clipposn="0 -24">
+						<frame pos="0 -8" id="FrameOuterGhosts" clip="1" clipsizen="78 55" clipposn="0 -24.75" scroll="1" scrollgrid="0 5.5" scrollmax="0 55">
 							<frame id="FrameGhosts">
 								<frameinstance modelid="FramemodelRecord"/>
 								<frameinstance modelid="FramemodelRecord" pos="0 -5.5"/>

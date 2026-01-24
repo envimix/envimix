@@ -150,6 +150,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelGravityValue;
     [ManialinkControl] public required CMlFrame FrameGravitySlider;
     [ManialinkControl] public required CMlFrame FrameGravityForcedValue;
+    [ManialinkControl] public required CMlFrame FrameOuterGhosts;
     [ManialinkControl] public required CMlFrame FrameGhosts;
     [ManialinkControl] public required CMlQuad QuadGhostSelectionPrev;
     [ManialinkControl] public required CMlQuad QuadGhostSelectionNext;
@@ -167,6 +168,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameButtonScriptParameters;
     [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnImpact;
     [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnWaypoint;
+    [ManialinkControl] public required CMlQuad QuadRecordsScrollbar;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -204,6 +206,10 @@ public class Menu : CTmMlScriptIngame, IContext
     public Dictionary<CTaskResult_Ghost, string> DownloadGhostTasks;
     public Dictionary<CTaskResult, string> SaveReplayTasks;
     public IList<string> DownloadedReplayFiles;
+    public float PrevGhostsScrollY;
+    public bool HoldRecordsScrollbar;
+    public float HoldRecordsScrollbarPos;
+    public bool ScrollbarRecordsMouseOut;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -381,6 +387,29 @@ public class Menu : CTmMlScriptIngame, IContext
         QuadButtonEnableVoiceOnWaypoint.MouseOver += () =>
         {
             Focus3();
+        };
+
+        QuadRecordsScrollbar.MouseClick += () =>
+        {
+            HoldRecordsScrollbar = true;
+            HoldRecordsScrollbarPos = MouseY - (float)QuadRecordsScrollbar.RelativePosition_V3.Y;
+        };
+
+        QuadRecordsScrollbar.MouseOver += () =>
+        {
+            AnimMgr.Add(QuadRecordsScrollbar, "<quad opacity=\"1\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadRecordsScrollbar.MouseOut += () =>
+        {
+            if (HoldRecordsScrollbar)
+            {
+                ScrollbarRecordsMouseOut = true;
+            }
+            else
+            {
+                AnimMgr.Add(QuadRecordsScrollbar, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
         };
     }
 
@@ -1352,6 +1381,24 @@ public class Menu : CTmMlScriptIngame, IContext
             LabelLoadingResult.SetText("");
         }
 
+        if (filteredLocalGhosts.Length > 10)
+        {
+            QuadRecordsScrollbar.Show();
+            QuadRecordsScrollbar.Size.Y = 10f / filteredLocalGhosts.Length * 55.25f;
+        }
+        else
+        {
+            QuadRecordsScrollbar.Hide();
+        }
+
+        FrameOuterGhosts.ScrollMax.Y = MathLib.Max(0, filteredLocalGhosts.Length - 10) * 5.5f;
+        var scrollOffset = MathLib.NearestInteger((float)FrameOuterGhosts.ScrollOffset.Y / 5.5f);
+
+        if (FrameOuterGhosts.ScrollMax.Y != 0)
+        {
+            QuadRecordsScrollbar.RelativePosition_V3.Y = -(float)FrameOuterGhosts.ScrollOffset.Y / FrameOuterGhosts.ScrollMax.Y * (55.25f - QuadRecordsScrollbar.Size.Y);
+        }
+
         for (var i = 0; i < FrameGhosts.Controls.Count; i++)
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
@@ -1362,7 +1409,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            var metadata = filteredLocalGhosts[i];
+            var metadata = filteredLocalGhosts[i + scrollOffset];
 
             frame.DataAttributeSet("file", metadata.FileName);
             frame.DataAttributeSet("url", "");
@@ -1375,6 +1422,7 @@ public class Menu : CTmMlScriptIngame, IContext
             var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
             var quadSaveGhost = (frame.GetFirstChild("QuadSaveGhost") as CMlQuad)!;
             var quadSaveGhostOff = (frame.GetFirstChild("QuadSaveGhostOff") as CMlQuad)!;
+            labelNickname.RelativePosition_V3.X = -31;
 
             labelRank.Hide();
             labelNickname.SetText(metadata.Nickname);
@@ -1496,6 +1544,24 @@ public class Menu : CTmMlScriptIngame, IContext
             LabelLoadingResult.SetText("");
         }
 
+        if (response.Records.Length > 10)
+        {
+            QuadRecordsScrollbar.Show();
+            QuadRecordsScrollbar.Size.Y = 10f / response.Records.Length * 55.25f;
+        }
+        else
+        {
+            QuadRecordsScrollbar.Hide();
+        }
+
+        FrameOuterGhosts.ScrollMax.Y = MathLib.Max(0, response.Records.Length - 10) * 5.5f;
+        var scrollOffset = MathLib.NearestInteger((float)FrameOuterGhosts.ScrollOffset.Y / 5.5f);
+
+        if (FrameOuterGhosts.ScrollMax.Y != 0)
+        {
+            QuadRecordsScrollbar.RelativePosition_V3.Y = -(float)FrameOuterGhosts.ScrollOffset.Y / FrameOuterGhosts.ScrollMax.Y * (55.25f - QuadRecordsScrollbar.Size.Y);
+        }
+
         var prevTime = -1;
         var rankOffset = 0;
         for (var i = 0; i < FrameGhosts.Controls.Count; i++)
@@ -1508,10 +1574,12 @@ public class Menu : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            var ghostUrl = response.Records[i].GhostUrl;
+            var record = response.Records[i + scrollOffset];
 
-            var fileNameSupportedTime = TextLib.Replace(TextLib.Replace(TimeToTextWithMilli(response.Records[i].Time), ":", "'"), ".", "''");
-            var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{GetCar()}_{TextLib.StripFormatting(response.Records[i].User.Nickname)}_({fileNameSupportedTime})";
+            var ghostUrl = record.GhostUrl;
+
+            var fileNameSupportedTime = TextLib.Replace(TextLib.Replace(TimeToTextWithMilli(record.Time), ":", "'"), ".", "''");
+            var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{GetCar()}_{TextLib.StripFormatting(record.User.Nickname)}_({fileNameSupportedTime})";
             var fullReplayPath = $"Replays/{replayPath}.Replay.Gbx";
 
             frame.DataAttributeSet("downloadfile", fullReplayPath);
@@ -1528,7 +1596,7 @@ public class Menu : CTmMlScriptIngame, IContext
             var quadSaveGhost = (frame.GetFirstChild("QuadSaveGhost") as CMlQuad)!;
             var quadSaveGhostOff = (frame.GetFirstChild("QuadSaveGhostOff") as CMlQuad)!;
 
-            var time = response.Records[i].Time;
+            var time = record.Time;
             if (time == prevTime)
             {
                 rankOffset += 1;
@@ -1540,8 +1608,9 @@ public class Menu : CTmMlScriptIngame, IContext
             }
 
             labelRank.Show();
-            labelRank.SetText(TextLib.FormatInteger(i + 1 - rankOffset, 2));
-            labelNickname.SetText(response.Records[i].User.Nickname);
+            labelRank.SetText(TextLib.FormatInteger(i + 1 - rankOffset + scrollOffset, 2));
+            labelNickname.RelativePosition_V3.X = labelRank.ComputeWidth(labelRank.Value) - 3.5f - 31;
+            labelNickname.SetText(record.User.Nickname);
             labelTime.SetText(TimeToTextWithMilli(time));
             labelAutosave.Hide();
 
@@ -1616,6 +1685,8 @@ public class Menu : CTmMlScriptIngame, IContext
 
     private void RequestAndUpdateRecords()
     {
+        FrameOuterGhosts.ScrollOffset.Y = 0;
+
         if (CurrentZoneIndex > -1)
         {
             RequestCurrentZoneRecords(refresh: false);
@@ -1994,6 +2065,7 @@ public class Menu : CTmMlScriptIngame, IContext
             SetSlidingText(FrameLabelCar, car.Get());
             LabelSkinCar.Value = car.Get();
             RequestAndUpdateRecords();
+
 
             PreviousCar = car.Get();
         }
@@ -2576,6 +2648,48 @@ public class Menu : CTmMlScriptIngame, IContext
         else
         {
             LabelValidator.Value = "$aaanobody";
+        }
+
+        if (HoldRecordsScrollbar && MouseLeftButton)
+        {
+            var newY = MathLib.Clamp(MouseY - HoldRecordsScrollbarPos, (float)QuadRecordsScrollbar.Size.Y - 130, 0);
+
+            var targetScrollOffset = newY / ((float)QuadRecordsScrollbar.Size.Y - 55.25f) * (float)FrameOuterGhosts.ScrollMax.Y;
+            var stepIndex = MathLib.NearestInteger((float)targetScrollOffset / 5.5f);
+            var steppedScrollOffset = stepIndex * 5.5f;
+
+            steppedScrollOffset = MathLib.Clamp(steppedScrollOffset, 0f, (float)FrameOuterGhosts.ScrollMax.Y);
+
+            if (FrameOuterGhosts.ScrollMax.Y > 0)
+            {
+                QuadRecordsScrollbar.RelativePosition_V3.Y = -(steppedScrollOffset / FrameOuterGhosts.ScrollMax.Y) * (55.25f - QuadRecordsScrollbar.Size.Y);
+            }
+
+            FrameOuterGhosts.ScrollOffset.Y = steppedScrollOffset;
+        }
+        else if (HoldRecordsScrollbar)
+        {
+            if (ScrollbarRecordsMouseOut)
+            {
+                AnimMgr.Add(QuadRecordsScrollbar, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+                ScrollbarRecordsMouseOut = false;
+            }
+            HoldRecordsScrollbar = false;
+        }
+
+        if (FrameOuterGhosts.ScrollOffset.Y != PrevGhostsScrollY)
+        {
+            PrevGhostsScrollY = (float)FrameOuterGhosts.ScrollOffset.Y;
+            FrameGhosts.RelativePosition_V3.Y = -PrevGhostsScrollY;
+
+            if (CurrentZoneIndex == -1)
+            {
+                UpdateLocalGhosts();
+            }
+            else
+            {
+                UpdateRecords();
+            }
         }
 
         // to refresh the leaderboard when a new record is driven
