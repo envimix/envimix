@@ -305,6 +305,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     {
                         UpdateStats(GetCampaignForMaps().MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
                     }
+                    SetupCampaign(false);
                     break;
                 case "LeaderboardData":
                     var mapUid = data[0];
