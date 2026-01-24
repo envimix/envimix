@@ -388,7 +388,7 @@ public class Envimix : UniverseModeBase
 
         vehicleManialink = $"{vehicleManialink}</frame>";
 
-        CreateLayer("Menu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
+        CreateLayer("MultiplayerMenu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
 
         Log(nameof(Envimix), "All manialinks successfully created!");
     }
