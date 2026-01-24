@@ -201,6 +201,9 @@ public class Menu : CTmMlScriptIngame, IContext
     public string MapNameInExplore = "";
     public bool PrevGhostToUpload;
     public string PrevClientCar;
+    public Dictionary<CTaskResult_Ghost, string> DownloadGhostTasks;
+    public Dictionary<CTaskResult, string> SaveReplayTasks;
+    public IList<string> DownloadedReplayFiles;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -780,6 +783,14 @@ public class Menu : CTmMlScriptIngame, IContext
                     (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(file);
                 }
                 
+                break;
+            case "QuadSaveGhost":
+                control.Hide();
+                control.Parent.GetFirstChild("QuadSaveGhostOff").Show();
+                var ghostFile = control.Parent.DataAttributeGet("downloadfile");
+                var ghostUrl = control.Parent.DataAttributeGet("url");
+                Log($"Saving ghost locally... {ghostFile}");
+                DownloadGhostTasks[DataFileMgr.Ghost_Download(ghostFile, ghostUrl)] = ghostFile;
                 break;
         }
 
@@ -1362,6 +1373,8 @@ public class Menu : CTmMlScriptIngame, IContext
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
             var labelAutosave = (frame.GetFirstChild("LabelAutosave") as CMlLabel)!;
             var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
+            var quadSaveGhost = (frame.GetFirstChild("QuadSaveGhost") as CMlQuad)!;
+            var quadSaveGhostOff = (frame.GetFirstChild("QuadSaveGhostOff") as CMlQuad)!;
 
             labelRank.Hide();
             labelNickname.SetText(metadata.Nickname);
@@ -1378,6 +1391,9 @@ public class Menu : CTmMlScriptIngame, IContext
             labelAutosave.Visible = TextLib.StartsWith("autosave", metadata.FileName, false, false);
 
             quadGhost.StyleSelected = SelectedGhosts.ContainsKey(metadata.FileName);
+
+            quadSaveGhost.Hide();
+            quadSaveGhostOff.Show();
 
             frame.Show();
         }
@@ -1494,6 +1510,11 @@ public class Menu : CTmMlScriptIngame, IContext
 
             var ghostUrl = response.Records[i].GhostUrl;
 
+            var fileNameSupportedTime = TextLib.Replace(TextLib.Replace(TimeToTextWithMilli(response.Records[i].Time), ":", "'"), ".", "''");
+            var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{GetCar()}_{TextLib.StripFormatting(response.Records[i].User.Nickname)}_({fileNameSupportedTime})";
+            var fullReplayPath = $"Replays/{replayPath}.Replay.Gbx";
+
+            frame.DataAttributeSet("downloadfile", fullReplayPath);
             frame.DataAttributeSet("file", "");
             frame.DataAttributeSet("url", ghostUrl);
             frame.DataAttributeSet("gindex", "0");
@@ -1504,6 +1525,8 @@ public class Menu : CTmMlScriptIngame, IContext
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
             var labelAutosave = (frame.GetFirstChild("LabelAutosave") as CMlLabel)!;
             var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
+            var quadSaveGhost = (frame.GetFirstChild("QuadSaveGhost") as CMlQuad)!;
+            var quadSaveGhostOff = (frame.GetFirstChild("QuadSaveGhostOff") as CMlQuad)!;
 
             var time = response.Records[i].Time;
             if (time == prevTime)
@@ -1523,6 +1546,17 @@ public class Menu : CTmMlScriptIngame, IContext
             labelAutosave.Hide();
 
             quadGhost.StyleSelected = SelectedGhosts.ContainsKey(ghostUrl);
+
+            if (ghostUrl == "" || DownloadedReplayFiles.Contains(fullReplayPath))
+            {
+                quadSaveGhost.Hide();
+                quadSaveGhostOff.Show();
+            }
+            else
+            {
+                quadSaveGhost.Show();
+                quadSaveGhostOff.Hide();
+            }
         }
     }
 
@@ -1875,7 +1909,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 // Multiplayer specific spawning
                 if (CutOffTimeLimit != -1 && InputPlayer.RaceStartTime > CutOffTimeLimit && !IsSpectator)
                 {
-                    SendCustomEvent("Car", new [] { DisplayedCars[VehicleIndex], "True", "False", "True" });
+                    SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True", "False", "True" });
                 }
 
                 // Solo specific spawning
@@ -1897,7 +1931,7 @@ public class Menu : CTmMlScriptIngame, IContext
         }
         else
         {
-            LabelArrow.TextColor = new Vec3(1,1,1);
+            LabelArrow.TextColor = new Vec3(1, 1, 1);
         }
 
         if ((EnableDefaultCar || OverrideEnableDefaultCar) != PreviousEnableDefaultCar)
@@ -2121,7 +2155,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
         QuadBackground.Visible = IsCarLocked();
         LabelLock.Visible = IsCarLocked();
-        
+
         if (IsCarLocked() && DisplayedCars.Contains(car.Get()))
         {
             FrameArrow.RelativePosition_V3.Y = FrameVehicles.ScrollAnimOffset.Y + DisplayedCars.IndexOf(car.Get()) * -20f;
@@ -2561,6 +2595,63 @@ public class Menu : CTmMlScriptIngame, IContext
         if (forceQuit.Get())
         {
             CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Quit);
+        }
+
+        ImmutableArray<CTaskResult_Ghost> downloadTasksToRemove = new();
+
+        foreach (var (ghostTask, replayFile) in DownloadGhostTasks)
+        {
+            if (ghostTask.IsProcessing)
+            {
+                continue;
+            }
+
+            if (ghostTask.HasSucceeded)
+            {
+                Log($"Ghost download succeeded: {replayFile}");
+
+                SaveReplayTasks[DataFileMgr.Replay_Save(replayFile, Map, ghostTask.Ghost)] = replayFile;
+            }
+            else
+            {
+                Log($"Ghost download failed: {replayFile}");
+            }
+
+            downloadTasksToRemove.Add(ghostTask);
+        }
+
+        foreach (var ghostTask in downloadTasksToRemove)
+        {
+            DownloadGhostTasks.Remove(ghostTask);
+            DataFileMgr.TaskResult_Release(ghostTask.Id);
+        }
+
+        ImmutableArray<CTaskResult> saveReplayTasksToRemove = new();
+
+        foreach (var (saveReplayTask, saveReplayFile) in SaveReplayTasks)
+        {
+            if (saveReplayTask.IsProcessing)
+            {
+                continue;
+            }
+
+            if (saveReplayTask.HasSucceeded)
+            {
+                Log($"Replay save succeeded: {saveReplayFile}");
+                DownloadedReplayFiles.Add(saveReplayFile);
+            }
+            else
+            {
+                Log($"Replay save failed: {saveReplayFile}");
+            }
+
+            saveReplayTasksToRemove.Add(saveReplayTask);
+        }
+
+        foreach (var saveReplayTask in saveReplayTasksToRemove)
+        {
+            SaveReplayTasks.Remove(saveReplayTask);
+            DataFileMgr.TaskResult_Release(saveReplayTask.Id);
         }
     }
 }
