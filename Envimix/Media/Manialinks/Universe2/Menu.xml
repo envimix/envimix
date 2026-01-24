@@ -178,7 +178,7 @@
 					<quad z-index="0" size="2 104.5" style="Bgs1" substyle="BgCardList" id="QuadSkinScrollable" opacity="0.5" scriptevents="1" halign="center"/>
 					<quad z-index="1" size="2 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadSkinScrollbar" scriptevents="1" halign="center" hidden="0"/>
 				</frame>
-				<frame clip="1" clipposn="0 -52.5" clipsizen="80 105" scroll="1" scrollgrid="15 15" scrollmax="0 100">
+				<frame id="FrameOuterSkinList" clip="1" clipposn="0 -52.5" clipsizen="80 105" scroll="1" scrollgrid="15 15" scrollmax="0 100">
 					<frame id="FrameSkinList">
 						<frameinstance modelid="FramemodelSkin"/>
 						<frameinstance modelid="FramemodelSkin" pos="0 -15"/>

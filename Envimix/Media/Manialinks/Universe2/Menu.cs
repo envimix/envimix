@@ -81,7 +81,8 @@ public class Menu : CTmMlScriptIngame, IContext
     }
 
     [ManialinkControl] public required CMlFrame FrameInnerVehicles;
-	[ManialinkControl] public required CMlFrame FrameSkinList;
+    [ManialinkControl] public required CMlFrame FrameOuterSkinList;
+    [ManialinkControl] public required CMlFrame FrameSkinList;
     [ManialinkControl] public required CMlQuad QuadButtonSpectator;
     [ManialinkControl] public required CMlFrame FrameMenu;
     [ManialinkControl] public required CMlFrame FrameAdvancedSettings;
@@ -210,6 +211,9 @@ public class Menu : CTmMlScriptIngame, IContext
     public bool HoldRecordsScrollbar;
     public float HoldRecordsScrollbarPos;
     public bool ScrollbarRecordsMouseOut;
+    public bool HoldSkinsScrollbar;
+    public float HoldSkinsScrollbarPos;
+    public bool ScrollbarSkinsMouseOut;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -409,6 +413,29 @@ public class Menu : CTmMlScriptIngame, IContext
             else
             {
                 AnimMgr.Add(QuadRecordsScrollbar, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+        };
+
+        QuadSkinScrollbar.MouseClick += () =>
+        {
+            HoldSkinsScrollbar = true;
+            HoldSkinsScrollbarPos = MouseY - (float)QuadSkinScrollbar.RelativePosition_V3.Y;
+        };
+
+        QuadSkinScrollbar.MouseOver += () =>
+        {
+            AnimMgr.Add(QuadSkinScrollbar, "<quad opacity=\"1\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadSkinScrollbar.MouseOut += () =>
+        {
+            if (HoldSkinsScrollbar)
+            {
+                ScrollbarSkinsMouseOut = true;
+            }
+            else
+            {
+                AnimMgr.Add(QuadSkinScrollbar, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         };
     }
@@ -2171,6 +2198,33 @@ public class Menu : CTmMlScriptIngame, IContext
             PreviousScrollOffset = vehiclesScrollOffsetY;
         }
 
+        if (HoldSkinsScrollbar && MouseLeftButton)
+        {
+            var newY = MathLib.Clamp(MouseY - HoldSkinsScrollbarPos, (float)QuadSkinScrollbar.Size.Y - 105, 0);
+
+            var targetScrollOffset = newY / ((float)QuadSkinScrollbar.Size.Y - 105f) * (float)FrameOuterSkinList.ScrollMax.Y;
+            var stepIndex = MathLib.NearestInteger((float)targetScrollOffset / 15);
+            var steppedScrollOffset = stepIndex * 15f;
+
+            steppedScrollOffset = MathLib.Clamp(steppedScrollOffset, 0f, (float)FrameOuterSkinList.ScrollMax.Y);
+
+            if (FrameOuterSkinList.ScrollMax.Y > 0)
+            {
+                QuadSkinScrollbar.RelativePosition_V3.Y = -(steppedScrollOffset / FrameOuterSkinList.ScrollMax.Y) * (105f - QuadSkinScrollbar.Size.Y);
+            }
+
+            FrameOuterSkinList.ScrollOffset.Y = steppedScrollOffset;
+        }
+        else if (HoldSkinsScrollbar)
+        {
+            if (ScrollbarSkinsMouseOut)
+            {
+                AnimMgr.Add(QuadSkinScrollbar, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+                ScrollbarSkinsMouseOut = false;
+            }
+            HoldSkinsScrollbar = false;
+        }
+
         if (Skins.ContainsKey(DisplayedCars[VehicleIndex]))
         {
             var skinsForCar = Skins[DisplayedCars[VehicleIndex]];
@@ -2652,7 +2706,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (HoldRecordsScrollbar && MouseLeftButton)
         {
-            var newY = MathLib.Clamp(MouseY - HoldRecordsScrollbarPos, (float)QuadRecordsScrollbar.Size.Y - 130, 0);
+            var newY = MathLib.Clamp(MouseY - HoldRecordsScrollbarPos, (float)QuadRecordsScrollbar.Size.Y - 55.25f, 0);
 
             var targetScrollOffset = newY / ((float)QuadRecordsScrollbar.Size.Y - 55.25f) * (float)FrameOuterGhosts.ScrollMax.Y;
             var stepIndex = MathLib.NearestInteger((float)targetScrollOffset / 5.5f);
