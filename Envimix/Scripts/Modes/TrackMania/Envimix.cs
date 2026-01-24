@@ -77,10 +77,10 @@ public class Envimix : UniverseModeBase
     public bool EnableTM2Cars = true;
 
     [Setting(As = "Enable TrafficCar", ReloadOnChange = true)]
-    public bool EnableTrafficCar = false;
+    public bool EnableTrafficCar = true;
 
     [Setting(As = "Enable United cars", ReloadOnChange = true)]
-    public bool EnableUnitedCars = false;
+    public bool EnableUnitedCars = true;
 
     [Setting(As = "Enable custom cars", ReloadOnChange = true)]
     public bool EnableCustomCars = false;
@@ -89,13 +89,13 @@ public class Envimix : UniverseModeBase
     public bool EnableDefaultCar = true;
 
     [Setting(As = "* Enable Stadium envimix")]
-    public bool EnableStadiumEnvimix = false; // Wrong usage can crash scripts
+    public bool EnableStadiumEnvimix = true; // Wrong usage can crash scripts
 
     [Setting(As = "* Enable TrafficCar in Stadium", ReloadOnChange = true)]
-    public bool EnableTrafficCarInStadium = false; // Wrong usage can crash scripts
+    public bool EnableTrafficCarInStadium = true; // Wrong usage can crash scripts
 
     [Setting(As = "* Use United models", ReloadOnChange = true)]
-    public bool UseUnitedModels = false; // Wrong usage can crash scripts
+    public bool UseUnitedModels = true; // Wrong usage can crash scripts
 
     [Setting(As = "* Always use vehicle items", ReloadOnChange = true)]
     public bool AlwaysUseVehicleItems = false; // Wrong usage can crash scripts
@@ -110,7 +110,7 @@ public class Envimix : UniverseModeBase
     public string CarsFile = "Cars.json";
 
     [Setting(As = "* Skins.json file", ReloadOnChange = true)]
-    public string SkinsFile = "";
+    public string SkinsFile = "Skins_Turbo.json";
 
     [Setting(As = "Envimix Web API")]
     public string EnvimixWebAPI = "";
