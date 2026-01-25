@@ -436,10 +436,27 @@ public class MainMenu : CManiaAppTitle, IContext
                             PlayLocalMap(e.CustomEventData[0]);
                             break;
                         case "EditReplay":
-                            EditReplay(e.CustomEventData[0]);
+                            ImmutableArray<string> replayPaths = new();
+                            foreach (var path in e.CustomEventData)
+                            {
+                                replayPaths.Add(path);
+                            }
+                            EditReplay(replayPaths);
+                            break;
+                        case "EditMap":
+                            EditMap(e.CustomEventData[0]);
+                            break;
+                        case "NewMap":
+                            if (TitleControl.IsReady)
+                            {
+                                TitleControl.EditNewMap(e.CustomEventData[0], "", "", "", "", "", "");
+                            }
                             break;
                         case "InterfaceDesigner":
-                            TitleControl.OpenEditor(CTitleControl.EEditorType.InterfaceDesigner);
+                            if (TitleControl.IsReady)
+                            {
+                                TitleControl.OpenEditor(CTitleControl.EEditorType.InterfaceDesigner);
+                            }
                             break;
                     }
                     break;
@@ -824,14 +841,16 @@ public class MainMenu : CManiaAppTitle, IContext
         PlayMapInProgress = false;
     }
 
-    private void EditReplay(string filePath)
+    private void EditReplay(IList<string> filePaths)
     {
-        if (PlayMapInProgress)
+        if (filePaths.Count == 0 || PlayMapInProgress)
         {
             return;
         }
 
         PlayMapInProgress = true;
+
+        var filePath = filePaths[0];
 
         IList<string> splitPath = TextLib.Split("\\", filePath);
         splitPath.RemoveAt(splitPath.Count - 1);
@@ -885,7 +904,43 @@ public class MainMenu : CManiaAppTitle, IContext
 
         if (TitleControl.IsReady)
         {
-            TitleControl.EditReplay(new[] { filePath });
+            TitleControl.EditReplay((string[])filePaths);
+        }
+
+        PlayMapInProgress = false;
+    }
+
+    private void EditMap(string filePath)
+    {
+        if (PlayMapInProgress)
+        {
+            return;
+        }
+
+        PlayMapInProgress = true;
+
+        IList<string> splitPath = TextLib.Split("\\", filePath);
+        splitPath.RemoveAt(splitPath.Count - 1);
+        var joinedPath = TextLib.Join("\\", (string[])splitPath);
+
+        var mapInfoInList = DataFileMgr.Map_GetGameList(joinedPath, false);
+        Wait(() => !mapInfoInList.IsProcessing);
+
+        foreach (var mapInfo in mapInfoInList.MapInfos)
+        {
+            if (mapInfo.FileName == filePath)
+            {
+                LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+                LoadingLayer.IsVisible = true;
+
+                DataFileMgr.TaskResult_Release(mapInfoInList.Id);
+                break;
+            }
+        }
+
+        if (TitleControl.IsReady)
+        {
+            TitleControl.EditMap(filePath, "", "");
         }
 
         PlayMapInProgress = false;

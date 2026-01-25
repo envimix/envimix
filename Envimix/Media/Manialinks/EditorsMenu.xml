@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+    <framemodel id="FramemodelItem">
+        <quad size="115 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" />
+        <quad id="QuadItem" size="115 10" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+        <quad id="QuadIcon" pos="5 -5" z-index="1" size="7 7" halign="center" valign="center"/>
+        <label id="LabelMapName" pos="10.5 -5.3" z-index="1" size="90 5" text="A06" textfont="RajdhaniMono" valign="center2"/>
+        <quad id="QuadEnvironment" pos="109.5 -5" z-index="1" size="7 7" halign="center" valign="center" image="file://Media/Images/Environments/LagoonTMT.png"/>
+    </framemodel>
+    <frame pos="45 75" clip="1" clipsizen="180 153" clipposn="-90.5 -76">
+        <frame id="FrameLocalPlayMenu">
+            <quad z-index="0" size="180 135" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <quad z-index="0" size="180 135" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <frame z-index="1">
+                <frame pos="-150 -2.5">
+                    <frame pos="0 0">
+                        <quad size="55 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center" />
+                        <quad id="QuadNewMap" halign="center" size="55 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+                        <label pos="0 -5.3" z-index="1" size="90 5" text="NEW MAP" textfont="RajdhaniMono" valign="center2" halign="center" />
+                    </frame>
+                    <frame pos="0 -10">
+                        <quad size="55 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center" />
+                        <quad id="QuadLoadMap" halign="center" size="55 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+                        <label pos="0 -5.3" z-index="1" size="90 5" text="LOAD MAP" textfont="RajdhaniMono" valign="center2" halign="center" />
+                    </frame>
+                    <frame pos="0 -20">
+                        <quad size="55 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center" />
+                        <quad id="QuadEditReplay" halign="center" size="55 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" styleselected="1" />
+                        <label pos="0 -5.3" z-index="1" size="90 5" text="EDIT A REPLAY" textfont="RajdhaniMono" valign="center2" halign="center" />
+                    </frame>
+                    <frame pos="0 -30" hidden="1">
+                        <quad size="55 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center" />
+                        <quad id="QuadInterfaceDesigner" halign="center" size="55 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+                        <label pos="0 -5.3" z-index="1" size="90 5" text="INTERFACE DESIGNER" textfont="RajdhaniMono" valign="center2" halign="center" />
+                    </frame>
+                    <frame pos="0 -32.5">
+                        <quad z-index="0" size="55 55" halign="center" style="Bgs1" substyle="BgCardList" />
+                        <quad id="QuadPanelMapThumbnail" pos="0 -1" z-index="1" size="53 53" halign="center" />
+                    </frame>
+                    <quad pos="0 -90" z-index="0" size="55 22.5" halign="center" style="Bgs1" substyle="BgCardList" />
+                    <frame pos="0 -90" id="FramePanelMap" z-index="1" clip="1" clipposn="0 -12.5" clipsizen="50 22.5">
+                        <quad id="QuadPanelMapEnvironment" pos="-22.5 -5" z-index="1" size="5 5" halign="center" image="file://Media/Images/Environments/CanyonTMT.png" valign="center" />
+                        <label id="LabelPanelMapName" pos="-18.5 -5.2" z-index="1" size="300 5" text="A01" textfont="RajdhaniMono" valign="center2" />
+                        <label id="LabelPanelAuthor" pos="-18.5 -9.5" z-index="1" size="42 5" text="Nadeo" textfont="RajdhaniMono" valign="center2" textprefix="by " textsize="1" />
+                        <quad pos="-22.5 -14.8" z-index="1" size="4 4" halign="center" style="Icons64x64_1" substyle="TrackInfo" valign="center" />
+                        <label id="LabelPanelCost" pos="-18.5 -15" z-index="1" size="42 5" text="300cc" textfont="RajdhaniMono" valign="center2" textsize="1" />
+                    </frame>
+                </frame>
+                <frame pos="-150 -117.5">
+                    <quad id="QuadActionBase" size="55 15" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" colorize="111" />
+                    <quad id="QuadAction" hidden="1" size="55 14.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" />
+                    <label id="LabelAction" pos="0 -7.75" z-index="1" size="55 10" text="Edit replays" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" textprefix="$t" />
+                </frame>
+                <frame id="FrameNewMap" pos="-62.5 0" hidden="1">
+                    <label pos="0 -7.5" z-index="0" size="80 5" text="Choose an environment" halign="center" valign="center" textfont="RajdhaniMono"/>
+                    <frame pos="-29 -30">
+                        <quad size="56 30" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9"  halign="center" valign="center"/>
+                        <quad id="QuadCanyon" size="56 30" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258"  valign="center" halign="center"/>
+                        <quad z-index="2" size="20 20" halign="center" valign="center" image="file://Media/Images/Environments/CanyonTMT.png"/>
+                    </frame>
+                    <frame pos="29 -30">
+                        <quad size="56 30" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9"  halign="center" valign="center"/>
+                        <quad id="QuadStadium" size="56 30" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258"  valign="center" halign="center"/>
+                        <quad z-index="2" size="20 20" halign="center" valign="center" image="file://Media/Images/Environments/StadiumTMT.png"/>
+                    </frame>
+                    <frame pos="-29 -62">
+                        <quad size="56 30" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9"  halign="center" valign="center"/>
+                        <quad id="QuadValley" size="56 30" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258"  valign="center" halign="center"/>
+                        <quad z-index="2" size="20 20" halign="center" valign="center" image="file://Media/Images/Environments/ValleyTMT.png"/>
+                    </frame>
+                    <frame pos="29 -62">
+                        <quad size="56 30" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9"  halign="center" valign="center"/>
+                        <quad id="QuadLagoon" size="56 30" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" colorize="258"  valign="center" halign="center"/>
+                        <quad z-index="2" size="20 20" halign="center" valign="center" image="file://Media/Images/Environments/LagoonTMT.png"/>
+                    </frame>
+                </frame>
+                <frame id="FrameList">
+                    <frame pos="-5 -2.5">
+                        <quad size="2.5 130" style="Bgs1" substyle="BgCardList" />
+                        <quad size="2.5 10" style="Bgs1" substyle="BgWindow4" z-index="1" opacity="0.8" id="QuadScroller" scriptevents="1"/>
+                    </frame>
+                    <frame pos="-120 -2.5" z-index="1" id="FrameMapListScrollable" scroll="1" scrollgrid="0 10" scrollmax="0 120" clip="1" clipposn="59 -65" clipsizen="116 130">
+                        <frame id="FrameMapList">
+                            <frameinstance modelid="FramemodelItem" pos="0 0" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -10" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -20" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -30" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -40" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -50" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -60" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -70" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -80" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -90" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -100" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -110" />
+                            <frameinstance modelid="FramemodelItem" pos="0 -120" />
+                        </frame>
+                    </frame>
+                </frame>
+            </frame>
+            <quad z-index="0" pos="0 -136" size="180 16" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <quad z-index="0" pos="0 -136" size="180 16" style="Bgs1" substyle="BgCardList" halign="right"/>
+            <frame z-index="1" pos="0 -144">
+                <frame pos="-155 5">
+                    <quad size="40 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center"/>
+                    <quad id="QuadLegacyMenu" halign="center" size="40 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+                    <label pos="0 -5.3" z-index="1" size="90 5" text="LEGACY MENU" textfont="RajdhaniMono" valign="center2" halign="center"/>
+                </frame>
+                <quad pos="-9 0" size="14 14" style="UIConstruction_Buttons" substyle="Reload" halign="center" valign="center" scriptevents="1" id="QuadRefresh"/>
+            </frame>
+        </frame>
+    </frame>
+</manialink>

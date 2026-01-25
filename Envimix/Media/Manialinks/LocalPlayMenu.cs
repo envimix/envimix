@@ -406,8 +406,8 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
                 if (mapInfo.FileName == SelectedFilePath)
                 {
                     QuadPanelMapThumbnail.ChangeImageUrl($"file://Thumbnails/MapUid/{mapInfo.MapUid}");
-                    QuadPanelMapEnvironment.ChangeImageUrl($"file://Media/Images/Environments/{mapInfo.CollectionName}TMT.png");
                     QuadPanelMapThumbnail.Show();
+                    QuadPanelMapEnvironment.ChangeImageUrl($"file://Media/Images/Environments/{mapInfo.CollectionName}TMT.png");
                     LabelPanelMapName.Value = mapInfo.Name;
                     LabelPanelAuthor.Value = mapInfo.AuthorNickName;
                     LabelPanelCost.Value = $"{mapInfo.CopperPrice}cc";
