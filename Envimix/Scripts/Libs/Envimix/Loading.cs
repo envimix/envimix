@@ -158,6 +158,15 @@ public static class Loading
         loadingManialink = $"{loadingManialink}        <quad pos=\"-80 0\" z-index=\"-1\" size=\"55 55\" halign=\"center\" valign=\"center\" style=\"Bgs1\" substyle=\"BgButtonGlow\" opacity=\".5\"/>";
         loadingManialink = $"{loadingManialink}        <quad pos=\"-80 0\" z-index=\"0\" size=\"50 50\" bgcolor=\"000\" halign=\"center\" valign=\"center\" image=\"file://Thumbnails/MapUid/{mapUid}\"/>";
         loadingManialink = $"{loadingManialink}        <quad pos=\"-80 0\" z-index=\"1\" size=\"51 51\" halign=\"center\" valign=\"center\" style=\"Bgs1\" substyle=\"BgColorContour\"/>";
+        
+        if (mapUid == "qlLsZ8gthEsvOcfugdadY4DqWU8")
+        {
+            loadingManialink = $"{loadingManialink}        <label pos=\"-50 20\" z-index=\"0\" size=\"60 5\" textprefix=\"$t\" text=\"Heading over to...\" textemboss=\"1\" textfont=\"BiryaniDemiBold\" textsize=\"2\"/>";
+            loadingManialink = $"{loadingManialink}        <frame pos=\"-50 15\" clip=\"True\" clipsizen=\"60 6\" clipposn=\"30 -3\">";
+            loadingManialink = $"{loadingManialink}            <label z-index=\"0\" size=\"200 6\" text=\"...a mysterious place...\" textemboss=\"1\" textfont=\"Oswald\" textsize=\"5\"/>";
+            loadingManialink = $"{loadingManialink}        </frame>";
+        }
+
         loadingManialink = $"{loadingManialink}    </frame>";
         loadingManialink = $"{loadingManialink}    <label pos=\"0 -50\" z-index=\"0\" size=\"210 20\" text=\"{GetTip()}\" halign=\"center\" autonewline=\"1\" textsize=\"2\" textfont=\"BiryaniDemiBold\"/>";
         loadingManialink = $"{loadingManialink}</frame>";
