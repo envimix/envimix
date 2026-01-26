@@ -525,7 +525,7 @@ public class EditorsMenu : CManiaAppTitleLayer, IContext
 
     private void LoadMapList(string folderPath)
     {
-        MapListTask = DataFileMgr.Map_GetGameList(folderPath, false);
+        MapListTask = DataFileMgr.Map_GetFilteredGameList(4, folderPath, false);
         MapListLoaded = false;
     }
 
