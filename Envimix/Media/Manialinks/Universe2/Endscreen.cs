@@ -248,7 +248,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
         QuadButtonDiscord.MouseClick += () =>
         {
-            OpenLink("https://discord.envimix.gbx.tools", CMlScript.LinkType.ExternalBrowser);
+            OpenLink("https://discord.gg/Rh23k9jcch", CMlScript.LinkType.ExternalBrowser);
         };
 
         Input.PadButtonPress += (pad, button, isAutoRepeat, keyCode, keyName) =>
