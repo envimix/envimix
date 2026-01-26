@@ -248,7 +248,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
         QuadButtonDiscord.MouseClick += () =>
         {
-            OpenLink("https://discord.gg/Rh23k9jcch", CMlScript.LinkType.ExternalBrowser);
+            OpenLink("https://discord.envimix.gbx.tools", CMlScript.LinkType.ExternalBrowser);
         };
 
         Input.PadButtonPress += (pad, button, isAutoRepeat, keyCode, keyName) =>
@@ -495,7 +495,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
         FrameContinue.RelativeScale = 1;
         AnimMgr.Add(FrameContinue, "<frame pos=\"0 0\" />", Now + 600, 500, CAnimManager.EAnimManagerEasing.QuadOut);
 
-        WidgetRequest = Http.CreateGet($"https://discord.com/api/guilds/1324043936204980234/widget.json");
+        //WidgetRequest = Http.CreateGet($"https://discord.com/api/guilds/1324043936204980234/widget.json");
     }
 
     void HideEndscreen()

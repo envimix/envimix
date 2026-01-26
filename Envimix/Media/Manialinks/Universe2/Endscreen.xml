@@ -67,7 +67,7 @@
                         <quad z-index="1" size="9 9" halign="center" valign="center" pos="-22.25 0" image="file://Media/Images/Discord.png"/>
                         <quad pos="-15 0" size="42.5 11" bgcolor="0004" valign="center" z-index="2"/>
                         <frame pos="-15 0" z-index="3" clip="1" clipsizen="42.5 11" clipposn="21.25 0" id="FrameDiscord">
-                            <label pos="3 -0.3" z-index="0" size="37.5 5" text="..." valign="center2" textfont="Oswald" id="LabelDiscordName"/>
+                            <label pos="3 -0.3" z-index="0" size="37.5 5" text="Nadeo Envimix" valign="center2" textfont="Oswald" id="LabelDiscordName"/>
                             <label pos="21 -0.3" z-index="0" size="37.5 5" text="$888• $fff0 members online" valign="center2" textfont="Oswald" halign="center" textsize="2.5" id="LabelDiscordMemberCount" opacity="0"/>
                             <frame pos="6 0" id="FrameDiscordUser1" hidden="1">
                                 <quad z-index="0" size="6 6" bgcolor="000A" halign="center" valign="center" id="QUAD_AVATAR" hidden="1"/>
