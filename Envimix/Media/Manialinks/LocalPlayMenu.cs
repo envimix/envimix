@@ -20,6 +20,7 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelStadiumCarTime;
     [ManialinkControl] public required CMlLabel LabelValleyCarTime;
     [ManialinkControl] public required CMlLabel LabelLagoonCarTime;
+    [ManialinkControl] public required CMlLabel LabelTrafficCarTime;
     [ManialinkControl] public required CMlLabel LabelDesertCarTime;
     [ManialinkControl] public required CMlLabel LabelSnowCarTime;
     [ManialinkControl] public required CMlLabel LabelRallyCarTime;
@@ -376,9 +377,20 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
         return formatted;
     }
 
-    private void SetTimeLabel(CMlLabel label, string car, string mapUid)
+    private void SetTimeLabel(CMlLabel label, string car, CMapInfo mapInfo)
     {
-        var time = ScoreMgr.Map_GetRecord(null, mapUid, $"{car}{ScoreContextPrefix}");
+        var scoreContext = $"{car}{ScoreContextPrefix}";
+
+        // hacky but it works for TMT
+        if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
+            || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
+            || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
+            || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
+        {
+            scoreContext = ScoreContextPrefix;
+        }
+
+        var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
 
         if (time < 0)
         {
@@ -411,16 +423,17 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
                     LabelPanelMapName.Value = mapInfo.Name;
                     LabelPanelAuthor.Value = mapInfo.AuthorNickName;
                     LabelPanelCost.Value = $"{mapInfo.CopperPrice}cc";
-                    SetTimeLabel(LabelCanyonCarTime, "CanyonCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelStadiumCarTime, "StadiumCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelValleyCarTime, "ValleyCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelLagoonCarTime, "LagoonCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelDesertCarTime, "DesertCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelSnowCarTime, "SnowCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelRallyCarTime, "RallyCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelIslandCarTime, "IslandCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelBayCarTime, "BayCar", mapInfo.MapUid);
-                    SetTimeLabel(LabelCoastCarTime, "CoastCar", mapInfo.MapUid);
+                    SetTimeLabel(LabelCanyonCarTime, "CanyonCar", mapInfo);
+                    SetTimeLabel(LabelStadiumCarTime, "StadiumCar", mapInfo);
+                    SetTimeLabel(LabelValleyCarTime, "ValleyCar", mapInfo);
+                    SetTimeLabel(LabelLagoonCarTime, "LagoonCar", mapInfo);
+                    SetTimeLabel(LabelTrafficCarTime, "TrafficCar", mapInfo);
+                    SetTimeLabel(LabelDesertCarTime, "DesertCar", mapInfo);
+                    SetTimeLabel(LabelSnowCarTime, "SnowCar", mapInfo);
+                    SetTimeLabel(LabelRallyCarTime, "RallyCar", mapInfo);
+                    SetTimeLabel(LabelIslandCarTime, "IslandCar", mapInfo);
+                    SetTimeLabel(LabelBayCarTime, "BayCar", mapInfo);
+                    SetTimeLabel(LabelCoastCarTime, "CoastCar", mapInfo);
                     QuadPlayMapBase.Colorize = new Vec3(0, 1, 0);
                     QuadPlayMap.Show();
                     FramePanelMap.Show();
