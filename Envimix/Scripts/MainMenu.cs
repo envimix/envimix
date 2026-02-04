@@ -529,6 +529,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
                 STitleStats stats = new();
                 stats.FromJson(StatsRequest.Result);
+                Yield();
 
                 ProcessTitleStats(stats);
             }
@@ -1156,6 +1157,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
             foreach (var mapGroup in campaign.MapGroups)
             {
+                Yield();
                 foreach (var mapInfo in mapGroup.MapInfos)
                 {
                     foreach (var car in Cars)
