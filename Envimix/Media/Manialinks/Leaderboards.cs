@@ -990,6 +990,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             quadCar.ChangeImageUrl($"file://Media/Images/Cars/{carName}.png");
 
             var labelSkillpoints = (frame.GetFirstChild("LabelSkillpoints") as CMlLabel)!;
+            var playerHasSkillpoints = false;
 
             if (skillpointsLeaderboard.ContainsKey(carKey))
             {
@@ -998,11 +999,13 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     if (player.L == LocalUser.Login)
                     {
                         labelSkillpoints.SetText(FormatNumberSpace(player.S));
+                        playerHasSkillpoints = true;
                         break;
                     }
                 }
             }
-            else
+            
+            if (!playerHasSkillpoints)
             {
                 labelSkillpoints.SetText("0");
             }
