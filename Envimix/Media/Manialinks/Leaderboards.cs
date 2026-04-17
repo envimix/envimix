@@ -1011,6 +1011,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             }
 
             var labelActivityPoints = (frame.GetFirstChild("LabelActivityPoints") as CMlLabel)!;
+            var playerHasActivityPoints = false;
 
             if (activityPointsLeaderboard.ContainsKey(carKey))
             {
@@ -1019,11 +1020,13 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     if (player.L == LocalUser.Login)
                     {
                         labelActivityPoints.SetText(FormatNumberSpace(player.S));
+                        playerHasActivityPoints = true;
                         break;
                     }
                 }
             }
-            else
+
+            if (!playerHasActivityPoints)
             {
                 labelActivityPoints.SetText("0");
             }
