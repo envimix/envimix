@@ -24,6 +24,17 @@
                         <quad z-index="0" size="20 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" id="QuadDelta" colorize="03F" opacity="0.8" />
                         <label z-index="1" size="20 5" text="-0.000" halign="center" valign="center2" textfont="RajdhaniMono" id="LabelDelta" textsize="1.5" pos="0 -0.3" />
                     </frame>
+                    <frame pos="-65 -11" id="FrameMedals">
+                        <quad id="QuadMedalBronze" pos="0 0" z-index="0" size="5 5" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze" />
+                        <quad id="QuadMedalSilver" pos="2.5 0" z-index="1" size="5 5" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver" />
+                        <quad id="QuadMedalGold" pos="5 0" z-index="2" size="5 5" halign="center" valign="center" style="MedalsBig" substyle="MedalGold" />
+                        <quad id="QuadMedalNadeo" pos="7.5 0" z-index="3" size="5 5" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo" />
+                        <quad id="QuadMedalSuperBronze" pos="10 0.5" z-index="4" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze" />
+                        <quad id="QuadMedalSuperSilver" pos="12.5 0.5" z-index="5" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver" />
+                        <quad id="QuadMedalSuperGold" pos="15 0.5" z-index="6" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalGold" />
+                        <quad id="QuadMedalSuperNadeo" pos="17.5 0.5" z-index="7" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo" />
+                        <quad id="QuadMedalDuck" pos="20 0.5" z-index="8" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo" modulatecolor="F00"/>
+                    </frame>
                 </frame>
             </frame>
             <frame pos="-35 35" clip="1" clipsizen="139.3 80" clipposn="0 -40">

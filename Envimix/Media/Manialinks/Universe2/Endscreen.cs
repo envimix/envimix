@@ -85,6 +85,12 @@ public class Endscreen : CTmMlScriptIngame, IContext
         public string TitlePackReleaseTimestamp;
     }
 
+    public struct SSuperMedals
+    {
+        public int Duck;
+        public int STM;
+    }
+
     [ManialinkControl] public required CMlFrame FrameEndscreenInfo;
     [ManialinkControl] public required CMlQuad QuadBlur;
     [ManialinkControl] public required CMlQuad QuadContinue;
@@ -122,6 +128,37 @@ public class Endscreen : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadZone;
     [ManialinkControl] public required CMlLabel LabelZone;
 
+    [ManialinkControl] public required CMlFrame FrameMedals;
+    [ManialinkControl] public required CMlQuad QuadMedalBronze;
+    [ManialinkControl] public required CMlQuad QuadMedalSilver;
+    [ManialinkControl] public required CMlQuad QuadMedalGold;
+    [ManialinkControl] public required CMlQuad QuadMedalNadeo;
+    [ManialinkControl] public required CMlQuad QuadMedalSuperBronze;
+    [ManialinkControl] public required CMlQuad QuadMedalSuperSilver;
+    [ManialinkControl] public required CMlQuad QuadMedalSuperGold;
+    [ManialinkControl] public required CMlQuad QuadMedalSuperNadeo;
+    [ManialinkControl] public required CMlQuad QuadMedalDuck;
+
+    public bool ReceiveBronze;
+    public bool ReceiveSilver;
+    public bool ReceiveGold;
+    public bool ReceiveNadeo;
+    public bool ReceiveSuperBronze;
+    public bool ReceiveSuperSilver;
+    public bool ReceiveSuperGold;
+    public bool ReceiveSuperNadeo;
+    public bool ReceiveDuck;
+
+    public bool ReceivedBronze;
+    public bool ReceivedSilver;
+    public bool ReceivedGold;
+    public bool ReceivedNadeo;
+    public bool ReceivedSuperBronze;
+    public bool ReceivedSuperSilver;
+    public bool ReceivedSuperGold;
+    public bool ReceivedSuperNadeo;
+    public bool ReceivedDuck;
+
     public int FinishedAt;
     public string PreviousCar = "";
     public CHttpRequest? WidgetRequest;
@@ -146,13 +183,21 @@ public class Endscreen : CTmMlScriptIngame, IContext
     public int CurrentActivityPoints;
     public int StartPointChangeAt = -1;
     public int BestTime = -1;
+    public CHttpRequest? SuperMedalsRequest;
 
     public CAudioSource AudioClick;
+    public CAudioSource AudioBronze;
+    public CAudioSource AudioSilver;
+    public CAudioSource AudioGold;
+    public CAudioSource AudioNadeo;
+    public CAudioSource AudioDuck;
 
     [Netread] public required Dictionary<string, int> Skillpoints { get; set; }
     [Netread] public required Dictionary<string, int> ActivityPoints { get; set; }
 
     [Netread] public string MapPlayerModelName { get; set; }
+
+    public required Dictionary<string, SSuperMedals> SuperMedals { get; set; }
 
     public Endscreen()
     {
@@ -204,6 +249,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
                         LabelSkillpointsDelta.Hide();
                         LabelActivityPointsDelta.Hide();
+
+                        SetupMedals(e.RaceTime);
 
                         ShowEndscreen();
                     }
@@ -334,6 +381,19 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
         AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
 
+        AudioBronze = Audio.CreateSound("file://Media/Sounds/medal-bronze.wav");
+        AudioBronze.Volume = 0.7f;
+        AudioSilver = Audio.CreateSound("file://Media/Sounds/medal-silver.wav");
+        AudioSilver.Volume = 0.7f;
+        AudioGold = Audio.CreateSound("file://Media/Sounds/medal-gold.wav");
+        AudioGold.Volume = 0.7f;
+        AudioNadeo = Audio.CreateSound("file://Media/Sounds/medal-author.wav");
+        AudioNadeo.Volume = 0.7f;
+        AudioDuck = Audio.CreateSound("file://Media/Sounds/duck.wav");
+        AudioDuck.Volume = 0.7f;
+
+        SuperMedalsRequest = Http.CreateGet("file://Media/Medals.json");
+
         Wait(() => GetPlayer() is not null);
     }
 
@@ -392,6 +452,16 @@ public class Endscreen : CTmMlScriptIngame, IContext
             WidgetRequest = null;
         }
 
+        if (SuperMedalsRequest is not null && SuperMedalsRequest.IsCompleted)
+        {
+            if (SuperMedalsRequest.StatusCode == 200)
+            {
+                SuperMedals.FromJson(SuperMedalsRequest.Result);
+            }
+            Http.Destroy(SuperMedalsRequest);
+            SuperMedalsRequest = null;
+        }
+
         if (EndscreenRecordsResponseReceivedAt != PreviousEndscreenRecordsResponseReceivedAt)
         {
             UpdateLeaderboards(true);
@@ -400,6 +470,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
         AnimateWidget();
         AnimatePoints();
+        AnimateMedals();
     }
 
     private string FormatNumberSpace(int number)
@@ -481,6 +552,146 @@ public class Endscreen : CTmMlScriptIngame, IContext
         ExpectedActivityPoints = CurrentActivityPoints;
         LabelSkillpoints.SetText(FormatNumberSpace(CurrentSkillpoints));
         LabelActivityPoints.SetText(FormatNumberSpace(CurrentActivityPoints));
+    }
+
+    private void SetupMedals(int newBestTime)
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var isDefaultCar = MapPlayerModelName == car.Get();
+
+        FrameMedals.Visible = isDefaultCar;
+
+        if (!isDefaultCar)
+        {
+            return;
+        }
+
+        ReceivedBronze = false;
+        ReceivedSilver = false;
+        ReceivedGold = false;
+        ReceivedNadeo = false;
+        ReceivedSuperBronze = false;
+        ReceivedSuperSilver = false;
+        ReceivedSuperGold = false;
+        ReceivedSuperNadeo = false;
+        ReceivedDuck = false;
+
+        if (BestTime != -1 && BestTime <= Map.MapInfo.TMObjective_BronzeTime)
+        {
+            QuadMedalBronze.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalBronze.Opacity = 0;
+        }
+
+        if (BestTime != -1 && BestTime <= Map.MapInfo.TMObjective_SilverTime)
+        {
+            QuadMedalSilver.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalSilver.Opacity = 0;
+        }
+
+        if (BestTime != -1 && BestTime <= Map.MapInfo.TMObjective_GoldTime)
+        {
+            QuadMedalGold.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalGold.Opacity = 0;
+        }
+
+        if (BestTime != -1 && BestTime <= Map.MapInfo.TMObjective_AuthorTime)
+        {
+            QuadMedalNadeo.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalNadeo.Opacity = 0;
+        }
+
+        ReceiveBronze = newBestTime <= Map.MapInfo.TMObjective_BronzeTime && (BestTime > Map.MapInfo.TMObjective_BronzeTime || BestTime == -1);
+        ReceiveSilver = newBestTime <= Map.MapInfo.TMObjective_SilverTime && (BestTime > Map.MapInfo.TMObjective_SilverTime || BestTime == -1);
+        ReceiveGold = newBestTime <= Map.MapInfo.TMObjective_GoldTime && (BestTime > Map.MapInfo.TMObjective_GoldTime || BestTime == -1);
+        ReceiveNadeo = newBestTime <= Map.MapInfo.TMObjective_AuthorTime && (BestTime > Map.MapInfo.TMObjective_AuthorTime || BestTime == -1);
+
+        if (!SuperMedals.ContainsKey(Map.MapInfo.MapUid))
+        {
+            QuadMedalSuperBronze.Opacity = 0;
+            QuadMedalSuperSilver.Opacity = 0;
+            QuadMedalSuperGold.Opacity = 0;
+            QuadMedalSuperNadeo.Opacity = 0;
+            QuadMedalDuck.Opacity = 0;
+
+            ReceiveSuperBronze = false;
+            ReceiveSuperSilver = false;
+            ReceiveSuperGold = false;
+            ReceiveSuperNadeo = false;
+            ReceiveDuck = false;
+
+            return;
+        }
+
+        var superMedals = SuperMedals[Map.MapInfo.MapUid];
+
+        var duck = superMedals.Duck;
+        var superNadeo = superMedals.STM;
+        var superGold = superNadeo - MathLib.FloorInteger((superNadeo - Map.MapInfo.TMObjective_AuthorTime) * 0.125f);
+        var superSilver = superNadeo - MathLib.FloorInteger((superNadeo - Map.MapInfo.TMObjective_AuthorTime) * 0.25f);
+        var superBronze = superNadeo - MathLib.FloorInteger((superNadeo - Map.MapInfo.TMObjective_AuthorTime) * 0.5f);
+
+        if (BestTime != -1 && BestTime <= superBronze)
+        {
+            QuadMedalSuperBronze.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalSuperBronze.Opacity = 0;
+        }
+
+        if (BestTime != -1 && BestTime <= superSilver)
+        {
+            QuadMedalSuperSilver.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalSuperSilver.Opacity = 0;
+        }
+
+        if (BestTime != -1 && BestTime <= superGold)
+        {
+            QuadMedalSuperGold.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalSuperGold.Opacity = 0;
+        }
+
+        if (BestTime != -1 && BestTime <= superNadeo)
+        {
+            QuadMedalSuperNadeo.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalSuperNadeo.Opacity = 0;
+        }
+
+        if (BestTime != -1 && BestTime <= duck)
+        {
+            QuadMedalDuck.Opacity = 1;
+        }
+        else
+        {
+            QuadMedalDuck.Opacity = 0;
+        }
+
+        ReceiveSuperBronze = newBestTime <= superBronze && (BestTime > superBronze || BestTime == -1);
+        ReceiveSuperSilver = newBestTime <= superSilver && (BestTime > superSilver || BestTime == -1);
+        ReceiveSuperGold = newBestTime <= superGold && (BestTime > superGold || BestTime == -1);
+        ReceiveSuperNadeo = newBestTime <= superNadeo && (BestTime > superNadeo || BestTime == -1);
+        ReceiveDuck = newBestTime <= duck && (BestTime > duck || BestTime == -1);
     }
 
     void ShowEndscreen()
@@ -1069,6 +1280,165 @@ public class Endscreen : CTmMlScriptIngame, IContext
         if (FrameEndscreenInfo.Visible && (skillpointsDiff > 0 || activityPointsDiff > 0))
         {
             Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, 2, 1f);
+        }
+    }
+
+    private void AnimateMedals()
+    {
+        if (!FrameMedals.Visible || FinishedAt == -1)
+        {
+            return;
+        }
+
+        var time = Now - FinishedAt - 800;
+        if (ReceiveBronze)
+        {
+            var ease = AnimLib.EaseInOutQuad(time, 0, 1, 200);
+            QuadMedalBronze.Opacity = ease;
+            QuadMedalBronze.RelativeScale = 2 - ease;
+            QuadMedalBronze.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedBronze && ease >= 0.1f)
+            {
+                AudioBronze.Play();
+                ReceivedBronze = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveSilver)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 200, 0, 1, 200);
+            QuadMedalSilver.Opacity = ease;
+            QuadMedalSilver.RelativeScale = 2 - ease;
+            QuadMedalSilver.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedSilver && ease >= 0.1f)
+            {
+                AudioSilver.Play();
+                ReceivedSilver = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveGold)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 400, 0, 1, 200);
+            QuadMedalGold.Opacity = ease;
+            QuadMedalGold.RelativeScale = 2 - ease;
+            QuadMedalGold.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedGold && ease >= 0.1f)
+            {
+                AudioGold.Play();
+                ReceivedGold = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveNadeo)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 600, 0, 1, 200);
+            QuadMedalNadeo.Opacity = ease;
+            QuadMedalNadeo.RelativeScale = 2 - ease;
+            QuadMedalNadeo.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedNadeo && ease >= 0.1f)
+            {
+                AudioNadeo.Play();
+                ReceivedNadeo = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveSuperBronze)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 800, 0, 1, 200);
+            QuadMedalSuperBronze.Opacity = ease;
+            QuadMedalSuperBronze.RelativeScale = 2 - ease;
+            QuadMedalSuperBronze.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedSuperBronze && ease >= 0.1f)
+            {
+                AudioBronze.Play();
+                ReceivedSuperBronze = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveSuperSilver)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 1000, 0, 1, 200);
+            QuadMedalSuperSilver.Opacity = ease;
+            QuadMedalSuperSilver.RelativeScale = 2 - ease;
+            QuadMedalSuperSilver.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedSuperSilver && ease >= 0.1f)
+            {
+                AudioSilver.Play();
+                ReceivedSuperSilver = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveSuperGold)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 1200, 0, 1, 200);
+            QuadMedalSuperGold.Opacity = ease;
+            QuadMedalSuperGold.RelativeScale = 2 - ease;
+            QuadMedalSuperGold.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedSuperGold && ease >= 0.1f)
+            {
+                AudioGold.Play();
+                ReceivedSuperGold = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveSuperNadeo)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 1400, 0, 1, 200);
+            QuadMedalSuperNadeo.Opacity = ease;
+            QuadMedalSuperNadeo.RelativeScale = 2 - ease;
+            QuadMedalSuperNadeo.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedSuperNadeo && ease >= 0.1f)
+            {
+                AudioNadeo.Play();
+                ReceivedSuperNadeo = true;
+            }
+        }
+        else
+        {
+            time -= 200;
+        }
+        if (ReceiveDuck)
+        {
+            var ease = AnimLib.EaseInOutQuad(time - 1600, 0, 1, 200);
+            QuadMedalDuck.Opacity = ease;
+            QuadMedalDuck.RelativeScale = 2 - ease;
+            QuadMedalDuck.RelativeRotation = -10 * (1 - ease);
+
+            if (!ReceivedDuck && ease >= 0.1f)
+            {
+                AudioDuck.Play();
+                ReceivedDuck = true;
+            }
         }
     }
 }
