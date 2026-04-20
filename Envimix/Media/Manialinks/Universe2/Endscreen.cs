@@ -382,15 +382,15 @@ public class Endscreen : CTmMlScriptIngame, IContext
         AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
 
         AudioBronze = Audio.CreateSound("file://Media/Sounds/medal-bronze.wav");
-        AudioBronze.Volume = 0.7f;
+        AudioBronze.Volume = 0.5f;
         AudioSilver = Audio.CreateSound("file://Media/Sounds/medal-silver.wav");
-        AudioSilver.Volume = 0.7f;
+        AudioSilver.Volume = 0.5f;
         AudioGold = Audio.CreateSound("file://Media/Sounds/medal-gold.wav");
-        AudioGold.Volume = 0.7f;
+        AudioGold.Volume = 0.5f;
         AudioNadeo = Audio.CreateSound("file://Media/Sounds/medal-author.wav");
-        AudioNadeo.Volume = 0.7f;
-        AudioDuck = Audio.CreateSound("file://Media/Sounds/duck.wav");
-        AudioDuck.Volume = 0.7f;
+        AudioNadeo.Volume = 0.5f;
+        AudioDuck = Audio.CreateSound("file://Media/Sounds/duck.ogg");
+        AudioDuck.Volume = 1f;
 
         SuperMedalsRequest = Http.CreateGet("file://Media/Medals.json");
 
@@ -565,6 +565,28 @@ public class Endscreen : CTmMlScriptIngame, IContext
         {
             return;
         }
+
+        // test
+        //ReceiveBronze = true;
+        //ReceiveSilver = true;
+        //ReceiveGold = true;
+        //ReceiveNadeo = true;
+        //ReceiveSuperBronze = true;
+        //ReceiveSuperSilver = true;
+        //ReceiveSuperGold = true;
+        //ReceiveSuperNadeo = true;
+        //ReceiveDuck = true;
+        //QuadMedalBronze.Opacity = 0;
+        //QuadMedalSilver.Opacity = 0;
+        //QuadMedalGold.Opacity = 0;
+        //QuadMedalNadeo.Opacity = 0;
+        //QuadMedalSuperBronze.Opacity = 0;
+        //QuadMedalSuperSilver.Opacity = 0;
+        //QuadMedalSuperGold.Opacity = 0;
+        //QuadMedalSuperNadeo.Opacity = 0;
+        //QuadMedalDuck.Opacity = 0;
+        //return;
+        //
 
         ReceivedBronze = false;
         ReceivedSilver = false;
@@ -1368,6 +1390,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
             if (!ReceivedSuperBronze && ease >= 0.1f)
             {
+                AudioBronze.Stop();
                 AudioBronze.Play();
                 ReceivedSuperBronze = true;
             }
@@ -1385,6 +1408,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
             if (!ReceivedSuperSilver && ease >= 0.1f)
             {
+                AudioSilver.Stop();
                 AudioSilver.Play();
                 ReceivedSuperSilver = true;
             }
@@ -1402,6 +1426,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
             if (!ReceivedSuperGold && ease >= 0.1f)
             {
+                AudioGold.Stop();
                 AudioGold.Play();
                 ReceivedSuperGold = true;
             }
@@ -1419,6 +1444,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
             if (!ReceivedSuperNadeo && ease >= 0.1f)
             {
+                AudioNadeo.Stop();
                 AudioNadeo.Play();
                 ReceivedSuperNadeo = true;
             }
