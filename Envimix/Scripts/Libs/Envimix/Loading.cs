@@ -61,7 +61,7 @@ public static class Loading
     {
         ImmutableArray<string> tips = new()
         {
-            "TIP: Donating to BigBang1112 helps covering the server costs to keep the title pack running: ~20€/month (including domains)",
+            "TIP: Donating to BigBang1112 helps covering the server costs to keep the title pack running: ~25€/month (including domains)",
             "FUN FACT: Activity points have a base limit of 1000. If you received over 1000 activity points on a single combination, then it was given via extra points from a validation bonus.",
             "TIP: TrafficCar is a very fast car which has a lower gravity similar to ValleyCar. If a combination is possible with ValleyCar, then it is certainly possible with TrafficCar.",
             "FUN FACT: TrafficCar doesn't have an official car model. The one commonly used is based off Sommer SportCar, designed by Stéphane Sommer for the Valley environment and ported in by puriPictures.",
