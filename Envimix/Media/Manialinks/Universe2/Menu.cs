@@ -48,6 +48,7 @@ public class Menu : CTmMlScriptIngame, IContext
         public bool Projected;
         public string GhostUrl;
         public string DrivenAt;
+        public bool Removed;
     }
 
     public struct SEnvimaniaRecordsResponse
@@ -78,6 +79,16 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         public string Login;
         public string Nickname;
+    }
+
+    public struct SEnvimaniaRemoveRecordRequest
+    {
+        public string MapUid;
+        public string Login;
+        public string CarId;
+        public int Gravity;
+        public int Laps;
+        public int Time;
     }
 
     [ManialinkControl] public required CMlFrame FrameInnerVehicles;
@@ -214,6 +225,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public bool HoldSkinsScrollbar;
     public float HoldSkinsScrollbarPos;
     public bool ScrollbarSkinsMouseOut;
+    public CHttpRequest? RemoveRecordRequest;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -848,6 +860,36 @@ public class Menu : CTmMlScriptIngame, IContext
                 Log($"Saving ghost locally... {ghostFile}");
                 DownloadGhostTasks[DataFileMgr.Ghost_Download(ghostFile, ghostUrl)] = ghostFile;
                 break;
+            case "QuadRemoveGhost":
+                var car = Netread<string>.For(GetPlayer());
+                var gravity = Netread<int>.For(GetPlayer());
+                var laps = GetLaps();
+                var login = control.Parent.DataAttributeGet("login");
+                var time = TextLib.ToInteger(control.Parent.DataAttributeGet("time"));
+                var removed = control.Parent.DataAttributeGet("removed") == "True";
+
+                SEnvimaniaRemoveRecordRequest removeRequest = new()
+                {
+                    MapUid = Map.MapInfo.MapUid,
+                    Login = login,
+                    CarId = car.Get(),
+                    Gravity = gravity.Get(),
+                    Laps = laps,
+                    Time = time
+                };
+
+                if (removed)
+                {
+                    Log($"Reverting record by {login} with time {time} on car {car.Get()}...");
+                    RemoveRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/record/revert", removeRequest.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+                }
+                else
+                {
+                    Log($"Removing record by {login} with time {time} on car {car.Get()}...");
+                    RemoveRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/record/remove", removeRequest.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+                }
+
+                break;
         }
 
         if (control == QuadJoinRed)
@@ -1449,8 +1491,10 @@ public class Menu : CTmMlScriptIngame, IContext
             var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
             var quadSaveGhost = (frame.GetFirstChild("QuadSaveGhost") as CMlQuad)!;
             var quadSaveGhostOff = (frame.GetFirstChild("QuadSaveGhostOff") as CMlQuad)!;
+            var quadRemoveGhost = (frame.GetFirstChild("QuadRemoveGhost") as CMlQuad)!;
             labelNickname.RelativePosition_V3.X = -31;
 
+            quadRemoveGhost.Hide();
             labelRank.Hide();
             labelNickname.SetText(metadata.Nickname);
 
@@ -1613,6 +1657,9 @@ public class Menu : CTmMlScriptIngame, IContext
             frame.DataAttributeSet("file", "");
             frame.DataAttributeSet("url", ghostUrl);
             frame.DataAttributeSet("gindex", "0");
+            frame.DataAttributeSet("time", record.Time.ToString());
+            frame.DataAttributeSet("login", record.User.Login);
+            frame.DataAttributeSet("removed", record.Removed.ToString());
             frame.Show();
 
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
@@ -1622,6 +1669,22 @@ public class Menu : CTmMlScriptIngame, IContext
             var quadGhost = (frame.GetFirstChild("QuadGhost") as CMlQuad)!;
             var quadSaveGhost = (frame.GetFirstChild("QuadSaveGhost") as CMlQuad)!;
             var quadSaveGhostOff = (frame.GetFirstChild("QuadSaveGhostOff") as CMlQuad)!;
+            var quadRemoveGhost = (frame.GetFirstChild("QuadRemoveGhost") as CMlQuad)!;
+
+            if (record.Removed)
+            {
+                labelRank.Opacity = 0.5f;
+                labelNickname.Opacity = 0.5f;
+                labelTime.Opacity = 0.5f;
+                quadRemoveGhost.ModulateColor = new Vec3(1, 1, 1);
+            }
+            else
+            {
+                labelRank.Opacity = 1;
+                labelNickname.Opacity = 1;
+                labelTime.Opacity = 1;
+                quadRemoveGhost.ModulateColor = new Vec3(1, 0, 0);
+            }
 
             var time = record.Time;
             if (time == prevTime)
@@ -1653,6 +1716,9 @@ public class Menu : CTmMlScriptIngame, IContext
                 quadSaveGhost.Show();
                 quadSaveGhostOff.Hide();
             }
+
+            var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+            quadRemoveGhost.Visible = envimixTurboUserIsAdmin.Get();
         }
     }
 
@@ -2820,6 +2886,21 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             SaveReplayTasks.Remove(saveReplayTask);
             DataFileMgr.TaskResult_Release(saveReplayTask.Id);
+        }
+
+        if (RemoveRecordRequest is not null && RemoveRecordRequest.IsCompleted)
+        {
+            if (RemoveRecordRequest.StatusCode == 200)
+            {
+                Log("Record removal/revertion succeeded.");
+                RefreshRecords();
+            }
+            else
+            {
+                Log($"Record removal/revertion failed (status code: {RemoveRecordRequest.StatusCode})");
+            }
+            Http.Destroy(RemoveRecordRequest);
+            RemoveRecordRequest = null;
         }
     }
 }

@@ -15,7 +15,8 @@
 		<label pos="29 -0.2" z-index="0" size="17.5 5" text="0:00.000" textsize="1.8" textfont="OswaldMono" halign="right" id="LabelTime" valign="center2"/>
 		<quad pos="32.5 0" z-index="0" size="5.5 5.5" style="UIConstruction_Buttons" substyle="SaveAs" opacity="0.25" halign="center" valign="center" id="QuadSaveGhostOff"/>
         <quad pos="32.5 0" z-index="0" size="5.5 5.5" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" hidden="1" halign="center" valign="center" id="QuadSaveGhost"/>
-	</framemodel>
+        <quad pos="-37.5 0" z-index="2" size="3 3" style="Icons128x32_1" substyle="Close" scriptevents="1" hidden="0" halign="center" valign="center" id="QuadRemoveGhost" modulatecolor="F00"/>
+    </framemodel>
 	<frame z-index="10">
 		<quad pos="0 0" z-index="-2" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" id="QuadBackground"/>
 		<frame id="FrameMenu">
@@ -49,7 +50,7 @@
 					<quad size="79 11" halign="center" z-index="-1" modulatecolor="258" opacity=".5" style="Bgs1" substyle="BgCardList"/>
 					<label pos="-36 -2.8" z-index="0" size="40 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname"/>
 					<label pos="35 -3" z-index="0" size="27.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime"/>
-					<quad pos="38 -4" z-index="1" size="5 5" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" hidden="1"/>
+                    <quad pos="34 -5.5" z-index="1" size="7 7" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" hidden="0" />
 				</frame>
 				<frame pos="0 30">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>

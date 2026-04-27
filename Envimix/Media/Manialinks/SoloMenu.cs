@@ -59,6 +59,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         public bool Projected;
         public string GhostUrl;
         public string DrivenAt;
+        public bool Removed;
     }
 
     public struct SEnvimaniaRecordsResponse
@@ -971,6 +972,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 var labelYouCouldBeHere = (frameRecords.Controls[0] as CMlLabel)!;
                 labelYouCouldBeHere.SetText("01 -:--.---  $i$888you could be here!");
                 labelYouCouldBeHere.Show();
+                labelYouCouldBeHere.Opacity = 1;
 
                 for (var i = 1; i < frameRecords.Controls.Count; i++)
                 {
@@ -1006,6 +1008,15 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 var labelRec = (controlRec as CMlLabel)!;
                 labelRec.SetText($"{TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2)} {TimeToTextWithMilli(record.Time)}  {record.User.Nickname}");
                 labelRec.Show();
+                
+                if (record.Removed)
+                {
+                    labelRec.Opacity = 0.5f;
+                }
+                else
+                {
+                    labelRec.Opacity = 1;
+                }
 
                 rankIndex += 1;
             }

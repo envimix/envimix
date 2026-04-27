@@ -65,6 +65,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
         public bool Projected;
         public string GhostUrl;
         public string DrivenAt;
+        public bool Removed;
     }
 
     public struct SEnvimaniaRecordsFilter

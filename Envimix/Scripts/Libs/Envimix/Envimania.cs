@@ -56,6 +56,7 @@ public static class Envimania
         public bool Projected;
         public string GhostUrl;
         public string DrivenAt;
+        public bool Removed;
     }
 
     public struct SRatingServerRequest
