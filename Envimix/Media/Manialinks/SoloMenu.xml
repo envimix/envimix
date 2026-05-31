@@ -74,6 +74,11 @@
                 <quad size="40 5.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" halign="center" pos="0 -0.125" id="QuadVRCampaign" />
                 <label id="LabelVRCampaign" pos="0 -3.3" z-index="2" size="55 10" text="VR campaign" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
             </frame>
+            <frame pos="-37 7">
+                <quad size="6 6" style="Bgs1" substyle="BgWindow4" halign="center" opacity=".75" colorize="555" />
+                <quad size="6 5.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" halign="center" pos="0 -0.125" id="QuadVROffzoneCampaign"  hidden="1"/>
+                <quad size="5 5" pos="0 -0.3" halign="center" style="UIConstruction_Buttons" substyle="OffZone" z-index="2"/>
+            </frame>
             <frame pos="53 7">
                 <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>
                 <label id="LabelSkillpoints" pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0F0"/>
