@@ -2337,10 +2337,31 @@ public class Menu : CTmMlScriptIngame, IContext
 
         MoveSlidingText(FrameLabelMapName, 10, 0.01f);
 
-        if (Map.MapInfo.AuthorNickName != PreviousMapAuthor)
+        var authorNickName = Map.MapInfo.AuthorNickName;
+        if (authorNickName == "" && IsExplore())
         {
-            LabelMapAuthor.SetText(Map.MapInfo.AuthorNickName);
-            PreviousMapAuthor = Map.MapInfo.AuthorNickName;
+            if (IsExplore())
+            {
+                var originalMapAuthorNickName = Metadata<string>.For(Map);
+                if (originalMapAuthorNickName.Get() != "")
+                {
+                    authorNickName = originalMapAuthorNickName.Get();
+                }
+                else
+                {
+                    authorNickName = "$aaa[unknown]";
+                }
+            }
+        }
+        else
+        {
+            authorNickName = "$aaa[unknown]";
+        }
+
+        if (authorNickName != PreviousMapAuthor)
+        {
+            LabelMapAuthor.SetText(authorNickName);
+            PreviousMapAuthor = authorNickName;
         }
 
         if (car.Get() != PreviousCar)
@@ -2948,6 +2969,26 @@ public class Menu : CTmMlScriptIngame, IContext
         if (car.Get() == MapPlayerModelName)
         {
             LabelValidator.Value = Map.MapInfo.AuthorNickName;
+
+            if (Map.MapInfo.AuthorNickName == "")
+            {
+                if (IsExplore())
+                {
+                    var originalMapAuthorNickName = Metadata<string>.For(Map);
+                    if (originalMapAuthorNickName.Get() != "")
+                    {
+                        LabelValidator.Value = originalMapAuthorNickName.Get();
+                    }
+                    else
+                    {
+                        LabelValidator.Value = "$aaa[unknown]";
+                    }
+                }
+                else
+                {
+                    LabelValidator.Value = "$aaa[unknown]";
+                }
+            }
         }
         else if (validations.Get().ContainsKey(currentFilterKey))
         {

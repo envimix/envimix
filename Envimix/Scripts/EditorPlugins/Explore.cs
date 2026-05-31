@@ -8,6 +8,9 @@ public class Explore : CMapEditorPlugin, IContext
     [Setting]
     public string OriginalMapUid = "";
 
+    [Setting]
+    public string OriginalAuthorNickName = "";
+
     public void Main()
     {
         if (OriginalMapName != "")
@@ -20,6 +23,9 @@ public class Explore : CMapEditorPlugin, IContext
 
         var originalMapUid = Metadata<string>.For(Map);
         originalMapUid.Set(OriginalMapUid);
+
+        var originalMapAuthorNickName = Metadata<string>.For(Map);
+        originalMapAuthorNickName.Set(OriginalAuthorNickName);
     }
 
     public void Loop()

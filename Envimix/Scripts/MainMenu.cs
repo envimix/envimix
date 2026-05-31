@@ -962,7 +962,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
         Wait(() => TitleControl.IsReady);
         Log("Exploring map: " + mapInfo.FileName);
-        TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_OriginalMapName\" type=\"text\" value=\"{mapInfo.Name}\"/><setting name=\"S_OriginalMapUid\" type=\"text\" value=\"{mapInfo.MapUid}\"/></settings>");
+        TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_OriginalMapName\" type=\"text\" value=\"{mapInfo.Name}\"/><setting name=\"S_OriginalMapUid\" type=\"text\" value=\"{mapInfo.MapUid}\"/><setting name=\"S_OriginalAuthorNickName\" type=\"text\" value=\"{mapInfo.AuthorNickName}\"/></settings>");
     }
 
     private void TryOpenRequestedMap()
