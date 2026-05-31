@@ -17,6 +17,11 @@
         <quad pos="32.5 0" z-index="0" size="5.5 5.5" style="UIConstruction_Buttons" substyle="SaveAs" scriptevents="1" hidden="1" halign="center" valign="center" id="QuadSaveGhost"/>
         <quad pos="-37.5 0" z-index="2" size="3 3" style="Icons128x32_1" substyle="Close" scriptevents="1" hidden="0" halign="center" valign="center" id="QuadRemoveGhost" modulatecolor="F00"/>
     </framemodel>
+    <framemodel id="FramemodelMedal">
+        <quad id="QuadCurrentMedal" pos="-4 0" z-index="0" size="23 4.75" valign="center" opacity="0.5" style="Bgs1" substyle="BgMetalBar" hidden="1"/>
+        <quad id="QuadMedalTime" size="4.5 4.5" z-index="20" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" />
+        <label id="LabelMedalTime" pos="3.5 -0.25" z-index="10" size="18 5" text="10:00.000" valign="center2" textfont="RajdhaniMono" textsize="2" />
+    </framemodel>
 	<frame z-index="10">
 		<quad pos="0 0" z-index="-2" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" id="QuadBackground"/>
 		<frame id="FrameMenu">
@@ -48,9 +53,26 @@
 				</frame>
 				<frame pos="0 42" z-index="1">
 					<quad size="79 11" halign="center" z-index="-1" modulatecolor="258" opacity=".5" style="Bgs1" substyle="BgCardList"/>
-					<label pos="-36 -2.8" z-index="0" size="40 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname"/>
-					<label pos="35 -3" z-index="0" size="27.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime"/>
-                    <quad pos="34 -5.5" z-index="1" size="7 7" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" hidden="0" />
+                    <label pos="-36 -2.8" z-index="0" size="33 5" text="$aaa[unknown]" textsize="4" textfont="Oswald" id="LabelPbNickname" />
+                    <label pos="29 -3" z-index="0" size="32.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime" scriptevents="1" style="TextCardRaceRank"/>
+                    <quad pos="34 -5.5" z-index="2" size="7 7" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" id="QuadMedal" scriptevents="1"/>
+                    <quad pos="34 -5.5" z-index="1" size="10 11" style="Bgs1" substyle="BgButtonGlow" halign="center" valign="center" hidden="1" />
+                    <frame pos="40 0" clip="1" clipposn="14.8 0" clipsizen="30 180">
+                        <frame id="FrameOuterMedals">
+                            <quad pos="0 0" z-index="0" size="26.5 50" style="Bgs1" substyle="BgCardList" id="QuadMedalList" />
+                            <frame id="FrameMedals" pos="4 -5" z-index="3">
+                                <frameinstance modelid="FramemodelMedal" pos="0 0" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -5" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -10" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -15" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -20" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -25" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -30" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -35" />
+                                <frameinstance modelid="FramemodelMedal" pos="0 -40" />
+                            </frame>
+                        </frame>
+                    </frame>
 				</frame>
 				<frame pos="0 30">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity=".5"/>

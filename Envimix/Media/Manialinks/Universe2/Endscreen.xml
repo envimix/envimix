@@ -29,10 +29,10 @@
                         <quad id="QuadMedalSilver" pos="2 0" z-index="1" size="5 5" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver" />
                         <quad id="QuadMedalGold" pos="4 0" z-index="2" size="5 5" halign="center" valign="center" style="MedalsBig" substyle="MedalGold" />
                         <quad id="QuadMedalNadeo" pos="6 0" z-index="3" size="5 5" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo" />
-                        <quad id="QuadMedalSuperBronze" pos="8 0.5" z-index="4" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze" />
-                        <quad id="QuadMedalSuperSilver" pos="10 0.5" z-index="5" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver" />
-                        <quad id="QuadMedalSuperGold" pos="12 0.5" z-index="6" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalGold" />
-                        <quad id="QuadMedalSuperNadeo" pos="14 0.5" z-index="7" size="6 6" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo" />
+                        <quad id="QuadMedalSuperBronze" pos="8 0.5" z-index="4" size="6 6" halign="center" valign="center" style="MedalsBig" image="file://Media/Images/Medals/superbronze.png" />
+                        <quad id="QuadMedalSuperSilver" pos="10 0.5" z-index="5" size="6 6" halign="center" valign="center" style="MedalsBig" image="file://Media/Images/Medals/supersilver.png" />
+                        <quad id="QuadMedalSuperGold" pos="12 0.5" z-index="6" size="6 6" halign="center" valign="center" style="MedalsBig" image="file://Media/Images/Medals/supergold.png" />
+                        <quad id="QuadMedalSuperNadeo" pos="14 0.5" z-index="7" size="6 6" halign="center" valign="center" style="MedalsBig" image="file://Media/Images/Medals/stm.png" />
                         <quad id="QuadMedalDuck" pos="16 0.5" z-index="8" size="6 6" halign="center" valign="center" style="MedalsBig" image="file://Media/Images/Medals/duck.png" />
                     </frame>
                 </frame>

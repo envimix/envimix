@@ -91,6 +91,12 @@ public class Menu : CTmMlScriptIngame, IContext
         public int Time;
     }
 
+    public struct SSuperMedals
+    {
+        public int Duck;
+        public int STM;
+    }
+
     [ManialinkControl] public required CMlFrame FrameInnerVehicles;
     [ManialinkControl] public required CMlFrame FrameOuterSkinList;
     [ManialinkControl] public required CMlFrame FrameSkinList;
@@ -181,6 +187,10 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnImpact;
     [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnWaypoint;
     [ManialinkControl] public required CMlQuad QuadRecordsScrollbar;
+    [ManialinkControl] public required CMlQuad QuadMedal;
+    [ManialinkControl] public required CMlFrame FrameMedals;
+    [ManialinkControl] public required CMlQuad QuadMedalList;
+    [ManialinkControl] public required CMlFrame FrameOuterMedals;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -257,6 +267,11 @@ public class Menu : CTmMlScriptIngame, IContext
     [Netread] public required Dictionary<string, int> ActivityPoints { get; set; }
 
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
+
+    public CHttpRequest? SuperMedalsRequest;
+    public SSuperMedals SuperMedals;
+
+    public bool MedalHovered;
 
     public Menu()
     {
@@ -449,6 +464,34 @@ public class Menu : CTmMlScriptIngame, IContext
             {
                 AnimMgr.Add(QuadSkinScrollbar, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             }
+        };
+
+        LabelPbTime.MouseOver += () =>
+        {
+            if (Map.MapInfo.TMObjective_BronzeTime > 0 && (GetPlayer().Score is null || GetPlayer().Score.BestRace.Time < 0 || GetPlayer().Score.BestRace.Time > Map.MapInfo.TMObjective_BronzeTime))
+            {
+                AnimMgr.Add(FrameOuterMedals, "<frame pos=\"0 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+        };
+
+        LabelPbTime.MouseOut += () =>
+        {
+            AnimMgr.Add(FrameOuterMedals, "<frame pos=\"-26.5 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadMedal.MouseOver += () =>
+        {
+            if (Map.MapInfo.TMObjective_BronzeTime > 0)
+            {
+                AnimMgr.Add(FrameOuterMedals, "<frame pos=\"0 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+            MedalHovered = true;
+        };
+
+        QuadMedal.MouseOut += () =>
+        {
+            AnimMgr.Add(FrameOuterMedals, "<frame pos=\"-26.5 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+            MedalHovered = false;
         };
     }
 
@@ -1819,6 +1862,150 @@ public class Menu : CTmMlScriptIngame, IContext
         return result;
     }
 
+    private void SetupMedals()
+    {
+        FrameOuterMedals.RelativePosition_V3.X = -26.5;
+
+        ImmutableArray<string> medalNames = new();
+        ImmutableArray<int> medalTimes = new();
+
+        if (SuperMedals.Duck > 0)
+        {
+            medalNames.Add("Duck");
+            medalTimes.Add(SuperMedals.Duck);
+        }
+
+        var superGold = 0;
+        var superSilver = 0;
+        var superBronze = 0;
+
+        if (SuperMedals.STM > 0)
+        {
+            medalNames.Add("STM");
+            medalTimes.Add(SuperMedals.STM);
+            superGold = SuperMedals.STM - MathLib.FloorInteger((SuperMedals.STM - Map.MapInfo.TMObjective_AuthorTime) * 0.125f);
+            superSilver = SuperMedals.STM - MathLib.FloorInteger((SuperMedals.STM - Map.MapInfo.TMObjective_AuthorTime) * 0.25f);
+            superBronze = SuperMedals.STM - MathLib.FloorInteger((SuperMedals.STM - Map.MapInfo.TMObjective_AuthorTime) * 0.5f);
+        }
+
+        if (superGold > 0)
+        {
+            medalNames.Add("SuperGold");
+            medalTimes.Add(superGold);
+        }
+
+        if (superSilver > 0)
+        {
+            medalNames.Add("SuperSilver");
+            medalTimes.Add(superSilver);
+        }
+
+        if (superBronze > 0)
+        {
+            medalNames.Add("SuperBronze");
+            medalTimes.Add(superBronze);
+        }
+
+        if (Map.MapInfo.TMObjective_AuthorTime > 0)
+        {
+            medalNames.Add("Author");
+            medalTimes.Add(Map.MapInfo.TMObjective_AuthorTime);
+        }
+
+        if (Map.MapInfo.TMObjective_GoldTime > 0)
+        {
+            medalNames.Add("Gold");
+            medalTimes.Add(Map.MapInfo.TMObjective_GoldTime);
+        }
+
+        if (Map.MapInfo.TMObjective_SilverTime > 0)
+        {
+            medalNames.Add("Silver");
+            medalTimes.Add(Map.MapInfo.TMObjective_SilverTime);
+        }
+
+        if (Map.MapInfo.TMObjective_BronzeTime > 0)
+        {
+            medalNames.Add("Bronze");
+            medalTimes.Add(Map.MapInfo.TMObjective_BronzeTime);
+        }
+
+        var medalListWidth = 0f;
+
+        for (var i = 0; i < FrameMedals.Controls.Count; i++)
+        {
+            var frame = (FrameMedals.Controls[i] as CMlFrame)!;
+
+            if (i > medalNames.Length - 1)
+            {
+                frame.Hide();
+                continue;
+            }
+
+            frame.Show();
+
+            var medalName = medalNames[i];
+            var medalTime = medalTimes[i];
+
+            frame.DataAttributeSet("medal", medalTime.ToString());
+
+            var labelMedalTime = (frame.GetFirstChild("LabelMedalTime") as CMlLabel)!;
+            var quadMedalTime = (frame.GetFirstChild("QuadMedalTime") as CMlQuad)!;
+
+            labelMedalTime.SetText(TimeToTextWithMilli(medalTime));
+
+            medalListWidth = MathLib.Max(medalListWidth, labelMedalTime.ComputeWidth(labelMedalTime.Value));
+
+            switch (medalName)
+            {
+                case "Duck":
+                    quadMedalTime.ImageUrl = "file://Media/Images/Medals/duck.png";
+                    quadMedalTime.Substyle = "";
+                    break;
+                case "STM":
+                    quadMedalTime.ImageUrl = "file://Media/Images/Medals/stm.png";
+                    quadMedalTime.Substyle = "";
+                    break;
+                case "SuperGold":
+                    quadMedalTime.ImageUrl = "file://Media/Images/Medals/supergold.png";
+                    quadMedalTime.Substyle = "";
+                    break;
+                case "SuperSilver":
+                    quadMedalTime.ImageUrl = "file://Media/Images/Medals/supersilver.png";
+                    quadMedalTime.Substyle = "";
+                    break;
+                case "SuperBronze":
+                    quadMedalTime.ImageUrl = "file://Media/Images/Medals/superbronze.png";
+                    quadMedalTime.Substyle = "";
+                    break;
+                case "Author":
+                    quadMedalTime.ImageUrl = "";
+                    quadMedalTime.Substyle = "MedalNadeo";
+                    break;
+                case "Gold":
+                    quadMedalTime.ImageUrl = "";
+                    quadMedalTime.Substyle = "MedalGold";
+                    break;
+                case "Silver":
+                    quadMedalTime.ImageUrl = "";
+                    quadMedalTime.Substyle = "MedalSilver";
+                    break;
+                case "Bronze":
+                    quadMedalTime.ImageUrl = "";
+                    quadMedalTime.Substyle = "MedalBronze";
+                    break;
+            }
+        }
+
+        QuadMedalList.Size.X = medalListWidth + 10;
+
+        for (var i = 0; i < FrameMedals.Controls.Count; i++)
+        {
+            var frame = (FrameMedals.Controls[i] as CMlFrame)!;
+            (frame.GetFirstChild("QuadCurrentMedal") as CMlQuad)!.Size.X = QuadMedalList.Size.X;
+        }
+    }
+
     public void Main()
     {
         Page.GetClassChildren("LOADING", Page.MainFrame, Recursive: true);
@@ -1829,6 +2016,9 @@ public class Menu : CTmMlScriptIngame, IContext
 
         NavFirstControl = QuadButtonContinue;
         NavFocusedControl = NavFirstControl;
+
+        SuperMedalsRequest = Http.CreateGet("file://Media/Medals.json");
+        SetupMedals();
 
         if (IsExplore())
         {
@@ -2173,14 +2363,16 @@ public class Menu : CTmMlScriptIngame, IContext
             FrameButtonSpectator.GetFirstChild("LABEL").RelativeScale = 1;
         }
 
+        var bestRaceTime = GetPlayer().Score.BestRace.Time;
+
         LabelPbNickname.Value = GetPlayer().User.Name;
-        if (GetPlayer().Score is null || GetPlayer().Score.BestRace.Time < 0)
+        if (GetPlayer().Score is null || bestRaceTime < 0)
         {
             LabelPbTime.Value = "-.--.---";
         }
         else
         {
-            LabelPbTime.Value = TimeToTextWithMilli(GetPlayer().Score.BestRace.Time);
+            LabelPbTime.Value = TimeToTextWithMilli(bestRaceTime);
         }
 
         LabelServerName.Value = Playground.ServerInfo.ServerName;
@@ -2901,6 +3093,146 @@ public class Menu : CTmMlScriptIngame, IContext
             }
             Http.Destroy(RemoveRecordRequest);
             RemoveRecordRequest = null;
+        }
+
+        if (SuperMedalsRequest is not null && SuperMedalsRequest.IsCompleted)
+        {
+            if (SuperMedalsRequest.StatusCode == 200)
+            {
+                Dictionary<string, SSuperMedals> superMedals = new();
+                superMedals.FromJson(SuperMedalsRequest.Result);
+
+                if (superMedals.ContainsKey(Map.MapInfo.MapUid))
+                {
+                    SuperMedals = superMedals[Map.MapInfo.MapUid];
+                }
+            }
+            Http.Destroy(SuperMedalsRequest);
+            SuperMedalsRequest = null;
+
+            SetupMedals();
+        }
+
+        QuadMedal.Visible = bestRaceTime > 0 && bestRaceTime <= Map.MapInfo.TMObjective_BronzeTime && Map.MapInfo.TMObjective_BronzeTime > 0;
+        if (QuadMedal.Visible)
+        {
+            LabelPbTime.RelativePosition_V3.X = 29;
+
+            if (car.Get() == MapPlayerModelName)
+            {
+                QuadMedal.Opacity = 1;
+            }
+            else if (MedalHovered)
+            {
+                QuadMedal.Opacity = 0.6f;
+            }
+            else
+            {
+                QuadMedal.Opacity = 0.25f;
+            }
+
+            var duck = SuperMedals.Duck;
+            var superNadeo = SuperMedals.STM;
+            var superGold = 0;
+            var superSilver = 0;
+            var superBronze = 0;
+            if (superNadeo != 0)
+            {
+                superGold = superNadeo - MathLib.FloorInteger((superNadeo - Map.MapInfo.TMObjective_AuthorTime) * 0.125f);
+                superSilver = superNadeo - MathLib.FloorInteger((superNadeo - Map.MapInfo.TMObjective_AuthorTime) * 0.25f);
+                superBronze = superNadeo - MathLib.FloorInteger((superNadeo - Map.MapInfo.TMObjective_AuthorTime) * 0.5f);
+            }
+
+            if (duck != 0 && bestRaceTime <= duck)
+            {
+                QuadMedal.ImageUrl = "file://Media/Images/Medals/duck.png";
+                QuadMedal.Substyle = "";
+            }
+            else if (superNadeo != 0 && bestRaceTime <= superNadeo)
+            {
+                QuadMedal.ImageUrl = "file://Media/Images/Medals/stm.png";
+                QuadMedal.Substyle = "";
+            }
+            else if (superGold != 0 && bestRaceTime <= superGold)
+            {
+                QuadMedal.ImageUrl = "file://Media/Images/Medals/supergold.png";
+                QuadMedal.Substyle = "";
+            }
+            else if (superSilver != 0 && bestRaceTime <= superSilver)
+            {
+                QuadMedal.ImageUrl = "file://Media/Images/Medals/supersilver.png";
+                QuadMedal.Substyle = "";
+            }
+            else if (superBronze != 0 && bestRaceTime <= superBronze)
+            {
+                QuadMedal.ImageUrl = "file://Media/Images/Medals/superbronze.png";
+                QuadMedal.Substyle = "";
+            }
+            else if (bestRaceTime <= Map.MapInfo.TMObjective_AuthorTime)
+            {
+                QuadMedal.ImageUrl = "";
+                QuadMedal.Substyle = "MedalNadeo";
+            }
+            else if (bestRaceTime <= Map.MapInfo.TMObjective_GoldTime)
+            {
+                QuadMedal.ImageUrl = "";
+                QuadMedal.Substyle = "MedalGold";
+            }
+            else if (bestRaceTime <= Map.MapInfo.TMObjective_SilverTime)
+            {
+                QuadMedal.ImageUrl = "";
+                QuadMedal.Substyle = "MedalSilver";
+            }
+            else if (bestRaceTime <= Map.MapInfo.TMObjective_BronzeTime)
+            {
+                QuadMedal.ImageUrl = "";
+                QuadMedal.Substyle = "MedalBronze";
+            }
+            else
+            {
+                QuadMedal.ImageUrl = "";
+                QuadMedal.Substyle = "";
+            }
+        }
+        else
+        {
+            LabelPbTime.RelativePosition_V3.X = 35;
+        }
+
+        CMlFrame? highestBeatenMedal = null;
+
+        if (bestRaceTime > 0)
+        {
+            // Pass 1: Find the highest medal the player has beaten
+            for (var i = 0; i < FrameMedals.Controls.Count; i++)
+            {
+                var medalFrame = (FrameMedals.Controls[i] as CMlFrame)!;
+                if (!medalFrame.Visible) continue;
+
+                var medalTime = TextLib.ToInteger(medalFrame.DataAttributeGet("medal"));
+
+                // Because we check from hardest to easiest, the first one we beat
+                // is our highest earned medal.
+                if (bestRaceTime <= medalTime)
+                {
+                    highestBeatenMedal = medalFrame;
+                    break; // Stop looking once we find the highest earned
+                }
+            }
+        }
+
+        // Pass 2: Apply Visibility
+        for (var i = 0; i < FrameMedals.Controls.Count; i++)
+        {
+            var medalFrame = (FrameMedals.Controls[i] as CMlFrame)!;
+            if (!medalFrame.Visible) continue;
+
+            var quad = medalFrame.GetFirstChild("QuadCurrentMedal");
+
+            // This turns the highest beaten medal ON, and turns all others OFF.
+            // If the player hasn't beaten ANY medals, highestBeatenMedal is null, 
+            // and this safely sets all quads to false.
+            quad.Visible = (medalFrame == highestBeatenMedal);
         }
     }
 }
