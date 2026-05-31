@@ -1316,6 +1316,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                                 || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
                             {
                                 scoreContext = ScoreContextPrefix;
+                                continue; // TODO configurable if default cars should count or not
                             }
                             else if (!TitleCombinations.ContainsKey(mapInfo.MapUid) || !TitleCombinations[mapInfo.MapUid].ContainsKey($"{carName}_0"))
                             {
