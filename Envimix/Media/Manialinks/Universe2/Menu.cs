@@ -191,6 +191,7 @@ public class Menu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameMedals;
     [ManialinkControl] public required CMlQuad QuadMedalList;
     [ManialinkControl] public required CMlFrame FrameOuterMedals;
+    [ManialinkControl] public required CMlFrame FrameTheoreticalMedal;
 
     public int VehicleIndex;
     public int PreviousVehicleIndex;
@@ -481,18 +482,28 @@ public class Menu : CTmMlScriptIngame, IContext
 
         QuadMedal.MouseOver += () =>
         {
-            if (Map.MapInfo.TMObjective_BronzeTime > 0)
-            {
-                AnimMgr.Add(FrameOuterMedals, "<frame pos=\"0 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
-            }
-            MedalHovered = true;
+            OpenMedals();
         };
 
         QuadMedal.MouseOut += () =>
         {
-            AnimMgr.Add(FrameOuterMedals, "<frame pos=\"-26.5 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
-            MedalHovered = false;
+            CloseMedals();
         };
+    }
+
+    private void OpenMedals()
+    {
+        if (Map.MapInfo.TMObjective_BronzeTime > 0)
+        {
+            AnimMgr.Add(FrameOuterMedals, "<frame pos=\"0 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+        MedalHovered = true;
+    }
+
+    private void CloseMedals()
+    {
+        AnimMgr.Add(FrameOuterMedals, "<frame pos=\"-26.5 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+        MedalHovered = false;
     }
 
     private void QuadButtonModeHelpClose_MouseClick()
@@ -1307,8 +1318,8 @@ public class Menu : CTmMlScriptIngame, IContext
 
                         if (NavFocusedControl == QuadButtonContinue)
                         {
-                            NavFocusedControl = QuadButtonExit;
-                            Focus2();
+                            OpenMedals();
+                            NavFocusedControl = QuadMedal;
                         }
                         else if (NavFocusedControl == QuadButtonExit)
                         {
@@ -1360,6 +1371,12 @@ public class Menu : CTmMlScriptIngame, IContext
                             NavFocusedControl = QuadButtonContinue;
                             Focus2();
                         }
+                        else if (NavFocusedControl == QuadMedal)
+                        {
+                            CloseMedals();
+                            NavFocusedControl = QuadButtonExit;
+                            Focus2();
+                        }
                     }
 
                     NavFocusedControl.StyleSelected = true;
@@ -1391,8 +1408,8 @@ public class Menu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonExit)
                         {
-                            NavFocusedControl = QuadButtonContinue;
-                            Focus2();
+                            OpenMedals();
+                            NavFocusedControl = QuadMedal;
                         }
                         else if (NavFocusedControl == QuadButtonManageServer)
                         {
@@ -1429,6 +1446,12 @@ public class Menu : CTmMlScriptIngame, IContext
                         else if (NavFocusedControl == QuadButtonSpectator)
                         {
                             NavFocusedControl = QuadButtonSkin;
+                            Focus2();
+                        }
+                        else if (NavFocusedControl == QuadMedal)
+                        {
+                            NavFocusedControl = QuadButtonContinue;
+                            CloseMedals();
                             Focus2();
                         }
                     }
@@ -2004,6 +2027,20 @@ public class Menu : CTmMlScriptIngame, IContext
             var frame = (FrameMedals.Controls[i] as CMlFrame)!;
             (frame.GetFirstChild("QuadCurrentMedal") as CMlQuad)!.Size.X = QuadMedalList.Size.X;
         }
+
+        FrameTheoreticalMedal.RelativePosition_V3.X = QuadMedalList.Size.X / 2;
+
+        foreach (var control in FrameTheoreticalMedal.Controls)
+        {
+            if (control is CMlQuad quad)
+            {
+                quad.Size.X = QuadMedalList.Size.X;
+            }
+            else if (control is CMlLabel label)
+            {
+                label.Size.X = QuadMedalList.Size.X - 3.5f;
+            }
+        }
     }
 
     public void Main()
@@ -2338,7 +2375,7 @@ public class Menu : CTmMlScriptIngame, IContext
         MoveSlidingText(FrameLabelMapName, 10, 0.01f);
 
         var authorNickName = Map.MapInfo.AuthorNickName;
-        if (authorNickName == "" && IsExplore())
+        if (authorNickName == "")
         {
             if (IsExplore())
             {
@@ -2352,10 +2389,10 @@ public class Menu : CTmMlScriptIngame, IContext
                     authorNickName = "$aaa[unknown]";
                 }
             }
-        }
-        else
-        {
-            authorNickName = "$aaa[unknown]";
+            else
+            {
+                authorNickName = "$aaa[unknown]";
+            }
         }
 
         if (authorNickName != PreviousMapAuthor)
@@ -3154,6 +3191,8 @@ public class Menu : CTmMlScriptIngame, IContext
             SetupMedals();
         }
 
+        FrameTheoreticalMedal.Visible = car.Get() != MapPlayerModelName;
+
         QuadMedal.Visible = bestRaceTime > 0 && bestRaceTime <= Map.MapInfo.TMObjective_BronzeTime && Map.MapInfo.TMObjective_BronzeTime > 0;
         if (QuadMedal.Visible)
         {
@@ -3165,11 +3204,11 @@ public class Menu : CTmMlScriptIngame, IContext
             }
             else if (MedalHovered)
             {
-                QuadMedal.Opacity = 0.6f;
+                QuadMedal.Opacity = 0.8f;
             }
             else
             {
-                QuadMedal.Opacity = 0.25f;
+                QuadMedal.Opacity = 0.4f;
             }
 
             var duck = SuperMedals.Duck;

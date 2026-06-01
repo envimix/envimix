@@ -18,9 +18,10 @@
         <quad pos="-37.5 0" z-index="2" size="3 3" style="Icons128x32_1" substyle="Close" scriptevents="1" hidden="0" halign="center" valign="center" id="QuadRemoveGhost" modulatecolor="F00"/>
     </framemodel>
     <framemodel id="FramemodelMedal">
-        <quad id="QuadCurrentMedal" pos="-4 0" z-index="0" size="23 4.75" valign="center" opacity="0.5" style="Bgs1" substyle="BgMetalBar" hidden="1"/>
+        <quad id="QuadCurrentMedal" pos="-4 0" z-index="-10" size="23 4.75" valign="center" opacity="0.5" style="Bgs1" substyle="BgMetalBar" hidden="1"/>
         <quad id="QuadMedalTime" size="4.5 4.5" z-index="20" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" />
         <label id="LabelMedalTime" pos="3.5 -0.25" z-index="10" size="18 5" text="10:00.000" valign="center2" textfont="RajdhaniMono" textsize="2" />
+        <label id="LabelMedalDelta" pos="24 -0.25" z-index="10" size="24 5" text="-1:10:00.000" valign="center2" textfont="RajdhaniMono" textsize="1" hidden="1" textemboss="1" textcolor="00F"/>
     </framemodel>
 	<frame z-index="10">
 		<quad pos="0 0" z-index="-2" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgEmpty" id="QuadBackground"/>
@@ -57,9 +58,14 @@
                     <label pos="29 -3" z-index="0" size="32.5 5" text="-:--.---" textsize="4.3" textfont="RajdhaniMono" halign="right" id="LabelPbTime" scriptevents="1" style="TextCardRaceRank"/>
                     <quad pos="34 -5.5" z-index="2" size="7 7" style="MedalsBig" substyle="MedalNadeo" halign="center" valign="center" id="QuadMedal" scriptevents="1"/>
                     <quad pos="34 -5.5" z-index="1" size="10 11" style="Bgs1" substyle="BgButtonGlow" halign="center" valign="center" hidden="1" />
-                    <frame pos="40 0" clip="1" clipposn="14.8 0" clipsizen="30 180">
+                    <frame pos="40 0" clip="1" clipposn="29.8 0" clipsizen="60 180">
                         <frame id="FrameOuterMedals">
                             <quad pos="0 0" z-index="0" size="26.5 50" style="Bgs1" substyle="BgCardList" id="QuadMedalList" />
+                            <frame pos="13.25 10" id="FrameTheoreticalMedal">
+                                <quad z-index="0" size="26.5 10" style="Bgs1" substyle="BgCardList" id="QuadMedalList"  halign="center"/>
+                                <label pos="0 -2.2" z-index="1" size="23 5" text="Theoretical medal" halign="center" textfont="Oswald" textsize="1.5" textprefix="$t$o$n" />
+                                <label pos="0 -5.9" z-index="1" size="23 5" text="(what medal this car could get)" halign="center" textfont="Oswald" textsize="0.4" />
+                            </frame>
                             <frame id="FrameMedals" pos="4 -5" z-index="3">
                                 <frameinstance modelid="FramemodelMedal" pos="0 0" />
                                 <frameinstance modelid="FramemodelMedal" pos="0 -5" />
