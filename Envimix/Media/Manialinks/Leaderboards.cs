@@ -35,6 +35,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameCategory;
     [ManialinkControl] public required CMlQuad QuadQuit;
     [ManialinkControl] public required CMlLabel LabelOverallCompletion;
+    [ManialinkControl] public required CMlLabel LabelOverallCompletionName;
 
     [ManialinkControl] public required CMlFrame FrameCompletionPlayers;
     [ManialinkControl] public required CMlFrame FrameMostSkillpointsPlayers;
@@ -54,6 +55,9 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
     public float EnvimixCompletionPercentage;
     public float DefaultCarCompletionPercentage;
     public float GlobalCompletionPercentage;
+    public Dictionary<string, float> EnvimixCompletionPercentages;
+    public Dictionary<string, float> DefaultCarCompletionPercentages;
+    public Dictionary<string, float> GlobalCompletionPercentages;
 
     public CMlQuad SelectedLeaderboards;
     public string SelectedCar;
@@ -93,6 +97,9 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     EnvimixCompletionPercentage = TextLib.ToReal(data[0]);
                     DefaultCarCompletionPercentage = TextLib.ToReal(data[1]);
                     GlobalCompletionPercentage = TextLib.ToReal(data[2]);
+                    EnvimixCompletionPercentages.FromJson(data[3]);
+                    DefaultCarCompletionPercentages.FromJson(data[4]);
+                    GlobalCompletionPercentages.FromJson(data[5]);
                     UpdateLeaderboards();
                     break;
             }
@@ -1181,19 +1188,73 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             float percentage;
             if (SelectedLeaderboards == QuadEnvimixLeaderboards)
             {
-                percentage = EnvimixCompletionPercentage;
+                if (SelectedCar == "")
+                {
+                    percentage = EnvimixCompletionPercentage;
+                }
+                else
+                {
+                    var carKey = $"{SelectedCar}_0";
+                    if (EnvimixCompletionPercentages.ContainsKey(carKey))
+                    {
+                        percentage = EnvimixCompletionPercentages[carKey];
+                    }
+                    else
+                    {
+                        percentage = 0;
+                    }
+                }
             }
             else if (SelectedLeaderboards == QuadDefaultCarLeaderboards)
             {
-                percentage = DefaultCarCompletionPercentage;
+                if (SelectedCar == "")
+                {
+                    percentage = DefaultCarCompletionPercentage;
+                }
+                else
+                {
+                    var carKey = $"{SelectedCar}_0";
+                    if (DefaultCarCompletionPercentages.ContainsKey(carKey))
+                    {
+                        percentage = DefaultCarCompletionPercentages[carKey];
+                    }
+                    else
+                    {
+                        percentage = 0;
+                    }
+                }
             }
             else
             {
-                percentage = GlobalCompletionPercentage;
+                if (SelectedCar == "")
+                {
+                    percentage = GlobalCompletionPercentage;
+                }
+                else
+                {
+                    var carKey = $"{SelectedCar}_0";
+                    if (GlobalCompletionPercentages.ContainsKey(carKey))
+                    {
+                        percentage = GlobalCompletionPercentages[carKey];
+                    }
+                    else
+                    {
+                        percentage = 0;
+                    }
+                }
             }
 
             var animatedOverallCompletion = AnimLib.EaseOutQuad(Now - OpenedAt, 0, percentage * 100, 1000);
             LabelOverallCompletion.Value = $"{TextLib.FormatReal(animatedOverallCompletion, 2, false, false)}%";
+
+            if (SelectedCar == "")
+            {
+                LabelOverallCompletionName.Value = "Overall completion";
+            }
+            else
+            {
+                LabelOverallCompletionName.Value = $"{SelectedCar} completion";
+            }
         }
     }
 }

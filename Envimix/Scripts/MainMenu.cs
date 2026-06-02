@@ -121,6 +121,9 @@ public class MainMenu : CManiaAppTitle, IContext
         public float EnvimixCompletionPercentage;
         public float DefaultCarCompletionPercentage;
         public float GlobalCompletionPercentage;
+        public Dictionary<string, float> EnvimixCompletionPercentages;
+        public Dictionary<string, float> DefaultCarCompletionPercentages;
+        public Dictionary<string, float> GlobalCompletionPercentages;
         public Dictionary<string, STitleUserInfo> Players;
         public Dictionary<string, Dictionary<string, SCombinationStat>> Combinations;
         public Dictionary<string, Dictionary<string, SStar>> Stars;
@@ -1267,7 +1270,7 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         LayerCustomEvent(SoloMenuLayer, "SetPoints", new[] { skillpointsTotal.ToString(), activityPointsTotal.ToString() });
-        LayerCustomEvent(LeaderboardsLayer, "SetLeaderboards", new[] { stats.EnvimixCompletionPercentage.ToString(), stats.DefaultCarCompletionPercentage.ToString(), stats.GlobalCompletionPercentage.ToString() });
+        LayerCustomEvent(LeaderboardsLayer, "SetLeaderboards", new[] { stats.EnvimixCompletionPercentage.ToString(), stats.DefaultCarCompletionPercentage.ToString(), stats.GlobalCompletionPercentage.ToString(), stats.EnvimixCompletionPercentages.ToJson(), stats.DefaultCarCompletionPercentages.ToJson(), stats.GlobalCompletionPercentages.ToJson() });
     }
 
     private void RequestLeaderboards(string mapUid, int laps, ImmutableArray<string> cars)

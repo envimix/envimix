@@ -144,8 +144,8 @@
     <frame pos="105 65" id="FrameOverallCompletion">
         <quad z-index="-2" size="69 32" halign="center" style="Bgs1" substyle="BgCardList" />
         <quad z-index="-2" size="69 32" halign="center" style="Bgs1" substyle="BgCardList" />
-        <label pos="0 -8" z-index="0" size="60 10" textprefix="$t$o" text="Overall completion" halign="center" textfont="Oswald" valign="center" textsize="4" />
-        <label id="LabelOverallCompletion" pos="-1 -22.5" z-index="0" size="60 15" text="0.00%" halign="center" textsize="10" textfont="RajdhaniMono" valign="center2"/>
+        <label id="LabelOverallCompletionName" pos="0 -8" z-index="0" size="60 10" textprefix="$t$o" text="Overall completion" halign="center" textfont="Oswald" valign="center" textsize="3.5" />
+        <label id="LabelOverallCompletion" pos="-1 -22.5" z-index="0" size="60 15" text="0.00%" halign="center" textsize="11" textfont="RajdhaniMono" valign="center2"/>
     </frame>
 
     <frame pos="105 28.5" id="FrameCars">
