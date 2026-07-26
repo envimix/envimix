@@ -68,6 +68,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
     public int ZoneIndexSkillpoints;
     public int ZoneIndexActivityPoints;
 
+    public CMlQuad? FocusedQuad;
+
     public Leaderboards()
     {
         QuadQuit.MouseClick += () =>
@@ -112,6 +114,243 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 case CMlScriptEvent.EMenuNavAction.Cancel:
                     SendCustomEvent("MainMenu", new[] { "" });
                     break;
+                case CMlScriptEvent.EMenuNavAction.Left:
+                    if (FocusedQuad is null)
+                    {
+                        FocusedQuad = SelectedLeaderboards;
+                    }
+                    FocusedQuad.StyleSelected = FocusedQuad == SelectedLeaderboards || FocusedQuad.DataAttributeGet("CarName") == SelectedCar;
+                    if (FocusedQuad == QuadEnvimixLeaderboards)
+                    {
+                        FocusedQuad = QuadGlobalLeaderboards;
+                    }
+                    else if (FocusedQuad == QuadDefaultCarLeaderboards)
+                    {
+                        FocusedQuad = QuadEnvimixLeaderboards;
+                    }
+                    else if (FocusedQuad == QuadGlobalLeaderboards)
+                    {
+                        FocusedQuad = QuadDefaultCarLeaderboards;
+                    }
+                    else if (FocusedQuad == (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = (FrameCars.GetFirstChild("QuadSelectCar") as CMlQuad);
+                    }
+                    else if (FocusedQuad == (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad.ControlId == "QuadSelectCar")
+                    {
+                        FocusedQuad = (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == QuadQuit)
+                    {
+                        FocusedQuad = (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    FocusedQuad.StyleSelected = true;
+                    break;
+                case CMlScriptEvent.EMenuNavAction.Right:
+                    if (FocusedQuad is null)
+                    {
+                        FocusedQuad = SelectedLeaderboards;
+                    }
+                    FocusedQuad.StyleSelected = FocusedQuad == SelectedLeaderboards || FocusedQuad.DataAttributeGet("CarName") == SelectedCar;
+                    if (FocusedQuad == QuadEnvimixLeaderboards)
+                    {
+                        FocusedQuad = QuadDefaultCarLeaderboards;
+                    }
+                    else if (FocusedQuad == QuadDefaultCarLeaderboards)
+                    {
+                        FocusedQuad = QuadGlobalLeaderboards;
+                    }
+                    else if (FocusedQuad == QuadGlobalLeaderboards)
+                    {
+                        FocusedQuad = (FrameCars.GetFirstChild("QuadSelectCar") as CMlQuad);
+                    }
+                    else if (FocusedQuad == (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = (FrameCars.GetFirstChild("QuadSelectCar") as CMlQuad);
+                    }
+                    else if (FocusedQuad.ControlId == "QuadSelectCar")
+                    {
+                        FocusedQuad = (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == QuadQuit)
+                    {
+                        FocusedQuad = (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    FocusedQuad.StyleSelected = true;
+                    break;
+                case CMlScriptEvent.EMenuNavAction.Down:
+                    if (FocusedQuad is null)
+                    {
+                        FocusedQuad = SelectedLeaderboards;
+                    }
+                    FocusedQuad.StyleSelected = FocusedQuad == SelectedLeaderboards || FocusedQuad.DataAttributeGet("CarName") == SelectedCar;
+                    if (FocusedQuad == QuadEnvimixLeaderboards)
+                    {
+                        FocusedQuad = (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == QuadDefaultCarLeaderboards)
+                    {
+                        FocusedQuad = (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == QuadGlobalLeaderboards)
+                    {
+                        FocusedQuad = (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = QuadEnvimixLeaderboards;
+                    }
+                    else if (FocusedQuad == (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = QuadDefaultCarLeaderboards;
+                    }
+                    else if (FocusedQuad == (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = QuadGlobalLeaderboards;
+                    }
+                    else if (FocusedQuad.ControlId == "QuadSelectCar")
+                    {
+                        var currentFound = false;
+                        var isLastControl = true;
+
+                        foreach (var control in FocusedQuad.Parent.Parent.Controls)
+                        {
+                            if (currentFound)
+                            {
+                                FocusedQuad = ((control as CMlFrame)!.GetFirstChild("QuadSelectCar") as CMlQuad);
+                                isLastControl = false;
+                                break;
+                            }
+
+                            if (FocusedQuad.Parent == control)
+                            {
+                                currentFound = true;
+                            }
+                        }
+
+                        if (isLastControl)
+                        {
+                            FocusedQuad = QuadQuit;
+                        }
+                    }
+                    else if (FocusedQuad == QuadQuit)
+                    {
+                        FocusedQuad = (FrameCars.GetFirstChild("QuadSelectCar") as CMlQuad);
+                    }
+                    FocusedQuad.StyleSelected = true;
+                    break;
+                case CMlScriptEvent.EMenuNavAction.Up:
+                    if (FocusedQuad is null)
+                    {
+                        FocusedQuad = SelectedLeaderboards;
+                    }
+                    FocusedQuad.StyleSelected = FocusedQuad == SelectedLeaderboards || FocusedQuad.DataAttributeGet("CarName") == SelectedCar;
+                    if (FocusedQuad == QuadEnvimixLeaderboards)
+                    {
+                        FocusedQuad = (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == QuadDefaultCarLeaderboards)
+                    {
+                        FocusedQuad = (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == QuadGlobalLeaderboards)
+                    {
+                        FocusedQuad = (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad);
+                    }
+                    else if (FocusedQuad == (FrameCompletion.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = QuadEnvimixLeaderboards;
+                    }
+                    else if (FocusedQuad == (FrameMostSkillpoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = QuadDefaultCarLeaderboards;
+                    }
+                    else if (FocusedQuad == (FrameMostActivityPoints.GetFirstChild("QuadZone") as CMlQuad))
+                    {
+                        FocusedQuad = QuadGlobalLeaderboards;
+                    }
+                    else if (FocusedQuad.ControlId == "QuadSelectCar")
+                    {
+                        var currentFound = false;
+                        var isFirstControl = true;
+
+                        for (var i = 0; i < FocusedQuad.Parent.Parent.Controls.Count; i++)
+                        {
+                            var control = FocusedQuad.Parent.Parent.Controls[FocusedQuad.Parent.Parent.Controls.Count - i - 1];
+
+                            if (currentFound)
+                            {
+                                FocusedQuad = ((control as CMlFrame)!.GetFirstChild("QuadSelectCar") as CMlQuad);
+                                isFirstControl = false;
+                                break;
+                            }
+
+                            if (FocusedQuad.Parent == control)
+                            {
+                                currentFound = true;
+                            }
+                        }
+
+                        if (isFirstControl)
+                        {
+                            FocusedQuad = QuadQuit;
+                        }
+                    }
+                    else if (FocusedQuad == QuadQuit)
+                    {
+                        var lastControl = (FrameCars.Controls[FrameCars.Controls.Count - 1] as CMlFrame)!;
+                        FocusedQuad = (lastControl.GetFirstChild("QuadSelectCar") as CMlQuad);
+                    }
+                    FocusedQuad.StyleSelected = true;
+                    break;
+                case CMlScriptEvent.EMenuNavAction.Select:
+                    if (FocusedQuad is not null)
+                    {
+                        if (FocusedQuad.ControlId == "QuadSelectCar")
+                        {
+                            SelectCar(FocusedQuad);
+                        }
+                        else if (FocusedQuad.ControlId == "QuadZone")
+                        {
+                            SelectZone(FocusedQuad);
+                        }
+                        else if (FocusedQuad == QuadEnvimixLeaderboards)
+                        {
+                            SelectedLeaderboards = QuadEnvimixLeaderboards;
+                            UpdateLeaderboards();
+                        }
+                        else if (FocusedQuad == QuadDefaultCarLeaderboards)
+                        {
+                            SelectedLeaderboards = QuadDefaultCarLeaderboards;
+                            UpdateLeaderboards();
+                        }
+                        else if (FocusedQuad == QuadGlobalLeaderboards)
+                        {
+                            SelectedLeaderboards = QuadGlobalLeaderboards;
+                            UpdateLeaderboards();
+                        }
+                        else if (FocusedQuad == QuadQuit)
+                        {
+                            SendCustomEvent("MainMenu", new[] { "" });
+                        }
+                    }
+                    break;
             }
         };
 
@@ -155,87 +394,12 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         {
             if (controlId == "QuadZone")
             {
-                IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
-                var index = 0;
-
-                switch (control.Parent.Parent.ControlId)
-                {
-                    case "FrameCompletion":
-                        if (zones.Count == 0)
-                        {
-                            ZoneIndexCompletion = 0;
-                        }
-                        else
-                        {
-                            ZoneIndexCompletion = (ZoneIndexCompletion + 1) % zones.Count;
-                        }
-                        index = ZoneIndexCompletion;
-                        break;
-                    case "FrameMostSkillpoints":
-                        if (zones.Count == 0)
-                        {
-                            ZoneIndexSkillpoints = 0;
-                        }
-                        else
-                        {
-                            ZoneIndexSkillpoints = (ZoneIndexSkillpoints + 1) % zones.Count;
-                        }
-                        index = ZoneIndexSkillpoints;
-                        break;
-                    case "FrameMostActivityPoints":
-                        if (zones.Count == 0)
-                        {
-                            ZoneIndexActivityPoints = 0;
-                        }
-                        else
-                        {
-                            ZoneIndexActivityPoints = (ZoneIndexActivityPoints + 1) % zones.Count;
-                        }
-                        index = ZoneIndexActivityPoints;
-                        break;
-                }
-
-                var zone = "World";
-                if (zones.Count > 0)
-                {
-                    zone = zones[index];
-                }
-
-                var labelZone = (control.Parent.GetFirstChild("LabelZone") as CMlLabel)!;
-                labelZone.SetText("|Zone|" + zone);
-
-                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 1, 1);
-
-                var leaderboardsUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(Page);
-
-                switch (control.Parent.Parent.ControlId)
-                {
-                    case "FrameCompletion":
-                        UpdateCompletionLeaderboard(leaderboardsUserInfos.Get(), zones);
-                        break;
-                    case "FrameMostSkillpoints":
-                        UpdateSkillpointsLeaderboard(leaderboardsUserInfos.Get(), zones);
-                        break;
-                    case "FrameMostActivityPoints":
-                        UpdateActivityPointsLeaderboard(leaderboardsUserInfos.Get(), zones);
-                        break;
-                }
+                SelectZone(control);
             }
 
             if (controlId == "QuadSelectCar")
             {
-                var carName = control.DataAttributeGet("CarName");
-                if (SelectedCar == carName)
-                {
-                    SelectedCar = "";
-                }
-                else
-                {
-                    SelectedCar = carName;
-                }
-                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
-
-                UpdateLeaderboards();
+                SelectCar(control);
             }
         };
 
@@ -1145,6 +1309,91 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             var frame = (FrameCars.Controls[i] as CMlFrame)!;
             AnimMgr.Add(frame, $"<frame hidden=\"1\" pos=\"100 {frame.RelativePosition_V3.Y}\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
         }
+    }
+
+    private void SelectZone(CMlControl control)
+    {
+        IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
+        var index = 0;
+
+        switch (control.Parent.Parent.ControlId)
+        {
+            case "FrameCompletion":
+                if (zones.Count == 0)
+                {
+                    ZoneIndexCompletion = 0;
+                }
+                else
+                {
+                    ZoneIndexCompletion = (ZoneIndexCompletion + 1) % zones.Count;
+                }
+                index = ZoneIndexCompletion;
+                break;
+            case "FrameMostSkillpoints":
+                if (zones.Count == 0)
+                {
+                    ZoneIndexSkillpoints = 0;
+                }
+                else
+                {
+                    ZoneIndexSkillpoints = (ZoneIndexSkillpoints + 1) % zones.Count;
+                }
+                index = ZoneIndexSkillpoints;
+                break;
+            case "FrameMostActivityPoints":
+                if (zones.Count == 0)
+                {
+                    ZoneIndexActivityPoints = 0;
+                }
+                else
+                {
+                    ZoneIndexActivityPoints = (ZoneIndexActivityPoints + 1) % zones.Count;
+                }
+                index = ZoneIndexActivityPoints;
+                break;
+        }
+
+        var zone = "World";
+        if (zones.Count > 0)
+        {
+            zone = zones[index];
+        }
+
+        var labelZone = (control.Parent.GetFirstChild("LabelZone") as CMlLabel)!;
+        labelZone.SetText("|Zone|" + zone);
+
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 1, 1);
+
+        var leaderboardsUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(Page);
+
+        switch (control.Parent.Parent.ControlId)
+        {
+            case "FrameCompletion":
+                UpdateCompletionLeaderboard(leaderboardsUserInfos.Get(), zones);
+                break;
+            case "FrameMostSkillpoints":
+                UpdateSkillpointsLeaderboard(leaderboardsUserInfos.Get(), zones);
+                break;
+            case "FrameMostActivityPoints":
+                UpdateActivityPointsLeaderboard(leaderboardsUserInfos.Get(), zones);
+                break;
+        }
+    }
+
+    private void SelectCar(CMlControl control)
+    {
+        var carName = control.DataAttributeGet("CarName");
+        if (SelectedCar == carName)
+        {
+            SelectedCar = "";
+        }
+        else
+        {
+            SelectedCar = carName;
+        }
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+
+        UpdateLeaderboards();
     }
 
     public void Main()

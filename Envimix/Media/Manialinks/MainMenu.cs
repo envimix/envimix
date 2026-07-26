@@ -40,6 +40,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
     public CAudioSource AudioClick;
 
+    public CMlQuad? FocusedQuad;
+
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
     public MainMenu()
@@ -169,6 +171,117 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             switch (action)
             {
+                case CMlScriptEvent.EMenuNavAction.Down:
+                    if (FocusedQuad is not null)
+                    {
+                        FocusedQuad.StyleSelected = false;
+                    }
+                    if (FocusedQuad == QuadSolo)
+                    {
+                        FocusedQuad = QuadLeaderboards;
+                    }
+                    else if (FocusedQuad == QuadLeaderboards)
+                    {
+                        FocusedQuad = QuadTotd;
+                    }
+                    else if (FocusedQuad == QuadTotd)
+                    {
+                        FocusedQuad = QuadLocal;
+                    }
+                    else if (FocusedQuad == QuadLocal)
+                    {
+                        FocusedQuad = QuadInternet;
+                    }
+                    else if (FocusedQuad == QuadInternet)
+                    {
+                        FocusedQuad = QuadEditor;
+                    }
+                    else if (FocusedQuad == QuadEditor)
+                    {
+                        FocusedQuad = QuadQuit;
+                    }
+                    else if (FocusedQuad == QuadQuit)
+                    {
+                        FocusedQuad = QuadSolo;
+                    }
+                    else
+                    {
+                        FocusedQuad = QuadSolo;
+                    }
+                    FocusedQuad.StyleSelected = true;
+                    break;
+                case CMlScriptEvent.EMenuNavAction.Up:
+                    if (FocusedQuad is not null)
+                    {
+                        FocusedQuad.StyleSelected = false;
+                    }
+                    if (FocusedQuad == QuadSolo)
+                    {
+                        FocusedQuad = QuadQuit;
+                    }
+                    else if (FocusedQuad == QuadQuit)
+                    {
+                        FocusedQuad = QuadEditor;
+                    }
+                    else if (FocusedQuad == QuadEditor)
+                    {
+                        FocusedQuad = QuadInternet;
+                    }
+                    else if (FocusedQuad == QuadInternet)
+                    {
+                        FocusedQuad = QuadLocal;
+                    }
+                    else if (FocusedQuad == QuadLocal)
+                    {
+                        FocusedQuad = QuadTotd;
+                    }
+                    else if (FocusedQuad == QuadTotd)
+                    {
+                        FocusedQuad = QuadLeaderboards;
+                    }
+                    else if (FocusedQuad == QuadLeaderboards)
+                    {
+                        FocusedQuad = QuadSolo;
+                    }
+                    else
+                    {
+                        FocusedQuad = QuadSolo;
+                    }
+                    FocusedQuad.StyleSelected = true;
+                    break;
+                case CMlScriptEvent.EMenuNavAction.Select:
+                    if (FocusedQuad == QuadSolo)
+                    {
+                        SendCustomEvent("MenuSolo", new[] { "" });
+                    }
+                    else if (FocusedQuad == QuadLocal)
+                    {
+                        SendCustomEvent("MenuLocal", new[] { "" });
+                    }
+                    else if (FocusedQuad == QuadInternet)
+                    {
+                        SendCustomEvent("MenuInternet", new[] { "" });
+                    }
+                    else if (FocusedQuad == QuadEditor)
+                    {
+                        SendCustomEvent("MenuEditor", new[] { "" });
+                    }
+                    else if (FocusedQuad == QuadQuit)
+                    {
+                        ParentApp.Menu_Quit();
+                    }
+                    else if (FocusedQuad == QuadLeaderboards)
+                    {
+                        SendCustomEvent("Leaderboards", new[] { "" });
+                    }
+                    else if (FocusedQuad == QuadTotd)
+                    {
+                        if (TotdInfo.Map.Uid != "")
+                        {
+                            EnvimixOpenMapUid = TotdInfo.Map.Uid;
+                        }
+                    }
+                    break;
                 case CMlScriptEvent.EMenuNavAction.Cancel:
                     SendCustomEvent("Quit", new[] { "" });
                     break;
