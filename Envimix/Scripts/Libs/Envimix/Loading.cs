@@ -84,6 +84,16 @@ public static class Loading
             "FUN FACT: If you see a vistamix somewhere, that's not us. :P",
             "TIP: To stay sane, prefer not calling Canyon 'Red Island', Valley 'Green Coast', and Lagoon 'Blue Bay'. Keep those Sunrise environments in their homes.",
             "TIP: Give yourself a rest after doing a hard validation. We don't want you burned out!",
+            "TIP: You can use pad controls or keyboard keys to navigate the main menu now.",
+            "FUN FACT: Players have already driven over 6 GB of ghost data in ENVIMIX Turbo. Please do not increase the sample rate of them (much).",
+            "TIP: Install the Replay Unlimiter OpenPlanet plugin to preserve data in your replays after the 1 hour 40 minute mark!",
+            "TIP: Medals are not given for envimix combinations, but you can view your theoretical envimix medals in the ingame menu per car.",
+            "FUN FACT: The red medal is called Duck Medal and refers to the riolu's record on the map.",
+            "FUN FACT: The soundtrack is called ENVIMIX b4 2018 and features music ideas initialized before the release of the Nadeo Envimix title pack in July 2018. All of the music ideas are more than 8 years old.",
+            "TIP: Submarine is a trick to gather as much speed as possible in the water. It is a technique used to overcome larger obstacles.",
+            "FUN FACT: Track of the Day in the Nadeo Envimix title pack was introduced in 2018, 2 years before Nadeo included Track of the Days in the latest Trackmania. It was included in ENVIMIX Turbo as a reminder of the possible inspiration.",
+            "TIP: Stars are manually-given ratings of interesting maps. It's worth checking them out!",
+            "FUN FACT: Nadeo Envimix is a challenge invented by Poutrel and MrLag in 2014."
         };
 
         var randomIndex = MathLib.Rand(0, tips.Length - 1);
