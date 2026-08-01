@@ -48,6 +48,10 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Collection;
         public int Order;
         public string Campaign;
+        public int AuthorTime;
+        public int GoldTime;
+        public int SilverTime;
+        public int BronzeTime;
     }
 
     public struct SSubmitMapsRequest
@@ -1045,7 +1049,11 @@ public class MainMenu : CManiaAppTitle, IContext
                         Uid = map.MapUid,
                         Collection = map.CollectionName,
                         Order = order,
-                        Campaign = campaignName
+                        Campaign = campaignName,
+                        AuthorTime = map.TMObjective_AuthorTime,
+                        GoldTime = map.TMObjective_GoldTime,
+                        SilverTime = map.TMObjective_SilverTime,
+                        BronzeTime = map.TMObjective_BronzeTime
                     };
                     request.Maps!.Add(mapInfo);
                     order += 1;
