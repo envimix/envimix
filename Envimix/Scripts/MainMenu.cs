@@ -98,6 +98,20 @@ public class MainMenu : CManiaAppTitle, IContext
         public float S;
     }
 
+    public struct SPlayerMedals
+    {
+        public string L;
+        public int D;
+        public int ST;
+        public int SG;
+        public int SS;
+        public int SB;
+        public int A;
+        public int G;
+        public int S;
+        public int B;
+    }
+
     public struct SCombinationStat
     {
         public string VL;
@@ -120,7 +134,24 @@ public class MainMenu : CManiaAppTitle, IContext
         public int G;
     }
 
-    public struct STitleStats
+    public struct STitleGeneralStats
+    {
+        public Dictionary<string, STitleUserInfo> Players;
+        public Dictionary<string, Dictionary<string, SCombinationStat>> Combinations;
+        public Dictionary<string, Dictionary<string, string>> Stars;
+    }
+
+    public struct STitleSkillpointStats
+    {
+        public IList<SPlayerScore> EnvimixMostSkillpoints;
+        public IList<SPlayerScore> DefaultCarMostSkillpoints;
+        public IList<SPlayerScore> GlobalMostSkillpoints;
+        public Dictionary<string, IList<SPlayerScore>> EnvimixCombinationMostSkillpoints;
+        public Dictionary<string, IList<SPlayerScore>> DefaultCarCombinationMostSkillpoints;
+        public Dictionary<string, IList<SPlayerScore>> GlobalCombinationMostSkillpoints;
+    }
+
+    public struct STitleCompletionStats
     {
         public float EnvimixCompletionPercentage;
         public float DefaultCarCompletionPercentage;
@@ -128,28 +159,23 @@ public class MainMenu : CManiaAppTitle, IContext
         public Dictionary<string, float> EnvimixCompletionPercentages;
         public Dictionary<string, float> DefaultCarCompletionPercentages;
         public Dictionary<string, float> GlobalCompletionPercentages;
-        public Dictionary<string, STitleUserInfo> Players;
-        public Dictionary<string, Dictionary<string, SCombinationStat>> Combinations;
-        public Dictionary<string, Dictionary<string, SStar>> Stars;
-        public IList<SPlayerScore> EnvimixMostSkillpoints;
-        public IList<SPlayerScore> EnvimixMostActivityPoints;
         public IList<SPlayerCompletion> EnvimixCompletion;
-        public IList<SPlayerScore> DefaultCarMostSkillpoints;
-        public IList<SPlayerScore> DefaultCarMostActivityPoints;
-        public IList<SPlayerCompletion> DefaultCarCompletion;
-        public IList<SPlayerScore> GlobalMostSkillpoints;
-        public IList<SPlayerScore> GlobalMostActivityPoints;
+        public IList<SPlayerMedals> DefaultCarCompletion;
         public IList<SPlayerCompletion> GlobalCompletion;
         public Dictionary<string, SCombinationRecordCount> CombinationRecordCount;
-        public Dictionary<string, IList<SPlayerScore>> EnvimixCombinationMostSkillpoints;
-        public Dictionary<string, IList<SPlayerScore>> EnvimixCombinationMostActivityPoints;
         public Dictionary<string, IList<SPlayerCompletion>> EnvimixCombinationCompletion;
-        public Dictionary<string, IList<SPlayerScore>> DefaultCarCombinationMostSkillpoints;
-        public Dictionary<string, IList<SPlayerScore>> DefaultCarCombinationMostActivityPoints;
-        public Dictionary<string, IList<SPlayerCompletion>> DefaultCarCombinationCompletion;
-        public Dictionary<string, IList<SPlayerScore>> GlobalCombinationMostSkillpoints;
-        public Dictionary<string, IList<SPlayerScore>> GlobalCombinationMostActivityPoints;
+        public Dictionary<string, IList<SPlayerMedals>> DefaultCarCombinationCompletion;
         public Dictionary<string, IList<SPlayerCompletion>> GlobalCombinationCompletion;
+    }
+
+    public struct STitleActivityPointStats
+    {
+        public IList<SPlayerScore> EnvimixMostActivityPoints;
+        public IList<SPlayerScore> DefaultCarMostActivityPoints;
+        public IList<SPlayerScore> GlobalMostActivityPoints;
+        public Dictionary<string, IList<SPlayerScore>> EnvimixCombinationMostActivityPoints;
+        public Dictionary<string, IList<SPlayerScore>> DefaultCarCombinationMostActivityPoints;
+        public Dictionary<string, IList<SPlayerScore>> GlobalCombinationMostActivityPoints;
     }
 
     public bool ManiaPlanetAuthenticationRequested;
@@ -190,7 +216,10 @@ public class MainMenu : CManiaAppTitle, IContext
     public CHttpRequest? SubmitMapsRequest;
     public CHttpRequest? SubmitTitleRequest;
     public CHttpRequest? TotdRequest;
-    public CHttpRequest? StatsRequest;
+    public CHttpRequest? StatsGeneralRequest;
+    public CHttpRequest? StatsSkillpointsRequest;
+    public CHttpRequest? StatsActivityPointsRequest;
+    public CHttpRequest? StatsCompletionRequest;
     public Dictionary<string, Dictionary<string, CHttpRequest>> LeaderboardRequests;
     public CHttpRequest? RestoreRecordsRequest;
 
@@ -528,24 +557,77 @@ public class MainMenu : CManiaAppTitle, IContext
             TotdRequest = null;
         }
 
-        if (StatsRequest is not null && StatsRequest.IsCompleted)
+        if (StatsGeneralRequest is not null && StatsGeneralRequest.IsCompleted)
         {
-            if (StatsRequest.StatusCode == 200)
+            if (StatsGeneralRequest.StatusCode == 200)
             {
-                Log("Stats received (200).");
+                Log("General stats received (200).");
 
-                STitleStats stats = new();
-                stats.FromJson(StatsRequest.Result);
+                STitleGeneralStats stats = new();
+                stats.FromJson(StatsGeneralRequest.Result);
                 Yield();
-
-                ProcessTitleStats(stats);
+                ProcessTitleGeneralStats(stats);
             }
             else
             {
-                Log($"Stats request failed ({StatsRequest.StatusCode}).");
+                Log($"General stats request failed ({StatsGeneralRequest.StatusCode}).");
             }
-            Http.Destroy(StatsRequest);
-            StatsRequest = null;
+            Http.Destroy(StatsGeneralRequest);
+            StatsGeneralRequest = null;
+        }
+
+        if (StatsSkillpointsRequest is not null && StatsSkillpointsRequest.IsCompleted)
+        {
+            if (StatsSkillpointsRequest.StatusCode == 200)
+            {
+                Log("Skillpoint stats received (200).");
+                STitleSkillpointStats stats = new();
+                stats.FromJson(StatsSkillpointsRequest.Result);
+                Yield();
+                ProcessTitleSkillpointStats(stats);
+            }
+            else
+            {
+                Log($"Skillpoint stats request failed ({StatsSkillpointsRequest.StatusCode}).");
+            }
+            Http.Destroy(StatsSkillpointsRequest);
+            StatsSkillpointsRequest = null;
+        }
+
+        if (StatsActivityPointsRequest is not null && StatsActivityPointsRequest.IsCompleted)
+        {
+            if (StatsActivityPointsRequest.StatusCode == 200)
+            {
+                Log("Activity point stats received (200).");
+                STitleActivityPointStats stats = new();
+                stats.FromJson(StatsActivityPointsRequest.Result);
+                Yield();
+                ProcessTitleActivityPointStats(stats);
+            }
+            else
+            {
+                Log($"Activity point stats request failed ({StatsActivityPointsRequest.StatusCode}).");
+            }
+            Http.Destroy(StatsActivityPointsRequest);
+            StatsActivityPointsRequest = null;
+        }
+
+        if (StatsCompletionRequest is not null && StatsCompletionRequest.IsCompleted)
+        {
+            if (StatsCompletionRequest.StatusCode == 200)
+            {
+                Log("Completion stats received (200).");
+                STitleCompletionStats stats = new();
+                stats.FromJson(StatsCompletionRequest.Result);
+                Yield();
+                ProcessTitleCompletionStats(stats);
+            }
+            else
+            {
+                Log($"Completion stats request failed ({StatsCompletionRequest.StatusCode}).");
+            }
+            Http.Destroy(StatsCompletionRequest);
+            StatsCompletionRequest = null;
         }
 
         if (RestoreRecordsRequest is not null && RestoreRecordsRequest.IsCompleted)
@@ -1071,7 +1153,10 @@ public class MainMenu : CManiaAppTitle, IContext
 
     private void RequestStats()
     {
-        StatsRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats");
+        StatsGeneralRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats/general");
+        StatsSkillpointsRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats/skillpoints");
+        StatsActivityPointsRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats/activity-points");
+        StatsCompletionRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/stats/completion");
     }
 
     private void RestoreRecords()
@@ -1079,71 +1164,8 @@ public class MainMenu : CManiaAppTitle, IContext
         RestoreRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/restore-records", "", $"Authorization: Bearer {EnvimixTurboUserToken}");
     }
 
-    private void ProcessTitleStats(STitleStats stats)
+    private void EvaluateOfflinePoints(STitleGeneralStats stats)
     {
-        var titleStars = Local<Dictionary<string, Dictionary<string, SStar>>>.For(SoloMenuLayer.LocalPage);
-        titleStars.Set(stats.Stars);
-
-        var titleCombinations = Local<Dictionary<string, Dictionary<string, SCombinationStat>>>.For(SoloMenuLayer.LocalPage);
-        titleCombinations.Set(stats.Combinations);
-
-        var leaderboardsUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(LeaderboardsLayer.LocalPage);
-        leaderboardsUserInfos.Set(stats.Players);
-
-        var soloUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(SoloMenuLayer.LocalPage);
-        soloUserInfos.Set(stats.Players);
-
-        var envimixCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
-        var envimixMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
-        var envimixMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
-
-        var defaultCarCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
-        var defaultCarMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
-        var defaultCarMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
-
-        var globalCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
-        var globalMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
-        var globalMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
-
-        envimixCompletion.Set(stats.EnvimixCompletion);
-        envimixMostSkillpoints.Set(stats.EnvimixMostSkillpoints);
-        envimixMostActivityPoints.Set(stats.EnvimixMostActivityPoints);
-
-        defaultCarCompletion.Set(stats.DefaultCarCompletion);
-        defaultCarMostSkillpoints.Set(stats.DefaultCarMostSkillpoints);
-        defaultCarMostActivityPoints.Set(stats.DefaultCarMostActivityPoints);
-
-        globalCompletion.Set(stats.GlobalCompletion);
-        globalMostSkillpoints.Set(stats.GlobalMostSkillpoints);
-        globalMostActivityPoints.Set(stats.GlobalMostActivityPoints);
-
-        var combinationRecordCount = Local<Dictionary<string, SCombinationRecordCount>>.For(LeaderboardsLayer.LocalPage);
-        combinationRecordCount.Set(stats.CombinationRecordCount);
-
-        var envimixCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(LeaderboardsLayer.LocalPage);
-        var envimixCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
-        var envimixCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
-
-        var defaultCarCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(LeaderboardsLayer.LocalPage);
-        var defaultCarCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
-        var defaultCarCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
-
-        var globalCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(LeaderboardsLayer.LocalPage);
-        var globalCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
-        var globalCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
-
-        envimixCombinationCompletion.Set(stats.EnvimixCombinationCompletion);
-        envimixCombinationMostSkillpoints.Set(stats.EnvimixCombinationMostSkillpoints);
-        envimixCombinationMostActivityPoints.Set(stats.EnvimixCombinationMostActivityPoints);
-
-        defaultCarCombinationCompletion.Set(stats.DefaultCarCombinationCompletion);
-        defaultCarCombinationMostSkillpoints.Set(stats.DefaultCarCombinationMostSkillpoints);
-        defaultCarCombinationMostActivityPoints.Set(stats.DefaultCarCombinationMostActivityPoints);
-
-        globalCombinationCompletion.Set(stats.GlobalCombinationCompletion);
-        globalCombinationMostSkillpoints.Set(stats.GlobalCombinationMostSkillpoints);
-        globalCombinationMostActivityPoints.Set(stats.GlobalCombinationMostActivityPoints);
-
         if (DataFileMgr.Campaigns.Count == 0)
         {
             return;
@@ -1278,7 +1300,108 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         LayerCustomEvent(SoloMenuLayer, "SetPoints", new[] { skillpointsTotal.ToString(), activityPointsTotal.ToString() });
-        LayerCustomEvent(LeaderboardsLayer, "SetLeaderboards", new[] { stats.EnvimixCompletionPercentage.ToString(), stats.DefaultCarCompletionPercentage.ToString(), stats.GlobalCompletionPercentage.ToString(), stats.EnvimixCompletionPercentages.ToJson(), stats.DefaultCarCompletionPercentages.ToJson(), stats.GlobalCompletionPercentages.ToJson() });
+    }
+
+    private void ProcessTitleGeneralStats(STitleGeneralStats stats)
+    {
+        var titleStars = Local<Dictionary<string, Dictionary<string, string>>>.For(SoloMenuLayer.LocalPage);
+        titleStars.Set(stats.Stars);
+
+        var titleCombinations = Local<Dictionary<string, Dictionary<string, SCombinationStat>>>.For(SoloMenuLayer.LocalPage);
+        titleCombinations.Set(stats.Combinations);
+
+        var leaderboardsUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(LeaderboardsLayer.LocalPage);
+        leaderboardsUserInfos.Set(stats.Players);
+
+        var soloUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(SoloMenuLayer.LocalPage);
+        soloUserInfos.Set(stats.Players);
+
+        LayerCustomEvent(SoloMenuLayer, "GeneralStats", new[] { "" });
+        LayerCustomEvent(LeaderboardsLayer, "UserInfos", new[] { "" });
+    }
+
+    private void ProcessTitleCompletionStats(STitleCompletionStats stats)
+    {
+        var envimixCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarCompletion = Local<IList<SPlayerMedals>>.For(LeaderboardsLayer.LocalPage);
+        var globalCompletion = Local<IList<SPlayerCompletion>>.For(LeaderboardsLayer.LocalPage);
+
+        envimixCompletion.Set(stats.EnvimixCompletion);
+        defaultCarCompletion.Set(stats.DefaultCarCompletion);
+        globalCompletion.Set(stats.GlobalCompletion);
+
+        var combinationRecordCount = Local<Dictionary<string, SCombinationRecordCount>>.For(LeaderboardsLayer.LocalPage);
+        combinationRecordCount.Set(stats.CombinationRecordCount);
+
+        var envimixCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarCombinationCompletion = Local<Dictionary<string, IList<SPlayerMedals>>>.For(LeaderboardsLayer.LocalPage);
+        var globalCombinationCompletion = Local<Dictionary<string, IList<SPlayerCompletion>>>.For(LeaderboardsLayer.LocalPage);
+
+        envimixCombinationCompletion.Set(stats.EnvimixCombinationCompletion);
+        defaultCarCombinationCompletion.Set(stats.DefaultCarCombinationCompletion);
+        globalCombinationCompletion.Set(stats.GlobalCombinationCompletion);
+
+        LayerCustomEvent(LeaderboardsLayer, "CompletionStats", new[] { stats.EnvimixCompletionPercentage.ToString(), stats.DefaultCarCompletionPercentage.ToString(), stats.GlobalCompletionPercentage.ToString(), stats.EnvimixCompletionPercentages.ToJson(), stats.DefaultCarCompletionPercentages.ToJson(), stats.GlobalCompletionPercentages.ToJson() });
+    }
+
+    private void ProcessTitleSkillpointStats(STitleSkillpointStats stats)
+    {
+        var envimixMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+        var globalMostSkillpoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+
+        envimixMostSkillpoints.Set(stats.EnvimixMostSkillpoints);
+        defaultCarMostSkillpoints.Set(stats.DefaultCarMostSkillpoints);
+        globalMostSkillpoints.Set(stats.GlobalMostSkillpoints);
+
+        var envimixCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
+        var globalCombinationMostSkillpoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
+
+        envimixCombinationMostSkillpoints.Set(stats.EnvimixCombinationMostSkillpoints);
+        defaultCarCombinationMostSkillpoints.Set(stats.DefaultCarCombinationMostSkillpoints);
+        globalCombinationMostSkillpoints.Set(stats.GlobalCombinationMostSkillpoints);
+
+        LayerCustomEvent(LeaderboardsLayer, "SkillpointStats", new[] { "" });
+
+        foreach (var playerScore in stats.GlobalMostSkillpoints)
+        {
+            if (playerScore.L == LocalUser.Login)
+            {
+                LayerCustomEvent(SoloMenuLayer, "Skillpoints", new[] { playerScore.S.ToString() });
+                break;
+            }
+        }
+    }
+
+    private void ProcessTitleActivityPointStats(STitleActivityPointStats stats)
+    {
+        var envimixMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+        var globalMostActivityPoints = Local<IList<SPlayerScore>>.For(LeaderboardsLayer.LocalPage);
+
+        envimixMostActivityPoints.Set(stats.EnvimixMostActivityPoints);
+        defaultCarMostActivityPoints.Set(stats.DefaultCarMostActivityPoints);
+        globalMostActivityPoints.Set(stats.GlobalMostActivityPoints);
+
+        var envimixCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
+        var defaultCarCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
+        var globalCombinationMostActivityPoints = Local<Dictionary<string, IList<SPlayerScore>>>.For(LeaderboardsLayer.LocalPage);
+
+        envimixCombinationMostActivityPoints.Set(stats.EnvimixCombinationMostActivityPoints);
+        defaultCarCombinationMostActivityPoints.Set(stats.DefaultCarCombinationMostActivityPoints);
+        globalCombinationMostActivityPoints.Set(stats.GlobalCombinationMostActivityPoints);
+
+        LayerCustomEvent(LeaderboardsLayer, "ActivityPointStats", new[] { "" });
+
+        foreach (var playerScore in stats.GlobalMostActivityPoints)
+        {
+            if (playerScore.L == LocalUser.Login)
+            {
+                LayerCustomEvent(SoloMenuLayer, "ActivityPoints", new[] { playerScore.S.ToString() });
+                break;
+            }
+        }
     }
 
     private void RequestLeaderboards(string mapUid, int laps, ImmutableArray<string> cars)

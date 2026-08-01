@@ -109,7 +109,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public int MapSelectedAt = -1;
     public int StatsAt = -1;
     public int StatsLocalAt = -1;
-    public int StatsReceivedAt = -1;
+    public int SkillpointsReceivedAt = -1;
+    public int ActivityPointsReceivedAt = -1;
 
     public int CurrentSkillpoints;
     public int CurrentActivityPoints;
@@ -131,7 +132,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
 
-    public Dictionary<string, Dictionary<string, SStar>> TitleStars;
+    public Dictionary<string, Dictionary<string, string>> TitleStars;
     public Dictionary<string, Dictionary<string, SCombinationStat>> TitleCombinations;
     public Dictionary<string, STitleUserInfo> SoloUserInfos;
 
@@ -248,20 +249,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     HideCampaignOverviewFrame();
                     HideMapOverviewFrame();
                     break;
-                case "SetPoints":
-                    ExpectedSkillpoints = TextLib.ToInteger(data[0]);
-                    ExpectedActivityPoints = TextLib.ToInteger(data[1]);
-                    StatsReceivedAt = Now;
-
-                    if (EnableMenuNavigationInputs && (ExpectedSkillpoints > CurrentSkillpoints || ExpectedActivityPoints > CurrentActivityPoints))
-                    {
-                        for (var i = 0; i < 10; i++)
-                        {
-                            Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
-                        }
-                    }
-
-                    var titleStars = Local<Dictionary<string, Dictionary<string, SStar>>>.For(Page);
+                case "GeneralStats":
+                    var titleStars = Local<Dictionary<string, Dictionary<string, string>>>.For(Page);
                     var soloUserInfos = Local<Dictionary<string, STitleUserInfo>>.For(Page);
                     var titleCombinations = Local<Dictionary<string, Dictionary<string, SCombinationStat>>>.For(Page);
                     TitleStars = titleStars.Get();
@@ -271,9 +260,31 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     // weird to call it at SetPoints, but it allows updating the solo menu stats when nothing is clicked
                     if (DataFileMgr.Campaigns.Count > 0 && MapGroupNum != -1 && MapInfoNum != -1)
                     {
-                        UpdateStats(GetCampaignForMaps().MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
+                        UpdateGeneralStats(GetCampaignForMaps().MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
                     }
                     SetupCampaign(false, false);
+                    break;
+                case "Skillpoints":
+                    ExpectedSkillpoints = TextLib.ToInteger(data[0]);
+                    SkillpointsReceivedAt = Now;
+                    if (EnableMenuNavigationInputs && ExpectedSkillpoints > CurrentSkillpoints)
+                    {
+                        for (var i = 0; i < 10; i++)
+                        {
+                            Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
+                        }
+                    }
+                    break;
+                case "ActivityPoints":
+                    ExpectedActivityPoints = TextLib.ToInteger(data[0]);
+                    ActivityPointsReceivedAt = Now;
+                    if (EnableMenuNavigationInputs && ExpectedActivityPoints > CurrentActivityPoints)
+                    {
+                        for (var i = 0; i < 10; i++)
+                        {
+                            Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
+                        }
+                    }
                     break;
                 case "LeaderboardData":
                     var mapUid = data[0];
@@ -662,26 +673,40 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
         }
 
-        if (StatsReceivedAt != -1)
+        if (SkillpointsReceivedAt != -1)
         {
             var duration = 1000;
-            var time = Now - StatsReceivedAt;
+            var time = Now - SkillpointsReceivedAt;
 
             var skillpointsDiff = ExpectedSkillpoints - CurrentSkillpoints;
-            var activityPointsDiff = ExpectedActivityPoints - CurrentActivityPoints;
-
             var skillpoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentSkillpoints), MathLib.ToReal(skillpointsDiff), duration));
-            var activityPoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentActivityPoints), MathLib.ToReal(activityPointsDiff), duration));
 
             LabelSkillpoints.Value = FormatNumberSpace(skillpoints);
-            LabelActivityPoints.Value = FormatNumberSpace(activityPoints);
 
-            var noPointDiff = skillpointsDiff == 0 && activityPointsDiff == 0;
+            var noPointDiff = skillpointsDiff == 0;
 
             if (time >= duration || noPointDiff)
             {
-                StatsReceivedAt = -1;
+                SkillpointsReceivedAt = -1;
                 CurrentSkillpoints = ExpectedSkillpoints;
+            }
+        }
+
+        if (ActivityPointsReceivedAt != -1)
+        {
+            var duration = 1000;
+            var time = Now - ActivityPointsReceivedAt;
+
+            var activityPointsDiff = ExpectedActivityPoints - CurrentActivityPoints;
+            var activityPoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentActivityPoints), MathLib.ToReal(activityPointsDiff), duration));
+
+            LabelActivityPoints.Value = FormatNumberSpace(activityPoints);
+
+            var noPointDiff = activityPointsDiff == 0;
+
+            if (time >= duration || noPointDiff)
+            {
+                ActivityPointsReceivedAt = -1;
                 CurrentActivityPoints = ExpectedActivityPoints;
             }
         }
@@ -1082,7 +1107,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
-    private void UpdateStats(CMapInfo selectedMapInfo)
+    private void UpdateGeneralStats(CMapInfo selectedMapInfo)
     {
         if (IsTMUF)
         {
@@ -1395,7 +1420,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         if (MapGroupNum != -1 && MapInfoNum != -1)
         {
-            UpdateStats(Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
+            UpdateGeneralStats(Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
         }
 
         if (MapSelectedAt != -1)
@@ -1568,7 +1593,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             LabelSelectedMapName.SetText(TextLib.FormatInteger(selectedNum + 1, 3));
             QuadPlay.Visible = true;
 
-            UpdateStats(selectedMapInfo);
+            UpdateGeneralStats(selectedMapInfo);
         }
         else
         {
