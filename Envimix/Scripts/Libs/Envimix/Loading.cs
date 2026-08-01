@@ -85,7 +85,7 @@ public static class Loading
             "TIP: To stay sane, prefer not calling Canyon 'Red Island', Valley 'Green Coast', and Lagoon 'Blue Bay'. Keep those Sunrise environments in their homes.",
             "TIP: Give yourself a rest after doing a hard validation. We don't want you burned out!",
             "TIP: You can use pad controls or keyboard keys to navigate the main menu now.",
-            "FUN FACT: Players have already driven over 6 GB of ghost data in ENVIMIX Turbo. Please do not increase the sample rate of them (much).",
+            "FUN FACT: Players have already driven over 6 GB of ghost data in ENVIMIX Turbo.",
             "TIP: Install the Replay Unlimiter OpenPlanet plugin to preserve data in your replays after the 1 hour 40 minute mark!",
             "TIP: Medals are not given for envimix combinations, but you can view your theoretical envimix medals in the ingame menu per car.",
             "FUN FACT: The red medal is called Duck Medal and refers to the riolu's record on the map.",
