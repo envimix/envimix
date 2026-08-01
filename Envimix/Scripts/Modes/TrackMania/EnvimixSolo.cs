@@ -576,6 +576,8 @@ public class EnvimixSolo : Envimix
 
     private bool TrySpawnEnvimixSoloPlayer(CTmPlayer player, bool frozen)
     {
+        Wait(() => OnlineGhostsTasks.Count == 0);
+
         bool spawned;
 
         if (frozen)
