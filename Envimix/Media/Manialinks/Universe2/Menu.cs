@@ -220,6 +220,7 @@ public class Menu : CTmMlScriptIngame, IContext
     public int CurrentZoneIndex = 0;
     public int PrevLocalGhostMetadataUpdatedAt = -1;
     public required Dictionary<string, bool> SelectedGhosts;
+    public IList<string> SelectedGhostsKeysBackup;
     public int PrevRatingsUpdatedAt;
     public bool PrevRatingEnabled;
     public int PrevValidationsUpdatedAt;
@@ -1180,13 +1181,33 @@ public class Menu : CTmMlScriptIngame, IContext
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
+	private bool HaveSelectedGhostsChanged()
+    {
+        var changed = SelectedGhosts.Count != SelectedGhostsKeysBackup.Count;
+
+        if (changed)
+        {
+            return changed;
+        }
+
+        foreach (var key in SelectedGhostsKeysBackup)
+        {
+            if (!SelectedGhosts.ContainsKey(key))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private bool IsCarLocked()
 	{
 		return (GetPlayer().RaceStartTime > 0 && GameTime - GetPlayer().RaceStartTime >= 0)
 			|| UI.UISequence == CUIConfig.EUISequence.Intro || IsSpectator;
-        //return (InputPlayer.RaceStartTime > 0 && GameTime - InputPlayer.RaceStartTime >= 0)
-        //	|| (Net_CutOffTimeLimit == -1 && InputPlayer.RaceStartTime == 0);  - issues with disabled default car and no time limit
-    }
+		//return (InputPlayer.RaceStartTime > 0 && GameTime - InputPlayer.RaceStartTime >= 0)
+		//	|| (Net_CutOffTimeLimit == -1 && InputPlayer.RaceStartTime == 0);  - issues with disabled default car and no time limit
+	}
 
     private void ShowCustomModeHelp()
     {
@@ -2292,6 +2313,13 @@ public class Menu : CTmMlScriptIngame, IContext
                 AnimMgr.Add(FrameJoinBlue, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);*/
 
                 MenuOpenTime = Now;
+
+                SelectedGhostsKeysBackup.Clear();
+
+                foreach (var (key, value) in SelectedGhosts)
+                {
+                    SelectedGhostsKeysBackup.Add(key);
+                }
             }
             else
             {
@@ -2303,11 +2331,14 @@ public class Menu : CTmMlScriptIngame, IContext
                     SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True", "False", "True" });
                 }
 
-                // Solo specific spawning
-                // TODO: 3000 should be compatible with custom countdown
-                if (IsSolo() && InputPlayer.RaceStartTime - 3000 > GameTime)
+                if (IsSolo())
                 {
-                    SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
+                    // Solo specific spawning
+                    // TODO: 3000 should be compatible with custom countdown
+                    if (InputPlayer.RaceStartTime - 3000 > GameTime || HaveSelectedGhostsChanged())
+                    {
+                        SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
+                    }
                 }
 
                 AnimMgr.Flush(FrameModeHelp);
