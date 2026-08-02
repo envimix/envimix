@@ -2,11 +2,28 @@
 
 public class ViewGhost : CTmMode, IContext
 {
+    public struct SUniverseWaypoint
+    {
+        public string Login;
+        public bool IsEndLap;
+        public int LapTime;
+        public int RaceTime;
+        public int CheckpointInLap;
+        public int CheckpointInRace;
+    }
+
     [Setting] public string Car = "";
     [Setting] public string GhostUrl = "";
 
-    public int GhostLength;
+    [Netwrite] public required int RaceStartTime { get; set; }
+    [Netwrite] public required int CurrentNbLaps { get; set; }
+
     public int StartTime;
+    public int GhostLength;
+    public IList<int> GhostCheckpoints;
+    public int GhostCheckpointIndex = -1;
+    public CUILayer CheckpointLayer;
+    public int LapFinishTime = -1;
 
     private void SpawnGhost(CGhost ghost)
     {
@@ -16,6 +33,27 @@ public class ViewGhost : CTmMode, IContext
         UIManager.UIAll.SpectatorForceCameraType = 1;
         UIManager.UIAll.SpectatorObserverMode = CUIConfig.EObserverMode.Forced;
         UIManager.UIAll.UISequence = CUIConfig.EUISequence.EndRound;
+    }
+
+    private void Reset()
+    {
+        StartTime = Now;
+        RaceStartTime = StartTime + 2500;
+        GhostCheckpointIndex = -1;
+        LapFinishTime = -1;
+
+        SUniverseWaypoint resetCp = new()
+        {
+            RaceTime = -1,
+            LapTime = -1,
+            CheckpointInLap = -1,
+            CheckpointInRace = -1,
+            IsEndLap = false,
+            Login = ""
+        };
+
+        var checkpoint = Netwrite<SUniverseWaypoint>.For(Players[0]);
+        checkpoint.Set(resetCp);
     }
 
     public void Main()
@@ -58,8 +96,13 @@ public class ViewGhost : CTmMode, IContext
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.SmallScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.UISequence = CUIConfig.EUISequence.PlayersPresentation;
+        UIManager.UIAll.ScoreTableOnlyManialink = true;
 
         UIManager.HoldLoadingScreen = true;
+
+        CreateLayer("321GoViewGhost");
+        CreateLayer("MultilapViewGhost");
+        CheckpointLayer = CreateLayer("Checkpoint2");
 
         RequestLoadMap();
         Wait(() => MapLoaded && Players.Count > 0);
@@ -94,7 +137,14 @@ public class ViewGhost : CTmMode, IContext
         UIManager.HoldLoadingScreen = false;
 
         GhostLength = ghostTask.Ghost.Result.Time;
-        StartTime = Now;
+
+        GhostCheckpoints.Clear();
+        foreach (var checkpoint in ghostTask.Ghost.Result.Checkpoints)
+        {
+            GhostCheckpoints.Add(checkpoint);
+        }
+
+        Reset();
 
         SpawnGhost(ghostTask.Ghost);
     }
@@ -103,10 +153,86 @@ public class ViewGhost : CTmMode, IContext
     {
         if (Now - StartTime > GhostLength + 3500)
         {
-            StartTime = Now;
             UIManager.UIAll.UISequence = CUIConfig.EUISequence.PlayersPresentation;
             Sleep(100);
             UIManager.UIAll.UISequence = CUIConfig.EUISequence.EndRound;
+            Reset();
         }
+
+        if (GhostCheckpoints.Count > 0)
+        {
+            if (GhostCheckpointIndex < GhostCheckpoints.Count - 1 && Now - StartTime - 2500 > GhostCheckpoints[GhostCheckpointIndex + 1])
+            {
+                GhostCheckpointIndex += 1;
+
+                var raceTime = GhostCheckpoints[GhostCheckpointIndex];
+                var lapTime = raceTime;
+                var checkpointIndexInLap = 0;
+                var isEndLap = false;
+                if (MapIsLapRace && MapCheckpointPos.Count > 0)
+                {
+                    checkpointIndexInLap = GhostCheckpointIndex % MapCheckpointPos.Count;
+                    isEndLap = (GhostCheckpointIndex + 1) % (MapCheckpointPos.Count + 1) == 0;
+
+                    if (LapFinishTime != -1)
+                    {
+                        lapTime = raceTime - LapFinishTime;
+                    }
+
+                    if (isEndLap)
+                    {
+                        LapFinishTime = GhostCheckpoints[GhostCheckpointIndex];
+                    }
+
+                    CurrentNbLaps = (GhostCheckpointIndex + 1) / MapCheckpointPos.Count;
+
+                    if (CurrentNbLaps >= MapNbLaps)
+                    {
+                        CurrentNbLaps = MapNbLaps;
+                    }
+                }
+
+                SUniverseWaypoint newCp = new()
+                {
+                    RaceTime = raceTime,
+                    LapTime = lapTime,
+                    CheckpointInLap = checkpointIndexInLap,
+                    CheckpointInRace = GhostCheckpointIndex,
+                    IsEndLap = isEndLap,
+                    Login = Players[0].User.Login
+                };
+
+                var checkpoint = Netwrite<SUniverseWaypoint>.For(Players[0]);
+                checkpoint.Set(newCp);
+            }
+        }
+    }
+
+    public required Dictionary<string, CUILayer> Layers;
+
+    public void DestroyLayer(string layerName)
+    {
+        UIManager.UILayerDestroy(Layers[layerName]);
+    }
+
+    public CUILayer CreateLayer(string layerName)
+    {
+        if (Layers.ContainsKey(layerName))
+        {
+            DestroyLayer(layerName);
+        }
+
+        var request = Http.CreateGet($"file://Media/Manialinks/Universe2/{layerName}.xml");
+        Wait(() => request.IsCompleted);
+
+        var layer = UIManager.UILayerCreate();
+        layer.Type = CUILayer.EUILayerType.Normal;
+        layer.ManialinkPage = request.Result;
+        Layers[layerName] = layer;
+        UIManager.UIAll.UILayers.Add(layer);
+
+        Http.Destroy(request);
+
+        return layer;
     }
 }

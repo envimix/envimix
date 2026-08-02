@@ -104,8 +104,17 @@ public class Checkpoint2 : CTmMlScriptIngame, IContext
         Wait(() => GetPlayer() is not null);
     }
 
+    public int PrevCheckpointTime = -1;
+
     public void Loop()
     {
+        var checkpoint = Netread<SUniverseWaypoint>.For(GetPlayer());
+        if (checkpoint.Get().RaceTime != PrevCheckpointTime && checkpoint.Get().RaceTime != 0)
+        {
+            Waypoint(checkpoint.Get());
+            PrevCheckpointTime = checkpoint.Get().RaceTime;
+        }
+
         if (CheckpointShowTime != -1)
         {
             FrameCheckpoint.Visible = !ScoreTableIsVisible;
