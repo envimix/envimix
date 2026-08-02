@@ -204,7 +204,18 @@ public class EnvimixSolo : Envimix
 
     public override void OnGameLoop()
     {
-        if (!Outro)
+        if (Outro)
+        {
+            if (Now > OutroGhostEndTime)
+            {
+                var ui = UIManager.GetUI(GetPlayer());
+                ui.UISequence = CUIConfig.EUISequence.PlayersPresentation; // quick reset to ghost-less black bars
+                Sleep(100); // yield is not enough, must be enough sleep time, 100 seems stable
+                ui.UISequence = CUIConfig.EUISequence.EndRound;
+                OutroGhostEndTime = Now + 3500 + OutroGhost!.Result.Time;
+            }
+        }
+        else
         {
             foreach (var player in PlayersWaiting)
             {
@@ -842,7 +853,7 @@ public class EnvimixSolo : Envimix
         RaceGhost_RemoveAll();
 
         OutroGhostViewInst = RaceGhost_Add(OutroGhost, false);
-        OutroGhostEndTime = Now + 2500 + OutroGhost!.Result.Time;
+        OutroGhostEndTime = Now + 3500 + OutroGhost!.Result.Time;
 
         Outro = true;
 
