@@ -1759,7 +1759,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
             var fileNameSupportedTime = TextLib.Replace(TextLib.Replace(TimeToTextWithMilli(record.Time), ":", "'"), ".", "''");
             var replayPath = $"{TextLib.StripFormatting(Map.MapInfo.Name)}_{GetCar()}_{TextLib.StripFormatting(record.User.Nickname)}_({fileNameSupportedTime})";
-            var fullReplayPath = $"Replays/Downloaded/Envimix_Turbo@bigbang1112/{replayPath}.Replay.Gbx";
+            var fullReplayPath = $"Downloaded/Envimix_Turbo@bigbang1112/{replayPath}.Replay.Gbx";
 
             frame.DataAttributeSet("downloadfile", fullReplayPath);
             frame.DataAttributeSet("file", "");
