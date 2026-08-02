@@ -145,6 +145,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public bool VRCampaignReleased;
     public bool LeaderboardsLoadedOrLoading;
 
+    public Dictionary<CMlFrame, float> PrevLeaderboardScrollY;
+
     public SoloMenu()
     {
         QuadBack.MouseClick += () =>
@@ -725,6 +727,29 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 VRCampaignReleased = true;
             }
         }
+
+        foreach (var control in FrameLeaderboards.Controls)
+        {
+            var frameScrollRecords = ((control as CMlFrame)!.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
+
+            if (!PrevLeaderboardScrollY.ContainsKey(frameScrollRecords))
+            {
+                PrevLeaderboardScrollY[frameScrollRecords] = 0;
+            }
+
+            if (frameScrollRecords.ScrollOffset.Y != PrevLeaderboardScrollY[frameScrollRecords])
+            {
+                PrevLeaderboardScrollY[frameScrollRecords] = (float)frameScrollRecords.ScrollOffset.Y;
+
+                var frameRecords = (frameScrollRecords.GetFirstChild("FrameRecords") as CMlFrame)!;
+                var quadRecordsScrollArea = (frameScrollRecords.GetFirstChild("QuadRecordsScrollArea") as CMlQuad)!;
+
+                frameRecords.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
+                quadRecordsScrollArea.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
+
+                UpdateLeaderboards();
+            }
+        }
     }
 
     static string TimeToTextWithMilli(int time)
@@ -1173,8 +1198,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var carName = cars[carIndex];
 
             var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
+            var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
             var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
             var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+
+            var scrollIndex = MathLib.NearestInteger((float)frameScrollRecords.ScrollOffset.Y / 5);
 
             labelConfirm.Hide();
 
@@ -1187,6 +1215,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
 
             var lb = Leaderboards[selectedMapInfo.MapUid][carName];
+
+            frameScrollRecords.ScrollMax.Y = MathLib.Max(0f, (lb.Records.Length - 10) * 5f);
 
             quadLoadingLeaderboard.Hide();
 
@@ -1204,7 +1234,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            var rankIndex = 0;
+            var rankIndex = scrollIndex;
             var prevTime = -1;
             var rankOffset = 0;
 
@@ -1392,7 +1422,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             var labelValidation = (FrameValidations.Controls[i] as CMlLabel)!;
             var frameLeaderboard = (FrameLeaderboards.Controls[i] as CMlFrame)!;
+            var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
             var labelRank = (FrameRanks.Controls[i] as CMlLabel)!;
+
+            frameScrollRecords.ScrollOffset.Y = 0;
 
             if (missingCar)
             {
