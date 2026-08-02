@@ -72,6 +72,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         public string TitlePackReleaseTimestamp;
     }
 
+    public struct SSuperMedals
+    {
+        public int Duck;
+        public int STM;
+    }
+
     [ManialinkControl] public required CMlQuad QuadBack;
     [ManialinkControl] public required CMlFrame FrameCars;
     [ManialinkControl] public required CMlFrame FrameValidations;
@@ -146,6 +152,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public bool LeaderboardsLoadedOrLoading;
 
     public Dictionary<CMlFrame, float> PrevLeaderboardScrollY;
+
+    public CHttpRequest? SuperMedalsRequest;
+    public Dictionary<string, SSuperMedals> SuperMedals;
 
     public SoloMenu()
     {
@@ -595,6 +604,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         SwitchCars(false);
         SetupCampaign(false, false);
+
+        SuperMedalsRequest = Http.CreateGet("file://Media/Medals.json");
     }
 
     public void Loop()
@@ -767,6 +778,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                 UpdateLeaderboards();
             }
+        }
+
+        if (SuperMedalsRequest is not null && SuperMedalsRequest.IsCompleted)
+        {
+            if (SuperMedalsRequest.StatusCode == 200)
+            {
+                SuperMedals.FromJson(SuperMedalsRequest.Result);
+            }
+            Http.Destroy(SuperMedalsRequest);
+            SuperMedalsRequest = null;
+
+            SetupCampaign(false, false);
         }
     }
 
@@ -1540,6 +1563,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         var labelSkillpoints = (frameMap.GetFirstChild("LabelSkillpoints") as CMlLabel)!;
                         var labelLaps = (frameMap.GetFirstChild("LabelLaps") as CMlLabel)!;
                         var labelCompleted = (frameMap.GetFirstChild("LabelCompleted") as CMlLabel)!;
+                        var quadMedal = (frameMap.GetFirstChild("QuadMedal") as CMlQuad)!;
 
                         if (mapGroup is null || mapCounter >= mapGroup.MapInfos.Count)
                         {
@@ -1550,6 +1574,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                             labelSkillpoints.Hide();
                             labelLaps.Hide();
                             labelCompleted.Hide();
+                            quadMedal.Hide();
                             continue;
                         }
 
@@ -1598,10 +1623,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                             var scoreContext = $"{ScoreContextPrefix}{carName}";
 
                             // hacky but it works for TMT
-                            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
+                            var isDefaultCar = (mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
                                 || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
                                 || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
-                                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+                                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar");
+
+                            if (isDefaultCar)
                             {
                                 scoreContext = ScoreContextPrefix;
                                 continue; // TODO configurable if default cars should count or not
@@ -1622,6 +1649,76 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         }
 
                         labelCompleted.Visible = completed;
+
+                        var defaultCarTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, ScoreContextPrefix);
+
+                        if (defaultCarTime < 0)
+                        {
+                            quadMedal.Hide();
+                        }
+                        else
+                        {
+                            quadMedal.ImageUrl = "";
+                            quadMedal.Substyle = "";
+
+                            if (SuperMedals.ContainsKey(mapInfo.MapUid))
+                            {
+                                var superMedals = SuperMedals[mapInfo.MapUid];
+                                if (defaultCarTime <= superMedals.Duck)
+                                {
+                                    quadMedal.ImageUrl = "file://Media/Images/Medals/duck.png";
+                                }
+                                else if (defaultCarTime <= superMedals.STM)
+                                {
+                                    quadMedal.ImageUrl = "file://Media/Images/Medals/stm.png";
+                                }
+                                else
+                                {
+                                    var superGold = superMedals.STM - MathLib.FloorInteger((superMedals.STM - mapInfo.TMObjective_AuthorTime) * 0.125f);
+                                    var superSilver = superMedals.STM - MathLib.FloorInteger((superMedals.STM - mapInfo.TMObjective_AuthorTime) * 0.25f);
+                                    var superBronze = superMedals.STM - MathLib.FloorInteger((superMedals.STM - mapInfo.TMObjective_AuthorTime) * 0.5f);
+
+                                    if (defaultCarTime <= superGold)
+                                    {
+                                        quadMedal.ImageUrl = "file://Media/Images/Medals/supergold.png";
+                                    }
+                                    else if (defaultCarTime <= superSilver)
+                                    {
+                                        quadMedal.ImageUrl = "file://Media/Images/Medals/supersilver.png";
+                                    }
+                                    else if (defaultCarTime <= superBronze)
+                                    {
+                                        quadMedal.ImageUrl = "file://Media/Images/Medals/superbronze.png";
+                                    }
+                                }
+                            }
+
+                            if (quadMedal.ImageUrl == "")
+                            {
+                                if (defaultCarTime <= mapInfo.TMObjective_AuthorTime)
+                                {
+                                    quadMedal.Substyle = "MedalNadeo";
+                                }
+                                else if (defaultCarTime <= mapInfo.TMObjective_GoldTime)
+                                {
+                                    quadMedal.Substyle = "MedalGold";
+                                }
+                                else if (defaultCarTime <= mapInfo.TMObjective_SilverTime)
+                                {
+                                    quadMedal.Substyle = "MedalSilver";
+                                }
+                                else if (defaultCarTime <= mapInfo.TMObjective_BronzeTime)
+                                {
+                                    quadMedal.Substyle = "MedalBronze";
+                                }
+                                else
+                                {
+                                    quadMedal.Substyle = "MedalSlot";
+                                }
+                            }
+
+                            quadMedal.Show();
+                        }
 
                         mapCounter += 1;
                         totalMapCounter += 1;

@@ -3,12 +3,13 @@
     <framemodel id="FramemodelMap">
         <quad size="14.75 14.75" halign="center" valign="center" bgcolor="222" opacity="0.75" z-index="0"/>
         <quad id="QuadMapThumbnail" size="14 14" halign="center" valign="center" image="file://Thumbnails/MapUid/YAGV4LM73qshYEC2mHm_RJqrOM8" z-index="1" hidden="1"/>
-        <quad id="QuadMapButton" size="15 15" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" z-index="2" scriptevents="1" opacity="0.5" hidden="1"/>
+        <quad id="QuadMapButton" size="15 15" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" z-index="3" scriptevents="1" opacity="0.5" hidden="1"/>
         <quad id="QuadMapName" size="7 5" halign="right" valign="bottom" bgcolor="222" opacity="0.9" z-index="2" pos="7 -7"/>
         <label id="LabelMapName" z-index="3" size="15 15" text="001" valign="bottom" textsize="2" textfont="OswaldMono" pos="6 -6.6" halign="right" hidden="1"/>
         <label id="LabelSkillpoints" z-index="1" size="15 15" text="0" textsize="1" style="TextRaceChrono" pos="-6 6" textcolor="0F0" hidden="1"/>
         <label id="LabelLaps" pos="4.5 5" z-index="1" size="20 5" text="$s🔁" textsize="1" halign="center" valign="center" />
         <label id="LabelCompleted" pos="-5 5" z-index="1" size="20 5" text="$s" textsize="1" halign="center" valign="center" />
+        <quad id="QuadMedal" pos="-7 -1.8" z-index="2" size="5 5" style="MedalsBig" substyle="MedalBronze"/>
     </framemodel>
     <framemodel id="FramemodelMapGroup">
         <frameinstance modelid="FramemodelMap" pos="-30 0"/>
