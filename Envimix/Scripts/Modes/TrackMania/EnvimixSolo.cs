@@ -119,6 +119,8 @@ public class EnvimixSolo : Envimix
     public const string ScoreContextPrefix = "";
     public const string DisabledCarMessage = "Default car is disabled until completing a different car.";
 
+    public bool EnqueuedRespawn;
+
     public override void OnServerInit()
     {
         ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixSingleplayerClient.Script.txt";
@@ -498,6 +500,15 @@ public class EnvimixSolo : Envimix
             ForceQuit = true;
         }
 
+        if (EnqueuedRespawn && OnlineGhostsTasks.Count == 0)
+        {
+            EnqueuedRespawn = false;
+            var player = GetPlayer();
+            var car = Netwrite<string>.For(player);
+            var frozen = false;
+            var spawned = SpawnEnvimixSoloPlayer(player, car.Get(), frozen);
+        }
+
         CheckForPersonalGhosts();
         CheckForLocalGhosts();
         CheckForOnlineGhosts();
@@ -576,8 +587,6 @@ public class EnvimixSolo : Envimix
 
     private bool TrySpawnEnvimixSoloPlayer(CTmPlayer player, bool frozen)
     {
-        Wait(() => OnlineGhostsTasks.Count == 0);
-
         bool spawned;
 
         if (frozen)
@@ -637,7 +646,11 @@ public class EnvimixSolo : Envimix
                     {
                         var respawn = true; // always respawn on Car event
 
-                        if (respawn)
+                        if (OnlineGhostsTasks.Count > 0)
+                        {
+                            EnqueuedRespawn = true;
+                        }
+                        else if (respawn)
                         {
                             var frozen = e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
                             var spawned = SpawnEnvimixSoloPlayer(player, car.Get(), frozen);
