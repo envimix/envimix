@@ -55,10 +55,11 @@ public class ViewGhost : CTmMode, IContext
         UIManager.UIAll.OverlayHideSpectatorControllers = true;
         UIManager.UIAll.OverlayHidePosition = true;
         UIManager.UIAll.OverlayHideBackground = true;
-        UIManager.UIAll.LabelsVisibility = CUIConfig.EHudVisibility.Nothing;
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.SmallScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.UISequence = CUIConfig.EUISequence.PlayersPresentation;
+
+        UIManager.HoldLoadingScreen = true;
 
         RequestLoadMap();
         Wait(() => MapLoaded && Players.Count > 0);
@@ -89,6 +90,8 @@ public class ViewGhost : CTmMode, IContext
             // PBs driven in test mode dont store ghosts, so this is edgecase
             return;
         }
+
+        UIManager.HoldLoadingScreen = false;
 
         GhostLength = ghostTask.Ghost.Result.Time;
         StartTime = Now;
