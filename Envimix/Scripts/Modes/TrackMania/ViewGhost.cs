@@ -101,7 +101,7 @@ public class ViewGhost : CTmMode, IContext
 
     public void Loop()
     {
-        if (Now - StartTime > GhostLength + 3000)
+        if (Now - StartTime > GhostLength + 3500)
         {
             StartTime = Now;
             UIManager.UIAll.UISequence = CUIConfig.EUISequence.PlayersPresentation;
