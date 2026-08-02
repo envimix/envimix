@@ -1590,7 +1590,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                         labelLaps.Visible = mapInfo.TMObjective_IsLapRace && mapInfo.TMObjective_NbLaps > 1;
 
-                        var completed = true;
+                        // completion isnt considered when data is missing
+                        var completed = TitleCombinations.Count > 0;
 
                         foreach (var carName in AllCars)
                         {
