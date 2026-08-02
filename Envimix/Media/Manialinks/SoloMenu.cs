@@ -306,6 +306,24 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 MapClick(control);
                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             }
+            if (control.Parent.ControlId == "FrameRecords")
+            {
+                var car = control.DataAttributeGet("Car");
+                var ghostUrl = control.DataAttributeGet("GhostUrl");
+                if (ghostUrl != "")
+                {
+                    ViewGhostSelectedMap(car, ghostUrl);
+                }
+            }
+            if (controlId == "LabelPersonalBest")
+            {
+                var car = control.DataAttributeGet("Car");
+                var time = control.DataAttributeGet("Time");
+                if (time != "-1")
+                {
+                    ViewGhostSelectedMap(car, "");
+                }
+            }
             if (FocusedControl is not null)
             {
                 FocusedControl.StyleSelected = false;
@@ -911,8 +929,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
 
             var labelPersonalBest = (frameLeaderboard.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
+            labelPersonalBest.DataAttributeSet("Car", carName);
 
             var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
+            labelPersonalBest.DataAttributeSet("Time", time.ToString());
 
             if (time == -1)
             {
@@ -1224,6 +1244,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 var labelYouCouldBeHere = (frameRecords.Controls[0] as CMlLabel)!;
                 labelYouCouldBeHere.SetText("01 -:--.---  $i$888you could be here!");
+                labelYouCouldBeHere.DataAttributeSet("Car", carName);
+                labelYouCouldBeHere.DataAttributeSet("GhostUrl", "");
                 labelYouCouldBeHere.Show();
                 labelYouCouldBeHere.Opacity = 1;
 
@@ -1260,8 +1282,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                 var labelRec = (controlRec as CMlLabel)!;
                 labelRec.SetText($"{TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2)} {TimeToTextWithMilli(record.Time)}  {record.User.Nickname}");
+                labelRec.DataAttributeSet("Car", carName);
+                labelRec.DataAttributeSet("GhostUrl", record.GhostUrl);
                 labelRec.Show();
-                
+
                 if (record.Removed)
                 {
                     labelRec.Opacity = 0.5f;
@@ -1673,6 +1697,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     private void ExploreSelectedMap()
     {
         SendCustomEvent("ExploreMap", new[] { MapGroupNum.ToString(), MapInfoNum.ToString() });
+    }
+
+    private void ViewGhostSelectedMap(string car, string ghostUrl)
+    {
+        SendCustomEvent("ViewGhost", new[] { MapGroupNum.ToString(), MapInfoNum.ToString(), car, ghostUrl });
     }
 
     private void MapClick(CMlControl control)

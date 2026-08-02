@@ -471,6 +471,13 @@ public class MainMenu : CManiaAppTitle, IContext
                         case "PlayLocalMap":
                             PlayLocalMap(e.CustomEventData[0]);
                             break;
+                        case "ViewGhost":
+                            var viewGhostGroupNum = TextLib.ToInteger(e.CustomEventData[0]);
+                            var viewGhostInfoNum = TextLib.ToInteger(e.CustomEventData[1]);
+                            var car = e.CustomEventData[2];
+                            var ghostUrl = e.CustomEventData[3];
+                            ViewGhost(viewGhostGroupNum, viewGhostInfoNum, car, ghostUrl);
+                            break;
                         case "EditReplay":
                             ImmutableArray<string> replayPaths = new();
                             foreach (var path in e.CustomEventData)
@@ -1052,6 +1059,23 @@ public class MainMenu : CManiaAppTitle, IContext
         Wait(() => TitleControl.IsReady);
         Log("Exploring map: " + mapInfo.FileName);
         TitleControl.EditNewMapFromBaseMap(mapInfo.FileName, ModNameOrUrl: "", PlayerModel: "", "EnvimixExplore.Script.txt", "Explore.Script.txt", $"<settings><setting name=\"S_OriginalMapName\" type=\"text\" value=\"{mapInfo.Name}\"/><setting name=\"S_OriginalMapUid\" type=\"text\" value=\"{mapInfo.MapUid}\"/><setting name=\"S_OriginalAuthorNickName\" type=\"text\" value=\"{mapInfo.AuthorNickName}\"/></settings>");
+    }
+
+    private void ViewGhost(int mapGroupNum, int mapInfoNum, string car, string ghostUrl)
+    {
+        if (DataFileMgr.Campaigns.Count == 0)
+        {
+            return;
+        }
+
+        var campaign = GetCampaignForMaps();
+        var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
+
+        LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
+        LoadingLayer.IsVisible = true;
+
+        Wait(() => TitleControl.IsReady);
+        TitleControl.PlayMap(mapInfo.FileName, "Modes/TrackMania/ViewGhost.Script.txt", $"<mode_script_settings><setting name=\"S_Car\" type=\"text\" value=\"{car}\"/><setting name=\"S_GhostUrl\" type=\"text\" value=\"{ghostUrl}\"/></mode_script_settings>");
     }
 
     private void TryOpenRequestedMap()
