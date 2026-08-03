@@ -45,6 +45,8 @@ public class RatingSolo : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameDifficulty;
     [ManialinkControl] public required CMlFrame FrameQuality;
 
+    [ManialinkControl] public required CMlFrame FrameTooltip;
+
     [Netread] public int FinishedAt { get; set; }
     [Netread] public bool RatingOpen { get; set; }
     [Netread] public bool Outro { get; set; }
@@ -110,6 +112,14 @@ public class RatingSolo : CTmMlScriptIngame, IContext
                     QuadStar.Opacity = 0.7f;
                 }
             }
+
+            var filterKey = ConstructRatingFilterKey();
+
+            if (Stars.ContainsKey(filterKey))
+            {
+                var star = Stars[filterKey];
+                UpdateTooltip(star.Nickname);
+            }
         };
 
         QuadStar.MouseOut += () =>
@@ -164,6 +174,11 @@ public class RatingSolo : CTmMlScriptIngame, IContext
                     }
                 }
             }
+        };
+
+        MouseOut += (control, controlId) =>
+        {
+            FrameTooltip.Hide();
         };
     }
 
@@ -455,6 +470,11 @@ public class RatingSolo : CTmMlScriptIngame, IContext
             Http.Destroy(StarRequest);
             StarRequest = null;
         }
+
+        if (FrameTooltip.Visible)
+        {
+            FrameTooltip.RelativePosition_V3 = new Vec2(MouseX, MouseY);
+        }
     }
 
     private void UpdateRatings()
@@ -624,5 +644,17 @@ public class RatingSolo : CTmMlScriptIngame, IContext
                 Hold = control.Parent;
             }
         }
+    }
+
+    private void UpdateTooltip(string text)
+    {
+        var labelText = (FrameTooltip.GetFirstChild("LabelText") as CMlLabel)!;
+        var quadTooltip = (FrameTooltip.GetFirstChild("QuadTooltip") as CMlQuad)!;
+
+        labelText.Size.X = labelText.ComputeWidth(text);
+        quadTooltip.Size.X = labelText.ComputeWidth(text) + 4;
+        labelText.SetText(text);
+
+        FrameTooltip.Show();
     }
 }

@@ -104,6 +104,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadVRCampaign;
     [ManialinkControl] public required CMlLabel LabelVRCampaign;
 
+    [ManialinkControl] public required CMlFrame FrameTooltip;
+
     public ImmutableArray<string> TM2Cars;
     public ImmutableArray<string> TMUFCars;
     public ImmutableArray<string> FunnyCars;
@@ -347,6 +349,25 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 MapSelect(control);
                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
             }
+            if (control.Parent.ControlId == "FrameStars")
+            {
+                AnimMgr.Add(control, "<quad scale=\"1.2\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                var nickname = control.DataAttributeGet("Login");
+                if (SoloUserInfos.ContainsKey(nickname))
+                {
+                    nickname = SoloUserInfos[nickname].N;
+                }
+                UpdateTooltip(nickname);
+            }
+        };
+
+        MouseOut += (control, controlId) =>
+        {
+            if (control.Parent.ControlId == "FrameStars")
+            {
+                AnimMgr.Add(control, "<quad scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+            FrameTooltip.Hide();
         };
 
         MenuNavigation += (action) =>
@@ -616,6 +637,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 control.RelativeRotation += Period * 0.2f;
             }
+        }
+
+        if (FrameTooltip.Visible)
+        {
+            FrameTooltip.RelativePosition_V3 = new Vec2(MouseX, MouseY);
         }
 
         // Update stats every minute
@@ -1163,11 +1189,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             if (TitleStars.ContainsKey(mapInfo.MapUid) && TitleStars[mapInfo.MapUid].ContainsKey(filterKey))
             {
-                var star = TitleStars[mapInfo.MapUid][filterKey];
+                var login = TitleStars[mapInfo.MapUid][filterKey];
+                controlStar.DataAttributeSet("Login", login);
                 controlStar.Show();
             }
             else
             {
+                controlStar.DataAttributeSet("Login", "");
                 controlStar.Hide();
             }
 
@@ -1893,5 +1921,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var selectedCampaign = Local<string>.For(Page);
             selectedCampaign.Set("VR");
         }
+    }
+
+    private void UpdateTooltip(string text)
+    {
+        var labelText = (FrameTooltip.GetFirstChild("LabelText") as CMlLabel)!;
+        var quadTooltip = (FrameTooltip.GetFirstChild("QuadTooltip") as CMlQuad)!;
+
+        labelText.Size.X = labelText.ComputeWidth(text);
+        quadTooltip.Size.X = labelText.ComputeWidth(text) + 4;
+        labelText.SetText(text);
+
+        FrameTooltip.Show();
     }
 }

@@ -186,17 +186,17 @@
                         <frameinstance id="FrameDifficultyRatings" modelid="FramemodelRating" pos="2.5 -4.75" />
                         <frameinstance id="FrameQualityRatings" modelid="FramemodelRating" pos="37.5 -4.75" />
                         <frame id="FrameStars" pos="40 -4.5" z-index="1">
-                            <quad pos="0 0" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -5" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -10" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -15" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -20" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -25" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -30" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -35" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -40" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -45" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
-                            <quad pos="0 -50" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1"/>
+                            <quad pos="0 0" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -5" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -10" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -15" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -20" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -25" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -30" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -35" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -40" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -45" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
+                            <quad pos="0 -50" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" hidden="1" scriptevents="1"/>
                         </frame>
                     </frame>
                     <frame pos="100 0">
@@ -263,4 +263,8 @@
             </frame>
         </frame>
     </frame>
+	<frame z-index="110" id="FrameTooltip" hidden="1">
+		<quad pos="0 0" z-index="-1" size="43.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip"/>
+		<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.envimix.gbx.tools" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
+	</frame>
 </manialink>
