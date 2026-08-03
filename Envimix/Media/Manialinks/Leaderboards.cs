@@ -441,6 +441,18 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             {
                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
             }
+            if (controlId == "QuadTopmostMedal")
+            {
+                AnimMgr.Add(control, "<quad scale=\"1.15\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+        };
+
+        MouseOut += (control, controlId) =>
+        {
+            if (controlId == "QuadTopmostMedal")
+            {
+                AnimMgr.Add(control, "<quad scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
         };
     }
 
@@ -551,6 +563,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 rankOffset = 0;
             }
 
+            frame.GetFirstChild("FrameMedals").Hide();
             (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank - rankOffset, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
@@ -625,6 +638,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         var labelPersonalNickname = (FramePersonalCompletion.GetFirstChild("LabelNickname") as CMlLabel)!;
         labelPersonalNickname.SetText(LocalUser.Name);
         labelPersonalNickname.RelativePosition_V3.X = completionOffsetX + 5;
+
+        FramePersonalCompletion.GetFirstChild("FrameMedals").Hide();
     }
 
     private void UpdateCompletionLeaderboard(Dictionary<string, STitleUserInfo> leaderboardsUserInfos, IList<SPlayerMedals> completionLeaderboard)
@@ -709,7 +724,62 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
             labelNickname.SetText(nickname);
-            labelNickname.RelativePosition_V3.X = completionOffsetX + 5;
+            labelNickname.RelativePosition_V3.X = completionOffsetX + 11;
+
+            var frameMedals = (frame.GetFirstChild("FrameMedals") as CMlFrame)!;
+            frameMedals.RelativePosition_V3.X = completionOffsetX + 6;
+            frameMedals.Show();
+
+            IList<int> medalArray = new[] { playerCompletion.D, playerCompletion.ST, playerCompletion.SG, playerCompletion.SS, playerCompletion.SB, playerCompletion.A, playerCompletion.G, playerCompletion.S, playerCompletion.B };
+            var currentMedalIndex = 0;
+
+            for (var i = 0; i < frameMedals.Controls.Count; i++)
+            {
+                var medalControl = frameMedals.Controls[frameMedals.Controls.Count - i - 1];
+                var medalQuad = (medalControl as CMlQuad)!;
+
+                while (medalArray[currentMedalIndex] == 0 && currentMedalIndex < medalArray.Count - 1)
+                {
+                    currentMedalIndex += 1;
+                }
+
+                medalQuad.Visible = medalArray[currentMedalIndex] > 0;
+                medalQuad.ImageUrl = "";
+                medalQuad.Substyle = "";
+
+                switch (currentMedalIndex)
+                {
+                    case 0:
+                        medalQuad.ImageUrl = "file://Media/Images/Medals/duck.png";
+                        break;
+                    case 1:
+                        medalQuad.ImageUrl = "file://Media/Images/Medals/stm.png";
+                        break;
+                    case 2:
+                        medalQuad.ImageUrl = "file://Media/Images/Medals/supergold.png";
+                        break;
+                    case 3:
+                        medalQuad.ImageUrl = "file://Media/Images/Medals/supersilver.png";
+                        break;
+                    case 4:
+                        medalQuad.ImageUrl = "file://Media/Images/Medals/superbronze.png";
+                        break;
+                    case 5:
+                        medalQuad.Substyle = "MedalNadeo";
+                        break;
+                    case 6:
+                        medalQuad.Substyle = "MedalGold";
+                        break;
+                    case 7:
+                        medalQuad.Substyle = "MedalSilver";
+                        break;
+                    case 8:
+                        medalQuad.Substyle = "MedalBronze";
+                        break;
+                }
+
+                currentMedalIndex += 1;
+            }
 
             frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerCompletion.L;
 
@@ -761,7 +831,11 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
         var labelPersonalNickname = (FramePersonalCompletion.GetFirstChild("LabelNickname") as CMlLabel)!;
         labelPersonalNickname.SetText(LocalUser.Name);
-        labelPersonalNickname.RelativePosition_V3.X = completionOffsetX + 5;
+        labelPersonalNickname.RelativePosition_V3.X = completionOffsetX + 11;
+
+        var framePersonalMedals = (FramePersonalCompletion.GetFirstChild("FrameMedals") as CMlFrame)!;
+        framePersonalMedals.RelativePosition_V3.X = completionOffsetX + 6;
+        framePersonalMedals.Show();
     }
 
     private void UpdateCompletionLeaderboard(Dictionary<string, STitleUserInfo> leaderboardsUserInfos)
@@ -832,8 +906,6 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 }
             }
         }
-
-        
     }
 
     private void UpdateCompletionLeaderboard()
@@ -969,6 +1041,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 rankOffset = 0;
             }
 
+            frame.GetFirstChild("FrameMedals").Hide();
             (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank - rankOffset, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
@@ -1043,6 +1116,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         var labelPersonalNickname = (FramePersonalSkillpoints.GetFirstChild("LabelNickname") as CMlLabel)!;
         labelPersonalNickname.SetText(LocalUser.Name);
         labelPersonalNickname.RelativePosition_V3.X = skillpointsOffsetX + 5;
+
+        FramePersonalSkillpoints.GetFirstChild("FrameMedals").Hide();
     }
 
     private void UpdateSkillpointsLeaderboard()
@@ -1178,6 +1253,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 rankOffset = 0;
             }
 
+            frame.GetFirstChild("FrameMedals").Hide();
             (frame.GetFirstChild("LabelRank") as CMlLabel)!.SetText(TextLib.FormatInteger(rank - rankOffset, 2));
 
             var labelRecord = (frame.GetFirstChild("LabelRecord") as CMlLabel)!;
@@ -1252,6 +1328,8 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         var labelPersonalNickname = (FramePersonalActivityPoints.GetFirstChild("LabelNickname") as CMlLabel)!;
         labelPersonalNickname.SetText(LocalUser.Name);
         labelPersonalNickname.RelativePosition_V3.X = activityPointsOffsetX + 5;
+
+        FramePersonalActivityPoints.GetFirstChild("FrameMedals").Hide();
     }
 
     private void UpdateActivityPointsLeaderboard()

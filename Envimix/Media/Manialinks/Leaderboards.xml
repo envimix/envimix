@@ -4,7 +4,12 @@
         <quad id="QuadHighlight" pos="25 0.3" z-index="-1" size="68 5.75" valign="center" halign="center" opacity="0.2" style="Bgs1" substyle="BgMetalBar" />
         <frame clip="1" clipsizen="61 6" clipposn="25 0">
             <label pos="-5.5 0" z-index="0" size="27.5 5" text="01" textsize="3" textfont="RajdhaniMono" id="LabelRank" valign="center2" />
-            <label pos="24 0" z-index="0" size="27.5 5" text="1 000 000" textsize="3" textfont="RajdhaniMono" id="LabelRecord" valign="center2" textcolor="0F0" halign="right" />
+            <frame pos="3 0.3" id="FrameMedals">
+                <quad pos="1 0" z-index="0" size="4.5 4.5" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver"/>
+                <quad pos="0.5 0" z-index="1" size="4.5 4.5" halign="center" valign="center" style="MedalsBig" substyle="MedalGold"/>
+                <quad id="QuadTopmostMedal" z-index="2" size="4.5 4.5" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo" scriptevents="1"/>
+            </frame>
+            <label pos="24 0" z-index="0" size="27.5 5" text="1 000 000" textsize="3" textfont="RajdhaniMono" id="LabelRecord" valign="center2" textcolor="0F0" halign="right" style="TextCardRaceRank" />
             <label pos="26 0" size="100 5" text="$o$i$nBIGBANG111222222222" textsize="2.5" textfont="Oswald" valign="center2" halign="left" id="LabelNickname" />
         </frame>
     </framemodel>
