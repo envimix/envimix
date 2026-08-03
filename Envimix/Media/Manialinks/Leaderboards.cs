@@ -65,6 +65,27 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     [ManialinkControl] public required CMlFrame FrameCars;
 
+    [ManialinkControl] public required CMlFrame FrameTooltip;
+
+    [ManialinkControl] public required CMlQuad QuadDuck;
+    [ManialinkControl] public required CMlQuad QuadSTM;
+    [ManialinkControl] public required CMlQuad QuadSuperGold;
+    [ManialinkControl] public required CMlQuad QuadSuperSilver;
+    [ManialinkControl] public required CMlQuad QuadSuperBronze;
+    [ManialinkControl] public required CMlQuad QuadNadeo;
+    [ManialinkControl] public required CMlQuad QuadGold;
+    [ManialinkControl] public required CMlQuad QuadSilver;
+    [ManialinkControl] public required CMlQuad QuadBronze;
+    [ManialinkControl] public required CMlLabel LabelDuck;
+    [ManialinkControl] public required CMlLabel LabelSTM;
+    [ManialinkControl] public required CMlLabel LabelSuperGold;
+    [ManialinkControl] public required CMlLabel LabelSuperSilver;
+    [ManialinkControl] public required CMlLabel LabelSuperBronze;
+    [ManialinkControl] public required CMlLabel LabelNadeo;
+    [ManialinkControl] public required CMlLabel LabelGold;
+    [ManialinkControl] public required CMlLabel LabelSilver;
+    [ManialinkControl] public required CMlLabel LabelBronze;
+
     public int OpenedAt = -1;
     public float EnvimixCompletionPercentage;
     public float DefaultCarCompletionPercentage;
@@ -444,6 +465,11 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             if (controlId == "QuadTopmostMedal")
             {
                 AnimMgr.Add(control, "<quad scale=\"1.15\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+
+                var medalsJson = control.Parent.DataAttributeGet("Medals");
+                SPlayerMedals medals = new();
+                medals.FromJson(medalsJson);
+                UpdateTooltip(medals);
             }
         };
 
@@ -453,6 +479,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             {
                 AnimMgr.Add(control, "<quad scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
             }
+            FrameTooltip.Hide();
         };
     }
 
@@ -727,6 +754,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             labelNickname.RelativePosition_V3.X = completionOffsetX + 11;
 
             var frameMedals = (frame.GetFirstChild("FrameMedals") as CMlFrame)!;
+            frameMedals.DataAttributeSet("Medals", playerCompletion.ToJson());
             frameMedals.RelativePosition_V3.X = completionOffsetX + 6;
             frameMedals.Show();
 
@@ -792,6 +820,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         // Update personal completion stats
         var completionRank = 0;
         var completionScore = -1;
+        var completionJson = "";
         foreach (var player in completionLeaderboard)
         {
             if (completionZone != "World" && leaderboardsUserInfos.ContainsKey(player.L) && !TextLib.StartsWith(completionZone, leaderboardsUserInfos[player.L].Z))
@@ -803,6 +832,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             if (player.L == LocalUser.Login)
             {
                 completionScore = player.D + player.ST + player.SG + player.SS + player.SB + player.A + player.G + player.S + player.B;
+                completionJson = player.ToJson();
                 break;
             }
         }
@@ -834,6 +864,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         labelPersonalNickname.RelativePosition_V3.X = completionOffsetX + 11;
 
         var framePersonalMedals = (FramePersonalCompletion.GetFirstChild("FrameMedals") as CMlFrame)!;
+        framePersonalMedals.DataAttributeSet("Medals", completionJson);
         framePersonalMedals.RelativePosition_V3.X = completionOffsetX + 6;
         framePersonalMedals.Show();
     }
@@ -1800,5 +1831,72 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 LabelOverallCompletionName.Value = $"{SelectedCar} completion";
             }
         }
+
+        if (FrameTooltip.Visible)
+        {
+            FrameTooltip.RelativePosition_V3 = new Vec2(MouseX, MouseY);
+        }
+    }
+
+    private void UpdateTooltip(SPlayerMedals medals)
+    {
+        LabelDuck.Value = medals.D.ToString();
+
+        var offset = 10f;
+
+        offset += LabelDuck.ComputeWidth(LabelDuck.Value);
+        QuadSTM.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelSTM.RelativePosition_V3.X = offset;
+        LabelSTM.Value = medals.ST.ToString();
+
+        offset += LabelSTM.ComputeWidth(LabelSTM.Value) + 4f;
+        QuadSuperGold.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelSuperGold.RelativePosition_V3.X = offset;
+        LabelSuperGold.Value = medals.SG.ToString();
+
+        offset += LabelSuperGold.ComputeWidth(LabelSuperGold.Value) + 4f;
+        QuadSuperSilver.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelSuperSilver.RelativePosition_V3.X = offset;
+        LabelSuperSilver.Value = medals.SS.ToString();
+
+        offset += LabelSuperSilver.ComputeWidth(LabelSuperSilver.Value) + 4f;
+        QuadSuperBronze.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelSuperBronze.RelativePosition_V3.X = offset;
+        LabelSuperBronze.Value = medals.SB.ToString();
+
+        offset += LabelSuperBronze.ComputeWidth(LabelSuperBronze.Value) + 4f;
+        QuadNadeo.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelNadeo.RelativePosition_V3.X = offset;
+        LabelNadeo.Value = medals.A.ToString();
+
+        offset += LabelNadeo.ComputeWidth(LabelNadeo.Value) + 4f;
+        QuadGold.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelGold.RelativePosition_V3.X = offset;
+        LabelGold.Value = medals.G.ToString();
+
+        offset += LabelGold.ComputeWidth(LabelGold.Value) + 4f;
+        QuadSilver.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelSilver.RelativePosition_V3.X = offset;
+        LabelSilver.Value = medals.S.ToString();
+
+        offset += LabelSilver.ComputeWidth(LabelSilver.Value) + 4f;
+        QuadBronze.RelativePosition_V3.X = offset;
+        offset += 3f;
+        LabelBronze.RelativePosition_V3.X = offset;
+        LabelBronze.Value = medals.B.ToString();
+
+        offset += LabelBronze.ComputeWidth(LabelBronze.Value);
+
+        var quadTooltip = (FrameTooltip.GetFirstChild("QuadTooltip") as CMlQuad)!;
+        quadTooltip.Size.X = offset + 2f;
+
+        FrameTooltip.Show();
     }
 }

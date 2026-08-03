@@ -172,4 +172,25 @@
         <quad size="20 10" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="F00" id="QuadQuit" />
         <label pos="0 -6" z-index="2" size="20 20" text="" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" textprefix="$t" />
     </frame>
+    <frame z-index="110" id="FrameTooltip" hidden="1">
+        <quad pos="0 0" z-index="-1" size="83.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip" />
+        <quad pos="3 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" id="QuadDuck" image="file://Media/Images/Medals/duck.png"/>
+        <label pos="6 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelDuck" />
+        <quad pos="12 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" id="QuadSTM" image="file://Media/Images/Medals/stm.png"/>
+        <label pos="15 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelSTM" />
+        <quad pos="21 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" id="QuadSuperGold" image="file://Media/Images/Medals/supergold.png"/>
+        <label pos="24 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelSuperGold" />
+        <quad pos="30 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" id="QuadSuperSilver" image="file://Media/Images/Medals/supersilver.png"/>
+        <label pos="33 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelSuperSilver" />
+        <quad pos="39 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" id="QuadSuperBronze" image="file://Media/Images/Medals/superbronze.png"/>
+        <label pos="42 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelSuperBronze" />
+        <quad pos="48 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo" id="QuadNadeo"/>
+        <label pos="51 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelNadeo" />
+        <quad pos="57 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" style="MedalsBig" substyle="MedalGold" id="QuadGold"/>
+        <label pos="60 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelGold" />
+        <quad pos="66 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver" id="QuadSilver"/>
+        <label pos="69 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelSilver" />
+        <quad pos="75 -3" z-index="0" size="4.5 4.5" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze" id="QuadBronze"/>
+        <label pos="78 -3.2" z-index="0" size="43.5 6" text="0" valign="center2" textsize="1.5" textfont="RajdhaniMono" id="LabelBronze" />
+    </frame>
 </manialink>
