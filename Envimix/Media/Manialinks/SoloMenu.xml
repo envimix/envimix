@@ -74,12 +74,13 @@
                 <label pos="0 -3.3" z-index="2" size="55 10" text="Official campaign" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
             </frame>
             <frame pos="-60 7">
-                <quad size="40 6" style="Bgs1" substyle="BgWindow4" halign="center" opacity=".75" colorize="DA0" />
-                <quad size="40 5.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" halign="center" pos="0 -0.125" id="QuadVRCampaign" />
+                <quad size="40 6" style="Bgs1" substyle="BgWindow4" halign="center" opacity=".75" colorize="555" />
+                <quad size="40 5.75" style="Bgs1" substyle="BgCardInventoryItem" colorize="555" scriptevents="1" halign="center" pos="0 -0.125" id="QuadVRCampaign" />
                 <label id="LabelVRCampaign" pos="0 -3.3" z-index="2" size="55 10" text="VR campaign" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
             </frame>
-            <frame pos="-36.5 7">
-                <quad size="7 7" pos="0 0" halign="center" style="UIConstruction_Buttons" substyle="OffZone" z-index="2" />
+            <frame pos="-36 7.5">
+                <quad id="QuadVROffzoneCampaign" size="7 7" pos="0 0" halign="center" style="UIConstruction_Buttons" substyle="OffZone" z-index="2" scriptevents="1" />
+                <label id="LabelVROffzoneCountdown" pos="4 -3.75" z-index="2" size="55 10" text="0s" valign="center2" textfont="RajdhaniMono" translate="1" textsize="1.6" />
             </frame>
             <frame pos="53 7">
                 <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>

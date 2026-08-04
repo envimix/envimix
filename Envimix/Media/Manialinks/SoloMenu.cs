@@ -103,6 +103,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadOfficialCampaign;
     [ManialinkControl] public required CMlQuad QuadVRCampaign;
     [ManialinkControl] public required CMlLabel LabelVRCampaign;
+    [ManialinkControl] public required CMlQuad QuadVROffzoneCampaign;
+    [ManialinkControl] public required CMlLabel LabelVROffzoneCountdown;
 
     [ManialinkControl] public required CMlFrame FrameTooltip;
 
@@ -151,6 +153,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public CMlQuad? FocusedControl;
 
     public bool VRCampaignReleased;
+    public bool VROffzoneCampaignReleased;
     public bool LeaderboardsLoadedOrLoading;
 
     public Dictionary<CMlFrame, float> PrevLeaderboardScrollY;
@@ -246,6 +249,16 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         QuadVRCampaign.MouseClick += () =>
         {
             SelectVRCampaign();
+        };
+
+        QuadVROffzoneCampaign.MouseClick += () =>
+        {
+            SelectVROffzoneCampaign();
+        };
+
+        QuadVROffzoneCampaign.MouseOver += () =>
+        {
+            UpdateTooltip("VR campaign (offzone mode)");
         };
 
         PluginCustomEvent += (type, data) =>
@@ -511,6 +524,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     }
                     else if (FocusedControl == QuadVRCampaign)
                     {
+                        FocusedControl = QuadVROffzoneCampaign;
+                    }
+                    else if (FocusedControl == QuadVROffzoneCampaign)
+                    {
                         FocusedControl = QuadOfficialCampaign;
                     }
                     if (FocusedControl is not null)
@@ -565,6 +582,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     }
                     else if (FocusedControl == QuadVRCampaign)
                     {
+                        FocusedControl = QuadVROffzoneCampaign;
+                    }
+                    else if (FocusedControl == QuadVROffzoneCampaign)
+                    {
                         FocusedControl = QuadQuickplay;
                     }
                     if (FocusedControl is not null)
@@ -600,6 +621,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         else if (FocusedControl == QuadVRCampaign)
                         {
                             SelectVRCampaign();
+                        }
+                        else if (FocusedControl == QuadVROffzoneCampaign)
+                        {
+                            SelectVROffzoneCampaign();
                         }
                     }
                     break;
@@ -781,6 +806,26 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 LabelVRCampaign.Value = "VR campaign";
                 VRCampaignReleased = true;
             }
+        }
+
+        if (CampaignsReleasedAt.ContainsKey("VROffzone"))
+        {
+            var releasedAt = CampaignsReleasedAt["VROffzone"];
+
+            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
+            {
+                LabelVROffzoneCountdown.Value = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
+                LabelVROffzoneCountdown.Show();
+            }
+            else
+            {
+                VROffzoneCampaignReleased = true;
+                LabelVROffzoneCountdown.Hide();
+            }
+        }
+        else
+        {
+            LabelVROffzoneCountdown.Visible = false;
         }
 
         foreach (var control in FrameLeaderboards.Controls)
@@ -1234,6 +1279,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return DataFileMgr.Campaigns[12];
         }
 
+        if (SelectedCampaignQuad == QuadVROffzoneCampaign)
+        {
+            return DataFileMgr.Campaigns[24];
+        }
+
         return DataFileMgr.Campaigns[0];
     }
 
@@ -1546,6 +1596,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadOfficialCampaign.StyleSelected = SelectedCampaignQuad == QuadOfficialCampaign;
         QuadVRCampaign.StyleSelected = SelectedCampaignQuad == QuadVRCampaign;
+        QuadVROffzoneCampaign.StyleSelected = SelectedCampaignQuad == QuadVROffzoneCampaign;
 
         Campaign = GetCampaignForMaps();
 
@@ -1608,7 +1659,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                         var visualMapNumber = totalMapCounter;
 
-                        if (SelectedCampaignQuad == QuadVRCampaign)
+                        if (SelectedCampaignQuad == QuadVRCampaign || SelectedCampaignQuad == QuadVROffzoneCampaign)
                         {
                             visualMapNumber = visualMapNumber % 10;
                         }
@@ -1645,6 +1696,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                         // completion isnt considered when data is missing
                         var completed = TitleCombinations.Count > 0;
+                        var nothingIsFinished = true;
 
                         foreach (var carName in AllCars)
                         {
@@ -1667,6 +1719,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                                 continue;
                             }
 
+                            nothingIsFinished = false;
+
                             var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
 
                             if (playerTime == -1)
@@ -1676,7 +1730,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                             }
                         }
 
-                        labelCompleted.Visible = completed;
+                        labelCompleted.Visible = completed && !nothingIsFinished;
 
                         var defaultCarTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, ScoreContextPrefix);
 
@@ -1766,7 +1820,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     visualMapNumber += Campaign.MapGroups[i].MapInfos.Count;
                 }
                 visualMapNumber += MapInfoNum;
-                if (SelectedCampaignQuad == QuadVRCampaign)
+                if (SelectedCampaignQuad == QuadVRCampaign || SelectedCampaignQuad == QuadVROffzoneCampaign)
                 {
                     visualMapNumber = visualMapNumber % 10;
                 }
@@ -1920,6 +1974,29 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             var selectedCampaign = Local<string>.For(Page);
             selectedCampaign.Set("VR");
+        }
+    }
+
+    private void SelectVROffzoneCampaign()
+    {
+        if (VROffzoneCampaignReleased && SelectedCampaignQuad != QuadVROffzoneCampaign)
+        {
+            MapGroupNum = -1;
+            MapInfoNum = -1;
+            MapSelectedAt = -1;
+
+            AudioPlayClick();
+            SelectedCampaignQuad = QuadVROffzoneCampaign;
+            SetupCampaign(false, false);
+            ResetPBs();
+            ResetValidators();
+            ResetRatings();
+            ResetStars();
+            ResetRanks();
+            UnloadLeaderboards();
+
+            var selectedCampaign = Local<string>.For(Page);
+            selectedCampaign.Set("VROffzone");
         }
     }
 

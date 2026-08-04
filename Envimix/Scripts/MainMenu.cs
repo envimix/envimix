@@ -886,6 +886,11 @@ public class MainMenu : CManiaAppTitle, IContext
             return DataFileMgr.Campaigns[12];
         }
 
+        if (selectedCampaign.Get() == "VROffzone")
+        {
+            return DataFileMgr.Campaigns[24];
+        }
+
         return DataFileMgr.Campaigns[0];
     }
 
@@ -1135,6 +1140,7 @@ public class MainMenu : CManiaAppTitle, IContext
         ImmutableArray<CCampaign> campaigns = new();
         campaigns.Add(DataFileMgr.Campaigns[0]);
         campaigns.Add(DataFileMgr.Campaigns[12]);
+        campaigns.Add(DataFileMgr.Campaigns[24]);
 
         foreach (var campaign in campaigns)
         {
@@ -1147,6 +1153,11 @@ public class MainMenu : CManiaAppTitle, IContext
                     if (campaign == DataFileMgr.Campaigns[12])
                     {
                         campaignName = "VR";
+                    }
+
+                    if (campaign == DataFileMgr.Campaigns[24])
+                    {
+                        campaignName = "VROffzone";
                     }
 
                     SMapInfo mapInfo = new()
