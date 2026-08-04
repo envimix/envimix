@@ -516,7 +516,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     }
                     if (FocusedControl == QuadQuickplay)
                     {
-                        FocusedControl = QuadVRCampaign;
+                        FocusedControl = QuadVROffzoneCampaign;
                     }
                     else if (FocusedControl == QuadOfficialCampaign)
                     {
@@ -524,11 +524,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     }
                     else if (FocusedControl == QuadVRCampaign)
                     {
-                        FocusedControl = QuadVROffzoneCampaign;
+                        FocusedControl = QuadOfficialCampaign;
                     }
                     else if (FocusedControl == QuadVROffzoneCampaign)
                     {
-                        FocusedControl = QuadOfficialCampaign;
+                        FocusedControl = QuadVRCampaign;
                     }
                     if (FocusedControl is not null)
                     {
