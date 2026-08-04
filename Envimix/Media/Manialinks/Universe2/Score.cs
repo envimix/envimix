@@ -174,9 +174,14 @@ public class Score : CTmMlScriptIngame, IContext
             if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid) && persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
             {
                 TotalTimeAtStart = persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()];
-                SessionStartedAt = "";
-                SessionTimeAtPause = 0;
             }
+            else
+            {
+                TotalTimeAtStart = 0;
+            }
+
+            SessionStartedAt = "";
+            SessionTimeAtPause = 0;
 
             if (IsSolo())
             {
