@@ -141,6 +141,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
             vehicleManialink = $"{vehicleManialink}        <quad id=\"QuadFlash\" z-index=\"4\" size=\"80 19\" valign=\"center\" halign=\"center\" style=\"Bgs1\" substyle=\"BgWindow4\" opacity=\"0\"/>";
             vehicleManialink = $"{vehicleManialink}        <label id=\"LabelSkillpoints\" textcolor=\"0F0\" textfont=\"RajdhaniMono\" pos=\"-29 6.5\" z-index=\"3\" size=\"15 5\" text=\"0\" valign=\"center\" halign=\"left\" textsize=\"1\" scale=\"0.75\" textemboss=\"1\" hidden=\"1\"/>";
             vehicleManialink = $"{vehicleManialink}        <label id=\"LabelActivityPoints\" textcolor=\"0FF\" textfont=\"RajdhaniMono\" pos=\"-29 4\" z-index=\"3\" size=\"15 5\" text=\"0\" valign=\"center\" halign=\"left\" textsize=\"1\" scale=\"0.75\" textemboss=\"1\" hidden=\"1\"/>";
+            vehicleManialink = $"{vehicleManialink}        <label id=\"LabelTotalTime\" size=\"32 5\" text=\"0s\" valign=\"center2\" z-index=\"3\" textfont=\"RajdhaniMono\" pos=\"-29 -7\" textsize=\"0.6\" textcolor=\"AAAA\" hidden=\"1\"/>";
 
             vehicleManialink = $"{vehicleManialink}     </frame>";
         }

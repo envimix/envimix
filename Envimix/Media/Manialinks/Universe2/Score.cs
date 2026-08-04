@@ -9,8 +9,19 @@ public class Score : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameInnerScore;
     [ManialinkControl] public required CMlLabel LabelBestTime;
     [ManialinkControl] public required CMlLabel LabelLastTime;
+    [ManialinkControl] public required CMlLabel LabelSessionTime;
+    [ManialinkControl] public required CMlLabel LabelTotalTime;
 
     [Netread(NetFor.Teams0)] public int FinishedAt { get; set; }
+
+    public string SessionStartedAt = "";
+    public int PrevGameTime;
+    public string PrevCar;
+    public int TotalTimeAtStart;
+    public bool TimerPaused;
+    public int SessionTimeAtPause;
+    public int LastInputActiveAt = -1;
+    public bool EnqueueAttempt;
 
     public Score()
     {
@@ -21,6 +32,23 @@ public class Score : CTmMlScriptIngame, IContext
                 case "MenuOpen":
                     MenuOpen = eventParams.Length > 0 && eventParams[0] == "True";
                     break;
+            }
+        };
+
+        RaceEvent += (e) =>
+        {
+            if (e.Type == CTmRaceClientEvent.EType.WayPoint && e.IsEndRace)
+            {
+                // no input presses within 5 seconds do good enough job
+                // PauseTimer();
+
+                IncrementFinish();
+            }
+
+            if (e.Type == CTmRaceClientEvent.EType.Respawn)
+            {
+                UnpauseTimer();
+                EnqueueAttempt = true;
             }
         };
     }
@@ -42,6 +70,11 @@ public class Score : CTmMlScriptIngame, IContext
         return CurrentServerModeName is "";
     }
 
+    bool IsSolo()
+    {
+        return CurrentServerLogin is "";
+    }
+
     bool IsVisible()
     {
         if (IsExplore())
@@ -60,6 +93,68 @@ public class Score : CTmMlScriptIngame, IContext
         return formatted;
     }
 
+    private void IncrementFinish()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var persistent_EnvimixFinishes = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (!persistent_EnvimixFinishes.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid] = new();
+        }
+        if (!persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
+        {
+            persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid][car.Get()] = 0;
+        }
+        persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid][car.Get()] = persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid][car.Get()] + 1;
+    }
+
+    private void IncrementAttempt()
+    {
+        var car = Netread<string>.For(GetPlayer());
+        var persistent_EnvimixAttempts = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (!persistent_EnvimixAttempts.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid] = new();
+        }
+        if (!persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
+        {
+            persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid][car.Get()] = 0;
+        }
+        persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid][car.Get()] = persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid][car.Get()] + 1;
+    }
+
+    private void PauseTimer()
+    {
+        if (TimerPaused)
+        {
+            return;
+        }
+
+        if (SessionStartedAt != "")
+        {
+            var delta = TimeLib.GetDelta((GameTime / 1000).ToString(), SessionStartedAt);
+
+            SessionTimeAtPause += delta;
+            TotalTimeAtStart += delta;
+            SessionStartedAt = "";
+
+            var car = Netread<string>.For(GetPlayer());
+            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+            if (!persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+            {
+                persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid] = new();
+            }
+            persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()] = TotalTimeAtStart;
+        }
+
+        TimerPaused = true;
+    }
+
+    private void UnpauseTimer()
+    {
+        TimerPaused = false;
+    }
+
     public void Main()
     {
         FrameScore.Visible = IsVisible();
@@ -72,6 +167,33 @@ public class Score : CTmMlScriptIngame, IContext
 
     public void Loop()
     {
+        var car = Netread<string>.For(GetPlayer());
+        if (car.Get() != PrevCar)
+        {
+            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+            if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid) && persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
+            {
+                TotalTimeAtStart = persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()];
+                SessionStartedAt = "";
+                SessionTimeAtPause = 0;
+            }
+
+            if (IsSolo())
+            {
+                var persistent_EnvimixTotalTimeTrackingAt = Persistent<Dictionary<string, Dictionary<string, string>>>.For(LocalUser);
+                if (!persistent_EnvimixTotalTimeTrackingAt.Get().ContainsKey(Map.MapInfo.MapUid))
+                {
+                    persistent_EnvimixTotalTimeTrackingAt.Get()[Map.MapInfo.MapUid] = new();
+                }
+                if (!persistent_EnvimixTotalTimeTrackingAt.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
+                {
+                    persistent_EnvimixTotalTimeTrackingAt.Get()[Map.MapInfo.MapUid][car.Get()] = TimeLib.GetCurrent();
+                }
+            }
+
+            PrevCar = car.Get();
+        }
+
         if (IsVisible() != PreviousIsVisible)
         {
             if (IsVisible())
@@ -80,10 +202,10 @@ public class Score : CTmMlScriptIngame, IContext
                 frame.Controls[0].Size.X = 0;
                 frame.Controls[1].Size.X = 0;
 
-                AnimMgr.Add(frame.Controls[0], "<quad size=\"0 12.5\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-                AnimMgr.Add(frame.Controls[1], "<quad size=\"0 12.5\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-                AnimMgr.AddChain(frame.Controls[0], "<quad size=\"42.5 12.5\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
-                AnimMgr.AddChain(frame.Controls[1], "<quad size=\"42.5 12.5\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.Add(frame.Controls[0], "<quad size=\"0 22\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.Add(frame.Controls[1], "<quad size=\"0 22\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.AddChain(frame.Controls[0], "<quad size=\"42.5 22\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+                AnimMgr.AddChain(frame.Controls[1], "<quad size=\"42.5 22\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
 
                 VisibleTime = Now;
             }
@@ -127,5 +249,75 @@ public class Score : CTmMlScriptIngame, IContext
         }
 
         FrameScore.Visible = IsVisible();
+
+        // detect active input
+        if (GetPlayer().InputGasPedal != 0 || GetPlayer().InputSteer != 0)
+        {
+            LastInputActiveAt = GameTime;
+        }
+
+        // pause timer if no input for 5 seconds
+        if (!TimerPaused && LastInputActiveAt != -1 && GameTime - LastInputActiveAt >= 5000)
+        {
+            PauseTimer();
+        }
+
+        // unpause timer if input detected
+        if (TimerPaused && GetPlayer().RaceStartTime < GameTime && (GetPlayer().InputGasPedal != 0 || GetPlayer().InputSteer != 0))
+        {
+            UnpauseTimer();
+        }
+
+        // increment attempt if respawned after race
+        if (EnqueueAttempt && GetPlayer().RaceStartTime != 0 && GetPlayer().RaceStartTime < GameTime)
+        {
+            IncrementAttempt();
+            EnqueueAttempt = false;
+        }
+
+        // start session timer if not started and input detected
+        if (!TimerPaused && SessionStartedAt == "" && GetPlayer().RaceStartTime < GameTime && GetPlayer().InputGasPedal != 0)
+        {
+            SessionStartedAt = (GameTime / 1000).ToString();
+        }
+
+        // update every tenth of a second
+        if ((GameTime / 100) != (PrevGameTime / 100))
+        {
+            if (SessionStartedAt == "")
+            {
+                FormatDelta(LabelSessionTime, SessionTimeAtPause);
+                FormatDelta(LabelTotalTime, TotalTimeAtStart);
+            }
+            else
+            {
+                var delta = TimeLib.GetDelta((GameTime / 1000).ToString(), SessionStartedAt);
+                FormatDelta(LabelSessionTime, SessionTimeAtPause + delta);
+                FormatDelta(LabelTotalTime, TotalTimeAtStart + delta);
+
+                // update total time every second
+                if (IsSolo() && (GameTime / 1000) != (PrevGameTime / 1000))
+                {
+                    var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+                    if (!persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+                    {
+                        persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid] = new();
+                    }
+                    persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()] = TotalTimeAtStart + delta;
+                }
+            }
+
+            PrevGameTime = GameTime;
+        }
+    }
+
+    private static void FormatDelta(CMlLabel label, int delta)
+    {
+        label.Value = TimeLib.FormatDelta("0", delta.ToString(), TimeLib.EDurationFormats.Abbreviated);
+
+        if (label.Value == "")
+        {
+            label.Value = "0s";
+        }
     }
 }
