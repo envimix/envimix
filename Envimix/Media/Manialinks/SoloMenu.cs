@@ -1959,6 +1959,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             ResetStars();
             ResetRanks();
             UnloadLeaderboards();
+            FrameCampaign.ScrollOffset.Y = 0;
 
             var selectedCampaign = Local<string>.For(Page);
             selectedCampaign.Set("");
@@ -1982,6 +1983,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             ResetStars();
             ResetRanks();
             UnloadLeaderboards();
+            FrameCampaign.ScrollOffset.Y = 0;
 
             var selectedCampaign = Local<string>.For(Page);
             selectedCampaign.Set("VR");
@@ -2005,6 +2007,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             ResetStars();
             ResetRanks();
             UnloadLeaderboards();
+            FrameCampaign.ScrollOffset.Y = 0;
 
             var selectedCampaign = Local<string>.For(Page);
             selectedCampaign.Set("VROffzone");
