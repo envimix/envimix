@@ -70,11 +70,6 @@ public class Score : CTmMlScriptIngame, IContext
         return CurrentServerModeName is "";
     }
 
-    bool IsSolo()
-    {
-        return CurrentServerLogin is "";
-    }
-
     bool IsVisible()
     {
         if (IsExplore())
@@ -95,7 +90,12 @@ public class Score : CTmMlScriptIngame, IContext
 
     private void IncrementFinish()
     {
-        var car = Netread<string>.For(GetPlayer());
+        if (InputPlayer is null)
+        {
+            return;
+        }
+
+        var car = Netread<string>.For(InputPlayer);
         var persistent_EnvimixFinishes = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
         if (!persistent_EnvimixFinishes.Get().ContainsKey(Map.MapInfo.MapUid))
         {
@@ -110,7 +110,12 @@ public class Score : CTmMlScriptIngame, IContext
 
     private void IncrementAttempt()
     {
-        var car = Netread<string>.For(GetPlayer());
+        if (InputPlayer is null)
+        {
+            return;
+        }
+
+        var car = Netread<string>.For(InputPlayer);
         var persistent_EnvimixAttempts = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
         if (!persistent_EnvimixAttempts.Get().ContainsKey(Map.MapInfo.MapUid))
         {
@@ -170,7 +175,7 @@ public class Score : CTmMlScriptIngame, IContext
         var car = Netread<string>.For(GetPlayer());
         if (car.Get() != PrevCar)
         {
-            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(GetPlayer().User);
             if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid) && persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
             {
                 TotalTimeAtStart = persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()];
@@ -183,7 +188,7 @@ public class Score : CTmMlScriptIngame, IContext
             SessionStartedAt = "";
             SessionTimeAtPause = 0;
 
-            if (IsSolo())
+            if (InputPlayer is not null)
             {
                 var persistent_EnvimixTotalTimeTrackingAt = Persistent<Dictionary<string, Dictionary<string, string>>>.For(LocalUser);
                 if (!persistent_EnvimixTotalTimeTrackingAt.Get().ContainsKey(Map.MapInfo.MapUid))
@@ -301,7 +306,7 @@ public class Score : CTmMlScriptIngame, IContext
                 FormatDelta(LabelTotalTime, TotalTimeAtStart + delta);
 
                 // update total time every second
-                if (IsSolo() && (GameTime / 1000) != (PrevGameTime / 1000))
+                if ((GameTime / 1000) != (PrevGameTime / 1000))
                 {
                     var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
                     if (!persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))

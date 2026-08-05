@@ -383,6 +383,7 @@ public class Envimix : UniverseModeBase
             vehicleManialink = $"{vehicleManialink}        <gauge id=\"GaugeDifficulty\" pos=\"-40 -5\" z-index=\"3\" size=\"11 6.5\" drawbg=\"0\" valign=\"center\" ratio=\"0\"/>";
             vehicleManialink = $"{vehicleManialink}        <gauge id=\"GaugeQuality\" pos=\"-40 -7\" z-index=\"3\" size=\"11 6.5\" drawbg=\"0\" valign=\"center\" ratio=\"0\"/>";
             vehicleManialink = $"{vehicleManialink}        <quad id=\"QuadFlash\" z-index=\"4\" size=\"80 19\" valign=\"center\" halign=\"center\" style=\"Bgs1\" substyle=\"BgWindow4\" opacity=\"0\"/>";
+            vehicleManialink = $"{vehicleManialink}        <label id=\"LabelTotalTime\" size=\"32 5\" text=\"0s\" valign=\"center2\" z-index=\"3\" textfont=\"RajdhaniMono\" pos=\"-29 -7\" textsize=\"0.6\" textcolor=\"AAAA\" hidden=\"1\"/>";
             vehicleManialink = $"{vehicleManialink}     </frame>";
         }
 
