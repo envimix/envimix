@@ -460,6 +460,11 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         }
     }
 
+    private bool IsTM2CarOnStadium(string carName)
+    {
+        return Map.MapInfo.CollectionName == "Stadium" && (carName == "CanyonCar" || carName == "LagoonCar" || carName == "ValleyCar");
+    }
+
     private void UpdateSkins()
     {
         var carName = DisplayedCars[VehicleIndex];
@@ -645,8 +650,16 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                     userSkins[CName] = "";
                     UserSkins = userSkins;
 
-                    var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
-                    persistent_EnvimixSkins.Get()[CName] = "";
+                    if (IsTM2CarOnStadium(CName))
+                    {
+                        var persistent_EnvimixStadiumSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+                        persistent_EnvimixStadiumSkins.Get()[CName] = "";
+                    }
+                    else
+                    {
+                        var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+                        persistent_EnvimixSkins.Get()[CName] = "";
+                    }
                 }
                 else
                 {
@@ -668,8 +681,16 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         userSkins[CName] = SNames[Index];
                         UserSkins = userSkins;
 
-                        var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
-                        persistent_EnvimixSkins.Get()[CName] = SNames[Index];
+                        if (IsTM2CarOnStadium(CName))
+                        {
+                            var persistent_EnvimixStadiumSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+                            persistent_EnvimixStadiumSkins.Get()[CName] = SNames[Index];
+                        }
+                        else
+                        {
+                            var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+                            persistent_EnvimixSkins.Get()[CName] = SNames[Index];
+                        }
                     }
                 }
                 UpdateSkins();
@@ -1414,11 +1435,23 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         }
 
         var persistent_EnvimixSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
+        var persistent_EnvimixStadiumSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
         foreach (var car in DisplayedCars)
         {
             var userSkins = UserSkins;
 
-            if (persistent_EnvimixSkins.Get().ContainsKey(car))
+            if (IsTM2CarOnStadium(car))
+            {
+                if (persistent_EnvimixStadiumSkins.Get().ContainsKey(car))
+                {
+                    userSkins[car] = persistent_EnvimixStadiumSkins.Get()[car];
+                }
+                else
+                {
+                    userSkins[car] = "";
+                }
+            }
+            else if (persistent_EnvimixSkins.Get().ContainsKey(car))
             {
                 userSkins[car] = persistent_EnvimixSkins.Get()[car];
             }
