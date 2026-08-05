@@ -92,7 +92,7 @@ public static class Loading
             "FUN FACT: The soundtrack is called ENVIMIX b4 2018 and features music ideas initialized before the release of the Nadeo Envimix title pack in July 2018. All of the music ideas are more than 8 years old.",
             "TIP: Submarine is a trick to gather as much speed as possible in the water. It is a technique used to overcome larger obstacles.",
             "FUN FACT: Track of the Day in the Nadeo Envimix title pack was introduced in 2018, 2 years before Nadeo included Track of the Days in the latest Trackmania. It was included in ENVIMIX Turbo as a reminder of the possible inspiration.",
-            "TIP: Stars are manually-given ratings of interesting maps. It's worth checking them out!",
+            "TIP: Stars are manually-given ratings of interesting combinations. It's worth checking them out!",
             "FUN FACT: Nadeo Envimix is a challenge invented by Poutrel and MrLag in 2014."
         };
 
