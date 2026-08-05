@@ -847,7 +847,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 frameRecords.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
                 quadRecordsScrollArea.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
 
-                UpdateLeaderboards();
+                UpdateLeaderboards(false);
             }
         }
 
@@ -1287,7 +1287,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         return DataFileMgr.Campaigns[0];
     }
 
-    private void UpdateLeaderboards()
+    private void UpdateLeaderboards(bool resetScroll)
     {
         if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1 || MapSelectedAt == -1)
         {
@@ -1322,6 +1322,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
             var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
             var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+
+            if (resetScroll)
+            {
+                frameScrollRecords.ScrollOffset.Y = 0;
+            }
 
             var scrollIndex = MathLib.NearestInteger((float)frameScrollRecords.ScrollOffset.Y / 5);
 
@@ -1453,7 +1458,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         if (carsToRequest.Length == 0)
         {
-            UpdateLeaderboards();
+            UpdateLeaderboards(true);
             return;
         }
 
@@ -1475,7 +1480,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
                 var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
                 var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+                var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
                 var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
+
+                frameScrollRecords.ScrollOffset.Y = 0;
 
                 quadLoadingLeaderboard.Show();
                 labelConfirm.Hide();
@@ -1500,7 +1508,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
 
         Leaderboards[mapUid][car] = response;
-        UpdateLeaderboards();
+        UpdateLeaderboards(false);
     }
 
     private void SwitchCars(bool isTMUF)
@@ -1855,7 +1863,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
             var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+            var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
             var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
+
+            frameScrollRecords.ScrollOffset.Y = 0;
 
             quadLoadingLeaderboard.Hide();
             labelConfirm.Show();
