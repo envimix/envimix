@@ -450,8 +450,11 @@ public class RatingSolo : CTmMlScriptIngame, IContext
 
         if (GetCar() != PrevCar)
         {
-            UpdateRatings();
-            UpdatePersonalRatings();
+            if (RatingEnabled)
+            {
+                UpdateRatings();
+                UpdatePersonalRatings();
+            }
 
             PrevCar = GetCar();
         }

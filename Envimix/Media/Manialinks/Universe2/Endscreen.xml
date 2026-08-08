@@ -102,6 +102,7 @@
                         <label pos="0 0.2" z-index="2" size="62 7" text="|Zone|World" halign="center" valign="center" textsize="1.5" style="TextButtonBig" id="LabelZone" translate="1" textprefix="$t"/>
                     </frame>
                     <quad pos="0 -60" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QuadLoadingLeaderboard"/>
+                    <label pos="0 -60" size="20 5" text="error" halign="center" valign="center2" textfont="RajdhaniMono" id="LabelLeaderboardError" hidden="1"/>
                     <frame pos="-25 -60" id="FrameLeaderboard">
                         <frame id="FrameLeaderboardContents">
                             <frameinstance modelid="FramemodelRecord" pos="0 35"/>

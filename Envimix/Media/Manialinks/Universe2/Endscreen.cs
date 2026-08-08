@@ -108,6 +108,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameLeaderboard;
     [ManialinkControl] public required CMlFrame FrameLeaderboardContents;
     [ManialinkControl] public required CMlQuad QuadLoadingLeaderboard;
+    [ManialinkControl] public required CMlLabel LabelLeaderboardError;
     [ManialinkControl] public required CMlFrame FramePersonalRecord;
     [ManialinkControl] public required CMlFrame FrameEvent;
     [ManialinkControl] public required CMlLabel LabelEvent;
@@ -174,6 +175,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
     [Netread] public bool GhostToUpload { get; set; }
 
     [Netread] public SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
+    [Netread] public int EndscreenRecordsResponseErrorCode { get; set; }
     [Netread] public int EndscreenRecordsResponseReceivedAt { get; set; }
     public int PreviousEndscreenRecordsResponseReceivedAt;
     public string EventText = "";
@@ -748,7 +750,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
 
     private void Continue()
     {
-        if (FinishedAt == -1 || Now - FinishedAt < 500 || GhostToUpload)
+        if (FinishedAt == -1 || Now - FinishedAt < 500)
         {
             return;
         }
@@ -780,6 +782,21 @@ public class Endscreen : CTmMlScriptIngame, IContext
     private void UpdateLeaderboards(bool updateResults)
     {
         QuadLoadingLeaderboard.Hide();
+
+        if (EndscreenRecordsResponseErrorCode != 0)
+        {
+            if (EndscreenRecordsResponseErrorCode == 10006)
+            {
+                LabelLeaderboardError.SetText("offline mode");
+            }
+            else
+            {
+                LabelLeaderboardError.SetText($"error {EndscreenRecordsResponseErrorCode}");
+            }
+            LabelLeaderboardError.Show();
+            FrameLeaderboard.Hide();
+        }
+
         FrameLeaderboard.Show();
 
         IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);

@@ -89,6 +89,8 @@ public class EnvimixSolo : Envimix
     public int OutroGhostEndTime;
     public CTaskResult? GhostUploadTask;
     [Netwrite] public bool GhostToUpload { get; set; }
+    public string GhostUploadFailedAt;
+    public int GhostUploadRetries;
     public string? GhostFinishTimestamp;
     public CTaskResult? NewRecordTask;
     public CHttpRequest? MapInfoRequest;
@@ -113,6 +115,7 @@ public class EnvimixSolo : Envimix
     [Netwrite] public bool ReplaySaved { get; set; }
 
     [Netwrite] public Envimania.SEnvimaniaRecordsResponse EndscreenRecordsResponse { get; set; }
+    [Netwrite] public int EndscreenRecordsResponseErrorCode { get; set; }
     [Netwrite] public int EndscreenRecordsResponseReceivedAt { get; set; }
     [Netwrite] public bool ForceQuit { get; set; }
 
@@ -248,17 +251,33 @@ public class EnvimixSolo : Envimix
                 DataFileMgr.TaskResult_Release(GhostUploadTask.Id);
                 GhostUploadTask = null;
                 GhostToUpload = false;
+                GhostUploadFailedAt = "";
+                GhostUploadRetries = 0;
                 RequestLeaderboard();
                 RequestMapInfo();
             }
             else
             {
-                Log(nameof(EnvimixSolo), $"Ghost upload failed - {GhostUploadTask.ErrorType} {GhostUploadTask.ErrorCode} {GhostUploadTask.ErrorDescription}. Retrying...");
+                Log(nameof(EnvimixSolo), $"Ghost upload failed - {GhostUploadTask.ErrorType} {GhostUploadTask.ErrorCode} {GhostUploadTask.ErrorDescription}.");
                 DataFileMgr.TaskResult_Release(GhostUploadTask.Id);
                 GhostUploadTask = null;
-                Sleep(1000);
-                UploadGhost(OutroGhost!);
+                if (GhostUploadRetries < 3)
+                {
+                    GhostUploadFailedAt = TimeLib.GetCurrent();
+                }
+                else
+                {
+                    GhostUploadRetries = 0;
+                }
             }
+        }
+
+        if (GhostUploadRetries < 3 && GhostUploadFailedAt != "" && TimeLib.GetDelta(TimeLib.GetCurrent(), GhostUploadFailedAt) > 1)
+        {
+            GhostUploadRetries += 1;
+            GhostUploadFailedAt = "";
+            Log(nameof(EnvimixSolo), $"Retrying ghost upload... {GhostUploadRetries}/3");
+            UploadGhost(OutroGhost!);
         }
 
         if (LeaderboardRequest is not null && LeaderboardRequest.IsCompleted)
@@ -276,12 +295,21 @@ public class EnvimixSolo : Envimix
                 }
 
                 EndscreenRecordsResponse = response;
-                EndscreenRecordsResponseReceivedAt = Now;
+                EndscreenRecordsResponseErrorCode = 0;
             }
             else
             {
-                Log(nameof(EnvimixSolo), $"Failed to get leaderboard data from webapi (status code: {LeaderboardRequest.StatusCode})");
+                if (LeaderboardRequest.StatusCode == 10006)
+                {
+                    Log(nameof(EnvimixSolo), $"Failed to get leaderboard data from webapi (offline mode)");
+                }
+                else
+                {
+                    Log(nameof(EnvimixSolo), $"Failed to get leaderboard data from webapi (status code: {LeaderboardRequest.StatusCode})");
+                }
+                EndscreenRecordsResponseErrorCode = LeaderboardRequest.StatusCode;
             }
+            EndscreenRecordsResponseReceivedAt = Now;
             Http.Destroy(LeaderboardRequest);
             LeaderboardRequest = null;
         }
@@ -461,15 +489,28 @@ public class EnvimixSolo : Envimix
             }
             else
             {
-                Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (status code: {MapInfoRequest.StatusCode})");
+                if (MapInfoRequest.StatusCode == 10006)
+                {
+                    Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (offline mode)");
+                }
+                else
+                {
+                    Log(nameof(EnvimixSolo), $"Failed to get map info from webapi (status code: {MapInfoRequest.StatusCode})");
+                }
 
-                // avoid force quit in endscreen (FinishedAt == -1) to the user can save a replay
+                RatingEnabled = false;
+
+                // avoid force quit in endscreen (FinishedAt == -1) so the user can save a replay
                 if (FinishedAt == -1 && MapInfoRequest.StatusCode is 401 or 403)
                 {
                     forceQuit = true;
                 }
 
-                MapInfoFailedAt = TimeLib.GetCurrent();
+                // no retries in offline mode
+                if (MapInfoRequest.StatusCode != 10006)
+                {
+                    MapInfoFailedAt = TimeLib.GetCurrent();
+                }
             }
             Http.Destroy(MapInfoRequest);
             MapInfoRequest = null;
@@ -886,10 +927,7 @@ public class EnvimixSolo : Envimix
         switch (e.CustomEventType)
         {
             case "EndscreenContinue":
-                if (!GhostToUpload)
-                {
-                    SwitchToOutro(e.UI);
-                }
+                SwitchToOutro(e.UI);
                 break;
             case "OutroContinue":
                 SwitchFromOutro(e.UI);
