@@ -539,7 +539,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
         }
         else
         {
-            CurrentSkillpoints = 0;
+            CurrentSkillpoints = -1;
         }
 
         if (ActivityPoints.ContainsKey(validationFilterKey))
@@ -548,13 +548,27 @@ public class Endscreen : CTmMlScriptIngame, IContext
         }
         else
         {
-            CurrentActivityPoints = 0;
+            CurrentActivityPoints = -1;
         }
 
         ExpectedSkillpoints = CurrentSkillpoints;
         ExpectedActivityPoints = CurrentActivityPoints;
-        LabelSkillpoints.SetText(FormatNumberSpace(CurrentSkillpoints));
-        LabelActivityPoints.SetText(FormatNumberSpace(CurrentActivityPoints));
+        if (CurrentSkillpoints == -1)
+        {
+            LabelSkillpoints.SetText("?");
+        }
+        else
+        {
+            LabelSkillpoints.SetText(FormatNumberSpace(CurrentSkillpoints));
+        }
+        if (CurrentActivityPoints == -1)
+        {
+            LabelActivityPoints.SetText("?");
+        }
+        else
+        {
+            LabelActivityPoints.SetText(FormatNumberSpace(CurrentActivityPoints));
+        }
     }
 
     private void SetupMedals(int newBestTime)
@@ -804,6 +818,11 @@ public class Endscreen : CTmMlScriptIngame, IContext
         if (zones.Count > 0)
         {
             zone = GetFullZone(zones, ZoneIndex);
+            QuadZone.Show();
+        }
+        else
+        {
+            QuadZone.Hide();
         }
 
         var index = 0;
@@ -933,7 +952,11 @@ public class Endscreen : CTmMlScriptIngame, IContext
         var quadPbHighlight = (FramePersonalRecord.GetFirstChild("QuadHighlight") as CMlQuad)!;
         quadPbHighlight.Opacity = 0.2f;
 
-        if (zone == "World")
+        if (EndscreenRecordsResponseErrorCode != 0)
+        {
+            labelPbRecord.SetText($"??  {TimeToTextWithMilli(pbTime)}");
+        }
+        else if (zone == "World")
         {
             labelPbRecord.SetText($"{TextLib.FormatInteger(pbRankCounter + 1, 2)}  {TimeToTextWithMilli(pbTime)}");
         }
@@ -953,63 +976,72 @@ public class Endscreen : CTmMlScriptIngame, IContext
             return;
         }
 
-        if (pbSkillpointRankCounter == 0)
+        var car = Netread<string>.For(GetPlayer());
+        var isDefaultCar = MapPlayerModelName == car.Get();
+
+        if (EndscreenRecordsResponseErrorCode == 0)
         {
-            pbSkillpointRankCounter = 1; // avoid div by 0
-        }
-        var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
-        int ceilingSkillpoints;
-        if (skillpointsReal == MathLib.TruncInteger(skillpointsReal))
-        {
-            ceilingSkillpoints = MathLib.TruncInteger(skillpointsReal);
+            if (pbSkillpointRankCounter == 0)
+            {
+                pbSkillpointRankCounter = 1; // avoid div by 0
+            }
+            var skillpointsReal = (totalRecCount - pbSkillpointRankCounter) * 100f / pbSkillpointRankCounter;
+            int ceilingSkillpoints;
+            if (skillpointsReal == MathLib.TruncInteger(skillpointsReal))
+            {
+                ceilingSkillpoints = MathLib.TruncInteger(skillpointsReal);
+            }
+            else
+            {
+                ceilingSkillpoints = MathLib.CeilingInteger(skillpointsReal);
+            }
+            Log($"Skillpoints calculation: ({totalRecCount} - {pbSkillpointRankCounter}) * 100 / {pbSkillpointRankCounter} = {skillpointsReal} (ceiling: {ceilingSkillpoints})");
+
+            var wr = pbTime;
+            if (records.Length > 0)
+            {
+                wr = records[0].Time;
+            }
+            var wrPb = wr * 1f / pbTime;
+            var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
+            var activityPoints = MathLib.NearestInteger(activityPointsReal);
+
+            Log($"Activity points calculation: 1000 * exp({totalRecCount} * ({wr} / {pbTime} - 1)) = {activityPointsReal} (nearest: {activityPoints})");
+
+            if (!isDefaultCar && EndscreenRecordsResponse.Validation.Length > 0)
+            {
+                var validation = EndscreenRecordsResponse.Validation[0];
+                if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && EndscreenRecordsResponse.TitlePackReleaseTimestamp != "")
+                {
+                    var validationTimestampInSeconds = validation.DrivenAt;
+                    var titlePackReleaseTimestampInSeconds = EndscreenRecordsResponse.TitlePackReleaseTimestamp;
+                    var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
+                    var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
+                    var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
+                    Log($"Extra activity points calculation: 100 + truncate(({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400) * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
+                    activityPoints += extraActivityPointsInt;
+                }
+            }
+
+            ExpectedSkillpoints = ceilingSkillpoints;
+            ExpectedActivityPoints = activityPoints;
+
+            // somehow this function runs while endscreen is not visible
+            // if less than 10 points difference, don't play sound, it will be played during loop
+            if (FrameEndscreenInfo.Visible && (MathLib.Abs(ExpectedSkillpoints - CurrentSkillpoints) > 10 || MathLib.Abs(ExpectedActivityPoints - CurrentActivityPoints) > 10))
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
+                }
+            }
+
+            StartPointChangeAt = Now;
         }
         else
         {
-            ceilingSkillpoints = MathLib.CeilingInteger(skillpointsReal);
-        }
-        Log($"Skillpoints calculation: ({totalRecCount} - {pbSkillpointRankCounter}) * 100 / {pbSkillpointRankCounter} = {skillpointsReal} (ceiling: {ceilingSkillpoints})");
-
-        var wr = pbTime;
-        if (records.Length > 0)
-        {
-            wr = records[0].Time;
-        }
-        var wrPb = wr * 1f / pbTime;
-        var activityPointsReal = 1000 * MathLib.Exp(totalRecCount * (wrPb - 1));
-        var activityPoints = MathLib.NearestInteger(activityPointsReal);
-
-        Log($"Activity points calculation: 1000 * exp({totalRecCount} * ({wr} / {pbTime} - 1)) = {activityPointsReal} (nearest: {activityPoints})");
-
-        var car = Netread<string>.For(GetPlayer());
-        var isDefaultCar = MapPlayerModelName == car.Get();
-        if (!isDefaultCar && EndscreenRecordsResponse.Validation.Length > 0)
-        {
-            var validation = EndscreenRecordsResponse.Validation[0];
-            if (validation.User.Login == GetPlayer().User.Login && validation.DrivenAt != "" && EndscreenRecordsResponse.TitlePackReleaseTimestamp != "")
-            {
-                var validationTimestampInSeconds = validation.DrivenAt;
-                var titlePackReleaseTimestampInSeconds = EndscreenRecordsResponse.TitlePackReleaseTimestamp;
-                var validationAge = TimeLib.GetDelta(validationTimestampInSeconds, titlePackReleaseTimestampInSeconds);
-                var extraActivityPointsReal = 100 + validationAge / 86400f * 10;
-                var extraActivityPointsInt = MathLib.NearestInteger(extraActivityPointsReal);
-                Log($"Extra activity points calculation: 100 + truncate(({validationTimestampInSeconds} - {titlePackReleaseTimestampInSeconds}) / 86400) * 10 = {extraActivityPointsReal} (nearest: {extraActivityPointsInt})");
-                activityPoints += extraActivityPointsInt;
-            }
-        }
-
-        ExpectedSkillpoints = ceilingSkillpoints;
-        ExpectedActivityPoints = activityPoints;
-
-        StartPointChangeAt = Now;
-
-        // somehow this function runs while endscreen is not visible
-        // if less than 10 points difference, don't play sound, it will be played during loop
-        if (FrameEndscreenInfo.Visible && (MathLib.Abs(ExpectedSkillpoints - CurrentSkillpoints) > 10 || MathLib.Abs(ExpectedActivityPoints - CurrentActivityPoints) > 10))
-        {
-            for (var i = 0; i < 10; i++)
-            {
-                Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
-            }
+            ExpectedSkillpoints = -1;
+            ExpectedActivityPoints = -1;
         }
 
         if (IsPb && pbIsWorldRecord)
