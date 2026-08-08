@@ -539,7 +539,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
         }
         else
         {
-            CurrentSkillpoints = -1;
+            CurrentSkillpoints = 0;
         }
 
         if (ActivityPoints.ContainsKey(validationFilterKey))
@@ -548,27 +548,13 @@ public class Endscreen : CTmMlScriptIngame, IContext
         }
         else
         {
-            CurrentActivityPoints = -1;
+            CurrentActivityPoints = 0;
         }
 
         ExpectedSkillpoints = CurrentSkillpoints;
         ExpectedActivityPoints = CurrentActivityPoints;
-        if (CurrentSkillpoints == -1)
-        {
-            LabelSkillpoints.SetText("?");
-        }
-        else
-        {
-            LabelSkillpoints.SetText(FormatNumberSpace(CurrentSkillpoints));
-        }
-        if (CurrentActivityPoints == -1)
-        {
-            LabelActivityPoints.SetText("?");
-        }
-        else
-        {
-            LabelActivityPoints.SetText(FormatNumberSpace(CurrentActivityPoints));
-        }
+        LabelSkillpoints.SetText(FormatNumberSpace(CurrentSkillpoints));
+        LabelActivityPoints.SetText(FormatNumberSpace(CurrentActivityPoints));
     }
 
     private void SetupMedals(int newBestTime)
@@ -1042,6 +1028,8 @@ public class Endscreen : CTmMlScriptIngame, IContext
         {
             ExpectedSkillpoints = -1;
             ExpectedActivityPoints = -1;
+            LabelSkillpoints.SetText("?");
+            LabelActivityPoints.SetText("?");
         }
 
         if (IsPb && pbIsWorldRecord)
