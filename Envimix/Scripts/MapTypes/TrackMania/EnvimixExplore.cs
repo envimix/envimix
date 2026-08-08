@@ -61,7 +61,7 @@ public class EnvimixExplore : CTmMapType, IContext
         {
             var forceQuit = false;
 
-            if (VisitMapRequest.StatusCode != 200)
+            if (VisitMapRequest.StatusCode is 401 or 403)
             {
                 forceQuit = true;
             }
