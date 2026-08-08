@@ -29,6 +29,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelTotdName;
     [ManialinkControl] public required CMlLabel LabelTotdEnv;
     [ManialinkControl] public required CMlLabel LabelTotdNextAt;
+    [ManialinkControl] public required CMlLabel LabelTotdNotAvailable;
     [ManialinkControl] public required CMlQuad QuadTotdLoading;
     [ManialinkControl] public required CMlFrame FrameTotd;
     [ManialinkControl] public required CMlQuad QuadTotd;
@@ -163,6 +164,14 @@ public class MainMenu : CManiaAppTitleLayer, IContext
                     if (data.Length < 1)
                         break;
                     SetTotd(data[0]);
+                    break;
+                case "TotdError":
+                    QuadTotdLoading.Hide();
+                    FrameTotd.Hide();
+                    if (data.Length < 1)
+                        break;
+                    LabelTotdNotAvailable.SetText(data[0]);
+                    LabelTotdNotAvailable.Show();
                     break;
             }
         };
@@ -396,6 +405,7 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
         SetNextAt();
 
+        LabelTotdNotAvailable.Hide();
         QuadTotdLoading.Hide();
         FrameTotd.Show();
     }

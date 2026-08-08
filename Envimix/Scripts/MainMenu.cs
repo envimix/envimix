@@ -34,13 +34,6 @@ public class MainMenu : CManiaAppTitle, IContext
         public string BanReason;
     }
 
-    public struct STitleReleaseInfo
-    {
-        public string ReleasedAt;
-        public string Key;
-        public Dictionary<string, string> CampaignsReleasedAt;
-    }
-
     public struct SMapInfo
     {
         public string Name;
@@ -189,8 +182,6 @@ public class MainMenu : CManiaAppTitle, IContext
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserBanReason { get; set; } = "";
     public int ManiaPlanetAuthReceivedAt = -1;
 
-    [Local(LocalFor.LocalUser)] public string TitleRelease { get; set; } = "";
-    [Local(LocalFor.LocalUser)] public string TitleKey { get; set; } = "";
     [Local(LocalFor.LocalUser)] public Dictionary<string, string> CampaignsReleasedAt { get; set; }
 
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
@@ -208,7 +199,6 @@ public class MainMenu : CManiaAppTitle, IContext
     public CUILayer MainMenuLayer;
     public CUILayer SoloMenuLayer;
     public CUILayer LoadingLayer;
-    public CUILayer ReleaseLayer;
     public CUILayer LeaderboardsLayer;
     public CUILayer LocalPlayMenuLayer;
     public CUILayer EditorsMenuLayer;
@@ -228,6 +218,8 @@ public class MainMenu : CManiaAppTitle, IContext
     public ImmutableArray<string> Cars;
 
     public const string EnvimixWebAPI = "https://api.envimix.gbx.tools";
+
+    public const int OfflineHttpCode = 10006;
 
     public void Main()
     {        
@@ -249,100 +241,6 @@ public class MainMenu : CManiaAppTitle, IContext
 
         var introLayer = UILayerCreate();
         introLayer.ManialinkPage = "file://Media/Manialinks/Intro.xml";
-
-        ReleaseLayer = UILayerCreate();
-        ReleaseLayer.ManialinkPage = "file://Media/Manialinks/Release.xml";
-
-        var releaseReceivedAt = -1;
-        TitleRelease = "";
-        var released = false;
-        var countdownShown = false;
-
-        while (TitleRelease == "" || TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) < 0 || TitleKey == "")
-        {
-            // this is some REAL maniascript bullshit bug right here
-            if (TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && TitleKey != "")
-            {
-                break;
-            }
-
-            if (!released && TitleRelease != "" && TimeLib.Compare(TimeLib.GetCurrent(), TitleRelease) >= 0 && TitleKey == "")
-            {
-                Log("Title has been released!");
-                released = true;
-                releaseReceivedAt = -1;
-            }
-
-            var waitTime = 30000;
-            if (released)
-            {
-                waitTime = 2000;
-            }
-
-            // if we received release info recently, wait a bit before requesting again
-            if (releaseReceivedAt != -1 && Now - releaseReceivedAt < waitTime)
-            {
-                Yield();
-                if (!countdownShown && IntroEnded)
-                {
-                    LayerCustomEvent(ReleaseLayer, "Show", new[] { "" });
-                    countdownShown = true;
-                }
-                CheckToken();
-                continue;
-            }
-
-            var headers = "";
-            if (EnvimixTurboUserToken != "")
-            {
-                headers = $"Authorization: Bearer {EnvimixTurboUserToken}";
-            }
-
-            var titleReleaseRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/release", false, headers);
-            Wait(() => titleReleaseRequest.IsCompleted);
-
-            if (titleReleaseRequest.StatusCode == 200)
-            {
-                STitleReleaseInfo releaseInfo = new();
-                if (!releaseInfo.FromJson(titleReleaseRequest.Result))
-                {
-                    Log("Title release info JSON not parsed entirely, there could be some problems.");
-                }
-
-                if (TitleRelease != releaseInfo.ReleasedAt)
-                {
-                    released = false;
-                }
-
-                TitleRelease = releaseInfo.ReleasedAt!;
-                TitleKey = releaseInfo.Key!;
-                CampaignsReleasedAt = releaseInfo.CampaignsReleasedAt!;
-
-                var expectation = "";
-                if (released)
-                {
-                    expectation = " (expecting release sometime now)";
-                }
-
-                Log($"Title release info received. Release date: {TimeLib.FormatDate(TitleRelease, TimeLib.EDateFormats.Full)}{expectation}");
-
-                releaseReceivedAt = Now;
-            }
-            else if (titleReleaseRequest.StatusCode == 404)
-            {
-                Log("No title release info found. You can press ESC to escape.");
-                //releaseReceivedAt = Now;
-                Sleep(10000);
-            }
-            else
-            {
-                Log($"Failed to fetch title release info ({titleReleaseRequest.StatusCode}). You can press ESC to escape.");
-                Sleep(10000);
-            }
-            Http.Destroy(titleReleaseRequest);
-        }
-
-        LayerCustomEvent(ReleaseLayer, "Hide", new[] { "" });
 
         MainMenuLayer = UILayerCreate();
         MainMenuLayer.ManialinkPage = "file://Media/Manialinks/MainMenu.xml";
@@ -558,6 +456,14 @@ public class MainMenu : CManiaAppTitle, IContext
             else
             {
                 Log($"TOTD request failed ({TotdRequest.StatusCode}).");
+                if (TotdRequest.StatusCode == OfflineHttpCode)
+                {
+                    LayerCustomEvent(MainMenuLayer, "TotdError", new[] { "in offline mode" });
+                }
+                else
+                {
+                    LayerCustomEvent(MainMenuLayer, "TotdError", new[] { $"(error code: {TotdRequest.StatusCode})" });
+                }
                 // TODO: retry?
             }
             Http.Destroy(TotdRequest);
@@ -1216,7 +1122,7 @@ public class MainMenu : CManiaAppTitle, IContext
             var campaignReleaseAt = "";
             if (i == 0)
             {
-                campaignReleaseAt = TitleRelease;
+                campaignReleaseAt = "1764349200";
             }
             else if (i == 1 && CampaignsReleasedAt.ContainsKey("VR"))
             {

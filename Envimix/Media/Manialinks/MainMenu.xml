@@ -19,7 +19,8 @@
             <frame pos="0 -52">
                 <quad size="65 25" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" opacity="0.9"/>
                 <quad pos="0 -12.5" size="15 15" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" id="QuadTotdLoading" z-index="1"/>
-				<frame z-index="1" hidden="1" id="FrameTotd">
+                <label id="LabelTotdNotAvailable" pos="0 -12.5" z-index="1" size="55 5" text="in offline mode" halign="center" valign="center2" textfont="RajdhaniMono" autonewline="1" textprefix="Track of the Day not available " hidden="1"/>
+                <frame z-index="1" hidden="1" id="FrameTotd">
                 	<quad id="QuadTotd" size="65 24.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" />
                 	<quad id="QuadTotdThumbnail" pos="-30 -12.25" z-index="1" size="20 20" valign="center"/>
                 	<label id="LabelTotdName" pos="-7.2 -2.5" z-index="1" size="37 6" text="005" textfont="OswaldMono" translate="1" textsize="5" />

@@ -467,9 +467,12 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                 AnimMgr.Add(control, "<quad scale=\"1.15\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
 
                 var medalsJson = control.Parent.DataAttributeGet("Medals");
-                SPlayerMedals medals = new();
-                medals.FromJson(medalsJson);
-                UpdateTooltip(medals);
+                if (medalsJson != "")
+                {
+                    SPlayerMedals medals = new();
+                    medals.FromJson(medalsJson);
+                    UpdateTooltip(medals);
+                }
             }
         };
 
@@ -864,7 +867,14 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         labelPersonalNickname.RelativePosition_V3.X = completionOffsetX + 11;
 
         var framePersonalMedals = (FramePersonalCompletion.GetFirstChild("FrameMedals") as CMlFrame)!;
-        framePersonalMedals.DataAttributeSet("Medals", completionJson);
+        if (completionScore == -1)
+        {
+            framePersonalMedals.DataAttributeSet("Medals", "");
+        }
+        else
+        {
+            framePersonalMedals.DataAttributeSet("Medals", completionJson);
+        }
         framePersonalMedals.RelativePosition_V3.X = completionOffsetX + 6;
         framePersonalMedals.Show();
     }
@@ -1724,6 +1734,10 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
     public void Main()
     {
+        EnvimixCompletionPercentage = -1;
+        DefaultCarCompletionPercentage = -1;
+        GlobalCompletionPercentage = -1;
+
         FrameCategory.RelativePosition_V3.Y = 30;
         FrameCategory.Visible = false;
 
@@ -1741,6 +1755,15 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
 
         FrameQuit.RelativePosition_V3.Y = -90;
         FrameQuit.Visible = false;
+
+        IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
+
+        if (zones.Count == 0 || (zones.Count == 1 && zones[0] == "World"))
+        {
+            FrameCompletion.GetFirstChild("QuadZone").Hide();
+            FrameMostSkillpoints.GetFirstChild("QuadZone").Hide();
+            FrameMostActivityPoints.GetFirstChild("QuadZone").Hide();
+        }
 
         foreach (var control in FrameCars.Controls)
         {
@@ -1776,7 +1799,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     }
                     else
                     {
-                        percentage = 0;
+                        percentage = -1;
                     }
                 }
             }
@@ -1795,7 +1818,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     }
                     else
                     {
-                        percentage = 0;
+                        percentage = -1;
                     }
                 }
             }
@@ -1814,13 +1837,20 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
                     }
                     else
                     {
-                        percentage = 0;
+                        percentage = -1;
                     }
                 }
             }
 
-            var animatedOverallCompletion = AnimLib.EaseOutQuad(Now - OpenedAt, 0, percentage * 100, 1000);
-            LabelOverallCompletion.Value = $"{TextLib.FormatReal(animatedOverallCompletion, 2, false, false)}%";
+            if (percentage == -1)
+            {
+                LabelOverallCompletion.Value = "?%";
+            }
+            else
+            {
+                var animatedOverallCompletion = AnimLib.EaseOutQuad(Now - OpenedAt, 0, percentage * 100, 1000);
+                LabelOverallCompletion.Value = $"{TextLib.FormatReal(animatedOverallCompletion, 2, false, false)}%";
+            }
 
             if (SelectedCar == "")
             {
