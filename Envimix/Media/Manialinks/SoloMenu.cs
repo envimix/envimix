@@ -800,10 +800,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
         }
 
-        if (CampaignsReleasedAt.ContainsKey("VR"))
+        /*if (CampaignsReleasedAt.ContainsKey("VR"))
         {
             var releasedAt = CampaignsReleasedAt["VR"];
-            
+
             if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
             {
                 LabelVRCampaign.Value = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
@@ -833,7 +833,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         else
         {
             LabelVROffzoneCountdown.Visible = false;
-        }
+        }*/
+
+        LabelVRCampaign.Value = "VR campaign";
+        VRCampaignReleased = true;
+
+        VROffzoneCampaignReleased = true;
+        LabelVROffzoneCountdown.Hide();
 
         foreach (var control in FrameLeaderboards.Controls)
         {
@@ -1350,6 +1356,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
             var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
             var labelStatus = (frameLeaderboard.GetFirstChild("LabelStatus") as CMlLabel)!;
+            labelStatus.SetText("...confirm map to load...");
 
             if (resetScroll)
             {

@@ -137,6 +137,7 @@ public class EnvimixSolo : Envimix
         OutroGhostMaxFinishLength = 1500;
         RatingOpen = false;
         ReplaySaved = false;
+        EndscreenRecordsResponseErrorCode = 0;
     }
 
     public override void OnMapLoad()
@@ -259,9 +260,19 @@ public class EnvimixSolo : Envimix
             else
             {
                 Log(nameof(EnvimixSolo), $"Ghost upload failed - {GhostUploadTask.ErrorType} {GhostUploadTask.ErrorCode} {GhostUploadTask.ErrorDescription}.");
+
+                // unsure yet
+                var isOfflineMode = GhostUploadTask.ErrorCode == "0x00002716";
+
                 DataFileMgr.TaskResult_Release(GhostUploadTask.Id);
                 GhostUploadTask = null;
-                if (GhostUploadRetries < 3)
+
+                if (isOfflineMode)
+                {
+                    // meant to fail but reaches the needed code path
+                    RequestLeaderboard();
+                }
+                else if (GhostUploadRetries < 3)
                 {
                     GhostUploadFailedAt = TimeLib.GetCurrent();
                 }
