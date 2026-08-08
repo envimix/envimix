@@ -69,13 +69,13 @@
                 <label pos="0 -3.3" z-index="1" size="55 10" text="Quickplay" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t"/>
             </frame>
             <frame pos="-100 7">
-                <quad size="40 6" style="Bgs1" substyle="BgWindow4" halign="center" opacity=".75" colorize="555"/>
-                <quad size="40 5.75" z-index="1" style="Bgs1" substyle="BgCardInventoryItem" colorize="555" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" id="QuadOfficialCampaign" styleselected="1" />
+                <quad size="40 6" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" />
+                <quad size="40 5.75" z-index="1" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" id="QuadOfficialCampaign" styleselected="1" />
                 <label pos="0 -3.3" z-index="2" size="55 10" text="Official campaign" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
             </frame>
             <frame pos="-60 7">
-                <quad size="40 6" style="Bgs1" substyle="BgWindow4" halign="center" opacity=".75" colorize="555" />
-                <quad size="40 5.75" style="Bgs1" substyle="BgCardInventoryItem" colorize="555" scriptevents="1" halign="center" pos="0 -0.125" id="QuadVRCampaign" />
+                <quad size="40 6" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" />
+                <quad size="40 5.75" z-index="1" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" id="QuadVRCampaign" />
                 <label id="LabelVRCampaign" pos="0 -3.3" z-index="2" size="55 10" text="VR campaign" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
             </frame>
             <frame pos="-36 7.5">
