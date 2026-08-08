@@ -1674,6 +1674,15 @@ public class Menu : CTmMlScriptIngame, IContext
         if (Zones.Count == 0)
         {
             CurrentZoneIndex = -1;
+            QuadGhostSelectionNext.Hide();
+            QuadGhostSelectionPrev.Hide();
+            LabelGhostSelection.RelativePosition_V3.X = 5;
+        }
+        else
+        {
+            QuadGhostSelectionNext.Show();
+            QuadGhostSelectionPrev.Show();
+            LabelGhostSelection.RelativePosition_V3.X = 0;
         }
 
         if (CurrentZoneIndex == -1)
