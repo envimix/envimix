@@ -59,7 +59,7 @@
             <label id="LabelPersonalBest" pos="0 -2.7" z-index="1" size="30 6" text="-:--.---" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" style="TextCardRaceRank" scriptevents="1" />
         </frame>
         <quad id="QuadLoadingLeaderboard" pos="21 -20" z-index="0" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" hidden="1" />
-        <label id="LabelConfirm" pos="21 -20" z-index="0" size="40 5" text="...confirm map to load..." halign="center" valign="center" textsize="2" textfont="BiryaniDemiBold"/>
+        <label id="LabelStatus" pos="21 -20" z-index="0" size="40 5" text="...confirm map to load..." halign="center" valign="center" textsize="2" textfont="BiryaniDemiBold"/>
     </framemodel>
     <frame clip="1" clipsizen="320 130" clipposn="0 25">
         <frame pos="0 80" id="FrameCampaignOverview">
@@ -84,11 +84,11 @@
             </frame>
             <frame pos="53 7">
                 <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>
-                <label id="LabelSkillpoints" pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0F0"/>
+                <label id="LabelSkillpoints" pos="-15 -2.7" z-index="1" size="30 6" text="?" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0F0"/>
             </frame>
             <frame pos="84 7">
                 <quad z-index="0" size="30 6" style="Bgs1" substyle="BgCardList" halign="right"/>
-                <label id="LabelActivityPoints" pos="-15 -2.7" z-index="1" size="30 6" text="0" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0FF"/>
+                <label id="LabelActivityPoints" pos="-15 -2.7" z-index="1" size="30 6" text="?" halign="center" valign="center" textfont="RajdhaniMono" textprefix="$t" textsize="2" textcolor="0FF"/>
             </frame>
             <frame pos="155 7">
                 <quad z-index="0" size="70 6" style="Bgs1" substyle="BgCardList" halign="right"/>
@@ -218,12 +218,12 @@
                             <label pos="244 -0.1" z-index="0" size="45 5" text="-/-" textsize="1.5" halign="right" valign="center2" textfont="OswaldMono"/>
                         </frame>
                         <frame id="FrameValidations" pos="0 -5">
-                            <label pos="-22.5 0" z-index="0" size="44 5" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="22.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="67.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="112.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="157.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
-                            <label pos="202.5 0" z-index="0" size="44 8" text="$888you can validate this!" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="-22.5 0" z-index="0" size="44 5" text="$888unknown validator" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="22.5 0" z-index="0" size="44 8" text="$888unknown validator" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="67.5 0" z-index="0" size="44 8" text="$888unknown validator" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="112.5 0" z-index="0" size="44 8" text="$888unknown validator" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="157.5 0" z-index="0" size="44 8" text="$888unknown validator" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
+                            <label pos="202.5 0" z-index="0" size="44 8" text="$888unknown validator" textsize="2" valign="center2" textfont="Oswald" hidden="1"/>
                         </frame>
                         <frame id="FrameLeaderboards" pos="0 -10.25">
                             <frameinstance modelid="FramemodelLeaderboard" pos="-22.5 0" />

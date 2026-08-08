@@ -141,6 +141,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
+    public Dictionary<string, Dictionary<string, int>> LeaderboardErrors;
 
     public Dictionary<string, Dictionary<string, string>> TitleStars;
     public Dictionary<string, Dictionary<string, SCombinationStat>> TitleCombinations;
@@ -319,6 +320,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     SEnvimaniaRecordsResponse response = new();
                     response.FromJson(recordsJson);
                     ProcessLeaderboardData(mapUid, car, response);
+                    break;
+                case "LeaderboardError":
+                    var errorMapUid = data[0];
+                    var errorCar = data[1];
+                    var errorCode = data[2];
+                    ProcessLeaderboardError(errorMapUid, errorCar, TextLib.ToInteger(errorCode));
                     break;
             }
         };
@@ -965,7 +972,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
             gaugeDifficulty.Ratio = 0;
-            gaugeDifficulty.Color = new Vec3(1, 0, 0);
+            if (TitleCombinations.Count > 0)
+            {
+                gaugeDifficulty.Color = new Vec3(1, 0, 0);
+            }
+            else
+            {
+                gaugeDifficulty.Color = new Vec3(1, 1, 1);
+            }
         }
         foreach (var control in FrameQualityRatings.Controls)
         {
@@ -974,7 +988,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
             gaugeQuality.Ratio = 0;
-            gaugeQuality.Color = new Vec3(1, 0, 0);
+            if (TitleCombinations.Count > 0)
+            {
+                gaugeQuality.Color = new Vec3(1, 0, 0);
+            }
+            else
+            {
+                gaugeQuality.Color = new Vec3(1, 1, 1);
+            }
         }
     }
 
@@ -1078,7 +1099,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             if (!TitleCombinations.ContainsKey(mapInfo.MapUid) || !TitleCombinations[mapInfo.MapUid].ContainsKey(combinationKey))
             {
-                labelValidation.SetText("$888you can validate this!");
+                if (TitleCombinations.Count == 0)
+                {
+                    labelValidation.SetText("$888unknown validator");
+                }
+                else
+                {
+                    labelValidation.SetText("$888you can validate this!");
+                }
                 carIndex += 1;
                 continue;
             }
@@ -1204,7 +1232,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 difficultyGauge.Ratio = 0;
                 qualityGauge.Ratio = 0;
 
-                if (isDefaultCar)
+                if (isDefaultCar || TitleCombinations.Count == 0)
                 {
                     difficultyGauge.Color = new Vec3(1, 1, 1);
                     qualityGauge.Color = new Vec3(1, 1, 1);
@@ -1321,7 +1349,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
             var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
             var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
-            var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+            var labelStatus = (frameLeaderboard.GetFirstChild("LabelStatus") as CMlLabel)!;
 
             if (resetScroll)
             {
@@ -1330,13 +1358,33 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             var scrollIndex = MathLib.NearestInteger((float)frameScrollRecords.ScrollOffset.Y / 5);
 
-            labelConfirm.Hide();
+            labelStatus.Hide();
 
             carIndex += 1;
 
             if (!Leaderboards.ContainsKey(selectedMapInfo.MapUid) || !Leaderboards[selectedMapInfo.MapUid].ContainsKey(carName))
             {
                 // check for any error
+                if (LeaderboardErrors.ContainsKey(selectedMapInfo.MapUid) && LeaderboardErrors[selectedMapInfo.MapUid].ContainsKey(carName))
+                {
+                    var errorCode = LeaderboardErrors[selectedMapInfo.MapUid][carName];
+
+                    if (errorCode == 10006)
+                    {
+                        labelStatus.Value = "offline mode";
+                    }
+                    else
+                    {
+                        labelStatus.Value = $"error {errorCode}";
+                    }
+                }
+                else
+                {
+                    labelStatus.Value = "unknown error";
+                }
+
+                labelStatus.Show();
+                quadLoadingLeaderboard.Hide();
                 continue;
             }
 
@@ -1479,14 +1527,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 }
 
                 var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
-                var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+                var labelStatus = (frameLeaderboard.GetFirstChild("LabelStatus") as CMlLabel)!;
                 var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
                 var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
 
                 frameScrollRecords.ScrollOffset.Y = 0;
 
                 quadLoadingLeaderboard.Show();
-                labelConfirm.Hide();
+                labelStatus.Hide();
 
                 foreach (var controlRec in frameRecords.Controls)
                 {
@@ -1508,6 +1556,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
 
         Leaderboards[mapUid][car] = response;
+        UpdateLeaderboards(false);
+    }
+
+    private void ProcessLeaderboardError(string mapUid, string car, int code)
+    {
+        if (!LeaderboardErrors.ContainsKey(mapUid))
+        {
+            LeaderboardErrors[mapUid] = new();
+        }
+
+        LeaderboardErrors[mapUid][car] = code;
         UpdateLeaderboards(false);
     }
 
@@ -1862,14 +1921,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
 
             var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
-            var labelConfirm = (frameLeaderboard.GetFirstChild("LabelConfirm") as CMlLabel)!;
+            var labelStatus = (frameLeaderboard.GetFirstChild("LabelStatus") as CMlLabel)!;
             var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
             var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
 
             frameScrollRecords.ScrollOffset.Y = 0;
 
             quadLoadingLeaderboard.Hide();
-            labelConfirm.Show();
+            labelStatus.Show();
 
             foreach (var controlRec in frameRecords.Controls)
             {

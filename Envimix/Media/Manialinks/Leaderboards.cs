@@ -608,7 +608,11 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             labelRecord.RelativePosition_V3.X = completionOffsetX + 2.5;
 
             var nickname = playerCompletion.L;
-            if (leaderboardsUserInfos.ContainsKey(playerCompletion.L))
+            if (playerCompletion.L == LocalUser.Login)
+            {
+                nickname = LocalUser.Name;
+            }
+            else if (leaderboardsUserInfos.ContainsKey(playerCompletion.L))
             {
                 nickname = leaderboardsUserInfos[playerCompletion.L].N;
             }
@@ -747,7 +751,11 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             labelRecord.RelativePosition_V3.X = completionOffsetX + 2.5;
 
             var nickname = playerCompletion.L;
-            if (leaderboardsUserInfos.ContainsKey(playerCompletion.L))
+            if (playerCompletion.L == LocalUser.Login)
+            {
+                nickname = LocalUser.Name;
+            }
+            else if (leaderboardsUserInfos.ContainsKey(playerCompletion.L))
             {
                 nickname = leaderboardsUserInfos[playerCompletion.L].N;
             }
@@ -1097,7 +1105,11 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             labelRecord.RelativePosition_V3.X = skillpointsOffsetX + 2.5;
 
             var nickname = playerScore.L;
-            if (leaderboardsUserInfos.ContainsKey(playerScore.L))
+            if (playerScore.L == LocalUser.Login)
+            {
+                nickname = LocalUser.Name;
+            }
+            else if (leaderboardsUserInfos.ContainsKey(playerScore.L))
             {
                 nickname = leaderboardsUserInfos[playerScore.L].N;
             }
@@ -1309,7 +1321,11 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             labelRecord.RelativePosition_V3.X = activityPointsOffsetX + 2.5;
 
             var nickname = playerScore.L;
-            if (leaderboardsUserInfos.ContainsKey(playerScore.L))
+            if (playerScore.L == LocalUser.Login)
+            {
+                nickname = LocalUser.Name;
+            }
+            else if (leaderboardsUserInfos.ContainsKey(playerScore.L))
             {
                 nickname = leaderboardsUserInfos[playerScore.L].N;
             }

@@ -578,6 +578,7 @@ public class MainMenu : CManiaAppTitle, IContext
                 else
                 {
                     Log($"Leaderboard request from map {mapUid} for car {car} failed ({request.StatusCode}).");
+                    LayerCustomEvent(SoloMenuLayer, "LeaderboardError", new[] { mapUid, car, request.StatusCode.ToString() });
                 }
 
                 Http.Destroy(request);
