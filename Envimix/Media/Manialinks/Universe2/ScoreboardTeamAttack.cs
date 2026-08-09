@@ -92,6 +92,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [Netread] public required int RatingsUpdatedAt { get; set; }
     [Netread(NetFor.UI)] public required IList<SFilteredRating> MyRatings { get; set; }
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
+    [Netread] public ImmutableArray<string> DisplayedCars { get; set; }
 
     public ScoreboardTeamAttack()
     {
@@ -361,51 +362,68 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         }
 
         Ranks = new();
+        var ranker = new Dictionary<string, Dictionary<string, int>>();
+
+        foreach (var score in Scores)
+        {
+            var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(score);
+
+            foreach (var car in DisplayedCars)
+            {
+                if (!ranker.ContainsKey(car))
+                {
+                    ranker[car] = new();
+                }
+                var key = $"{car}_0_Time";
+                if (envimixBestRace.Get().ContainsKey(key))
+                {
+                    ranker[car][score.User.Login] = envimixBestRace.Get()[key].Time;
+                }
+            }
+        }
+
+        foreach (var (car, times) in ranker)
+        {
+            Ranks[car] = new();
+
+            var index = 1;
+            var currentRank = 1;
+            var prevTime = -1;
+
+            foreach (var (login, time) in times.Sort()) // Assumes times.Sort() sorts ascending
+            {
+                // Only update the assigned rank if the time is actually slower
+                if (time != prevTime)
+                {
+                    currentRank = index;
+                }
+
+                Ranks[car][login] = currentRank;
+
+                prevTime = time;
+                index += 1;
+            }
+        }
 
         if (InputPlayer is not null)
         {
+
             if (InputPlayer.Score is not null)
             {
-                UpdatePlayer(FrameYourScore, InputPlayer.Score, rank: 0);
-            }
+                int myOverallRank = 0;
 
-            var ranker = new Dictionary<string, Dictionary<string, int>>();
-
-            foreach (var score in Scores)
-            {
-                var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(score);
-
-                foreach (var (key, time) in envimixBestRace.Get())
+                // Find the player's actual index in the global scores to get their rank
+                for (int i = 0; i < Scores.Count; i++)
                 {
-                    if (!ranker.ContainsKey(key))
+                    if (Scores[i].User.Login == InputPlayer.User.Login)
                     {
-                        ranker[key] = new();
+                        myOverallRank = i + 1;
+                        break;
                     }
-
-                    ranker[key][score.User.Login] = envimixBestRace.Get()[key].Time;
                 }
-            }
 
-            foreach (var (car, times) in ranker)
-            {
-                Ranks[car] = new();
-
-                var offset = 0;
-                var prevTime = 0;
-                var index = 1;
-
-                foreach (var (login, time) in times.Sort())
-                {
-                    if (time == prevTime)
-                    {
-                        offset += 1;
-                    }
-
-                    Ranks[car][login] = index - offset;
-
-                    prevTime = time;
-                    index += 1;
-                }
+                // Pass their actual calculated rank instead of hardcoding 0
+                UpdatePlayer(FrameYourScore, InputPlayer.Score, rank: myOverallRank);
             }
         }
 
