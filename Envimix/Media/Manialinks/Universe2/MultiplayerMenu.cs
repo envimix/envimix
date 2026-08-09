@@ -2143,28 +2143,40 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
             PrevRatingsUpdatedAt = ratingsUpdatedAt.Get();
         }
 
-        // every second, update total time from persistent
+        // every second, update total time from persistent or net if different player
         if (IsMenuOpen && (GameTime / 100) != (PrevGameTime / 100))
         {
-            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
-            if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+            if (InputPlayer != GUIPlayer)
             {
                 foreach (var control in FrameInnerVehicles.Controls)
                 {
                     var frame = (control as CMlFrame)!;
-
-                    var carName = frame.DataAttributeGet("car");
-
                     var controlTotalTime = frame.GetFirstChild("LabelTotalTime");
+                    controlTotalTime.Hide();
+                }
+            }
+            else
+            {
+                var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+                if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+                {
+                    foreach (var control in FrameInnerVehicles.Controls)
+                    {
+                        var frame = (control as CMlFrame)!;
 
-                    if (persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid].ContainsKey(carName))
-                    {
-                        (controlTotalTime as CMlLabel)!.Value = TimeLib.FormatDelta("0", persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][carName].ToString(), TimeLib.EDurationFormats.Abbreviated);
-                        controlTotalTime.Show();
-                    }
-                    else
-                    {
-                        controlTotalTime.Hide();
+                        var carName = frame.DataAttributeGet("car");
+
+                        var controlTotalTime = frame.GetFirstChild("LabelTotalTime");
+
+                        if (persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid].ContainsKey(carName))
+                        {
+                            (controlTotalTime as CMlLabel)!.Value = TimeLib.FormatDelta("0", persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][carName].ToString(), TimeLib.EDurationFormats.Abbreviated);
+                            controlTotalTime.Show();
+                        }
+                        else
+                        {
+                            controlTotalTime.Hide();
+                        }
                     }
                 }
             }
