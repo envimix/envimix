@@ -2326,6 +2326,20 @@ public class Envimix : UniverseModeBase
                     }
                 }
                 break;
+            case "SessionTime":
+                if (e.CustomEventData.Count > 0)
+                {
+                    var sessionTime = Netwrite<int>.For(GetPlayer(e.UI));
+                    sessionTime.Set(TextLib.ToInteger(e.CustomEventData[0]));
+                }
+                break;
+            case "TotalTime":
+                if (e.CustomEventData.Count > 0)
+                {
+                    var totalTime = Netwrite<int>.For(GetPlayer(e.UI));
+                    totalTime.Set(TextLib.ToInteger(e.CustomEventData[0]));
+                }
+                break;
         }
     }
 

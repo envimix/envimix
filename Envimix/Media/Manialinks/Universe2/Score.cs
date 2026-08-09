@@ -184,6 +184,8 @@ public class Score : CTmMlScriptIngame, IContext
             {
                 TotalTimeAtStart = 0;
             }
+            SendCustomEvent("SessionTime", new[] { "0" });
+            SendCustomEvent("TotalTime", new[] { TotalTimeAtStart.ToString() });
 
             SessionStartedAt = "";
             SessionTimeAtPause = 0;
@@ -260,64 +262,91 @@ public class Score : CTmMlScriptIngame, IContext
 
         FrameScore.Visible = IsVisible();
 
-        // detect active input
-        if (GetPlayer().InputGasPedal != 0 || GetPlayer().InputSteer != 0)
+        if (InputPlayer != GUIPlayer)
         {
-            LastInputActiveAt = GameTime;
-        }
-
-        // pause timer if no input for 5 seconds
-        if (!TimerPaused && LastInputActiveAt != -1 && GameTime - LastInputActiveAt >= 5000)
-        {
-            PauseTimer();
-        }
-
-        // unpause timer if input detected
-        if (TimerPaused && GetPlayer().RaceStartTime < GameTime && (GetPlayer().InputGasPedal != 0 || GetPlayer().InputSteer != 0))
-        {
-            UnpauseTimer();
-        }
-
-        // increment attempt if respawned after race
-        if (EnqueueAttempt && GetPlayer().RaceStartTime != 0 && GetPlayer().RaceStartTime < GameTime)
-        {
-            IncrementAttempt();
-            EnqueueAttempt = false;
-        }
-
-        // start session timer if not started and input detected
-        if (!TimerPaused && SessionStartedAt == "" && GetPlayer().RaceStartTime < GameTime && GetPlayer().InputGasPedal != 0)
-        {
-            SessionStartedAt = (GameTime / 1000).ToString();
-        }
-
-        // update every tenth of a second
-        if ((GameTime / 100) != (PrevGameTime / 100))
-        {
-            if (SessionStartedAt == "")
+            // update every half second
+            if ((GameTime / 500) != (PrevGameTime / 500))
             {
-                FormatDelta(LabelSessionTime, SessionTimeAtPause);
-                FormatDelta(LabelTotalTime, TotalTimeAtStart);
+                var sessionTime = Netread<int>.For(GetPlayer());
+                var totalTime = Netread<int>.For(GetPlayer());
+
+                FormatDelta(LabelSessionTime, sessionTime.Get());
+                FormatDelta(LabelTotalTime, totalTime.Get());
             }
-            else
+        }
+        else if (InputPlayer is not null)
+        {
+            // detect active input
+            if (InputPlayer.InputGasPedal != 0 || InputPlayer.InputSteer != 0)
             {
-                var delta = TimeLib.GetDelta((GameTime / 1000).ToString(), SessionStartedAt);
-                FormatDelta(LabelSessionTime, SessionTimeAtPause + delta);
-                FormatDelta(LabelTotalTime, TotalTimeAtStart + delta);
+                LastInputActiveAt = GameTime;
+            }
 
-                // update total time every second
-                if ((GameTime / 1000) != (PrevGameTime / 1000))
+            // pause timer if no input for 5 seconds
+            if (!TimerPaused && LastInputActiveAt != -1 && GameTime - LastInputActiveAt >= 5000)
+            {
+                PauseTimer();
+            }
+
+            // unpause timer if input detected
+            if (TimerPaused && InputPlayer.RaceStartTime < GameTime && (InputPlayer.InputGasPedal != 0 || InputPlayer.InputSteer != 0))
+            {
+                UnpauseTimer();
+            }
+
+            // increment attempt if respawned after race
+            if (EnqueueAttempt && InputPlayer.RaceStartTime != 0 && InputPlayer.RaceStartTime < GameTime)
+            {
+                IncrementAttempt();
+                EnqueueAttempt = false;
+            }
+
+            // start session timer if not started and input detected
+            if (!TimerPaused && SessionStartedAt == "" && InputPlayer.RaceStartTime < GameTime && InputPlayer.InputGasPedal != 0)
+            {
+                SessionStartedAt = (GameTime / 1000).ToString();
+            }
+
+            // update every tenth of a second
+            if ((GameTime / 100) != (PrevGameTime / 100))
+            {
+                if (SessionStartedAt == "")
                 {
-                    var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
-                    if (!persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
-                    {
-                        persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid] = new();
-                    }
-                    persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()] = TotalTimeAtStart + delta;
+                    FormatDelta(LabelSessionTime, SessionTimeAtPause);
+                    FormatDelta(LabelTotalTime, TotalTimeAtStart);
                 }
-            }
+                else
+                {
+                    var delta = TimeLib.GetDelta((GameTime / 1000).ToString(), SessionStartedAt);
 
-            PrevGameTime = GameTime;
+                    var sessionTime = SessionTimeAtPause + delta;
+                    FormatDelta(LabelSessionTime, sessionTime);
+
+                    var totalTime = TotalTimeAtStart + delta;
+                    FormatDelta(LabelTotalTime, totalTime);
+
+                    // update total time every second
+                    if ((GameTime / 1000) != (PrevGameTime / 1000))
+                    {
+                        var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+                        if (!persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+                        {
+                            persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid] = new();
+                        }
+                        persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()] = totalTime;
+
+                    }
+
+                    // update session time and total time every half second
+                    if ((GameTime / 500) != (PrevGameTime / 500))
+                    {
+                        SendCustomEvent("SessionTime", new[] { sessionTime.ToString() });
+                        SendCustomEvent("TotalTime", new[] { totalTime.ToString() });
+                    }
+                }
+
+                PrevGameTime = GameTime;
+            }
         }
     }
 
