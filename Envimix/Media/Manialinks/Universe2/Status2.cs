@@ -243,9 +243,8 @@ public class Status2 : CTmMlScriptIngame, IContext
             }
         }
 
-        var animatedScore1 = 0f;
-        var animatedScore2 = 0f;
-        var isAnimating = false;
+        var animatedScore1 = MathLib.ToReal(ClanScores[1]);
+        var animatedScore2 = MathLib.ToReal(ClanScores[2]);
 
         for (int i = 0; i < PrevClanScoresTime.Count; i++)
         {
@@ -256,7 +255,8 @@ public class Status2 : CTmMlScriptIngame, IContext
                 var score = ClanScores[i];
                 var prevScore = PrevClanScoresForAnim[i];
 
-                var animatedScore = AnimLib.EaseOutQuad(Now - time, prevScore * 1f, (score - prevScore) * 1f, 1000);
+                var timeElapsed = MathLib.Min(Now - time, 1000);
+                var animatedScore = AnimLib.EaseOutQuad(timeElapsed, prevScore * 1f, (score - prevScore) * 1f, 1000);
 
                 if (i == 1)
                 {
@@ -268,30 +268,25 @@ public class Status2 : CTmMlScriptIngame, IContext
                     animatedScore2 = animatedScore;
                     LabelBluePoints.SetText(ToNicerNumber(MathLib.NearestInteger(animatedScore)));
                 }
-
-                isAnimating = true;
             }
         }
 
-        if (isAnimating)
+        var redRatio = .5f;
+        var blueRatio = .5f;
+
+        if (animatedScore1 + animatedScore2 > 0)
         {
-            var redRatio = .5f;
-            var blueRatio = .5f;
-
-            if (animatedScore1 + animatedScore2 > 0)
-            {
-                redRatio = animatedScore1 / (animatedScore1 + animatedScore2);
-                blueRatio = animatedScore2 / (animatedScore1 + animatedScore2);
-            }
-
-            redRatio = MathLib.Clamp(redRatio, .2f, .8f);
-            blueRatio = MathLib.Clamp(blueRatio, .2f, .8f);
-
-            QuadRedPoints.Size.X = 47f * redRatio - (QuadRedPoints.RelativePosition_V3.X + 23.4);
-            QuadBluePoints.Size.X = 47f * blueRatio - (-QuadBluePoints.RelativePosition_V3.X + 23.4);
-            LabelRedPoints.RelativePosition_V3.X = QuadRedPoints.RelativePosition_V3.X + QuadRedPoints.Size.X / 2;
-            LabelBluePoints.RelativePosition_V3.X = -QuadRedPoints.RelativePosition_V3.X - QuadBluePoints.Size.X / 2;
+            redRatio = animatedScore1 / (animatedScore1 + animatedScore2);
+            blueRatio = animatedScore2 / (animatedScore1 + animatedScore2);
         }
+
+        redRatio = MathLib.Clamp(redRatio, .2f, .8f);
+        blueRatio = MathLib.Clamp(blueRatio, .2f, .8f);
+
+        QuadRedPoints.Size.X = 47f * redRatio - (QuadRedPoints.RelativePosition_V3.X + 23.4f);
+        QuadBluePoints.Size.X = 47f * blueRatio - (-QuadBluePoints.RelativePosition_V3.X + 23.4f);
+        LabelRedPoints.RelativePosition_V3.X = QuadRedPoints.RelativePosition_V3.X + QuadRedPoints.Size.X / 2;
+        LabelBluePoints.RelativePosition_V3.X = QuadBluePoints.RelativePosition_V3.X - QuadBluePoints.Size.X / 2;
 
         if (IsVisible() != PrevVisible)
         {
