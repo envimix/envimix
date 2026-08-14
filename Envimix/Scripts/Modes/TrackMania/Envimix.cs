@@ -167,6 +167,7 @@ public class Envimix : UniverseModeBase
     public required Dictionary<string, Envimania.SRatingServerRequest> UserRatingsToRequest;
     public CHttpRequest? UserRatingRequest;
     public required int UserRatingsUpdatedAt;
+    public required Dictionary<string, int> RatingChatLastSentAt;
 
     public required Dictionary<string, Envimania.SUserInfo> UserJoinAdditionalInfosToRequest;
     public CHttpRequest? UserJoinAdditionalInfoRequest;
@@ -2083,6 +2084,9 @@ public class Envimix : UniverseModeBase
             return;
         }
 
+        // Minimum time between rating chat messages from the same player, so slider dragging doesn't spam chat
+        const int ratingChatCooldown = 15000;
+
         if (UserRatingRequest is null && UserRatingsToRequest.Count > 0 && UserRatingsUpdatedAt + 1000 <= Now)
         {
             ImmutableArray<Envimania.SRatingServerRequest> ratingReqs = new();
@@ -2105,7 +2109,13 @@ public class Envimix : UniverseModeBase
 
                 UserRatings[key] = req.Rating;
 
-                if (difficulty != -1 && isDifficultyDifferent)
+                var difficultyChatKey = $"{req.User.Login}_Difficulty";
+                var qualityChatKey = $"{req.User.Login}_Quality";
+
+                var canSendDifficultyChat = !RatingChatLastSentAt.ContainsKey(difficultyChatKey) || Now - RatingChatLastSentAt[difficultyChatKey] >= ratingChatCooldown;
+                var canSendQualityChat = !RatingChatLastSentAt.ContainsKey(qualityChatKey) || Now - RatingChatLastSentAt[qualityChatKey] >= ratingChatCooldown;
+
+                if (difficulty != -1 && isDifficultyDifferent && canSendDifficultyChat)
                 {
                     var word = "";
 
@@ -2135,9 +2145,10 @@ public class Envimix : UniverseModeBase
                     }
 
                     UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map is $<{word}$> with $<$ff8{req.Car}$> ({TextLib.FormatReal(difficulty * 100, 0, _HideZeroes: true, _HideDot: true)}%).");
+                    RatingChatLastSentAt[difficultyChatKey] = Now;
                 }
 
-                if (quality != -1 && isQualityDifferent)
+                if (quality != -1 && isQualityDifferent && canSendQualityChat)
                 {
                     var word = "";
 
@@ -2167,6 +2178,7 @@ public class Envimix : UniverseModeBase
                     }
 
                     UIManager.UIAll.SendChat($"$<{req.User.Nickname}$> thinks this map is $<{word}$> with $<$ff8{req.Car}$> ({TextLib.FormatReal(quality * 100, 0, _HideZeroes: true, _HideDot: true)}%).");
+                    RatingChatLastSentAt[qualityChatKey] = Now;
                 }
             }
 
@@ -2420,15 +2432,23 @@ public class Envimix : UniverseModeBase
             case "SessionTime":
                 if (e.CustomEventData.Count > 0)
                 {
-                    var sessionTime = Netwrite<int>.For(GetPlayer(e.UI));
-                    sessionTime.Set(TextLib.ToInteger(e.CustomEventData[0]));
+                    var player = GetPlayer(e.UI);
+                    if (player is not null)
+                    {
+                        var sessionTime = Netwrite<int>.For(player);
+                        sessionTime.Set(TextLib.ToInteger(e.CustomEventData[0]));
+                    }
                 }
                 break;
             case "TotalTime":
                 if (e.CustomEventData.Count > 0)
                 {
-                    var totalTime = Netwrite<int>.For(GetPlayer(e.UI));
-                    totalTime.Set(TextLib.ToInteger(e.CustomEventData[0]));
+                    var player = GetPlayer(e.UI);
+                    if (player is not null)
+                    {
+                        var totalTime = Netwrite<int>.For(player);
+                        totalTime.Set(TextLib.ToInteger(e.CustomEventData[0]));
+                    }
                 }
                 break;
         }
