@@ -147,7 +147,7 @@ public class EnvimixTimeAttack : Envimix
             }
 
             CheckEnvimaniaSession();
-            CheckMapInfo();
+            CheckMapInfoUnauthorized();
             CheckRatings();
             CheckUserInfoRequests();
             UpdateSpectatorLists();

@@ -192,7 +192,7 @@ public class EnvimixTeamAttack : Envimix
             }
 
             CheckEnvimaniaSession();
-            CheckMapInfo();
+            CheckMapInfoUnauthorized();
             CheckRatings();
             CheckUserInfoRequests();
             UpdateSpectatorLists();

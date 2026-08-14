@@ -97,6 +97,7 @@ public class EnvimixSolo : Envimix
     public string PersonalRatingUpdatedAt;
     public CTaskResult? SaveReplayTask;
     public CHttpRequest? LeaderboardRequest;
+    public CHttpRequest? MapInfoRequest;
 
     public IList<CTaskResult_Ghost> PersonalGhostTasks;
     public Dictionary<Ident, string> PersonalGhostFilterKeys;

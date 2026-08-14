@@ -491,7 +491,7 @@ public class Envimix : UniverseModeBase
         QueueMapIndex();
 
         CheckEnvimaniaSession();
-        CheckMapInfo();
+        CheckMapInfoUnauthorized();
         CheckRatings();
         CheckUserInfoRequests();
     }
@@ -499,7 +499,7 @@ public class Envimix : UniverseModeBase
     public override void WhileMapIntro()
     {
         CheckEnvimaniaSession();
-        CheckMapInfo();
+        CheckMapInfoUnauthorized();
         CheckRatings();
         CheckUserInfoRequests();
     }
@@ -507,7 +507,7 @@ public class Envimix : UniverseModeBase
     public override void OnLoop()
     {
         CheckEnvimaniaSession();
-        CheckMapInfo();
+        CheckMapInfoUnauthorized();
         CheckRatings();
         CheckUserInfoRequests();
     }
@@ -588,7 +588,7 @@ public class Envimix : UniverseModeBase
     public required ImmutableArray<SEnvimaniaSessionRecordRequest> EnvimaniaSessionRecordRequests;
     public int EnvimaniaRecordsRequestsLastCheck;
     public CHttpRequest? EnvimaniaRecordsRequest;
-    public CHttpRequest? MapInfoRequest;
+    public CHttpRequest? MapInfoUnauthorizedRequest;
 
     private bool HasRemoteConnection()
     {
@@ -634,7 +634,7 @@ public class Envimix : UniverseModeBase
 
     protected void RequestUnauthorizedMapInfo()
     {
-        MapInfoRequest = Http.CreateGet($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", UseCache: false);
+        MapInfoUnauthorizedRequest = Http.CreateGet($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", UseCache: false);
     }
 
     public bool RequestEnvimaniaSession()
@@ -1136,22 +1136,22 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    public void CheckMapInfo()
+    public void CheckMapInfoUnauthorized()
     {
-        if (MapInfoRequest is null || !MapInfoRequest.IsCompleted)
+        if (MapInfoUnauthorizedRequest is null || !MapInfoUnauthorizedRequest.IsCompleted)
         {
             return;
         }
 
         // Ignored once the Envimania session already provided the authoritative data
-        if (MapInfoRequest.StatusCode == 200 && EnvimaniaSessionToken is "")
+        if (MapInfoUnauthorizedRequest.StatusCode == 200 && EnvimaniaSessionToken is "")
         {
             SMapInfoBriefResponse mapInfoResponse = new();
 
-            if (!mapInfoResponse.FromJson(MapInfoRequest.Result))
+            if (!mapInfoResponse.FromJson(MapInfoUnauthorizedRequest.Result))
             {
                 Log(nameof(Envimix), "Map info retrieval failed (JSON issue).");
-                Log(nameof(Envimix), MapInfoRequest.Result);
+                Log(nameof(Envimix), MapInfoUnauthorizedRequest.Result);
             }
             else
             {
@@ -1164,13 +1164,13 @@ public class Envimix : UniverseModeBase
                 Log(nameof(Envimix), $"Retrieved preliminary map info from webapi ({Validations.Count} validations).");
             }
         }
-        else if (MapInfoRequest.StatusCode != 200)
+        else if (MapInfoUnauthorizedRequest.StatusCode != 200)
         {
-            Log(nameof(Envimix), $"Failed to get preliminary map info from webapi (status code: {MapInfoRequest.StatusCode})");
+            Log(nameof(Envimix), $"Failed to get preliminary map info from webapi (status code: {MapInfoUnauthorizedRequest.StatusCode})");
         }
 
-        Http.Destroy(MapInfoRequest);
-        MapInfoRequest = null;
+        Http.Destroy(MapInfoUnauthorizedRequest);
+        MapInfoUnauthorizedRequest = null;
     }
 
     public override void OnXmlRpcEvent(CXmlRpcEvent e)
