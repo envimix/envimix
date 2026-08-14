@@ -58,6 +58,15 @@ public class EnvimixTimeAttack : Envimix
         ClearScores();
     }
 
+    public override void OnMapStart()
+    {
+        // Preliminary data shown before the Envimania session is established, overwritten once the session responds
+        if (EnvimixWebAPI is not "")
+        {
+            RequestUnauthorizedMapInfo();
+        }
+    }
+
     public override void OnMapLoad()
     {
         SetLaps(); // Define independent laps or forced amount of laps
@@ -138,6 +147,7 @@ public class EnvimixTimeAttack : Envimix
             }
 
             CheckEnvimaniaSession();
+            CheckMapInfo();
             CheckRatings();
             CheckUserInfoRequests();
             UpdateSpectatorLists();

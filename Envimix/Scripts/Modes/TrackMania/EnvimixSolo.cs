@@ -15,6 +15,19 @@ public class EnvimixSolo : Envimix
         public int Time;
     }
 
+    public struct SRatingClientRequest
+    {
+        public Envimania.SMapInfo Map;
+        public string Car;
+        public int Gravity;
+        public Envimania.SRating Rating;
+    }
+
+    public struct SRatingClientResponse
+    {
+        public Envimania.SFilteredRating Rating;
+    }
+
     public struct STitleDto
     {
         public string Id;
@@ -40,19 +53,6 @@ public class EnvimixSolo : Envimix
         public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
         public Dictionary<string, Envimania.SStar> Stars;
         public Dictionary<string, ImmutableArray<int>> Skillpoints;
-    }
-
-    public struct SRatingClientRequest
-    {
-        public Envimania.SMapInfo Map;
-        public string Car;
-        public int Gravity;
-        public Envimania.SRating Rating;
-    }
-
-    public struct SRatingClientResponse
-    {
-        public Envimania.SFilteredRating Rating;
     }
 
     [Setting] public new bool EnableDefaultCar = true;
@@ -93,7 +93,6 @@ public class EnvimixSolo : Envimix
     public int GhostUploadRetries;
     public string? GhostFinishTimestamp;
     public CTaskResult? NewRecordTask;
-    public CHttpRequest? MapInfoRequest;
     public string MapInfoFailedAt;
     public string PersonalRatingUpdatedAt;
     public CTaskResult? SaveReplayTask;

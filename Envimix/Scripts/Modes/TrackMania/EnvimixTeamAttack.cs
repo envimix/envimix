@@ -49,6 +49,15 @@ public class EnvimixTeamAttack : Envimix
         }
     }
 
+    public override void OnMapStart()
+    {
+        // Preliminary data shown before the Envimania session is established, overwritten once the session responds
+        if (EnvimixWebAPI is not "")
+        {
+            RequestUnauthorizedMapInfo();
+        }
+    }
+
     public override void OnUIEvent(CUIConfigEvent e)
     {
         switch (e.Type)
@@ -183,6 +192,7 @@ public class EnvimixTeamAttack : Envimix
             }
 
             CheckEnvimaniaSession();
+            CheckMapInfo();
             CheckRatings();
             CheckUserInfoRequests();
             UpdateSpectatorLists();

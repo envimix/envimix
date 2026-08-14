@@ -65,6 +65,17 @@ public class Envimix : UniverseModeBase
         public ImmutableArray<Envimania.SEnvimaniaRecordsResponse> UpdatedRecords;
     }
 
+    public struct SMapInfoBriefResponse
+    {
+        public string Name;
+        public string Uid;
+        public string Collection;
+        public ImmutableArray<Envimania.SFilteredRating> Ratings;
+        public IList<Envimania.SFilteredRating> UserRatings;
+        public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
+        public Dictionary<string, Envimania.SStar> Stars;
+    }
+
     public struct SChatMessage
     {
         public string Login;
@@ -480,6 +491,7 @@ public class Envimix : UniverseModeBase
         QueueMapIndex();
 
         CheckEnvimaniaSession();
+        CheckMapInfo();
         CheckRatings();
         CheckUserInfoRequests();
     }
@@ -487,6 +499,7 @@ public class Envimix : UniverseModeBase
     public override void WhileMapIntro()
     {
         CheckEnvimaniaSession();
+        CheckMapInfo();
         CheckRatings();
         CheckUserInfoRequests();
     }
@@ -494,6 +507,7 @@ public class Envimix : UniverseModeBase
     public override void OnLoop()
     {
         CheckEnvimaniaSession();
+        CheckMapInfo();
         CheckRatings();
         CheckUserInfoRequests();
     }
@@ -530,6 +544,18 @@ public class Envimix : UniverseModeBase
         return $"{filter.Car}_{filter.Gravity}_{filter.Type}";
     }
 
+    protected static Dictionary<string, Envimania.SRating> BuildRatingsDictionary(ImmutableArray<Envimania.SFilteredRating> filteredRatings)
+    {
+        Dictionary<string, Envimania.SRating> ratings = new();
+
+        foreach (var filteredRating in filteredRatings)
+        {
+            ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
+        }
+
+        return ratings;
+    }
+
     public static string ConstructFilterKey(CPlayer player)
     {
         var car = Netwrite<string>.For(player);
@@ -562,6 +588,7 @@ public class Envimix : UniverseModeBase
     public required ImmutableArray<SEnvimaniaSessionRecordRequest> EnvimaniaSessionRecordRequests;
     public int EnvimaniaRecordsRequestsLastCheck;
     public CHttpRequest? EnvimaniaRecordsRequest;
+    public CHttpRequest? MapInfoRequest;
 
     private bool HasRemoteConnection()
     {
@@ -603,6 +630,11 @@ public class Envimix : UniverseModeBase
         {
             EnvimaniaSessionRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session", sessionRequest.ToJson(), "Content-Type: application/json");
         }
+    }
+
+    protected void RequestUnauthorizedMapInfo()
+    {
+        MapInfoRequest = Http.CreateGet($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", UseCache: false);
     }
 
     public bool RequestEnvimaniaSession()
@@ -1102,6 +1134,43 @@ public class Envimix : UniverseModeBase
             EnvimaniaRecordsRequests.Remove(filterKey);
             Http.Destroy(request);
         }
+    }
+
+    public void CheckMapInfo()
+    {
+        if (MapInfoRequest is null || !MapInfoRequest.IsCompleted)
+        {
+            return;
+        }
+
+        // Ignored once the Envimania session already provided the authoritative data
+        if (MapInfoRequest.StatusCode == 200 && EnvimaniaSessionToken is "")
+        {
+            SMapInfoBriefResponse mapInfoResponse = new();
+
+            if (!mapInfoResponse.FromJson(MapInfoRequest.Result))
+            {
+                Log(nameof(Envimix), "Map info retrieval failed (JSON issue).");
+                Log(nameof(Envimix), MapInfoRequest.Result);
+            }
+            else
+            {
+                Ratings = BuildRatingsDictionary(mapInfoResponse.Ratings);
+                RatingsUpdatedAt = Now;
+                Validations = mapInfoResponse.Validations;
+                ValidationsUpdatedAt = Now;
+                Stars = mapInfoResponse.Stars;
+
+                Log(nameof(Envimix), $"Retrieved preliminary map info from webapi ({Validations.Count} validations).");
+            }
+        }
+        else if (MapInfoRequest.StatusCode != 200)
+        {
+            Log(nameof(Envimix), $"Failed to get preliminary map info from webapi (status code: {MapInfoRequest.StatusCode})");
+        }
+
+        Http.Destroy(MapInfoRequest);
+        MapInfoRequest = null;
     }
 
     public override void OnXmlRpcEvent(CXmlRpcEvent e)
