@@ -325,7 +325,7 @@ public class RatingSolo : CTmMlScriptIngame, IContext
         EnableMenuNavigationInputs = IsVisible() && !Outro;
 
         var car = Netread<string>.For(GetPlayer());
-        var currentCarUrl = $"https://envimix.gbx.tools/img/cars/{car.Get()}.png";
+        var currentCarUrl = $"file://Media/Images/Cars/{car.Get()}.png";
 
         if (QuadMyCar.ImageUrl != currentCarUrl)
         {

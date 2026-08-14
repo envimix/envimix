@@ -190,7 +190,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
 
             if (car.Get() != "" && playersOfThisCar.ContainsKey(login))
             {
-                quadCar.ChangeImageUrl($"https://envimix.gbx.tools/img/cars/{car.Get()}.png");
+                quadCar.ChangeImageUrl($"file://Media/Images/Cars/{car.Get()}.png");
                 quadCar.Show();
             }
             else
