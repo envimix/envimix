@@ -396,6 +396,7 @@ public class EnvimixTeamAttack : Envimix
     public override void OnPodiumStart()
     {
         UIManager.UIAll.UISequence = CUIConfig.EUISequence.None;
+        UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedVisible;
     }
 
     public override void OnPodiumLoop()
@@ -408,6 +409,7 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnMapEnd()
     {
+        UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.Normal;
         CutOffTimeLimit = -1;
     }
 
