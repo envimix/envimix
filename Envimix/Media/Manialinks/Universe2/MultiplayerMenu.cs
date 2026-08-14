@@ -140,10 +140,12 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameButtonChooseSkin;
     [ManialinkControl] public required CMlFrame FrameButtonAdvancedOptions;
     [ManialinkControl] public required CMlFrame FrameTooltip;
-    [ManialinkControl] public required CMlFrame FrameModeHelp;
-    [ManialinkControl] public required CMlLabel LabelModeHelpName;
-    [ManialinkControl] public required CMlLabel LabelModeHelpDescription;
-    [ManialinkControl] public required CMlQuad QuadButtonModeHelpClose;
+    [ManialinkControl] public required CMlFrame FrameMessageBox;
+    [ManialinkControl] public required CMlFrame FrameMessageBoxConfirm;
+    [ManialinkControl] public required CMlLabel LabelMessageBoxName;
+    [ManialinkControl] public required CMlLabel LabelMessageBoxDescription;
+    [ManialinkControl] public required CMlQuad QuadButtonMessageBoxClose;
+    [ManialinkControl] public required CMlQuad QuadButtonMessageBoxConfirm;
     [ManialinkControl] public required CMlLabel LabelValidator;
     [ManialinkControl] public required CMlQuad QuadStarButton;
     [ManialinkControl] public required CMlFrame FrameButtonScriptParameters;
@@ -259,9 +261,9 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
         MenuNavigation += Menu_MenuNavigation;
 
-        QuadButtonModeHelpClose.MouseClick += QuadButtonModeHelpClose_MouseClick;
+        QuadButtonMessageBoxClose.MouseClick += QuadButtonMessageBoxClose_MouseClick;
 
-        QuadButtonModeHelpClose.MouseOver += () =>
+        QuadButtonMessageBoxClose.MouseOver += () =>
         {
             Focus2();
         };
@@ -344,11 +346,16 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                 AnimMgr.Add(QuadSkinScrollbar, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
             }
         };
+
+        QuadButtonMessageBoxConfirm.MouseClick += () =>
+        {
+            CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Quit);
+        };
     }
 
-    private void QuadButtonModeHelpClose_MouseClick()
+    private void QuadButtonMessageBoxClose_MouseClick()
     {
-        AnimMgr.Add(FrameModeHelp, "<frame pos=\"0 -130\" hidden=\"1\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameMessageBox, "<frame pos=\"0 -130\" hidden=\"1\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
@@ -916,11 +923,25 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
-	private void QUAD_BUTTON_EXIT()
+    private void ShowCloseServerMessageBox()
+    {
+        FrameMessageBoxConfirm.Show();
+        LabelMessageBoxName.Value = TextLib.GetTranslatedText("Close server?");
+        LabelMessageBoxDescription.Value = TextLib.GetTranslatedText("Are you sure you want to close the server?");
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        AnimMgr.Add(FrameMessageBox, "<frame pos=\"0 0\" hidden=\"0\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        NavFocusedControl = QuadButtonMessageBoxClose;
+    }
+
+    private void QUAD_BUTTON_EXIT()
 	{
         if (IsExplore())
         {
             ShowInGameMenu();
+        }
+        else if (CurrentServerLogin == LocalUser.Login)
+        {
+            ShowCloseServerMessageBox();
         }
         else
         {
@@ -989,10 +1010,12 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
     private void ShowCustomModeHelp()
     {
+        FrameMessageBoxConfirm.Hide();
+        LabelMessageBoxName.Value = Playground.ServerInfo.ModeName;
+        LabelMessageBoxDescription.Value = ModeHelp;
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
-
-        AnimMgr.Add(FrameModeHelp, "<frame pos=\"0 0\" hidden=\"0\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
-        NavFocusedControl = QuadButtonModeHelpClose;
+        AnimMgr.Add(FrameMessageBox, "<frame pos=\"0 0\" hidden=\"0\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        NavFocusedControl = QuadButtonMessageBoxClose;
     }
 
     private void Menu_MenuNavigation(CMlScriptEvent.EMenuNavAction action)
@@ -1098,9 +1121,9 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                     {
                         QUAD_BUTTON_SPECTATOR();
                     }
-                    else if (NavFocusedControl == QuadButtonModeHelpClose)
+                    else if (NavFocusedControl == QuadButtonMessageBoxClose)
                     {
-                        QuadButtonModeHelpClose_MouseClick();
+                        QuadButtonMessageBoxClose_MouseClick();
                     }
                 }
                 break;
@@ -1613,9 +1636,9 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                     SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
                 }
 
-                AnimMgr.Flush(FrameModeHelp);
-                FrameModeHelp.Visible = false;
-                FrameModeHelp.RelativePosition_V3 = new Vec2(0, -130f);
+                AnimMgr.Flush(FrameMessageBox);
+                FrameMessageBox.Visible = false;
+                FrameMessageBox.RelativePosition_V3 = new Vec2(0, -130f);
             }
         }
 
@@ -2182,12 +2205,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
             }
 
             PrevGameTime = GameTime;
-        }
-
-        if (FrameModeHelp.Visible)
-        {
-            LabelModeHelpName.Value = Playground.ServerInfo.ModeName;
-            LabelModeHelpDescription.Value = ModeHelp;
         }
 
         /*if (validationsUpdatedAt.Get() != PrevValidationsUpdatedAt)
