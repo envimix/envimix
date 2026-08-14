@@ -6,6 +6,7 @@
         <quad z-index="0" size="70 120" style="Bgs1" substyle="BgCardList" halign="center"/>
         <frame z-index="1">
             <quad pos="0 -15" z-index="0" size="60 25" halign="center" valign="center" style="TitleLogos" substyle="Title" scale="0.9"/>
+            <label pos="30.5 -3" z-index="0" size="30 5" text="" textsize="1" textfont="OswaldMono" valign="center2" url="https://envimix.gbx.tools/turbo" style="TextCardMedium" />
             <frame pos="0 -25">
                 <quad size="65 15" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" modulatecolor="0F0"/>
                 <quad size="65 14.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" id="QuadSolo"/>
@@ -56,7 +57,7 @@
             <quad pos="35 -2.5" z-index="1" size="28 8" style="TitleLogos" substyle="Author" valign="center" halign="right"/>
             <label id="LabelBuild" pos="-32 -2.75" z-index="1" size="20 5" text="unknown build" valign="center" textsize="1" textfont="Oswald"/>
         </frame>
-        <label pos="34 2" z-index="0" size="50 5" text="Support me on Ko-fi" style="TextButtonBig" scriptevents="1" valign="center2" textcolor="F42" textemboss="1" url="https://ko-fi.com/bigbang1112" textsize="0.5"  halign="right"/>
+        <label pos="33 2.5" z-index="0" size="50 5" text="Support me on Ko-fi" style="TextButtonBig" scriptevents="1" valign="center2" textcolor="F42" textemboss="1" url="https://ko-fi.com/bigbang1112" textsize="0.5" halign="right" />
         <label id="LabelRestoreRecords" pos="40 -13" z-index="-1" size="20 5" text="Restore records" halign="center" style="CardButtonSmall" scriptevents="1" rot="90" scale="0.7"/>
         <label id="LabelSubmitTitle" pos="40 -39" z-index="-1" size="20 5" text="Submit title pack" halign="center" style="CardButtonSmall" scriptevents="1" rot="90" scale="0.7"/>
         <label id="LabelSubmitCampaignMaps" pos="40 -65" z-index="-1" size="20 5" text="Submit campaign maps" halign="center" style="CardButtonSmall" scriptevents="1"  rot="90" scale="0.7"/>
