@@ -113,7 +113,7 @@ public class Envimix : UniverseModeBase
     public string SkinsFile = "Skins_Turbo.json";
 
     [Setting(As = "Envimix Web API")]
-    public string EnvimixWebAPI = "";
+    public string EnvimixWebAPI = "https://api.envimix.gbx.tools";
 
     [Setting(As = "Envimix XML-RPC")]
     public bool EnvimixXmlRpc = false;
@@ -184,6 +184,7 @@ public class Envimix : UniverseModeBase
         UIManager.UIAll.OverlayHideSpectatorInfos = true;
         UIManager.UIAll.OverlayHideGauges = true;
         UIManager.UIAll.ScoreTableOnlyManialink = true;
+        UIManager.UIAll.SmallScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
 
         ImmutableArray<string> tm2CarNames = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar" };
@@ -192,7 +193,7 @@ public class Envimix : UniverseModeBase
         {
             tm2CarNames.Add("TrafficCar");
         }
-        
+
         ImmutableArray<string> unitedCarNames = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
 
         Cars.Clear();
@@ -203,7 +204,7 @@ public class Envimix : UniverseModeBase
         ItemCars.Clear();
 
         var skins = Netwrite<Dictionary<string, Dictionary<string, SSkin>>>.For(Teams[0]);
-        
+
         if (SkinsFile != "")
         {
             Log(nameof(Envimix), $"Reading {SkinsFile}...");
@@ -248,7 +249,7 @@ public class Envimix : UniverseModeBase
                         Cars[car][name] = ItemList_AddWithSkin(itemNameForSkin, $"Skins/Models/{skin.File}");
                     }
                 }
-                                            
+
                 itemCars[car] = itemName;
 
                 if (AlwaysUseVehicleItems || (EnableStadiumEnvimix && car != "StadiumCar" && car != "TrafficCar") || (EnableTrafficCarInStadium && car == "TrafficCar"))
@@ -554,10 +555,11 @@ public class Envimix : UniverseModeBase
     public int EnvimaniaStatusReceived;
     public CHttpRequest? EnvimaniaStatusRequest;
     public CHttpRequest? EnvimaniaCloseRequest;
-
+    public int EnvimaniaSessionRetryCount;
     public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
     public required Dictionary<string, Envimania.SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
     public required Dictionary<string, Envimania.SEnvimaniaRecordsFilter> EnvimaniaFinishedRecordsRequests;
+    public required ImmutableArray<SEnvimaniaSessionRecordRequest> EnvimaniaSessionRecordRequests;
     public int EnvimaniaRecordsRequestsLastCheck;
     public CHttpRequest? EnvimaniaRecordsRequest;
 
@@ -612,6 +614,7 @@ public class Envimix : UniverseModeBase
 
         EnvimaniaSessionRequestTimeout = -1;
         EnvimaniaSessionFirstRequestTimeout = -1;
+        EnvimaniaSessionRetryCount = 1;
         EnvimaniaSessionToken = "";
         EnvimaniaSessionTokenReceived = -1;
         EnvimaniaStatusReceived = -1;
@@ -693,6 +696,7 @@ public class Envimix : UniverseModeBase
                 else
                 {
                     EnvimaniaSessionToken = sessionResponse.SessionToken!;
+                    EnvimaniaSessionRetryCount = 1;
 
                     InitiateRatingsForAllPlayers(sessionResponse);
                 }
@@ -788,6 +792,16 @@ public class Envimix : UniverseModeBase
         // EnvimaniaSessionRequestTimeout is not -1 by default, it is protected by the first if statement
         if (EnvimaniaSessionRequestTimeout != -1 && Now - EnvimaniaSessionRequestTimeout >= 10000)
         {
+            // 5 retries limit before fully bailing out
+            if (EnvimaniaSessionRetryCount >= 5)
+            {
+                EnvimaniaSessionRequestTimeout = -1;
+                EnvimaniaSessionFirstRequestTimeout = -1;
+                EnvimaniaStatusMessage = "Envimania connection failed";
+                Log(nameof(Envimix), "Envimania session creation failed after 5 retries. Giving up.");
+                return;
+            }
+
             // Request a new ManiaPlanet token after 30 minutes of failure
             if (Now - EnvimaniaSessionFirstRequestTimeout >= 1800000)
             {
@@ -795,6 +809,7 @@ public class Envimix : UniverseModeBase
                 return;
             }
 
+            EnvimaniaSessionRetryCount += 1;
             DirectlyRequestEnvimaniaSession();
             EnvimaniaSessionRequestTimeout = -1;
         }
@@ -804,7 +819,7 @@ public class Envimix : UniverseModeBase
         {
             if (EnvimaniaSessionRequest.StatusCode != 200)
             {
-                Log(nameof(Envimix), $"Envimania session creation failed ({EnvimaniaSessionRequest.StatusCode}). Retry in 10 seconds.");
+                Log(nameof(Envimix), $"Envimania session creation failed ({EnvimaniaSessionRequest.StatusCode}). Retry in 10 seconds (attempt {EnvimaniaSessionRetryCount}/5)");
                 Http.Destroy(EnvimaniaSessionRequest);
                 EnvimaniaSessionRequest = null;
                 EnvimaniaSessionRequestTimeout = Now;
@@ -845,6 +860,7 @@ public class Envimix : UniverseModeBase
             else
             {
                 EnvimaniaSessionToken = sessionResponse.SessionToken!;
+                EnvimaniaSessionRetryCount = 1;
 
                 InitiateRatingsForAllPlayers(sessionResponse);
 
@@ -1117,8 +1133,6 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    public ImmutableArray<SEnvimaniaSessionRecordRequest> EnvimaniaSessionRecordRequests;
-
     public virtual void OnPlayerFirstFinishOrImprovement(CTmModeEvent e)
     {
     }
@@ -1136,7 +1150,7 @@ public class Envimix : UniverseModeBase
         Record.ToResult(e.Player.Score.PrevRace, tempRace.Get());
 
         var firstFinishOrImprovement = false;
-        
+
         if (!envimixBestRace.Get().ContainsKey(key) || envimixBestRace.Get()[key].Time == -1)
         {
             envimixBestRace.Get()[key] = tempRace.Get();
@@ -1325,6 +1339,12 @@ public class Envimix : UniverseModeBase
 
             UserJoinAdditionalInfosToRequest[userInfo.Login] = userInfo;
         }
+
+        var car = Netwrite<string>.For(e.Player);
+        if (car.Get() == "")
+        {
+            car.Set(ItemCars.KeyOf(GetDefaultCar()));
+        }
     }
 
     public override void OnPlayerRemoved(CTmModeEvent e)
@@ -1379,7 +1399,7 @@ public class Envimix : UniverseModeBase
 
             if (MapList[NextMapIndex].CollectionName == "Stadium")
             {
-                NextMapIndex += 1;
+                NextMapIndex = (NextMapIndex + 1) % MapList.Count; // Wrap around safely
             }
             else
             {
@@ -1569,9 +1589,7 @@ public class Envimix : UniverseModeBase
     {
         foreach (var player in PlayersWaiting)
         {
-            var car = Netwrite<string>.For(player);
-            car.Set(carName);
-            var spawned = SpawnEnvimixPlayer(player, car.Get(), frozen);
+            var spawned = SpawnEnvimixPlayer(player, carName, frozen);
         }
     }
 
@@ -1676,7 +1694,7 @@ public class Envimix : UniverseModeBase
         {
             return TrySpawnEnvimixPlayer(player, -2);
         }
-        
+
         return TrySpawnEnvimixPlayer(player, -1);
     }
 
@@ -1686,9 +1704,9 @@ public class Envimix : UniverseModeBase
         var skins = Netwrite<Dictionary<string, Dictionary<string, SSkin>>>.For(Teams[0]);
 
         var allCars = GetAllCars();
-	
-	    ImmutableArray<string> sortedNames = new();
-	    if (skins.Get().ContainsKey(car.Get()))
+
+        ImmutableArray<string> sortedNames = new();
+        if (skins.Get().ContainsKey(car.Get()))
         {
             foreach (var (name, carSkin) in skins.Get()[car.Get()])
             {
@@ -1696,19 +1714,19 @@ public class Envimix : UniverseModeBase
             }
 
             sortedNames = sortedNames.Sort();
-	    }
-	
-	    var actualSkin = "";
+        }
+
+        var actualSkin = "";
         if (allCars[car.Get()].ContainsKey(skin))
         {
             actualSkin = skin;
         }
-	
-	    player.ForceModelId = allCars[car.Get()][actualSkin];
+
+        player.ForceModelId = allCars[car.Get()][actualSkin];
 
         if (skin == "")
         {
-		    if (CutOffTimeLimit < 0)
+            if (CutOffTimeLimit < 0)
             {
                 player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
             }
@@ -1717,9 +1735,9 @@ public class Envimix : UniverseModeBase
                 player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
             }
         }
-	    else
+        else
         {
-		    if (CutOffTimeLimit < 0)
+            if (CutOffTimeLimit < 0)
             {
                 player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car.Get()) * 3000 + (sortedNames.IndexOf(skin) + 1) * 3000 + 3000;
             }
@@ -1738,7 +1756,7 @@ public class Envimix : UniverseModeBase
     /// <returns></returns>
     public static ImmutableArray<CTmResult> GetRecords(bool referenceCondition, bool similarityCondition)
     {
-	    return new();
+        return new();
     }
 
     public ImmutableArray<Record.SRecord> GetBestRecords(string car)
@@ -1762,9 +1780,9 @@ public class Envimix : UniverseModeBase
             }
         }
 
-	    if (record.Time != -1)
+        if (record.Time != -1)
         {
-		    foreach (var score in Scores)
+            foreach (var score in Scores)
             {
                 var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
 
@@ -1775,17 +1793,17 @@ public class Envimix : UniverseModeBase
                     records.Add(envimixBestRace.Get()[key]);
                 }
             }
-	    }
+        }
 
-	    return records;
+        return records;
     }
 
     public int GetBestTime(string car)
     {
-	    var time = -1;
-	    var records = GetBestRecords(car);
+        var time = -1;
+        var records = GetBestRecords(car);
 
-	    if (records.Length > 0)
+        if (records.Length > 0)
         {
             time = records[0].Time;
         }
@@ -1795,15 +1813,15 @@ public class Envimix : UniverseModeBase
 
     public static ImmutableArray<Record.SRecord> GetWorstRecords(string car)
     {
-	    return new();
+        return new();
     }
 
     public static int GetWorstTime(string car)
     {
-	    var time = -1;
-	    var records = GetWorstRecords(car);
+        var time = -1;
+        var records = GetWorstRecords(car);
 
-	    if (records.Length > 0)
+        if (records.Length > 0)
         {
             time = records[0].Time;
         }
@@ -1813,9 +1831,9 @@ public class Envimix : UniverseModeBase
 
     public ImmutableArray<Record.SRecord> GetRecords(string car)
     {
-	    ImmutableArray<Record.SRecord> records = new();
+        ImmutableArray<Record.SRecord> records = new();
 
-	    foreach (var score in Scores)
+        foreach (var score in Scores)
         {
             var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
 
@@ -1827,26 +1845,30 @@ public class Envimix : UniverseModeBase
             }
         }
 
-	    return records;
+        return records;
     }
 
     public Dictionary<string, float> GetPlayerWRPB(CScore score)
     {
         Dictionary<string, float> wrPbs = new();
 
-	    foreach (var (car, model) in GetAllCars())
+        foreach (var (car, model) in GetAllCars())
         {
-		    var bestTime = GetBestTime(car);
+            var bestTime = GetBestTime(car);
 
             var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
-            
+
             var key = ConstructFilterKey(car);
 
             var wrPb = 0f;
 
-		    if (envimixBestRace.Get().ContainsKey(key))
+            if (envimixBestRace.Get().ContainsKey(key))
             {
                 if (envimixBestRace.Get()[key].Time == 0)
+                {
+                    wrPb = 1;
+                }
+                else if (bestTime <= 0) // No previous WRPB exists
                 {
                     wrPb = 1;
                 }
@@ -1857,20 +1879,20 @@ public class Envimix : UniverseModeBase
             }
 
             wrPbs[car] = wrPb;
-	    }
+        }
 
-	    return wrPbs;
+        return wrPbs;
     }
 
     public Dictionary<string, int> GetPlayerActivityPoints(CScore score)
     {
-	    Dictionary<string, int> activityPoints = new();
+        Dictionary<string, int> activityPoints = new();
 
-	    foreach (var (car, wrPb) in GetPlayerWRPB(score))
+        foreach (var (car, wrPb) in GetPlayerWRPB(score))
         {
-		    var records = GetRecords(car);
+            var records = GetRecords(car);
 
-		    if (records.Length > 0 && wrPb > 0)
+            if (records.Length > 0 && wrPb > 0)
             {
                 activityPoints[car] = MathLib.NearestInteger(1000 * MathLib.Exp(GetRecords(car).Length * (wrPb - 1)));
             }
@@ -1880,27 +1902,27 @@ public class Envimix : UniverseModeBase
             }
         }
 
-	    return activityPoints;
+        return activityPoints;
     }
 
     public static Dictionary<string, int> GetPlayerSkillpoints(CScore score)
     {
-	    return new();
+        return new();
     }
 
     public float GetPlayerWRPB(CTmScore score, string car)
     {
-	    return GetPlayerWRPB(score)[car];
+        return GetPlayerWRPB(score)[car];
     }
 
     public int GetPlayerActivityPoints(CTmScore score, string car)
     {
-	    return GetPlayerActivityPoints(score)[car];
+        return GetPlayerActivityPoints(score)[car];
     }
 
     public static int GetPlayerSkillpoints(CTmScore score, string car)
     {
-	    return -1;
+        return -1;
     }
 
     public void UpdateScores()
@@ -1910,26 +1932,26 @@ public class Envimix : UniverseModeBase
             ClanScores[i] = 0;
         }
 
-	    foreach (var score in Scores)
+        foreach (var score in Scores)
         {
             var envimixPoints = Netwrite<Dictionary<string, int>>.For(score);
             envimixPoints.Set(GetPlayerActivityPoints(score));
-		    score.Points = 0;
+            score.Points = 0;
 
-		    foreach (var (car, points) in envimixPoints.Get())
+            foreach (var (car, points) in envimixPoints.Get())
             {
                 score.Points += points;
             }
 
             ClanScores[score.TeamNum] += score.Points;
-	    }
+        }
 
-	    Scores_Sort(CTmMode.ETmScoreSortOrder.TotalPoints);
+        Scores_Sort(CTmMode.ETmScoreSortOrder.TotalPoints);
     }
 
     public void ClearScores()
     {
-	    foreach (var score in Scores)
+        foreach (var score in Scores)
         {
             var envimixPoints = Netwrite<Dictionary<string, int>>.For(score);
             var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
@@ -1939,9 +1961,9 @@ public class Envimix : UniverseModeBase
             envimixBestRace.Get().Clear();
             envimixBestLap.Get().Clear();
             envimixPrevRace.Get().Clear();
-	    }
+        }
 
-	    Scores_Clear();
+        Scores_Clear();
     }
 
     public void PrespawnPlayer(CTmPlayer player)
@@ -2130,7 +2152,7 @@ public class Envimix : UniverseModeBase
         }
 
         if (UserJoinAdditionalInfoRequest is null && UserJoinAdditionalInfosToRequest.Count > 0 && UserJoinAdditionalInfosUpdatedAt + 1000 <= Now)
-        {            
+        {
             UserJoinAdditionalInfoRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/users", UserJoinAdditionalInfosToRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
             UserJoinAdditionalInfosToRequest.Clear();

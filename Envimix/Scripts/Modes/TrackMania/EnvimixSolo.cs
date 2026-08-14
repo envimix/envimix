@@ -129,7 +129,6 @@ public class EnvimixSolo : Envimix
         ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixSingleplayerClient.Script.txt";
 
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
-        UIManager.UIAll.SmallScoreTableVisibility = CUIConfig.EVisibility.ForcedHidden;
         UIManager.UIAll.ScoreTableOnlyManialink = true;
         UIManager.UIAll.OverlayHideSpectatorControllers = true;
 
