@@ -74,6 +74,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollable;
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollbar;
     [ManialinkControl] public required CMlQuad QuadBlur;
+    [ManialinkControl] public required CMlFrame FrameCars;
 
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
@@ -390,6 +391,15 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             {
                 label.SetText("--");
             }
+
+            if (DisplayedCars.Contains(car))
+            {
+                label.Opacity = 1f;
+            }
+            else
+            {
+                label.Opacity = 0.3f;
+            }
         }
 
         var quadCurrentCar = (frame.GetFirstChild("QuadCurrentCar") as CMlQuad)!;
@@ -543,6 +553,20 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 {
                     ranker[car][score.User.Login] = envimixBestRace.Get()[key].Time;
                 }
+            }
+        }
+
+        foreach (var control in FrameCars.Controls)
+        {
+            var quadCar = (control as CMlQuad)!;
+            var car = quadCar.DataAttributeGet("car");
+            if (!DisplayedCars.Contains(car))
+            {
+                quadCar.Opacity = 0.3f;
+            }
+            else
+            {
+                quadCar.Opacity = 1f;
             }
         }
 
