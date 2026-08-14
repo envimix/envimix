@@ -42,6 +42,18 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         public SRating Rating;
     }
 
+    public struct SStar
+    {
+        public string Login;
+        public string Nickname;
+    }
+
+    public struct SRatingStarRequest
+    {
+        public string MapUid;
+        public SRatingFilter Filter;
+    }
+
     [ManialinkControl] public required CMlFrame FrameOuterGlobalScores;
     [ManialinkControl] public required CMlFrame FrameGlobalScores;
     [ManialinkControl] public required CMlFrame FrameYourScore;
@@ -57,9 +69,10 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameQuality;
     [ManialinkControl] public required CMlQuad QuadMyCar;
     [ManialinkControl] public required CMlLabel LabelMyCar;
+    [ManialinkControl] public required CMlQuad QuadStar;
+    [ManialinkControl] public required CMlFrame FrameTooltip;
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollable;
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollbar;
-    [ManialinkControl] public required CMlLabel LabelCheckpoint;
 
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
@@ -86,13 +99,18 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public float PrevScrollOffsetY;
     public bool HoldsScrollbar;
     public float HoldsScrollbarMouseY;
+    public CHttpRequest? StarRequest;
 
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
+    [Netread] public required Dictionary<string, SStar> Stars { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
     [Netread(NetFor.UI)] public required IList<SFilteredRating> MyRatings { get; set; }
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
     [Netread] public ImmutableArray<string> DisplayedCars { get; set; }
+
+    [Netread] public string EnvimixWebAPI { get; set; }
+    [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
 
     public ScoreboardTeamAttack()
     {
@@ -113,6 +131,89 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         {
             HoldsScrollbar = true;
             HoldsScrollbarMouseY = MouseY;
+        };
+
+        QuadStar.MouseOver += () =>
+        {
+            var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+
+            if (envimixTurboUserIsAdmin.Get() && StarRequest is null)
+            {
+                if (HasStar())
+                {
+                    QuadStar.Opacity = 1;
+                }
+                else
+                {
+                    QuadStar.Opacity = 0.7f;
+                }
+            }
+
+            var filterKey = ConstructRatingFilterKey();
+
+            if (Stars.ContainsKey(filterKey))
+            {
+                var star = Stars[filterKey];
+                UpdateTooltip(star.Nickname);
+            }
+        };
+
+        QuadStar.MouseOut += () =>
+        {
+            var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+
+            if (envimixTurboUserIsAdmin.Get() && StarRequest is null)
+            {
+                if (HasStar())
+                {
+                    QuadStar.Opacity = 0.9f;
+                }
+                else
+                {
+                    QuadStar.Opacity = 0.1f;
+                }
+            }
+        };
+
+        QuadStar.MouseClick += () =>
+        {
+            if (StarRequest is null)
+            {
+                var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+                if (envimixTurboUserIsAdmin.Get())
+                {
+                    var car = Netread<string>.For(GetPlayer());
+                    var gravity = Netread<int>.For(GetPlayer());
+
+                    SRatingFilter filter = new()
+                    {
+                        Car = car.Get(),
+                        Gravity = gravity.Get(),
+                        Type = "Time"
+                    };
+                    SRatingStarRequest starRequest = new()
+                    {
+                        MapUid = Map.MapInfo.MapUid,
+                        Filter = filter
+                    };
+
+                    if (HasStar())
+                    {
+                        QuadStar.Opacity = 0.7f;
+                        StarRequest = Http.CreatePost($"{EnvimixWebAPI}/rate/unstar", starRequest.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+                    }
+                    else
+                    {
+                        QuadStar.Opacity = 0.9f;
+                        StarRequest = Http.CreatePost($"{EnvimixWebAPI}/rate/star", starRequest.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
+                    }
+                }
+            }
+        };
+
+        MouseOut += (control, controlId) =>
+        {
+            FrameTooltip.Hide();
         };
     }
 
@@ -161,6 +262,23 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         var gravity = Netread<int>.For(GetPlayer());
 
         return ConstructFilterKey(car.Get(), gravity.Get());
+    }
+
+    bool HasStar()
+    {
+        return Stars.ContainsKey(ConstructRatingFilterKey());
+    }
+
+    private void UpdateTooltip(string text)
+    {
+        var labelText = (FrameTooltip.GetFirstChild("LabelText") as CMlLabel)!;
+        var quadTooltip = (FrameTooltip.GetFirstChild("QuadTooltip") as CMlQuad)!;
+
+        labelText.Size.X = labelText.ComputeWidth(text);
+        quadTooltip.Size.X = labelText.ComputeWidth(text) + 4;
+        labelText.SetText(text);
+
+        FrameTooltip.Show();
     }
 
     static int EchelonToInteger(CUser.EEchelon echelon)
@@ -271,7 +389,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         
         if (PlayerCars.ContainsKey(score.User.Login))
         {
-            var currentCarUrl = $"https://envimix.gbx.tools/img/cars/{PlayerCars[score.User.Login]}.png";
+            var currentCarUrl = $"file://Media/Images/Cars/{PlayerCars[score.User.Login]}.png";
 
             if (quadCurrentCar.ImageUrl != currentCarUrl)
             {
@@ -288,27 +406,53 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         {
             (FrameDifficulty.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
             (FrameQuality.GetFirstChild("GaugeRating") as CMlGauge)!.Ratio = 0;
-            return;
-        }
-
-        var rating = Ratings[filterKey];
-
-        if (rating.Difficulty < 0)
-        {
-            AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
         }
         else
         {
-            AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Difficulty * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            var rating = Ratings[filterKey];
+
+            if (rating.Difficulty < 0)
+            {
+                AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+            else
+            {
+                AnimMgr.Add(FrameDifficulty.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Difficulty * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+
+            if (rating.Quality < 0)
+            {
+                AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+            else
+            {
+                AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Quality * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
         }
 
-        if (rating.Quality < 0)
+        var envimixTurboUserIsAdmin = Local<bool>.For(LocalUser);
+
+        if (Stars.ContainsKey(filterKey))
         {
-            AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), "<gauge ratio=\"0\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            var star = Stars[filterKey];
+            QuadStar.Visible = true;
+
+            if (envimixTurboUserIsAdmin.Get())
+            {
+                QuadStar.Opacity = 0.9f;
+            }
         }
         else
         {
-            AnimMgr.Add(FrameQuality.GetFirstChild("GaugeRating"), $"<gauge ratio=\"{rating.Quality * .9f + .1f}\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            if (envimixTurboUserIsAdmin.Get())
+            {
+                QuadStar.Visible = true;
+                QuadStar.Opacity = 0.1f;
+            }
+            else
+            {
+                QuadStar.Visible = false;
+            }
         }
     }
 
@@ -343,7 +487,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         if (PlayerCars.ContainsKey(LocalUser.Login))
         {
-            var currentCarUrl = $"https://envimix.gbx.tools/img/cars/{PlayerCars[LocalUser.Login]}.png";
+            var currentCarUrl = $"file://Media/Images/Cars/{PlayerCars[LocalUser.Login]}.png";
 
             if (QuadMyCar.ImageUrl != currentCarUrl)
             {
@@ -503,20 +647,6 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
     private void Scoreboard_RaceEvent(CTmRaceClientEvent e)
     {
-        switch (e.Type)
-        {
-            case CTmRaceClientEvent.EType.WayPoint:
-                LabelCheckpoint.SetText(TimeToTextWithMilli(e.RaceTime));
-                if (e.IsEndRace)
-                {
-                    UpdateScoreboard();
-                }
-                break;
-            case CTmRaceClientEvent.EType.Respawn:
-                LabelCheckpoint.SetText("0:00.000");
-                break;
-        }
-
         if (e.Player != InputPlayer)
         {
             return;
@@ -804,5 +934,25 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         }
 
         FrameGlobalScores.RelativePosition_V3 = new Vec2(-FrameOuterGlobalScores.ScrollOffset.X, -FrameOuterGlobalScores.ScrollOffset.Y);
+
+        if (StarRequest is not null && StarRequest.IsCompleted)
+        {
+            if (StarRequest.StatusCode == 200)
+            {
+                Log("Star/unstar request succeeded.");
+                SendCustomEvent("Star", new[] { "" });
+            }
+            else
+            {
+                Log($"Star/unstar request failed with status code {StarRequest.StatusCode}.");
+            }
+            Http.Destroy(StarRequest);
+            StarRequest = null;
+        }
+
+        if (FrameTooltip.Visible)
+        {
+            FrameTooltip.RelativePosition_V3 = new Vec2(MouseX, MouseY);
+        }
     }
 }

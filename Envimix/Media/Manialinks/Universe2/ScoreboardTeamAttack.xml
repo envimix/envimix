@@ -22,7 +22,7 @@
 			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
 			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
 		</frame>
-		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png" pos="136 0"/>
+		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="136 0"/>
 	</framemodel>
 	<framemodel id="FramemodelRating">
 		<frame pos="0 2.5" z-index="1">
@@ -40,10 +40,26 @@
 	</framemodel>
 	<frame z-index="1000">
 		<quad pos="0 0" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
-		<frame pos="0 47.5">
-			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
-			<label id="LabelCheckpoint" pos="0 -0.75" z-index="0" size="60 10" text="0:00.000" halign="center" valign="center2" textfont="RajdhaniMono" textsize="7"/>
-		</frame>
+        <frame pos="0 47.5">
+            <quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center" />
+            <label id="LabelYourName" pos="-92.5 0.3" z-index="0" size="45 6" text="$aaa[unknown]" textsize="3" textfont="RajdhaniMono" valign="center" />
+            <frame pos="-21 0" z-index="0">
+                <quad size="42 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5" />
+                <label z-index="1" size="40 10" text="0.0" halign="center" valign="center2" textsize="5" textfont="RajdhaniMono" pos="0 -0.5" opacity=".9" textcolor="CB6" id="LabelLadderPoints" />
+                <quad pos="-17 -3.2" z-index="1" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="LadderPoints" />
+            </frame>
+            <frame pos="21 0" z-index="0">
+                <quad z-index="1" pos="0 0" size="42 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5" />
+                <quad z-index="3" size="6 6" halign="center" valign="center" opacity=".9" pos="-16.75 1" id="QuadEchelonCurrent" image="file://Media/Manialinks/Common/Echelons/echelon3.dds" />
+                <label z-index="4" pos="-16.75 1" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1.5" id="LabelEchelonCurrent" opacity="1" />
+                <quad z-index="3" size="6 6" halign="center" valign="center" opacity=".9" pos="16.75 1" id="QuadEchelonNext" image="file://Media/Manialinks/Common/Echelons/echelon4.dds" />
+                <label z-index="4" pos="16.75 1" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1.5" id="LabelEchelonNext" opacity="1" />
+                <label z-index="3" size="40 5" text="Not ranked" halign="center" valign="center2" textsize="1.5" textfont="RajdhaniMono" pos="0 0.6" id="LabelLadderZone" translate="1" />
+                <quad z-index="2" size="40 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1" />
+                <quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-20 -3.5" id="QuadEchelonPercent" colorize="CB6" />
+            </frame>
+            <quad pos="75 0" z-index="0" size="45 6.48" halign="center" valign="center" image="file://Media/Images/Envimix.png" scale="0.75" />
+        </frame>
 		<frame pos="-100 0">
 			<quad z-index="-1" size="145 80" style="Bgs1" substyle="BgCardList" valign="center"/>
 			<frame pos="0 34.5" z-index="0">
@@ -52,17 +68,17 @@
 				<label pos="18 0.4" z-index="0" size="20 5" text="Players" valign="center" textfont="RajdhaniMono" textsize="2" translate="1"/>
 				<label pos="60 0.4" z-index="0" size="20 5" text="Score" valign="center" textfont="RajdhaniMono" textsize="2" translate="1" halign="right"/>
 				<frame pos="66 0">
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/StadiumCar.png" pos="6 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/ValleyCar.png" pos="12 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/LagoonCar.png" pos="18 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/TrafficCar.png" pos="24 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/DesertCar.png" pos="30 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/SnowCar.png" pos="36 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/RallyCar.png" pos="42 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/IslandCar.png" pos="48 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/BayCar.png" pos="54 0"/>
-					<quad z-index="0" size="5 5" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CoastCar.png" pos="60 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="6 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/ValleyCar.png" pos="12 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/LagoonCar.png" pos="18 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/TrafficCar.png" pos="24 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/DesertCar.png" pos="30 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="36 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="42 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/IslandCar.png" pos="48 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/BayCar.png" pos="54 0"/>
+					<quad z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CoastCar.png" pos="60 0"/>
 				</frame>
 				<label pos="136 2.3" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
 				<label pos="136 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
@@ -91,32 +107,18 @@
 		</frame>
 		<frame pos="73 0">
 			<quad z-index="-1" size="54 80" style="Bgs1" substyle="BgCardList" valign="center" halign="center"/>
-			<label id="LabelYourName" pos="0 37" z-index="0" size="45 6" text="$aaa[unknown]" halign="center" textsize="3" textfont="RajdhaniMono"/>
-			<frame pos="0 25" z-index="0">
-				<quad size="52 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
-				<label z-index="1" size="50 10" text="0.0" halign="center" valign="center2" textsize="5" textfont="RajdhaniMono" pos="0 -0.5" opacity=".9" textcolor="CB6" id="LabelLadderPoints"/>
-				<quad pos="-22 -3.2" z-index="1" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="LadderPoints"/>
-			</frame>
-			<frame pos="0 16.5" z-index="0">
-				<quad z-index="1" pos="0 -1" size="52 8" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5"/>
-				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="-22.75 0" id="QuadEchelonCurrent" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
-				<label z-index="4" pos="-22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LabelEchelonCurrent" opacity="1"/>
-				<quad z-index="3" size="4 4" halign="center" valign="center" opacity=".9" pos="22.75 0" id="QuadEchelonNext" image="file://Media/Manialinks/Common/Echelons/echelon4.dds"/>
-				<label z-index="4" pos="22.75 0" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1" id="LabelEchelonNext" opacity="1"/>
-				<label z-index="3" size="40 5" text="Not ranked" halign="center" valign="center2" textsize="1" textfont="RajdhaniMono" pos="0 -0.2" id="LabelLadderZone" translate="1"/>
-
-				<quad z-index="2" size="50 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1"/>
-				<quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QuadEchelonPercent" colorize="CB6"/>
-			</frame>
-			<quad pos="0 -32.5" z-index="0" size="45 6.48" halign="center" valign="center" image="https://envimix.gbx.tools/img/envimix.png" scale="0.75"/>
 		</frame>
 		<frame pos="0 -47.5">
 			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
-			<quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="https://envimix.gbx.tools/img/cars/CanyonCar.png" pos="-92 0"/>
+			<quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="-92 0"/>
 			<label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4"/>
-			<quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame"/>
+			<quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" opacity="0.9" scriptevents="1"/>
 			<frameinstance pos="2.5 0" id="FrameDifficulty" modelid="FramemodelRating"/>
 			<frameinstance pos="67.5 0" id="FrameQuality" modelid="FramemodelRating"/>
 		</frame>
+	</frame>
+	<frame z-index="110" id="FrameTooltip" hidden="1">
+		<quad pos="0 0" z-index="-1" size="43.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip"/>
+		<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.envimix.gbx.tools" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
 	</frame>
 </manialink>
