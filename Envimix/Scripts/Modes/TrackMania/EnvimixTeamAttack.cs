@@ -393,6 +393,11 @@ public class EnvimixTeamAttack : Envimix
         CloseLadder();
     }
 
+    public override void OnPodiumStart()
+    {
+        UIManager.UIAll.UISequence = CUIConfig.EUISequence.None;
+    }
+
     public override void OnPodiumLoop()
     {
         foreach (var e in UIManager.PendingEvents)
