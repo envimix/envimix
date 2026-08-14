@@ -5,7 +5,7 @@ namespace Envimix.Scripts.Modes.TrackMania;
 public class EnvimixTeamAttack : Envimix
 {
     [Setting(As = "Time limit")]
-    public int TimeLimit = 600;
+    public int TimeLimit = 900;
 
     [Setting(As = "Car select time")]
     public int CarSelectTime = 10;
