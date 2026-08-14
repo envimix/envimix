@@ -318,7 +318,16 @@ public class Dashboard : CTmMlScriptIngame, IContext
         LabelTime.SetText(TimeToTextWithMilli(PlayerTime - IndependantLapsOffset));
         LabelSpeed.SetText(GetOwner().DisplaySpeed.ToString());
         LabelSpeed.RelativeScale = rpmRatio * 0.2f + 0.9f;
-        LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o{TextLib.FormatReal(GetOwner().Distance - DistanceOffset, 2, false, false)}$tm";
+
+        var isSpectating = InputPlayer != GUIPlayer;
+        if (isSpectating)
+        {
+            LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o?";
+        }
+        else
+        {
+            LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o{TextLib.FormatReal(GetOwner().Distance - DistanceOffset, 2, false, false)}$tm";
+        }
 
         int checkpointCount;
         if (IndependantLaps)
@@ -351,7 +360,11 @@ public class Dashboard : CTmMlScriptIngame, IContext
         GaugeRPM.Ratio = rpmRatio;
         GaugeRPM.RelativeScale = GetOwner().EngineTurboRatio * 0.15f + 1;
 
-        if (GetOwner().EngineCurGear != LastGear)
+        if (isSpectating)
+        {
+            LabelGear.SetText("?");
+        }
+        else if (GetOwner().EngineCurGear != LastGear)
         {
             LabelGear.Opacity = 0;
             AnimMgr.Add(LabelGear, "<label opacity=\"1\"/>", Duration: 200, EasingFunc: CAnimManager.EAnimManagerEasing.QuadOut);
