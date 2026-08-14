@@ -102,6 +102,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public float HoldsScrollbarMouseY;
     public CHttpRequest? StarRequest;
     public bool PrevScoreTableIsVisible;
+    public Dictionary<string, bool> ConnectedPlayers;
 
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
@@ -335,6 +336,8 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
     private void UpdatePlayer(CMlFrame frame, CTmScore score, int rank)
     {
+        var isConnected = ConnectedPlayers.ContainsKey(score.User.Login) && ConnectedPlayers[score.User.Login];
+
         var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
         quadTeam.BgColor = Teams[score.TeamNum - 1].ColorPrimary;
 
@@ -351,9 +354,11 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         var quadEchelon = (frame.GetFirstChild("QuadEchelon") as CMlQuad)!;
         quadEchelon.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(score.User.Echelon)}.dds");
+        quadEchelon.Visible = isConnected;
 
         var quadZone = (frame.GetFirstChild("QuadZone") as CMlQuad)!;
         quadZone.ChangeImageUrl($"file://ZoneFlags/Path/{score.User.ZonePath}");
+        quadZone.Visible = isConnected;
 
         if (score.User.Echelon == CUser.EEchelon.None)
         {
@@ -398,6 +403,9 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 quadCurrentCar.ChangeImageUrl(currentCarUrl);
             }
         }
+
+        var quadStatus = (frame.GetFirstChild("QuadStatus") as CMlQuad)!;
+        quadStatus.Visible = !isConnected;
     }
 
     private void UpdateRatings()
@@ -507,6 +515,16 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             LabelMyCar.Hide();
         }
 
+        foreach (var (connectedPlayer, isConnected) in ConnectedPlayers)
+        {
+            ConnectedPlayers[connectedPlayer] = false;
+        }
+
+        foreach (var player in Players)
+        {
+            ConnectedPlayers[player.User.Login] = true;
+        }
+
         Ranks = new();
         var ranker = new Dictionary<string, Dictionary<string, int>>();
 
@@ -553,7 +571,6 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         if (InputPlayer is not null)
         {
-
             if (InputPlayer.Score is not null)
             {
                 int myOverallRank = 0;
@@ -598,7 +615,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 frame.Visible = false;
                 continue;
             }
-            
+
             UpdatePlayer(frame, Scores[newI], rank: newI + 1);
 
             frame.Visible = true;
@@ -663,7 +680,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 }
                 break;
             case CTmRaceClientEvent.EType.Respawn:
-                ClientUI.ScoreTableVisibility = CUIConfig.EVisibility.Normal;
+                ClientUI.ScoreTableVisibility = CUIConfig.EVisibility.None;
                 break;
         }
     }
@@ -777,6 +794,12 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 PlayerCars[player.User.Login] = car.Get();
                 return true;
             }
+
+            if (!ConnectedPlayers.ContainsKey(player.User.Login) || !ConnectedPlayers[player.User.Login])
+            {
+                ConnectedPlayers[player.User.Login] = true;
+                return true;
+            }
         }
 
         return false;
@@ -815,7 +838,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         {
             if (PageIsVisible)
             {
-                if (ClientUI.ScoreTableVisibility == CUIConfig.EVisibility.ForcedVisible)
+                if (ClientUI.ScoreTableVisibility == CUIConfig.EVisibility.ForcedVisible || UI.ScoreTableVisibility == CUIConfig.EVisibility.ForcedVisible)
                 {
                     QuadBlur.RelativeScale = 0;
                     AnimMgr.Add(QuadBlur, "<quad scale=\"1\" />", 300, CAnimManager.EAnimManagerEasing.QuadOut);
