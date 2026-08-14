@@ -403,6 +403,11 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
             return 1;
         }
 
+        if (IndependantLaps)
+        {
+            return 0;
+        }
+
         if (NbLaps == -1)
         {
             return Map.TMObjective_NbLaps;

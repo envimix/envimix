@@ -25,7 +25,7 @@ public class Multilap : CTmMlScriptIngame, IContext
             return false;
         }
 
-        return !IsInGameMenuDisplayed && MapIsLapRace && MapNbLaps > 1 && FinishedAt == -1 && !Outro;
+        return !IsInGameMenuDisplayed && MapIsLapRace && NbLaps > 1 && FinishedAt == -1 && !Outro;
     }
 
     CTmMlPlayer GetPlayer()

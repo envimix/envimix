@@ -314,7 +314,7 @@ public class UniverseModeBase : CTmMode, IContext
 
     public void SetLaps()
     {
-        IndependantLaps = ForceLapsNb == 0 || !MapIsLapRace;
+        IndependantLaps = ForceLapsNb == 0 && MapIsLapRace;
 
         if (ForceLapsNb > 0)
         {
@@ -331,6 +331,11 @@ public class UniverseModeBase : CTmMode, IContext
         if (!MapIsLapRace)
         {
             return 1;
+        }
+
+        if (IndependantLaps)
+        {
+            return 0;
         }
 
         if (NbLaps == -1)
