@@ -1151,7 +1151,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                             }
                             else
                             {
-                                NavFocusedControl = QuadButtonServerSettings;
+                                NavFocusedControl = QuadButtonModeHelp; //QuadButtonServerSettings;
                             }
                             Focus2();
                         }
@@ -1234,7 +1234,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonModeHelp)
                         {
-                            NavFocusedControl = QuadButtonServerSettings;
+                            NavFocusedControl = QuadButtonExit; //QuadButtonServerSettings;
                             Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonServerSettings)

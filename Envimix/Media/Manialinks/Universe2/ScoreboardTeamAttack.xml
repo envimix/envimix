@@ -58,7 +58,7 @@
                 <quad z-index="2" size="40 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1" />
                 <quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-20 -3.5" id="QuadEchelonPercent" colorize="CB6" />
             </frame>
-            <quad pos="75 0" z-index="0" size="45 6.48" halign="center" valign="center" image="file://Media/Images/Envimix.png" scale="0.75" />
+            <quad pos="75 0" z-index="0" size="45 6.48" halign="center" valign="center" image="file://Media/Images/EnvimixSmall.png" scale="0.75" />
         </frame>
 		<frame pos="-100 0">
 			<quad z-index="-1" size="145 80" style="Bgs1" substyle="BgCardList" valign="center"/>
