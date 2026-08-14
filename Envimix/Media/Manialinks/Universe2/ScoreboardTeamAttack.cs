@@ -73,6 +73,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameTooltip;
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollable;
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollbar;
+    [ManialinkControl] public required CMlQuad QuadBlur;
 
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
@@ -100,6 +101,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public bool HoldsScrollbar;
     public float HoldsScrollbarMouseY;
     public CHttpRequest? StarRequest;
+    public bool PrevScoreTableIsVisible;
 
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
@@ -808,6 +810,23 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public void Loop()
     {
         ScoreTableIsVisible = PageIsVisible;
+
+        if (PageIsVisible != PrevScoreTableIsVisible)
+        {
+            if (PageIsVisible)
+            {
+                if (ClientUI.ScoreTableVisibility == CUIConfig.EVisibility.ForcedVisible)
+                {
+                    QuadBlur.RelativeScale = 0;
+                    AnimMgr.Add(QuadBlur, "<quad scale=\"1\" />", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+                }
+                else
+                {
+                    QuadBlur.RelativeScale = 1;
+                }
+            }
+            PrevScoreTableIsVisible = PageIsVisible;
+        }
 
         if (DetectChange())
         {
