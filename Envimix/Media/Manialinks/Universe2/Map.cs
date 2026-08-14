@@ -259,6 +259,13 @@ public class Map : CTmMlScriptIngame, IContext
 
     private void AdjustCarFrame()
     {
+        if (GUIPlayer is null)
+        {
+            FrameCar.Visible = false;
+            PreviousCar = "";
+            return;
+        }
+
         var car = Netread<string>.For(GetPlayer());
         LabelCar.Value = car.Get();
 

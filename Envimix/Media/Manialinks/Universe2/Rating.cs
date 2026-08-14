@@ -107,7 +107,7 @@ public class Rating : CTmMlScriptIngame, IContext
             return !MenuOpen;
         }
 
-        return !IsInGameMenuDisplayed && FinishedAt == -1 && !Outro;
+        return !IsInGameMenuDisplayed && FinishedAt == -1 && !Outro && GUIPlayer is not null;
     }
 
     CTmMlPlayer GetPlayer()

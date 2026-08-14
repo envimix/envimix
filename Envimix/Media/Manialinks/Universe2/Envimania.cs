@@ -113,7 +113,7 @@ public class Envimania : CTmMlScriptIngame, IContext
 
     bool IsVisible()
     {
-        return !IsInGameMenuDisplayed;
+        return !IsInGameMenuDisplayed && GUIPlayer is not null;
     }
 
     string GetCar()

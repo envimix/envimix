@@ -53,7 +53,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
 
     bool IsVisible()
     {
-        return !IsInGameMenuDisplayed;
+        return !IsInGameMenuDisplayed && GUIPlayer is not null;
     }
 
     public void Main()

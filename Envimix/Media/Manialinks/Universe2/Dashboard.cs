@@ -225,7 +225,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
             return !MenuOpen;
         }
 
-        return !IsInGameMenuDisplayed && FinishedAt == -1 && !Outro;
+        return !IsInGameMenuDisplayed && FinishedAt == -1 && !Outro && GUIPlayer is not null;
     }
 
     public void Main()
@@ -394,18 +394,21 @@ public class Dashboard : CTmMlScriptIngame, IContext
             QuadSpeedFreewheeling.Opacity = 0;
         }
 
-        if (GetOwner().AimPitch >= 0 && GetOwner().AimPitch <= 1)
+        // AimPitch is network-approximated and can briefly overshoot +/-1, so clamp it to keep the branches exhaustive
+        var aimPitch = MathLib.Clamp(GetOwner().AimPitch, _Min: -1, _Max: 1);
+
+        if (aimPitch >= 0)
         {
-            FrameSteepnessZeroOne.RelativeRotation = GetOwner().AimPitch * 90;
-            LabelSteepnessZeroOne.Value = $"{MathLib.NearestInteger(-GetOwner().AimPitch * 90)}°";
+            FrameSteepnessZeroOne.RelativeRotation = aimPitch * 90;
+            LabelSteepnessZeroOne.Value = $"{MathLib.NearestInteger(-aimPitch * 90)}°";
 
             FrameSteepnessZeroOne.Visible = true;
             FrameSteepnessZeroMinusOne.Visible = false;
         }
-        else if (GetOwner().AimPitch <= 0 && GetOwner().AimPitch >= -1)
+        else
         {
-            FrameSteepnessZeroMinusOne.RelativeRotation = GetOwner().AimPitch * 90;
-            LabelSteepnessZeroMinusOne.Value = $"{MathLib.NearestInteger(-GetOwner().AimPitch * 90)}°";
+            FrameSteepnessZeroMinusOne.RelativeRotation = aimPitch * 90;
+            LabelSteepnessZeroMinusOne.Value = $"{MathLib.NearestInteger(-aimPitch * 90)}°";
 
             FrameSteepnessZeroMinusOne.Visible = true;
             FrameSteepnessZeroOne.Visible = false;

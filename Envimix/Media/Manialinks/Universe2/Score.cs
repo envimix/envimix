@@ -77,7 +77,7 @@ public class Score : CTmMlScriptIngame, IContext
             return !MenuOpen;
         }
 
-        return !IsInGameMenuDisplayed && FinishedAt == -1;
+        return !IsInGameMenuDisplayed && FinishedAt == -1 && GUIPlayer is not null;
     }
 
     static string TimeToTextWithMilli(int time)
@@ -334,7 +334,6 @@ public class Score : CTmMlScriptIngame, IContext
                             persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid] = new();
                         }
                         persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()] = totalTime;
-
                     }
 
                     // update session time and total time every half second

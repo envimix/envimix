@@ -48,8 +48,6 @@
 					<quad size="20 5" bgcolor="FFFD" halign="center"/>
 					<label pos="-2.25 0" z-index="0" size="8 3" text="?°" valign="bottom" halign="center" textsize="0.2" textfont="Oswald" opacity=".75" id="LabelSteepnessZeroOne"/>
 				</frame>
-				<quad pos="2.5 1.5" z-index="0" size="20 5" bgcolor="FFFD" halign="center" rot="170" hidden="1"/>
-				<quad pos="-2.5 1.5" z-index="0" size="20 5" bgcolor="FFFD" halign="center" rot="190" hidden="1"/>
 			</frame>
 		</frame>
 	</frame>
