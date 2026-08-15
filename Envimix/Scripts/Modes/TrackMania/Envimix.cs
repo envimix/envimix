@@ -404,6 +404,19 @@ public class Envimix : UniverseModeBase
 
         CreateLayer("MultiplayerMenu", CUILayer.EUILayerType.InGameMenu, "<frame id=\"FrameInnerVehicles\" />", vehicleManialink);
 
+        var loadingManialink = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
+        loadingManialink = $"{loadingManialink}<manialink version=\"3\" xmlns=\"manialink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"manialink https://raw.githubusercontent.com/BigBang1112/manialink-xsd/main/manialink_v3_ns.xsd\">";
+        loadingManialink = $"{loadingManialink}    <frame z-index=\"1000\">";
+        loadingManialink = $"{loadingManialink}        <quad z-index=\"0\" size=\"320 180\" bgcolor=\"000\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/EnvimixTurbo.jpg\" />";
+        loadingManialink = $"{loadingManialink}        <quad z-index=\"1\" size=\"320 180\" bgcolor=\"000C\" halign=\"center\" valign=\"center\"/>";
+        loadingManialink = $"{loadingManialink}        <quad pos=\"0 -0.5\" size=\"180 26\" halign=\"center\" valign=\"center\" image=\"file://Media/Images/Envimix2.png\" z-index=\"2\"/>";
+        loadingManialink = $"{loadingManialink}        <label z-index=\"2\" size=\"160 8\" text=\"CRAFTED BY $o$i$nBIGBANG1112\" halign=\"center\" pos=\"0 -74\" valign=\"center2\" textfont=\"RajdhaniMono\" textsize=\"4\" />";
+        loadingManialink = $"{loadingManialink}        <label z-index=\"2\" size=\"160 8\" text=\"inspired by Poutrel's and MrLag's Nadeo Envimix challenge\" textprefix=\"$t\" halign=\"center\" pos=\"0 -80\" valign=\"center2\" textfont=\"RajdhaniMono\" textsize=\"1.5\" />";
+        loadingManialink = $"{loadingManialink}    </frame>";
+        loadingManialink = $"{loadingManialink}</manialink>";
+
+        CreateLayer("Loading", CUILayer.EUILayerType.LoadingScreen, loadingManialink);
+
         Log(nameof(Envimix), "All manialinks successfully created!");
     }
 
