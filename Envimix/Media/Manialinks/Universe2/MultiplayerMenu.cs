@@ -379,11 +379,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         return car.Get();
     }
 
-    bool IsSolo()
-    {
-        return CurrentServerLogin is "";
-    }
-
     bool IsExplore()
     {
         return CurrentServerModeName is "";
@@ -1166,14 +1161,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonExit)
                         {
-                            if (IsSolo())
-                            {
-                                NavFocusedControl = QuadButtonAdvanced;
-                            }
-                            else
-                            {
-                                NavFocusedControl = QuadButtonModeHelp; //QuadButtonServerSettings;
-                            }
+                            NavFocusedControl = QuadButtonModeHelp; //QuadButtonServerSettings;
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonManageServer)
@@ -1198,15 +1186,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonSkin)
                         {
-                            if (IsSolo())
-                            {
-                                NavFocusedControl = QuadButtonContinue;
-                            }
-                            else
-                            {
-                                NavFocusedControl = QuadButtonSpectator;
-                            }
-
+                            NavFocusedControl = QuadButtonSpectator;
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonSpectator)
@@ -1232,15 +1212,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
                         if (NavFocusedControl == QuadButtonContinue)
                         {
-                            if (IsSolo())
-                            {
-                                NavFocusedControl = QuadButtonSkin;
-                            }
-                            else
-                            {
-                                NavFocusedControl = QuadButtonSpectator;
-                            }
-                            
+                            NavFocusedControl = QuadButtonSpectator;
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonExit)
@@ -1265,14 +1237,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonAdvanced)
                         {
-                            if (IsSolo())
-                            {
-                                NavFocusedControl = QuadButtonExit;
-                            }
-                            else
-                            {
-                                NavFocusedControl = QuadButtonManageServer;
-                            }
+                            NavFocusedControl = QuadButtonManageServer;
                             Focus2();
                         }
                         else if (NavFocusedControl == QuadButtonSkin)
@@ -1407,17 +1372,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
             }
         }
 
-        FrameMultiplayer.Visible = !IsSolo();
-        FrameButtonSpectator.Visible = !IsSolo();
-        FrameButtonManageServer.Visible = !IsSolo();
-        FrameButtonScriptParameters.Visible = !IsSolo();
-
-        if (IsSolo())
-        {
-            FrameButtonChooseSkin.RelativePosition_V3.Y = 20;
-            FrameButtonAdvancedOptions.RelativePosition_V3.Y = 10;
-        }
-
         PreviousEnableDefaultCar = EnableDefaultCar || OverrideEnableDefaultCar;
 
         FrameButtonSpectator.DataAttributeSet("checked", IsSpectatorClient.ToString());
@@ -1545,13 +1499,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
         Zones = TextLib.Split("|", LocalUser.ZonePath);
 
-        if (IsSolo())
-        {
-            var canListenToUIEvents = Netread<bool>.For(Teams[0]);
-            Wait(() => canListenToUIEvents.Get());
-            LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
-        }
-
         for (var i = 0; i < FrameInnerVehicles.Controls.Count; i++)
         {
             var frame = (FrameInnerVehicles.Controls[i] as CMlFrame)!;
@@ -1648,13 +1595,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                 if (CutOffTimeLimit != -1 && InputPlayer.RaceStartTime > CutOffTimeLimit && !IsSpectator)
                 {
                     SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True", "False", "True" });
-                }
-
-                // Solo specific spawning
-                // TODO: 3000 should be compatible with custom countdown
-                if (IsSolo() && InputPlayer.RaceStartTime - 3000 > GameTime)
-                {
-                    SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
                 }
 
                 AnimMgr.Flush(FrameMessageBox);
