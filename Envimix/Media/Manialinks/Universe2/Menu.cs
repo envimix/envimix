@@ -757,6 +757,17 @@ public class Menu : CTmMlScriptIngame, IContext
         }
     }
 
+    private void QUAD_BUTTON_SKIN_PLAY()
+    {
+        AnimMgr.Add(FrameMenu, "<frame pos=\"-110 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameSkins, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+        MenuKind = "";
+
+        SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
+        ResumeMenu();
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+    }
+
     private void Menu_MouseClick(CMlControl control, string controlId)
     {
         switch (controlId)
@@ -838,6 +849,12 @@ public class Menu : CTmMlScriptIngame, IContext
                 var SOffset = MathLib.NearestInteger((float)FrameSkinList.Parent.ScrollOffset.Y / 15f);
                 var Index = control.Parent.Parent.Controls.IndexOf(control.Parent) + SOffset - 1;
                 var CName = DisplayedCars[VehicleIndex];
+                var PreviousSkin = "";
+                if (UserSkins.ContainsKey(CName))
+                {
+                    PreviousSkin = UserSkins[CName];
+                }
+                var SkinSelectionValid = false;
 
                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
 
@@ -846,6 +863,8 @@ public class Menu : CTmMlScriptIngame, IContext
                     var userSkins = UserSkins;
                     userSkins[CName] = "";
                     UserSkins = userSkins;
+
+                    SkinSelectionValid = true;
 
                     if (IsTM2CarOnStadium(CName))
                     {
@@ -878,6 +897,8 @@ public class Menu : CTmMlScriptIngame, IContext
                         userSkins[CName] = SNames[Index];
                         UserSkins = userSkins;
 
+                        SkinSelectionValid = true;
+
                         if (IsTM2CarOnStadium(CName))
                         {
                             var persistent_EnvimixStadiumSkins = Persistent<Dictionary<string, string>>.For(LocalUser);
@@ -892,6 +913,12 @@ public class Menu : CTmMlScriptIngame, IContext
                 }
                 UpdateSkins();
                 SendCustomEvent("Skin", new[] { CName, UserSkins[CName] });
+
+                // Clicking the already-selected skin again plays with it, like the Play button
+                if (SkinSelectionValid && UserSkins[CName] == PreviousSkin)
+                {
+                    QUAD_BUTTON_SKIN_PLAY();
+                }
                 break;
             case "QuadGhost":
                 var file = control.Parent.DataAttributeGet("file");
@@ -1178,17 +1205,6 @@ public class Menu : CTmMlScriptIngame, IContext
         AnimMgr.Add(FrameSkins, "<frame pos=\"0 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         MenuKind = "Skin";
         CloseGravityMenu();
-        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
-    }
-
-    private void QUAD_BUTTON_SKIN_PLAY()
-	{
-        AnimMgr.Add(FrameMenu, "<frame pos=\"-110 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-        AnimMgr.Add(FrameSkins, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-        MenuKind = "";
-
-        SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
-        ResumeMenu();
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
