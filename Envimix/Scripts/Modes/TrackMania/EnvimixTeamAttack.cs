@@ -382,12 +382,6 @@ public class EnvimixTeamAttack : Envimix
         {
             score.LadderRankSortValue = -1 - score.Points;
             score.LadderMatchScoreValue = score.Points * 1f;
-
-            // log spam to understand the behaviour
-            foreach (var s in Scores)
-            {
-                Log(nameof(EnvimixTeamAttack), $"Ladder: {s.User.Login} {s.LadderMatchScoreValue} {s.LadderRankSortValue} {s.User.ReferenceScore}");
-            }
         }
 
         CloseLadder();
