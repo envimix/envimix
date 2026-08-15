@@ -116,6 +116,10 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public bool RecordsScrollbarMouseOut;
     public CHttpRequest? StarRequest;
     public bool PrevScoreTableIsVisible;
+    public int PodiumStartTime = -1;
+    public bool PlayedLadderPointsSound;
+    public float PreviousLadderPoints;
+    public int PreviousLadderRank;
     public Dictionary<string, bool> ConnectedPlayers;
     public Dictionary<string, int> PreviousPoints;
     public Dictionary<string, int> PreviousPointsTime;
@@ -735,16 +739,6 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     private void UpdateScoreboard()
     {
         LabelYourName.SetText(LocalUser.Name);
-        LabelLadderPoints.SetText(TextLib.FormatReal(LocalUser.LadderPoints, 1, _HideZeroes: false, _HideDot: false));
-        
-        if (LocalUser.LadderRank == -1)
-        {
-            LabelLadderZone.Value = "Not ranked";
-        }
-        else
-        {
-            LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{LocalUser.LadderRank}$aaa / {LocalUser.LadderTotal}";
-        }
 
         QuadEchelonPercent.Size.X = LocalUser.NextEchelonPercent / 100f * 50;
         QuadEchelonCurrent.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(LocalUser.Echelon)}.dds");
@@ -1052,7 +1046,65 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         Wait(() => GetPlayer() is not null);
 
+        PreviousLadderPoints = LocalUser.LadderPoints;
+        PreviousLadderRank = LocalUser.LadderRank;
+
         UpdateScoreboard();
+    }
+
+    // Holds the pre-match ladder points/rank for 10s, then eases them into the new values, like the podium screen does
+    private void UpdateLadderPoints()
+    {
+        if (PodiumStartTime != -1 && Now - PodiumStartTime > 5000)
+        {
+            if (!PlayedLadderPointsSound)
+            {
+                PlayedLadderPointsSound = true;
+
+                if (LocalUser.LadderPoints != PreviousLadderPoints)
+                {
+                    for (var i = 0; i < 10; i++)
+                    {
+                        Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: i * 100);
+                    }
+                }
+            }
+
+            var t = Now - PodiumStartTime - 5000;
+            var animatedPoints = AnimLib.EaseOutQuad(t, PreviousLadderPoints, LocalUser.LadderPoints - PreviousLadderPoints, 1000);
+            LabelLadderPoints.SetText(TextLib.FormatReal(animatedPoints, 1, _HideZeroes: false, _HideDot: false));
+
+            if (LocalUser.LadderRank == -1)
+            {
+                LabelLadderZone.Value = "Not ranked";
+            }
+            else if (PreviousLadderRank == -1)
+            {
+                var animatedRank = MathLib.NearestInteger(AnimLib.EaseOutQuad(t, LocalUser.LadderTotal * 1f, (LocalUser.LadderRank - LocalUser.LadderTotal) * 1f, 1000));
+                LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{animatedRank}$aaa / {LocalUser.LadderTotal}";
+            }
+            else
+            {
+                var animatedRank = MathLib.NearestInteger(AnimLib.EaseOutQuad(t, PreviousLadderRank * 1f, (LocalUser.LadderRank - PreviousLadderRank) * 1f, 1000));
+                LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{animatedRank}$aaa / {LocalUser.LadderTotal}";
+            }
+        }
+        else if (PodiumStartTime == -1)
+        {
+            LabelLadderPoints.SetText(TextLib.FormatReal(LocalUser.LadderPoints, 1, _HideZeroes: false, _HideDot: false));
+
+            if (LocalUser.LadderRank == -1)
+            {
+                LabelLadderZone.Value = "Not ranked";
+            }
+            else
+            {
+                LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{LocalUser.LadderRank}$aaa / {LocalUser.LadderTotal}";
+            }
+
+            PreviousLadderPoints = LocalUser.LadderPoints;
+            PreviousLadderRank = LocalUser.LadderRank;
+        }
     }
 
     private bool DetectChange()
@@ -1224,14 +1276,28 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 {
                     QuadBlur.RelativeScale = 0;
                     AnimMgr.Add(QuadBlur, "<quad scale=\"1\" />", 300, CAnimManager.EAnimManagerEasing.QuadOut);
+
                 }
                 else
                 {
                     QuadBlur.RelativeScale = 1;
                 }
+
+                if (UI.ScoreTableVisibility == CUIConfig.EVisibility.ForcedVisible && UI.UISequence == CUIConfig.EUISequence.None && PodiumStartTime == -1)
+                {
+                    PodiumStartTime = Now;
+                    PlayedLadderPointsSound = false;
+                }
+                else
+                {
+                    PodiumStartTime = -1;
+                    PlayedLadderPointsSound = false;
+                }
             }
             PrevScoreTableIsVisible = PageIsVisible;
         }
+
+        UpdateLadderPoints();
 
         if (DetectChange())
         {
