@@ -1213,8 +1213,18 @@ public class Envimix : UniverseModeBase
         var car = Netwrite<string>.For(e.Player);
         var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
         var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
+        var envimixCarFinishCounts = Netwrite<Dictionary<string, int>>.For(e.Player.Score);
 
         var key = ConstructFilterKey(e.Player);
+
+        if (envimixCarFinishCounts.Get().ContainsKey(car.Get()))
+        {
+            envimixCarFinishCounts.Get()[car.Get()] += 1;
+        }
+        else
+        {
+            envimixCarFinishCounts.Get()[car.Get()] = 1;
+        }
 
         envimixPrevRace.Get()[key] = tempRace.Get();
         Record.ToResult(e.Player.Score.PrevRace, tempRace.Get());
@@ -2027,10 +2037,12 @@ public class Envimix : UniverseModeBase
             var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
             var envimixBestLap = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
             var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(score);
+            var envimixCarFinishCounts = Netwrite<Dictionary<string, int>>.For(score);
             envimixPoints.Get().Clear();
             envimixBestRace.Get().Clear();
             envimixBestLap.Get().Clear();
             envimixPrevRace.Get().Clear();
+            envimixCarFinishCounts.Get().Clear();
         }
 
         Scores_Clear();
@@ -2403,6 +2415,20 @@ public class Envimix : UniverseModeBase
                     var value = TextLib.ToReal(e.CustomEventData[1]);
                     var player = GetPlayer(e.UI);
                     TryRate(player, type, value);
+                }
+                break;
+            case "Poke":
+                if (e.CustomEventData.Count == 2)
+                {
+                    var poker = GetPlayer(e.UI);
+                    var targetLogin = e.CustomEventData[0];
+                    var suggestedCar = e.CustomEventData[1];
+                    var target = GetPlayer(targetLogin);
+
+                    if (poker is not null && target is not null && target.User.Login != poker.User.Login)
+                    {
+                        NoticeMessage(UIManager.GetUI(target), $"$<{poker.User.Name}$> thinks you should try $ff0{suggestedCar}$g!");
+                    }
                 }
                 break;
         }

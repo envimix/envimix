@@ -8,6 +8,11 @@
 		</frame>
 		<label pos="38 0.3" z-index="0" size="15 5" text="-:--.---" halign="right" valign="center" textfont="OswaldMono" textsize="1.75" id="LabelTime"/>
 		<quad id="QuadCar" pos="43.5 0" z-index="0" size="4.5 4.5" halign="center" valign="center" image="file://Media/Images/Cars/CanyonCar.png"/>
+        <frame pos="44.5 0" id="FramePoke" hidden="1">
+            <quad size="8 5" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" valign="center"/>
+            <quad size="8 4.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" colorize="258" id="QuadPoke" valign="center"/>
+            <label size="20.5 5" text="POKE" valign="center2" textfont="RajdhaniMono" textsize="0.8"  z-index="1" halign="center" pos="0 -0.2"/>
+        </frame>
 	</framemodel>
 	<frame pos="-162 12.5" id="FrameLiveRankingsCar" scale="0.85">
 		<frame pos="26 -3">
@@ -20,7 +25,7 @@
 		</frame>
 		<frame pos="0 -6" id="FrameLiveRankingsRecords">
 			<quad z-index="0" pos="26 0" size="42.5 52.5" style="Bgs1" substyle="BgCardList" halign="center"/>
-			<frame pos="7 -3.5" z-index="3" id="FrameRecords" clip="1" clipposn="19 -23.25" clipsizen="53.5 52.5">
+			<frame pos="7 -3.5" z-index="3" id="FrameRecords" clip="1" clipposn="24 -23.25" clipsizen="53.5 52.5">
 				<frameinstance modelid="FramemodelRecord"/>
 				<frameinstance modelid="FramemodelRecord" pos="0 -5"/>
 				<frameinstance modelid="FramemodelRecord" pos="0 -10"/>

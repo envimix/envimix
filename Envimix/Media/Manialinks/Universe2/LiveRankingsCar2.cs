@@ -32,6 +32,13 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
 
     public bool PreviousVisible;
     public int VisibleTime = -1;
+    public Dictionary<string, string> PreviousPlayerCars;
+    public Dictionary<string, int> PokedAt;
+
+    public LiveRankingsCar2()
+    {
+        MouseClick += LiveRankingsCar2_MouseClick;
+    }
 
     CTmMlPlayer GetPlayer()
     {
@@ -64,6 +71,25 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
         Wait(() => GetPlayer() is not null);
     }
 
+    private void LiveRankingsCar2_MouseClick(CMlControl control, string controlId)
+    {
+        if (controlId != "QuadPoke")
+        {
+            return;
+        }
+
+        var targetLogin = control.DataAttributeGet("login");
+
+        if (targetLogin == "")
+        {
+            return;
+        }
+
+        var car = Netread<string>.For(GetPlayer());
+        SendCustomEvent("Poke", new[] { targetLogin, car.Get() });
+        PokedAt[targetLogin] = Now;
+    }
+
     public Dictionary<string, bool> GetPlayersOf(string carName)
     {
         Dictionary<string, bool> playerLogins = new();
@@ -93,6 +119,26 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
         var car = Netread<string>.For(GetPlayer());
 
         var playersOfThisCar = GetPlayersOf(car.Get());
+        var myLogin = GetPlayer().User.Login;
+
+        Dictionary<string, string> playerCars = new();
+
+        foreach (var player in Players)
+        {
+            var playerCar = Netread<string>.For(player);
+            playerCars[player.User.Login] = playerCar.Get();
+        }
+
+        // Switching car resolves the "stuck" state, so any pending poke cooldown for it no longer applies
+        foreach (var (login, currentCar) in playerCars)
+        {
+            if (PreviousPlayerCars.ContainsKey(login) && PreviousPlayerCars[login] != currentCar)
+            {
+                PokedAt.Remove(login);
+            }
+
+            PreviousPlayerCars[login] = currentCar;
+        }
 
         FrameLiveRankingsCar.Visible = IsVisible();
 
@@ -183,6 +229,8 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
             var labelTime = (frame.GetFirstChild("LabelTime") as CMlLabel)!;
             var quadCar = (frame.GetFirstChild("QuadCar") as CMlQuad)!;
+            var framePoke = (frame.GetFirstChild("FramePoke") as CMlFrame)!;
+            var quadPoke = (framePoke.GetFirstChild("QuadPoke") as CMlQuad)!;
 
             labelNickname.Value = Scores[scoreIndex].User.Name;
 
@@ -196,6 +244,38 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             else
             {
                 quadCar.Hide();
+            }
+
+            var showPoke = false;
+
+            if (login != myLogin && time == 2147483647 && playerCars.ContainsKey(login))
+            {
+                var otherCar = playerCars[login];
+
+                if (otherCar != "" && otherCar != car.Get())
+                {
+                    var envimixCarFinishCounts = Netread<Dictionary<string, int>>.For(Scores[scoreIndex]);
+
+                    if (envimixCarFinishCounts.Get().ContainsKey(otherCar) && envimixCarFinishCounts.Get()[otherCar] >= 3)
+                    {
+                        showPoke = true;
+                    }
+                }
+            }
+
+            if (showPoke && PokedAt.ContainsKey(login) && Now - PokedAt[login] < 30000)
+            {
+                showPoke = false;
+            }
+
+            if (showPoke)
+            {
+                quadPoke.DataAttributeSet("login", login);
+                framePoke.Show();
+            }
+            else
+            {
+                framePoke.Hide();
             }
 
             if (time == 2147483647)
