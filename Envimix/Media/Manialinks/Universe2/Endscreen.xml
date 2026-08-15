@@ -74,7 +74,7 @@
                     <label pos="1 -65.25" z-index="0" size="65 8" textprefix="$t" text="Screenshot and share" valign="center" textfont="Oswald" textsize="5.5" halign="right"/>
                     <label pos="1 -71.25" z-index="0" size="65 5" textprefix="$t" text="your effort in our friendly little place" valign="center" textfont="Oswald" textsize="1.5" halign="right"/>
                     <frame pos="35 -67.5" z-index="1" id="FrameDiscord">
-                        <quad z-index="0" size="60 15" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="ABD" id="QuadButtonDiscord" valign="center" pos="0 0"/>
+                        <quad z-index="0" size="60 15" halign="center" style="Bgs1InRace" substyle="BgCard" scriptevents="1" modulatecolor="77F" id="QuadButtonDiscord" valign="center" pos="0 0"/>
                         <quad z-index="1" size="9 9" halign="center" valign="center" pos="-22.25 0" image="file://Media/Images/Discord.png"/>
                         <quad pos="-15 0" size="42.5 11" bgcolor="0004" valign="center" z-index="2"/>
                         <frame pos="-15 0" z-index="3" clip="1" clipsizen="42.5 11" clipposn="21.25 0" id="FrameDiscord">
