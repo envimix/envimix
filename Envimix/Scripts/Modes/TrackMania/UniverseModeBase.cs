@@ -363,6 +363,7 @@ public class UniverseModeBase : CTmMode, IContext
     public void UpdateSpectatorLists()
     {
         var spectatorLists = Netwrite<Dictionary<string, Dictionary<string, string>>>.For(Teams[0]);
+        var spectators = Netwrite<Dictionary<string, bool>>.For(Teams[0]);
 
         foreach (var (spectatorTarget, unused) in spectatorLists.Get())
         {
@@ -410,6 +411,13 @@ public class UniverseModeBase : CTmMode, IContext
 
                 spectatorLists.Get()[spectatorTarget.Get()][player.User.Login] = player.User.Name;
             }
+
+            spectators.Get()[player.User.Login] = false;
+        }
+
+        foreach (var spectator in Spectators)
+        {
+            spectators.Get()[spectator.User.Login] = true;
         }
     }
 

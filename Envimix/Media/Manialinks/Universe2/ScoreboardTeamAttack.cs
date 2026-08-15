@@ -75,6 +75,14 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadScoreboardScrollbar;
     [ManialinkControl] public required CMlQuad QuadBlur;
     [ManialinkControl] public required CMlFrame FrameCars;
+    [ManialinkControl] public required CMlLabel LabelLeaderboardCar;
+    [ManialinkControl] public required CMlQuad QuadLeaderboardPrevCar;
+    [ManialinkControl] public required CMlQuad QuadLeaderboardNextCar;
+    [ManialinkControl] public required CMlFrame FrameOuterRecords;
+    [ManialinkControl] public required CMlFrame FrameRecords;
+    [ManialinkControl] public required CMlFrame FrameYourRecord;
+    [ManialinkControl] public required CMlQuad QuadRecordsScrollable;
+    [ManialinkControl] public required CMlQuad QuadRecordsScrollbar;
 
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
@@ -101,9 +109,17 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public float PrevScrollOffsetY;
     public bool HoldsScrollbar;
     public float HoldsScrollbarMouseY;
+    public bool ScrollbarMouseOut;
+    public float PrevRecordsScrollOffsetY;
+    public bool HoldsRecordsScrollbar;
+    public float HoldsRecordsScrollbarMouseY;
+    public bool RecordsScrollbarMouseOut;
     public CHttpRequest? StarRequest;
     public bool PrevScoreTableIsVisible;
     public Dictionary<string, bool> ConnectedPlayers;
+    public Dictionary<string, int> PreviousPoints;
+    public Dictionary<string, int> PreviousPointsTime;
+    public Dictionary<string, bool> PreviousSpectators;
 
     [Netread] public bool RatingEnabled { get; }
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
@@ -116,10 +132,13 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [Netread] public string EnvimixWebAPI { get; set; }
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
 
+    [Netread] public Dictionary<string, bool> Spectators { get; }
+
     public ScoreboardTeamAttack()
     {
         RaceEvent += Scoreboard_RaceEvent;
         MouseClick += Scoreboard_MouseClick;
+        MouseOver += Scoreboard_MouseOver;
 
         QuadScoreboardScrollbar.MouseOver += () =>
         {
@@ -128,13 +147,43 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         QuadScoreboardScrollbar.MouseOut += () =>
         {
-            AnimMgr.Add(QuadScoreboardScrollbar, "<quad opacity=\"0.75\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            if (HoldsScrollbar)
+            {
+                ScrollbarMouseOut = true;
+            }
+            else
+            {
+                AnimMgr.Add(QuadScoreboardScrollbar, "<quad opacity=\"0.75\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
         };
 
         QuadScoreboardScrollbar.MouseClick += () =>
         {
             HoldsScrollbar = true;
-            HoldsScrollbarMouseY = MouseY;
+            HoldsScrollbarMouseY = MouseY - (float)QuadScoreboardScrollbar.RelativePosition_V3.Y;
+        };
+
+        QuadRecordsScrollbar.MouseOver += () =>
+        {
+            AnimMgr.Add(QuadRecordsScrollbar, "<quad opacity=\"0.9\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadRecordsScrollbar.MouseOut += () =>
+        {
+            if (HoldsRecordsScrollbar)
+            {
+                RecordsScrollbarMouseOut = true;
+            }
+            else
+            {
+                AnimMgr.Add(QuadRecordsScrollbar, "<quad opacity=\"0.75\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            }
+        };
+
+        QuadRecordsScrollbar.MouseClick += () =>
+        {
+            HoldsRecordsScrollbar = true;
+            HoldsRecordsScrollbarMouseY = MouseY - (float)QuadRecordsScrollbar.RelativePosition_V3.Y;
         };
 
         QuadStar.MouseOver += () =>
@@ -219,6 +268,33 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         {
             FrameTooltip.Hide();
         };
+
+        QuadLeaderboardNextCar.MouseClick += () =>
+        {
+            var currentIndex = DisplayedCars.IndexOf(LabelLeaderboardCar.Value);
+            var nextIndex = (currentIndex + 1) % DisplayedCars.Length;
+            var nextCar = DisplayedCars[nextIndex];
+            LabelLeaderboardCar.Value = nextCar;
+            UpdateRecords();
+        };
+
+        QuadLeaderboardPrevCar.MouseClick += () =>
+        {
+            var currentIndex = DisplayedCars.IndexOf(LabelLeaderboardCar.Value);
+            var prevIndex = (currentIndex - 1 + DisplayedCars.Length) % DisplayedCars.Length;
+            var prevCar = DisplayedCars[prevIndex];
+            LabelLeaderboardCar.Value = prevCar;
+            UpdateRecords();
+        };
+    }
+
+    private int GetInterpolatedScore(int previousPoints, int targetPoints, int startTime)
+    {
+        if (Now - startTime >= 1000) return targetPoints;
+        var t = (Now - startTime) * 1f;
+        var c = (targetPoints - previousPoints) * 1f;
+        t = t / 1000f;
+        return MathLib.NearestInteger(-c * t * (t - 2) + previousPoints);
     }
 
     CTmMlPlayer GetPlayer()
@@ -338,6 +414,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     private void UpdatePlayer(CMlFrame frame, CTmScore score, int rank)
     {
         var isConnected = ConnectedPlayers.ContainsKey(score.User.Login) && ConnectedPlayers[score.User.Login];
+        var isSpectator = Spectators.ContainsKey(score.User.Login) && Spectators[score.User.Login];
 
         var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
         quadTeam.BgColor = Teams[score.TeamNum - 1].ColorPrimary;
@@ -372,9 +449,33 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         var labelPlayerName = (frame.GetFirstChild("LabelPlayerName") as CMlLabel)!;
         labelPlayerName.SetText(score.User.Name);
+        labelPlayerName.DataAttributeSet("login", score.User.Login);
+        if (isConnected)
+        {
+            labelPlayerName.Opacity = 1f;
+        }
+        else
+        {
+            labelPlayerName.Opacity = 0.3f;
+        }
 
         var labelScore = (frame.GetFirstChild("LabelScore") as CMlLabel)!;
-        labelScore.SetText(ToNicerNumber(score.Points));
+        int currentVisualPoints = score.Points;
+
+        if (PreviousPointsTime.ContainsKey(score.User.Login) && PreviousPoints.ContainsKey(score.User.Login))
+        {
+            currentVisualPoints = GetInterpolatedScore(PreviousPoints[score.User.Login], score.Points, PreviousPointsTime[score.User.Login]);
+        }
+
+        labelScore.SetText(ToNicerNumber(currentVisualPoints));
+        if (isConnected)
+        {
+            labelScore.Opacity = 1f;
+        }
+        else
+        {
+            labelScore.Opacity = 0.3f;
+        }
 
         var frameCarRanks = (frame.GetFirstChild("FrameCarRanks") as CMlFrame)!;
 
@@ -392,7 +493,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 label.SetText("--");
             }
 
-            if (DisplayedCars.Contains(car))
+            if (isConnected && DisplayedCars.Contains(car))
             {
                 label.Opacity = 1f;
             }
@@ -412,10 +513,17 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             {
                 quadCurrentCar.ChangeImageUrl(currentCarUrl);
             }
+
+            quadCurrentCar.DataAttributeSet("car", PlayerCars[score.User.Login]);
         }
+
+        quadCurrentCar.Visible = isConnected && !isSpectator;
 
         var quadStatus = (frame.GetFirstChild("QuadStatus") as CMlQuad)!;
         quadStatus.Visible = !isConnected;
+
+        var quadSpectator = (frame.GetFirstChild("QuadSpectator") as CMlQuad)!;
+        quadSpectator.Visible = isSpectator;
     }
 
     private void UpdateRatings()
@@ -476,6 +584,154 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         }
     }
 
+    private void UpdateRecords()
+    {
+        var car = LabelLeaderboardCar.Value;
+        var key = $"{car}_0_Time";
+
+        Dictionary<string, int> playerTimes = new();
+        ImmutableArray<string> playerLogins = new();
+        Dictionary<string, int> scoreIndices = new();
+
+        for (var i = 0; i < Scores.Count; i++)
+        {
+            var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(Scores[i]);
+            var login = Scores[i].User.Login;
+
+            if (envimixBestRace.Get().ContainsKey(key))
+            {
+                playerTimes[login] = envimixBestRace.Get()[key].Time;
+            }
+            else
+            {
+                playerTimes[login] = 2147483647;
+            }
+
+            scoreIndices[login] = i;
+        }
+
+        playerTimes = playerTimes.Sort();
+
+        foreach (var (login, time) in playerTimes)
+        {
+            playerLogins.Add(login);
+        }
+
+        var offset = 0;
+        var previousTime = 0;
+        Dictionary<string, int> calculatedRanks = new();
+
+        // Precalculate all ranks so we have the local player's rank even if they aren't on the first page
+        for (int i = 0; i < playerLogins.Length; i++)
+        {
+            var login = playerLogins[i];
+            var time = playerTimes[login];
+
+            if (time == 2147483647)
+            {
+                calculatedRanks[login] = 0;
+                continue;
+            }
+
+            if (time == previousTime)
+            {
+                offset += 1;
+            }
+            else
+            {
+                offset = 0;
+            }
+
+            calculatedRanks[login] = i - offset + 1;
+            previousTime = time;
+        }
+
+        var visibleRecordRows = FrameRecords.Controls.Count;
+
+        if (playerLogins.Length > visibleRecordRows)
+        {
+            FrameOuterRecords.ScrollMax = new Vec2(0, (playerLogins.Length - visibleRecordRows) * 5f);
+            QuadRecordsScrollbar.Size.Y = visibleRecordRows * 1f / playerLogins.Length * 60;
+            QuadRecordsScrollbar.RelativePosition_V3.Y = -(FrameOuterRecords.ScrollOffset.Y / FrameOuterRecords.ScrollMax.Y) * (QuadRecordsScrollable.Size.Y - QuadRecordsScrollbar.Size.Y);
+            QuadRecordsScrollbar.Show();
+        }
+        else
+        {
+            FrameOuterRecords.ScrollOffset = new Vec2(0, 0);
+            FrameOuterRecords.ScrollMax = new Vec2(0, 0);
+            QuadRecordsScrollbar.Hide();
+        }
+
+        for (int i = 0; i < FrameRecords.Controls.Count; i++)
+        {
+            var frame = (FrameRecords.Controls[i] as CMlFrame)!;
+
+            var newI = i + MathLib.FloorInteger((float)FrameOuterRecords.ScrollOffset.Y / 5);
+
+            if (playerLogins.Length <= newI)
+            {
+                frame.Hide();
+                continue;
+            }
+
+            frame.Show();
+
+            var login = playerLogins[newI];
+            var time = playerTimes[login];
+            var scoreIndex = scoreIndices[login];
+            var isConnected = ConnectedPlayers.ContainsKey(login) && ConnectedPlayers[login];
+
+            var quadTeam = (frame.GetFirstChild("QuadTeam") as CMlQuad)!;
+            var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
+            var labelPlayerName = (frame.GetFirstChild("LabelPlayerName") as CMlLabel)!;
+            var labelScore = (frame.GetFirstChild("LabelScore") as CMlLabel)!;
+
+            labelPlayerName.Value = Scores[scoreIndex].User.Name;
+            labelPlayerName.DataAttributeSet("login", Scores[scoreIndex].User.Login);
+
+            quadTeam.BgColor = Teams[Scores[scoreIndex].TeamNum - 1].ColorPrimary;
+
+            if (time == 2147483647)
+            {
+                labelRank.Value = "--";
+                labelScore.Value = "-:--.---";
+                labelPlayerName.RelativePosition_V3.X = 12 + labelScore.ComputeWidth(labelScore.Value);
+                continue;
+            }
+
+            labelRank.Value = TextLib.FormatInteger(calculatedRanks[login], 2);
+            labelScore.Value = TimeToTextWithMilli(time);
+            labelPlayerName.RelativePosition_V3.X = 12 + labelScore.ComputeWidth(labelScore.Value);
+        }
+
+        if (InputPlayer is not null && InputPlayer.Score is not null)
+        {
+            var myLogin = InputPlayer.User.Login;
+            var quadTeam = (FrameYourRecord.GetFirstChild("QuadTeam") as CMlQuad)!;
+            var labelRank = (FrameYourRecord.GetFirstChild("LabelRank") as CMlLabel)!;
+            var labelPlayerName = (FrameYourRecord.GetFirstChild("LabelPlayerName") as CMlLabel)!;
+            var labelScore = (FrameYourRecord.GetFirstChild("LabelScore") as CMlLabel)!;
+
+            labelPlayerName.Value = InputPlayer.User.Name;
+            labelPlayerName.DataAttributeSet("login", myLogin);
+
+            quadTeam.BgColor = Teams[InputPlayer.Score.TeamNum - 1].ColorPrimary;
+
+            if (playerTimes.ContainsKey(myLogin) && playerTimes[myLogin] != 2147483647)
+            {
+                labelRank.Value = TextLib.FormatInteger(calculatedRanks[myLogin], 2);
+                labelScore.Value = TimeToTextWithMilli(playerTimes[myLogin]);
+            }
+            else
+            {
+                labelRank.Value = "--";
+                labelScore.Value = "-:--.---";
+            }
+
+            labelPlayerName.RelativePosition_V3.X = 12 + labelScore.ComputeWidth(labelScore.Value);
+        }
+    }
+
     private void UpdateScoreboard()
     {
         LabelYourName.SetText(LocalUser.Name);
@@ -490,7 +746,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{LocalUser.LadderRank}$aaa / {LocalUser.LadderTotal}";
         }
 
-        QuadEchelonPercent.Size.X = LocalUser.NextEchelonPercent / 100f * 72;
+        QuadEchelonPercent.Size.X = LocalUser.NextEchelonPercent / 100f * 50;
         QuadEchelonCurrent.ChangeImageUrl($"file://Media/Manialinks/Common/Echelons/echelon{EchelonToInteger(LocalUser.Echelon)}.dds");
         LabelEchelonCurrent.Value = EchelonToInteger(LocalUser.Echelon).ToString();
         
@@ -513,6 +769,8 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             {
                 QuadMyCar.ChangeImageUrl(currentCarUrl);
             }
+
+            QuadMyCar.DataAttributeSet("car", PlayerCars[LocalUser.Login]);
 
             LabelMyCar.Value = PlayerCars[LocalUser.Login];
 
@@ -593,23 +851,37 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             }
         }
 
+        // Players with equal points share the same rank, like on the records list
+        var pointsOffset = 0;
+        var previousPoints = -1;
+        Dictionary<string, int> calculatedScoreRanks = new();
+
+        for (int i = 0; i < Scores.Count; i++)
+        {
+            if (Scores[i].Points == previousPoints)
+            {
+                pointsOffset += 1;
+            }
+            else
+            {
+                pointsOffset = 0;
+            }
+
+            calculatedScoreRanks[Scores[i].User.Login] = i - pointsOffset + 1;
+            previousPoints = Scores[i].Points;
+        }
+
         if (InputPlayer is not null)
         {
             if (InputPlayer.Score is not null)
             {
-                int myOverallRank = 0;
+                var myOverallRank = 0;
 
-                // Find the player's actual index in the global scores to get their rank
-                for (int i = 0; i < Scores.Count; i++)
+                if (calculatedScoreRanks.ContainsKey(InputPlayer.User.Login))
                 {
-                    if (Scores[i].User.Login == InputPlayer.User.Login)
-                    {
-                        myOverallRank = i + 1;
-                        break;
-                    }
+                    myOverallRank = calculatedScoreRanks[InputPlayer.User.Login];
                 }
 
-                // Pass their actual calculated rank instead of hardcoding 0
                 UpdatePlayer(FrameYourScore, InputPlayer.Score, rank: myOverallRank);
             }
         }
@@ -640,10 +912,12 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
                 continue;
             }
 
-            UpdatePlayer(frame, Scores[newI], rank: newI + 1);
+            UpdatePlayer(frame, Scores[newI], rank: calculatedScoreRanks[Scores[newI].User.Login]);
 
             frame.Visible = true;
         }
+
+        UpdateRecords();
     }
 
     private void ClearPersonalRating(CMlFrame frame)
@@ -709,8 +983,23 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         }
     }
 
+    private void Scoreboard_MouseOver(CMlControl control, string controlId)
+    {
+        var car = control.DataAttributeGet("car");
+
+        if (car != "")
+        {
+            UpdateTooltip(car);
+        }
+    }
+
     private void Scoreboard_MouseClick(CMlControl control, string controlId)
     {
+        if (controlId == "LabelPlayerName")
+        {
+            ShowProfile(control.DataAttributeGet("login"));
+        }
+
         if (RatingEnabled)
         {
             if (controlId == "QuadBox" || controlId == "QuadDraggable")
@@ -768,65 +1057,134 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
     private bool DetectChange()
     {
+        bool changed = false;
+
         if (InputPlayer is not null && InputPlayer.User.LadderPoints != CurrentLadderPoints)
         {
             CurrentLadderPoints = InputPlayer.User.LadderPoints;
-            return true;
+            changed = true;
         }
 
         if (FrameOuterGlobalScores.ScrollOffset.Y != PrevScrollOffsetY)
         {
             PrevScrollOffsetY = (float)FrameOuterGlobalScores.ScrollOffset.Y;
-            return true;
+            changed = true;
+        }
+
+        if (FrameOuterRecords.ScrollOffset.Y != PrevRecordsScrollOffsetY)
+        {
+            PrevRecordsScrollOffsetY = (float)FrameOuterRecords.ScrollOffset.Y;
+            changed = true;
         }
 
         foreach (var score in Scores)
         {
             if (!PlayerPoints.ContainsKey(score.User.Login) || PlayerPoints[score.User.Login] != score.Points)
             {
+                if (PlayerPoints.ContainsKey(score.User.Login))
+                {
+                    PreviousPoints[score.User.Login] = PlayerPoints[score.User.Login];
+                    PreviousPointsTime[score.User.Login] = Now;
+                }
+                else
+                {
+                    PreviousPoints[score.User.Login] = score.Points;
+                    PreviousPointsTime[score.User.Login] = 0; // Don't animate when first discovered
+                }
+
                 PlayerPoints[score.User.Login] = score.Points;
-                return true;
+                changed = true;
             }
 
             if (!PlayerTeams.ContainsKey(score.User.Login) || PlayerTeams[score.User.Login] != score.TeamNum)
             {
                 PlayerTeams[score.User.Login] = score.TeamNum;
-                return true;
+                changed = true;
             }
 
             if (!PlayerEchelons.ContainsKey(score.User.Login) || PlayerEchelons[score.User.Login] != score.User.Echelon)
             {
                 PlayerEchelons[score.User.Login] = score.User.Echelon;
-                return true;
+                changed = true;
             }
 
             var envimixRecordUpdated = Netread<int>.For(score);
-
             if (!LastUpdated.ContainsKey(score.User.Login) || LastUpdated[score.User.Login] != envimixRecordUpdated.Get())
             {
                 LastUpdated[score.User.Login] = envimixRecordUpdated.Get();
-                return true;
+                changed = true;
             }
         }
 
         foreach (var player in Players)
         {
             var car = Netread<string>.For(player);
-
             if (!PlayerCars.ContainsKey(player.User.Login) || PlayerCars[player.User.Login] != car.Get())
             {
                 PlayerCars[player.User.Login] = car.Get();
-                return true;
+                changed = true;
             }
 
             if (!ConnectedPlayers.ContainsKey(player.User.Login) || !ConnectedPlayers[player.User.Login])
             {
                 ConnectedPlayers[player.User.Login] = true;
-                return true;
+                changed = true;
             }
         }
 
-        return false;
+        foreach (var (login, isConnected) in ConnectedPlayers)
+        {
+            if (!isConnected)
+            {
+                continue;
+            }
+
+            var isStillHere = false;
+
+            // Search the Players array for this login
+            foreach (var player in Players)
+            {
+                if (player.User.Login == login)
+                {
+                    isStillHere = true;
+                    break;
+                }
+            }
+
+            // If we didn't find them in the Players array, they left
+            if (!isStillHere)
+            {
+                ConnectedPlayers[login] = false;
+                changed = true;
+            }
+        }
+
+        // check for spectator changes
+        if (PreviousSpectators.Count != Spectators.Count)
+        {
+            changed = true;
+        }
+        else
+        {
+            foreach (var (login, isSpectator) in Spectators)
+            {
+                if (!PreviousSpectators.ContainsKey(login) || PreviousSpectators[login] != isSpectator)
+                {
+                    changed = true;
+                    break;
+                }
+            }
+        }
+
+        if (changed)
+        {
+            foreach (var (login, isSpectator) in Spectators)
+            {
+                PreviousSpectators[login] = isSpectator;
+            }
+        }
+
+        return changed;
     }
 
     private void UpdatePersonalRatings()
@@ -878,7 +1236,49 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         if (DetectChange())
         {
             UpdateScoreboard();
-        }        
+        }
+
+        // Point animation start
+        if (PageIsVisible)
+        {
+            for (int i = 0; i < FrameGlobalScores.Controls.Count; i++)
+            {
+                var frame = (FrameGlobalScores.Controls[i] as CMlFrame)!;
+                if (!frame.Visible) continue;
+
+                var newI = i + MathLib.FloorInteger((float)FrameOuterGlobalScores.ScrollOffset.Y / 6);
+                if (Scores.Count <= newI) continue;
+
+                if (PreviousPointsTime.ContainsKey(Scores[newI].User.Login) && PreviousPoints.ContainsKey(Scores[newI].User.Login))
+                {
+                    var labelScore = (frame.GetFirstChild("LabelScore") as CMlLabel)!;
+                    int visualPoints = GetInterpolatedScore(PreviousPoints[Scores[newI].User.Login], Scores[newI].Points, PreviousPointsTime[Scores[newI].User.Login]);
+                    string targetText = ToNicerNumber(visualPoints);
+
+                    if (labelScore.Value != targetText)
+                    {
+                        labelScore.SetText(targetText);
+                    }
+                }
+            }
+
+            if (InputPlayer is not null && InputPlayer.Score is not null)
+            {
+                string login = InputPlayer.User.Login;
+                if (PreviousPointsTime.ContainsKey(login) && PreviousPoints.ContainsKey(login))
+                {
+                    var labelScore = (FrameYourScore.GetFirstChild("LabelScore") as CMlLabel)!;
+                    int visualPoints = GetInterpolatedScore(PreviousPoints[login], InputPlayer.Score.Points, PreviousPointsTime[login]);
+                    string targetText = ToNicerNumber(visualPoints);
+
+                    if (labelScore.Value != targetText)
+                    {
+                        labelScore.SetText(targetText);
+                    }
+                }
+            }
+        }
+        // Point animation end
 
         if (RatingEnabled != PrevRatingEnabled)
         {
@@ -984,22 +1384,73 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             UpdateRatings();
             UpdatePersonalRatings();
 
+            LabelLeaderboardCar.Value = GetCar();
+            UpdateRecords();
+
             PrevCar = GetCar();
         }
 
-        if (HoldsScrollbar)
+        if (HoldsScrollbar && MouseLeftButton)
         {
-            var mouseY = MouseY - HoldsScrollbarMouseY;
+            var trackHeight = (float)QuadScoreboardScrollable.Size.Y;
+            var newY = MathLib.Clamp(MouseY - HoldsScrollbarMouseY, (float)QuadScoreboardScrollbar.Size.Y - trackHeight, 0);
 
-            //FrameOuterGlobalScores.ScrollOffset = new Vec2(0, -mouseY);
+            var targetScrollOffset = newY / ((float)QuadScoreboardScrollbar.Size.Y - trackHeight) * (float)FrameOuterGlobalScores.ScrollMax.Y;
+            var stepIndex = MathLib.NearestInteger(targetScrollOffset / 6f);
+            var steppedScrollOffset = stepIndex * 6f;
 
-            if (!MouseLeftButton)
+            steppedScrollOffset = MathLib.Clamp(steppedScrollOffset, 0f, (float)FrameOuterGlobalScores.ScrollMax.Y);
+
+            if (FrameOuterGlobalScores.ScrollMax.Y > 0)
             {
-                HoldsScrollbar = false;
+                QuadScoreboardScrollbar.RelativePosition_V3.Y = -(steppedScrollOffset / FrameOuterGlobalScores.ScrollMax.Y) * (trackHeight - QuadScoreboardScrollbar.Size.Y);
             }
+
+            FrameOuterGlobalScores.ScrollOffset.Y = steppedScrollOffset;
+        }
+        else if (HoldsScrollbar)
+        {
+            if (ScrollbarMouseOut)
+            {
+                AnimMgr.Add(QuadScoreboardScrollbar, "<quad opacity=\"0.75\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                ScrollbarMouseOut = false;
+            }
+
+            HoldsScrollbar = false;
         }
 
         FrameGlobalScores.RelativePosition_V3 = new Vec2(-FrameOuterGlobalScores.ScrollOffset.X, -FrameOuterGlobalScores.ScrollOffset.Y);
+
+        if (HoldsRecordsScrollbar && MouseLeftButton)
+        {
+            var trackHeight = (float)QuadRecordsScrollable.Size.Y;
+            var newY = MathLib.Clamp(MouseY - HoldsRecordsScrollbarMouseY, (float)QuadRecordsScrollbar.Size.Y - trackHeight, 0);
+
+            var targetScrollOffset = newY / ((float)QuadRecordsScrollbar.Size.Y - trackHeight) * (float)FrameOuterRecords.ScrollMax.Y;
+            var stepIndex = MathLib.NearestInteger(targetScrollOffset / 5f);
+            var steppedScrollOffset = stepIndex * 5f;
+
+            steppedScrollOffset = MathLib.Clamp(steppedScrollOffset, 0f, (float)FrameOuterRecords.ScrollMax.Y);
+
+            if (FrameOuterRecords.ScrollMax.Y > 0)
+            {
+                QuadRecordsScrollbar.RelativePosition_V3.Y = -(steppedScrollOffset / FrameOuterRecords.ScrollMax.Y) * (trackHeight - QuadRecordsScrollbar.Size.Y);
+            }
+
+            FrameOuterRecords.ScrollOffset.Y = steppedScrollOffset;
+        }
+        else if (HoldsRecordsScrollbar)
+        {
+            if (RecordsScrollbarMouseOut)
+            {
+                AnimMgr.Add(QuadRecordsScrollbar, "<quad opacity=\"0.75\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+                RecordsScrollbarMouseOut = false;
+            }
+
+            HoldsRecordsScrollbar = false;
+        }
+
+        FrameRecords.RelativePosition_V3 = new Vec2(-FrameOuterRecords.ScrollOffset.X, -FrameOuterRecords.ScrollOffset.Y);
 
         if (StarRequest is not null && StarRequest.IsCompleted)
         {

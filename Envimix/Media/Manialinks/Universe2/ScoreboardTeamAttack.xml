@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-	<framemodel id="FramemodelScore">
-		<quad id="QuadRowHelper" pos="0.2 0" z-index="-1" size="144.6 6" bgcolor="000" valign="center" opacity=".0" scriptevents="1"/>
-		<quad id="QuadTeam" pos="1 0" z-index="0" size="1.5 5" bgcolor="F00" valign="center" opacity=".7"/>
-		<label id="LabelRank" pos="7 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center"/>
-		<quad id="QuadEchelon" pos="14 0" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
-		<quad id="QuadZone" pos="14 -0.4" z-index="1" size="3.25 3.25" valign="center" halign="center" image="file://ZoneFlags/Path/World|Europe|Czech Republic"/>
-		<quad id="QuadStatus" pos="14 0" z-index="2" size="5 5" valign="center" halign="center" style="Icons64x64_2" substyle="Disconnected" hidden="1"/>
-		<label id="LabelPlayerName" scriptevents="1" style="TextCardMedium" pos="18 -0.4" z-index="0" size="27 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2.5"/>
-		<label id="LabelScore" pos="60 -0.3" z-index="0" size="17 5" text="0" valign="center2" textfont="RajdhaniMono" halign="right"/>
-		<frame pos="66 -0.1" id="FrameCarRanks">
-			<label pos="0 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CanyonCar"/>
-			<label pos="6 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="StadiumCar"/>
-			<label pos="12 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="ValleyCar"/>
-			<label pos="18 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="LagoonCar"/>
-			<label pos="24 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="TrafficCar"/>
-			<label pos="30 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="DesertCar"/>
-			<label pos="36 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="SnowCar"/>
-			<label pos="42 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="RallyCar"/>
-			<label pos="48 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="IslandCar"/>
-			<label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
-			<label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
-		</frame>
-		<quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="136 0"/>
-	</framemodel>
-	<framemodel id="FramemodelRating">
-		<frame pos="0 2.5" z-index="1">
-			<quad id="QuadGlow" z-index="-2" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.1"/>
-			<quad id="QuadBox" z-index="-1" size="60 5" halign="center" valign="center" style="Bgs1InRace" substyle="BgCardList" scriptevents="1" opacity=".25"/>
-			<quad id="QuadBlink" hidden="1" z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" opacity="0.1"/>
-			<label id="LabelRateName" z-index="1" size="40 5" text="Rating is currently disabled" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3"/>
-			<frame id="FrameDraggable" z-index="2" pos="-28 0" hidden="1">
-				<quad z-index="0" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgMetalBar"/>
-				<quad z-index="1" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".5" id="QuadDraggable"/>
-			</frame>
-		</frame>
-		<label id="LabelRating" pos="29.5 -4.75" z-index="0" size="40 5" textprefix="$o" text="Rating" textfont="Oswald" halign="right" textsize="1.5" valign="bottom" translate="1"/>
-		<gauge pos="-32 -3" z-index="0" size="45 8" valign="center" drawbg="0" ratio="0" id="GaugeRating"/>
-	</framemodel>
-	<frame z-index="1000">
-		<quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
+    <framemodel id="FramemodelScore">
+        <quad id="QuadRowHelper" pos="0.2 0" z-index="-1" size="144.6 6" bgcolor="000" valign="center" opacity=".0" scriptevents="1"/>
+        <quad id="QuadTeam" pos="1 0" z-index="0" size="1.5 5" bgcolor="F00" valign="center" opacity=".7"/>
+        <label id="LabelRank" pos="7 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center"/>
+        <quad id="QuadEchelon" pos="14 0" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds"/>
+        <quad id="QuadZone" pos="14 -0.4" z-index="1" size="3.25 3.25" valign="center" halign="center" image="file://ZoneFlags/Path/World|Europe|Czech Republic"/>
+        <quad id="QuadStatus" pos="14 0" z-index="2" size="5 5" valign="center" halign="center" style="Icons64x64_2" substyle="Disconnected" hidden="1"/>
+        <label id="LabelPlayerName" scriptevents="1" style="TextCardRaceRank" pos="18 -0.4" z-index="0" size="27 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2.5"/>
+        <label id="LabelScore" pos="60 -0.3" z-index="0" size="17 5" text="0" valign="center2" textfont="RajdhaniMono" halign="right"/>
+        <frame pos="66 -0.1" id="FrameCarRanks">
+            <label pos="0 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CanyonCar"/>
+            <label pos="6 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="StadiumCar"/>
+            <label pos="12 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="ValleyCar"/>
+            <label pos="18 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="LagoonCar"/>
+            <label pos="24 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="TrafficCar"/>
+            <label pos="30 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="DesertCar"/>
+            <label pos="36 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="SnowCar"/>
+            <label pos="42 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="RallyCar"/>
+            <label pos="48 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="IslandCar"/>
+            <label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar"/>
+            <label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar"/>
+        </frame>
+        <quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="136 0" scriptevents="1"/>
+        <quad id="QuadSpectator" z-index="1" size="5 5" valign="center" halign="center" pos="136 0"  style="BgRaceScore2" substyle="Spectator" hidden="1"/>
+    </framemodel>
+    <framemodel id="FramemodelRating">
+        <frame pos="0 2.5" z-index="1">
+            <quad id="QuadGlow" z-index="-2" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.1"/>
+            <quad id="QuadBox" z-index="-1" size="60 5" halign="center" valign="center" style="Bgs1InRace" substyle="BgCardList" scriptevents="1" opacity=".25"/>
+            <quad id="QuadBlink" hidden="1" z-index="0" size="60 5" halign="center" valign="center" style="Bgs1" substyle="BgWindow4" opacity="0.1"/>
+            <label id="LabelRateName" z-index="1" size="40 5" text="Rating is currently disabled" textfont="RajdhaniMono" textsize="1.25" halign="center" valign="center" opacity=".75" pos="0 .3"/>
+            <frame id="FrameDraggable" z-index="2" pos="-28 0" hidden="1">
+                <quad z-index="0" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgMetalBar"/>
+                <quad z-index="1" size="4 5" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".5" id="QuadDraggable"/>
+            </frame>
+        </frame>
+        <label id="LabelRating" pos="29.5 -4.75" z-index="0" size="40 5" textprefix="$o" text="Rating" textfont="Oswald" halign="right" textsize="1.5" valign="bottom" translate="1"/>
+        <gauge pos="-32 -3" z-index="0" size="45 8" valign="center" drawbg="0" ratio="0" id="GaugeRating"/>
+    </framemodel>
+    <framemodel id="FramemodelRecord">
+        <quad id="QuadRowHelper" pos="0.2 0" z-index="-1" size="144.6 6" bgcolor="000" valign="center" opacity=".0" scriptevents="1"/>
+        <quad id="QuadTeam" pos="1 0" z-index="0" size="1 4.5" bgcolor="F00" valign="center" opacity=".7" />
+        <label id="LabelRank" pos="6 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center"  textsize="2"/>
+        <label id="LabelScore" pos="10 -0.3" z-index="0" size="28 5" text="-:--.---" valign="center2" textfont="RajdhaniMono"  textsize="2"/>
+        <label id="LabelPlayerName" scriptevents="1" style="TextCardRaceRank" pos="28 -0.4" z-index="0" size="27 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2"/>
+    </framemodel>
+    <quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
+    <frame z-index="500">
         <frame pos="0 47.5">
             <quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center" />
             <label id="LabelYourName" pos="-92.5 0.3" z-index="0" size="45 6" text="$aaa[unknown]" textsize="3" textfont="RajdhaniMono" valign="center" />
@@ -48,77 +56,104 @@
                 <label z-index="1" size="40 10" text="0.0" halign="center" valign="center2" textsize="5" textfont="RajdhaniMono" pos="0 -0.5" opacity=".9" textcolor="CB6" id="LabelLadderPoints" />
                 <quad pos="-17 -3.2" z-index="1" size="5 5" halign="center" valign="center" style="BgRaceScore2" substyle="LadderPoints" />
             </frame>
-            <frame pos="21 0" z-index="0">
-                <quad z-index="1" pos="0 0" size="42 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5" />
-                <quad z-index="3" size="6 6" halign="center" valign="center" opacity=".9" pos="-16.75 1" id="QuadEchelonCurrent" image="file://Media/Manialinks/Common/Echelons/echelon3.dds" />
-                <label z-index="4" pos="-16.75 1" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1.5" id="LabelEchelonCurrent" opacity="1" />
-                <quad z-index="3" size="6 6" halign="center" valign="center" opacity=".9" pos="16.75 1" id="QuadEchelonNext" image="file://Media/Manialinks/Common/Echelons/echelon4.dds" />
-                <label z-index="4" pos="16.75 1" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1.5" id="LabelEchelonNext" opacity="1" />
-                <label z-index="3" size="40 5" text="Not ranked" halign="center" valign="center2" textsize="1.5" textfont="RajdhaniMono" pos="0 0.6" id="LabelLadderZone" translate="1" />
-                <quad z-index="2" size="40 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1" />
-                <quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-20 -3.5" id="QuadEchelonPercent" colorize="CB6" />
+            <frame pos="26 0" z-index="0">
+                <quad z-index="1" pos="0 0" size="52 10" halign="center" valign="center" style="Bgs1" substyle="BgWindow1" opacity=".5" />
+                <quad z-index="3" size="6 6" halign="center" valign="center" opacity=".9" pos="-21.75 1" id="QuadEchelonCurrent" image="file://Media/Manialinks/Common/Echelons/echelon3.dds" />
+                <label z-index="4" pos="-21.75 1" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1.5" id="LabelEchelonCurrent" opacity="1" />
+                <quad z-index="3" size="6 6" halign="center" valign="center" opacity=".9" pos="21.75 1" id="QuadEchelonNext" image="file://Media/Manialinks/Common/Echelons/echelon4.dds" />
+                <label z-index="4" pos="21.75 1" size="8 5" text="1" valign="center" halign="center" textfont="RajdhaniMono" textsize="1.5" id="LabelEchelonNext" opacity="1" />
+                <label z-index="3" size="50 5" text="Not ranked" halign="center" valign="center2" textsize="1.5" textfont="RajdhaniMono" pos="0 0.6" id="LabelLadderZone" translate="1" />
+                <quad z-index="2" size="50 1.5" halign="center" valign="center" style="Bgs1" pos="0 -3.5" substyle="BgWindow4" opacity=".1" />
+                <quad size="20 1.5" valign="center" style="Bgs1" substyle="BgWindow4" opacity=".75" pos="-25 -3.5" id="QuadEchelonPercent" colorize="CB6" />
             </frame>
-            <quad pos="75 0" z-index="0" size="45 6.48" halign="center" valign="center" image="file://Media/Images/EnvimixSmall.png" scale="0.75" />
+
+            <quad pos="76 0" z-index="0" size="45 6.48" halign="center" valign="center" image="file://Media/Images/EnvimixSmall.png" scale="0.75" />
         </frame>
-		<frame pos="-100 0">
-			<quad z-index="-1" size="145 80" style="Bgs1" substyle="BgCardList" valign="center"/>
-			<frame pos="0 34.5" z-index="0">
-				<label pos="7 0.4" z-index="0" size="7 5" text="R" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
-				<label pos="14 0.4" z-index="0" size="7 5" text="Z" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
-				<label pos="18 0.4" z-index="0" size="20 5" text="Players" valign="center" textfont="RajdhaniMono" textsize="2" translate="1"/>
-				<label pos="60 0.4" z-index="0" size="20 5" text="Score" valign="center" textfont="RajdhaniMono" textsize="2" translate="1" halign="right"/>
+        <frame pos="-100 0">
+            <quad z-index="-1" size="145 80" style="Bgs1" substyle="BgCardList" valign="center"/>
+            <frame pos="0 34.5" z-index="0">
+                <label pos="7 0.4" z-index="0" size="7 5" text="R" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
+                <label pos="14 0.4" z-index="0" size="7 5" text="Z" valign="center" halign="center" textfont="RajdhaniMono" textsize="2"/>
+                <label pos="18 0.4" z-index="0" size="20 5" text="Players" valign="center" textfont="RajdhaniMono" textsize="2" translate="1"/>
+                <label pos="60 0.4" z-index="0" size="20 5" text="Score" valign="center" textfont="RajdhaniMono" textsize="2" translate="1" halign="right"/>
                 <frame pos="66 0" id="FrameCars">
-                    <quad data-car="CanyonCar" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png"/>
-                    <quad data-car="StadiumCar" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="6 0"/>
-                    <quad data-car="ValleyCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/ValleyCar.png" pos="12 0"/>
-                    <quad data-car="LagoonCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/LagoonCar.png" pos="18 0"/>
-                    <quad data-car="TrafficCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/TrafficCar.png" pos="24 0"/>
-                    <quad data-car="DesertCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/DesertCar.png" pos="30 0"/>
-                    <quad data-car="SnowCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="36 0"/>
-                    <quad data-car="RallyCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="42 0"/>
-                    <quad data-car="IslandCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/IslandCar.png" pos="48 0"/>
-                    <quad data-car="BayCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/BayCar.png" pos="54 0"/>
-                    <quad data-car="CoastCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CoastCar.png" pos="60 0"/>
-				</frame>
-				<label pos="136 2.3" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
-				<label pos="136 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
-			</frame>
-			<frame id="FrameOuterGlobalScores" pos="0 28" z-index="1" clip="1" clipposn="71 -26.75" clipsizen="142.5 59" scroll="1" scrollgrid="0 6" scrollmax="0 0">
-				<frame id="FrameGlobalScores">
-					<frameinstance modelid="FramemodelScore"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -6"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -12"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -18"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -24"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -30"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -36"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -42"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -48"/>
-					<frameinstance modelid="FramemodelScore" pos="0 -54"/>
-				</frame>
-			</frame>
-			<frame pos="0 -34" z-index="1">
-				<frameinstance modelid="FramemodelScore" id="FrameYourScore"/>
-			</frame>
-			<frame pos="143 31">
-				<quad z-index="0" size="1.5 60" style="Bgs1" substyle="BgCardList" id="QuadScoreboardScrollable" opacity="0.5" scriptevents="1" halign="center"/>
-				<quad z-index="1" size="1.5 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadScoreboardScrollbar" scriptevents="1" halign="center" hidden="1"/>
-			</frame>
-		</frame>
-		<frame pos="73 0">
-			<quad z-index="-1" size="54 80" style="Bgs1" substyle="BgCardList" valign="center" halign="center"/>
-		</frame>
-		<frame pos="0 -47.5">
-			<quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
-			<quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="-92 0"/>
-			<label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4"/>
-			<quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" opacity="0.9" scriptevents="1"/>
-			<frameinstance pos="2.5 0" id="FrameDifficulty" modelid="FramemodelRating"/>
-			<frameinstance pos="67.5 0" id="FrameQuality" modelid="FramemodelRating"/>
-		</frame>
-	</frame>
-	<frame z-index="110" id="FrameTooltip" hidden="1">
-		<quad pos="0 0" z-index="-1" size="43.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip"/>
-		<label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.envimix.gbx.tools" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
-	</frame>
+                    <quad data-car="CanyonCar" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" scriptevents="1"/>
+                    <quad data-car="StadiumCar" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="6 0" scriptevents="1"/>
+                    <quad data-car="ValleyCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/ValleyCar.png" pos="12 0" scriptevents="1"/>
+                    <quad data-car="LagoonCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/LagoonCar.png" pos="18 0" scriptevents="1"/>
+                    <quad data-car="TrafficCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/TrafficCar.png" pos="24 0" scriptevents="1"/>
+                    <quad data-car="DesertCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/DesertCar.png" pos="30 0" scriptevents="1"/>
+                    <quad data-car="SnowCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/SnowCar.png" pos="36 0" scriptevents="1"/>
+                    <quad data-car="RallyCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/RallyCar.png" pos="42 0" scriptevents="1"/>
+                    <quad data-car="IslandCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/IslandCar.png" pos="48 0" scriptevents="1"/>
+                    <quad data-car="BayCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/BayCar.png" pos="54 0" scriptevents="1"/>
+                    <quad data-car="CoastCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CoastCar.png" pos="60 0" scriptevents="1"/>
+                </frame>
+                <label pos="136 2.3" z-index="0" size="15 3" text="CURRENTLY" halign="center" textfont="RajdhaniMono" textsize="0"/>
+                <label pos="136 0.5" z-index="0" size="15 3" text="PLAYING" halign="center" textfont="RajdhaniMono" textsize="1"/>
+            </frame>
+            <frame id="FrameOuterGlobalScores" pos="0 28" z-index="1" clip="1" clipposn="71 -26.75" clipsizen="142.5 59" scroll="1" scrollgrid="0 6" scrollmax="0 0">
+                <frame id="FrameGlobalScores">
+                    <frameinstance modelid="FramemodelScore"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -6"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -12"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -18"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -24"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -30"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -36"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -42"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -48"/>
+                    <frameinstance modelid="FramemodelScore" pos="0 -54"/>
+                </frame>
+            </frame>
+            <frame pos="0 -35" z-index="1">
+                <frameinstance modelid="FramemodelScore" id="FrameYourScore"/>
+            </frame>
+            <frame pos="143 31">
+                <quad z-index="0" size="1.5 60" style="Bgs1" substyle="BgCardList" id="QuadScoreboardScrollable" opacity="0.5" scriptevents="1" halign="center"/>
+                <quad z-index="1" size="1.5 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadScoreboardScrollbar" scriptevents="1" halign="center" hidden="1"/>
+            </frame>
+        </frame>
+        <frame pos="73 0">
+            <quad z-index="-1" size="54 80" style="Bgs1" substyle="BgCardList" valign="center" halign="center"/>
+            <label id="LabelLeaderboardCar" pos="0 35" z-index="0" size="30 5" text="StadiumCar" valign="center" textfont="RajdhaniMono" textsize="3" translate="1" halign="center"/>
+            <quad id="QuadLeaderboardPrevCar" pos="-20 34.5" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1"/>
+            <quad id="QuadLeaderboardNextCar" pos="20 34.5" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" rot="180" scriptevents="1"/>
+            <frame id="FrameOuterRecords" pos="-27 27" clip="1" clipposn="27 -27.5" clipsizen="54 60" scroll="1" scrollgrid="0 5" scrollmax="0 0">
+                <frame id="FrameRecords">
+                    <frameinstance modelid="FramemodelRecord" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -5" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -10" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -15" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -20" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -25" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -30" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -35" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -40" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -45" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -50" />
+                    <frameinstance modelid="FramemodelRecord" pos="0 -55" />
+                </frame>
+            </frame>
+            <frame pos="25 29.5">
+                <quad z-index="0" size="1.5 60" style="Bgs1" substyle="BgCardList" id="QuadRecordsScrollable" opacity="0.5" scriptevents="1" halign="center"/>
+                <quad z-index="1" size="1.5 30" style="Bgs1" substyle="BgWindow4" opacity=".75" id="QuadRecordsScrollbar" scriptevents="1" halign="center" hidden="1"/>
+            </frame>
+            <frame pos="-27 27">
+                <frameinstance modelid="FramemodelRecord" id="FrameYourRecord" pos="0 -62" />
+            </frame>
+        </frame>
+        <frame pos="0 -47.5">
+            <quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
+            <quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="-92 0" scriptevents="1"/>
+            <label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4"/>
+            <quad id="QuadStar" hidden="1" pos="-37.5 0.25" z-index="0" size="10 10" halign="center" valign="center" style="BgRaceScore2" substyle="Fame" opacity="0.9" scriptevents="1"/>
+            <frameinstance pos="2.5 0" id="FrameDifficulty" modelid="FramemodelRating"/>
+            <frameinstance pos="67.5 0" id="FrameQuality" modelid="FramemodelRating"/>
+        </frame>
+    </frame>
+    <frame z-index="510" id="FrameTooltip" hidden="1">
+        <quad pos="0 0" z-index="-1" size="43.5 6" style="Bgs1" substyle="BgCardOnline" colorize="000" id="QuadTooltip"/>
+        <label pos="2 -3.1" z-index="0" size="43.5 6" text="https://discord.envimix.gbx.tools" valign="center2" textsize="1.5" textfont="BiryaniDemiBold" id="LabelText"/>
+    </frame>
 </manialink>
