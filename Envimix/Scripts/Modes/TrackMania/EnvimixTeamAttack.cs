@@ -143,6 +143,8 @@ public class EnvimixTeamAttack : Envimix
             Yield();
         }
 
+        AutobalanceTeams();
+
         CarSelectionMode = false;
         TeamSelectionMode = false;
 
@@ -169,33 +171,7 @@ public class EnvimixTeamAttack : Envimix
 
             TrySpawnEnvimixTeamAttackPlayer(player, frozen: false);
         }
-
-        /*declare Integer[Text] PlayerTeams;
-        declare Integer[Integer] PlayerCounts;
-        foreach(Score in Scores) {
-            PlayerTeams[Score.User.Login] = Score.TeamNum;
-            if(!PlayerCounts.existskey(Score.TeamNum))
-                PlayerCounts[Score.TeamNum] = 0;
-            PlayerCounts[Score.TeamNum] += 1;
         }
-
-        if(PlayerCounts.existskey(1) && PlayerCounts.existskey(2)) {
-            if(MathLib::Abs(PlayerCounts[1]-PlayerCounts[2]) > 1) {
-                ServerAdmin.AutoTeamBalance();
-            }
-        }
-
-        declare Barrier_Start = Synchro_AddBarrier();
-        wait(Synchro_BarrierReached(Barrier_Start));
-
-        foreach(Score in Scores) {
-            if(PlayerTeams.existskey(Score.User.Login)) {
-                if(PlayerTeams[Score.User.Login] != Score.TeamNum) {
-                    log(Score.User.Login ^ " has been autobalanced from " ^ PlayerTeams[Score.User.Login] ^ " to " ^ Score.TeamNum);
-                }
-            }
-        }*/
-    }
 
     private bool TrySpawnEnvimixTeamAttackPlayer(CTmPlayer player, bool frozen)
     {
@@ -241,6 +217,74 @@ public class EnvimixTeamAttack : Envimix
         UpdateDisabledCarNotice(player, "Default car is currently disabled.");
 
         return spawned;
+    }
+
+    public void ChangePlayerClan(CTmPlayer player, int clan)
+    {
+        UnspawnPlayer(player);
+        SetPlayerClan(player, clan);
+        var car = Netwrite<string>.For(player);
+        SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen: true);
+    }
+
+    private void AutobalanceTeams()
+    {
+        ImmutableArray<CTmScore> team1 = new();
+        ImmutableArray<CTmScore> team2 = new();
+
+        foreach (var score in Scores)
+        {
+            if (score.TeamNum == 1) team1.Add(score);
+            else if (score.TeamNum == 2) team2.Add(score);
+        }
+
+        if (MathLib.Abs(team1.Length - team2.Length) <= 1)
+        {
+            return;
+        }
+
+        ImmutableArray<CTmScore> largerTeam;
+        int targetTeamNum;
+
+        if (team1.Length > team2.Length)
+        {
+            largerTeam = team1;
+            targetTeamNum = 2;
+        }
+        else
+        {
+            largerTeam = team2;
+            targetTeamNum = 1;
+        }
+
+        string newTeamName;
+        if (targetTeamNum == 1)
+        {
+            newTeamName = Teams[0].ColorizedName;
+        }
+        else
+        {
+            newTeamName = Teams[1].ColorizedName;
+        }
+
+        var amountToMove = MathLib.Abs(team1.Length - team2.Length) / 2;
+
+        for (var i = 0; i < amountToMove; i++)
+        {
+            var randomIndex = MathLib.Rand(0, largerTeam.Length - 1);
+            var scoreToMove = largerTeam[randomIndex];
+            largerTeam.RemoveAt(randomIndex);
+
+            var player = GetPlayer(scoreToMove.User.Login);
+
+            if (player is null)
+            {
+                continue;
+            }
+
+            ChangePlayerClan(player, targetTeamNum);
+            UIManager.UIAll.SendChat($"$<{scoreToMove.User.Name}$> has been autobalanced to {newTeamName}.");
+        }
     }
 
     public void RespawnAllWaiting()
@@ -395,14 +439,6 @@ public class EnvimixTeamAttack : Envimix
                 }
                 break;
         }
-    }
-
-    public void ChangePlayerClan(CTmPlayer player, int clan)
-    {
-        UnspawnPlayer(player);
-        SetPlayerClan(player, clan);
-        var car = Netwrite<string>.For(player);
-        SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen: true);
     }
 
     private void ProcessUiEvents()
