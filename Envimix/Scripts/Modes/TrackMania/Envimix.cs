@@ -173,6 +173,8 @@ public class Envimix : UniverseModeBase
     public CHttpRequest? UserJoinAdditionalInfoRequest;
     public required int UserJoinAdditionalInfosUpdatedAt;
 
+    public required Dictionary<string, int> PokeCooldowns;
+
     public override void OnServerInit()
     {
         Log(nameof(Envimix), "Initializing server...");
@@ -2469,6 +2471,65 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
+    /// <summary>
+    /// Re-validates the poke request server-side, mirroring the conditions LiveRankingsCar2 uses to show the poke button, since a client could otherwise send an arbitrary "Poke" event.
+    /// </summary>
+    private bool TryPoke(CTmPlayer? poker, CTmPlayer? target, string suggestedCar)
+    {
+        if (poker is null || target is null || target.User.Login == poker.User.Login)
+        {
+            return false;
+        }
+
+        if (poker.Score.TeamNum != target.Score.TeamNum)
+        {
+            return false;
+        }
+
+        var pokerCar = Netwrite<string>.For(poker);
+
+        // The suggested car must always be the poker's own current car, never an arbitrary/forged value
+        if (suggestedCar == "" || suggestedCar != pokerCar.Get() || !IsValidCar(suggestedCar))
+        {
+            return false;
+        }
+
+        var targetCar = Netwrite<string>.For(target);
+
+        if (targetCar.Get() == "" || targetCar.Get() == suggestedCar)
+        {
+            return false;
+        }
+
+        var envimixCarFinishCounts = Netwrite<Dictionary<string, int>>.For(target.Score);
+
+        if (!envimixCarFinishCounts.Get().ContainsKey(targetCar.Get()) || envimixCarFinishCounts.Get()[targetCar.Get()] < 3)
+        {
+            return false;
+        }
+
+        var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(target.Score);
+        var key = ConstructFilterKey(suggestedCar);
+
+        if (envimixBestRace.Get().ContainsKey(key) && envimixBestRace.Get()[key].Time != -1)
+        {
+            return false;
+        }
+
+        var cooldownKey = $"{poker.User.Login}_{target.User.Login}";
+
+        if (PokeCooldowns.ContainsKey(cooldownKey) && Now - PokeCooldowns[cooldownKey] < 30000)
+        {
+            return false;
+        }
+
+        PokeCooldowns[cooldownKey] = Now;
+
+        UIManager.GetUI(target).SendChat($"$<{poker.User.Name}$> thinks you should try $ff0{suggestedCar}$fff!");
+
+        return true;
+    }
+
     public void ProcessGeneralEnvimixEvents(CUIConfigEvent e)
     {
         switch (e.CustomEventType)
@@ -2490,10 +2551,7 @@ public class Envimix : UniverseModeBase
                     var suggestedCar = e.CustomEventData[1];
                     var target = GetPlayer(targetLogin);
 
-                    if (poker is not null && target is not null && target.User.Login != poker.User.Login)
-                    {
-                        UIManager.GetUI(target).SendChat($"$<{poker.User.Name}$> thinks you should try $ff0{suggestedCar}$fff!");
-                    }
+                    TryPoke(poker, target, suggestedCar);
                 }
                 break;
         }

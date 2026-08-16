@@ -253,7 +253,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
 
             var showPoke = false;
 
-            if (login != myLogin && time == 2147483647 && playerCars.ContainsKey(login))
+            if (login != myLogin && Scores[scoreIndex].TeamNum == GetPlayer().Score.TeamNum && time == 2147483647 && playerCars.ContainsKey(login))
             {
                 var otherCar = playerCars[login];
 
