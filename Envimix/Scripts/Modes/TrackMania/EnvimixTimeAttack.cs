@@ -16,6 +16,9 @@ public class EnvimixTimeAttack : Envimix
     [Setting(As = "Auto-respawn time")]
     public int AutoRespawnTime = 6;
 
+    [Setting(As = "Clear scores on map end (WIP)")]
+    public bool ClearScoresOnMapEnd = false;
+
     public required Dictionary<string, int> AutoRespawn;
 
     [Netwrite] public string ModeHelp { get; set; }
@@ -55,7 +58,10 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnMapInit()
     {
-        ClearScores();
+        if (!ClearScoresOnMapEnd)
+        {
+            ClearScores();
+        }
     }
 
     public override void OnMapStart()
@@ -333,6 +339,11 @@ public class EnvimixTimeAttack : Envimix
     public override void OnMapEnd()
     {
         CutOffTimeLimit = -1;
+
+        if (ClearScoresOnMapEnd)
+        {
+            ClearScores();
+        }
     }
 
     private void ProcessUpdateCarEvent(CUIConfigEvent e, bool forceFreeze)

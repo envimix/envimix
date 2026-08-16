@@ -16,6 +16,9 @@ public class EnvimixTeamAttack : Envimix
     [Setting(As = "Auto-respawn time")]
     public int AutoRespawnTime = 6;
 
+    [Setting(As = "Clear scores on map end (WIP)")]
+    public bool ClearScoresOnMapEnd = false;
+
     public required Dictionary<string, int> AutoRespawn;
 
     [Netwrite] public string ModeHelp { get; set; }
@@ -27,7 +30,7 @@ public class EnvimixTeamAttack : Envimix
         CreateServersideLayers();
         CreateLayer("ScoreboardTeamAttack", CUILayer.EUILayerType.ScoresTable);
         IndependantLaps = true;
-        ModeHelp = "OBJECTIVE: Two teams compare collective skills. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible under a time limit.";
+        ModeHelp = "OBJECTIVE: Two teams compare collective skill on different cars. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible under a time limit.";
         ModeStatusMessage = ModeHelp;
 
         UseClans = true;
@@ -74,7 +77,10 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnMapInit()
     {
-        ClearScores();
+        if (!ClearScoresOnMapEnd)
+        {
+            ClearScores();
+        }
     }
 
     public override void OnMapLoad()
@@ -405,6 +411,11 @@ public class EnvimixTeamAttack : Envimix
     {
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.Normal;
         CutOffTimeLimit = -1;
+
+        if (ClearScoresOnMapEnd)
+        {
+            ClearScores();
+        }
     }
 
     private void ProcessUpdateCarEvent(CUIConfigEvent e, bool forceFreeze)
@@ -420,24 +431,16 @@ public class EnvimixTeamAttack : Envimix
 
                     var car = Netwrite<string>.For(player);
 
-                    if (e.CustomEventData.Count > 1)
+                    AutoRespawn.Remove(player.User.Login);
+
+                    var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
+                    var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
+
+                    var isMenuEscape = e.CustomEventData.Count > 3 && e.CustomEventData[3] == "True";
+
+                    if (spawned || isMenuEscape)
                     {
-                        var respawn = e.CustomEventData[1] == "True";
-
-                        if (respawn)
-                        {
-                            AutoRespawn.Remove(player.User.Login);
-
-                            var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
-                            var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
-
-                            var isMenuEscape = e.CustomEventData.Count > 3 && e.CustomEventData[3] == "True";
-
-                            if (spawned || isMenuEscape)
-                            {
-                                RequestEnvimaniaRecords(carName, MathLib.NearestInteger(player.GravityCoef * 10) - 10, GetLaps());
-                            }
-                        }
+                        RequestEnvimaniaRecords(carName, MathLib.NearestInteger(player.GravityCoef * 10) - 10, GetLaps());
                     }
                 }
                 break;
