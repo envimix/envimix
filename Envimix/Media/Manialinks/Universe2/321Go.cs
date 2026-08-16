@@ -58,7 +58,7 @@ public class _321Go : CTmMlScriptIngame, IContext
             return; // generated as return, should act as continue, or just migrated to a method
         }
 
-        var time = GameTime - GetPlayer().RaceStartTime;
+        var time = GameTime - GetPlayer().RaceStartTime + 50;
         var animTime = time % 1000;
 
         if (animTime < 0)
