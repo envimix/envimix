@@ -25,7 +25,7 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnServerInit()
     {
-        ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
+        //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
 
         CreateServersideLayers();
         IndependantLaps = true;

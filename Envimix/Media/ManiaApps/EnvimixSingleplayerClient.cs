@@ -251,7 +251,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
     {
         var layer = UILayerCreate();
         layer.Type = layerType;
-        layer.ManialinkPage = TextLib.Replace(ReadFile(manialinkXml), toReplace, replaceWith);
+        layer.ManialinkPage = TextLib.Replace(manialinkXml, toReplace, replaceWith);
         return layer;
     }
 
@@ -263,12 +263,12 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
     public CUILayer CreateLayer(string layerName, CUILayer.EUILayerType layerType)
     {
         Log($"Creating layer {layerName}...");
-        return CreateLayer(layerType, $"Manialinks/Universe2/{layerName}.xml");
+        return CreateLayer(layerType, ReadFile($"Manialinks/Universe2/{layerName}.xml"));
     }
 
     public CUILayer CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
     {
         Log($"Creating layer {layerName}...");
-        return CreateLayer(layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
+        return CreateLayer(layerType, ReadFile($"Manialinks/Universe2/{layerName}.xml"), toReplace, replaceWith);
     }
 }

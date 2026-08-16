@@ -356,9 +356,11 @@ public class Envimix : UniverseModeBase
 
     public void CreateServersideLayers()
     {
+        UIManager.UIAll.OverlayHide321Go = true;
+
         Log(nameof(Envimix), "Creating manialinks...");
 
-        //CreateLayer("321Go", CUILayer.EUILayerType.Normal);
+        CreateLayer("321Go", CUILayer.EUILayerType.Normal);
         CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
         CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
         CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);

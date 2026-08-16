@@ -25,7 +25,7 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnServerInit()
     {
-        ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
+        //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
 
         CreateServersideLayers();
         CreateLayer("ScoreboardTeamAttack", CUILayer.EUILayerType.ScoresTable);
