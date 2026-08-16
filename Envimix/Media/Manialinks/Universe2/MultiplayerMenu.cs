@@ -476,6 +476,8 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     {
         var carName = DisplayedCars[VehicleIndex];
 
+        LabelSkinCar.Value = carName;
+
         ImmutableArray<string> sortedNames = new();
 
         if (Skins.ContainsKey(carName))
@@ -1670,7 +1672,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         if (car.Get() != PreviousCar)
         {
             SetSlidingText(FrameLabelCar, car.Get());
-            LabelSkinCar.Value = car.Get();
 
             PreviousCar = car.Get();
         }
