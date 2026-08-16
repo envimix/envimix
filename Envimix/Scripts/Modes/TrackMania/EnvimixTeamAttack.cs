@@ -8,7 +8,7 @@ public class EnvimixTeamAttack : Envimix
     public int TimeLimit = 900;
 
     [Setting(As = "Car select time")]
-    public int CarSelectTime = 10;
+    public int CarSelectTime = 5;
 
     [Setting(As = "Custom countdown")]
     public int CustomCountdown = -1;
@@ -32,6 +32,9 @@ public class EnvimixTeamAttack : Envimix
         IndependantLaps = true;
         ModeHelp = "OBJECTIVE: Two teams compare collective skill on different cars. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible under a time limit.";
         ModeStatusMessage = ModeHelp;
+
+        Users_SetNbFakeUsers(7, 4);
+
 
         UseClans = true;
         UseForcedClans = true;
@@ -171,7 +174,7 @@ public class EnvimixTeamAttack : Envimix
 
             TrySpawnEnvimixTeamAttackPlayer(player, frozen: false);
         }
-        }
+    }
 
     private bool TrySpawnEnvimixTeamAttackPlayer(CTmPlayer player, bool frozen)
     {
