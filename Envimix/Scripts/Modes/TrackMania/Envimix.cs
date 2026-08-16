@@ -2445,7 +2445,7 @@ public class Envimix : UniverseModeBase
 
                     if (poker is not null && target is not null && target.User.Login != poker.User.Login)
                     {
-                        NoticeMessage(UIManager.GetUI(target), $"$<{poker.User.Name}$> thinks you should try $ff0{suggestedCar}$g!");
+                        UIManager.GetUI(target).SendChat($"$<{poker.User.Name}$> thinks you should try $ff0{suggestedCar}$fff!");
                     }
                 }
                 break;
