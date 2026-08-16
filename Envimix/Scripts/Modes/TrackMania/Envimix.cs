@@ -444,6 +444,11 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    public override void OnMapInit()
+    {
+        UIManager.HoldLoadingScreen = true;
+    }
+
     public override void OnMapLoad()
     {
         UIManager.HoldLoadingScreen = false;
