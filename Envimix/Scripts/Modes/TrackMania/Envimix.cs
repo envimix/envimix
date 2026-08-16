@@ -345,13 +345,13 @@ public class Envimix : UniverseModeBase
     public void CreateLayer(string layerName, CUILayer.EUILayerType layerType)
     {
         Log(nameof(Envimix), "Creating layer " + layerName + "...");
-        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml");
+        CreateLayer(layerName, layerType, ReadFile($"Manialinks/Universe2/{layerName}.xml"));
     }
 
     public void CreateLayer(string layerName, CUILayer.EUILayerType layerType, string toReplace, string replaceWith)
     {
         Log(nameof(Envimix), "Creating layer " + layerName + "...");
-        CreateLayer(layerName, layerType, $"Manialinks/Universe2/{layerName}.xml", toReplace, replaceWith);
+        CreateLayer(layerName, layerType, ReadFile($"Manialinks/Universe2/{layerName}.xml"), toReplace, replaceWith);
     }
 
     public void CreateServersideLayers()

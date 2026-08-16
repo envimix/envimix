@@ -299,7 +299,7 @@ public class UniverseModeBase : CTmMode, IContext
 
         var layer = UIManager.UILayerCreate();
         layer.Type = layerType;
-        layer.ManialinkPage = TextLib.Replace(ReadFile(manialinkXml), toReplace, replaceWith);
+        layer.ManialinkPage = TextLib.Replace(manialinkXml, toReplace, replaceWith);
         Layers[layerName] = layer;
         UIManager.UIAll.UILayers.Add(layer);
     }
