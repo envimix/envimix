@@ -44,7 +44,7 @@
         <quad id="QuadTeam" pos="1 0" z-index="0" size="1 4.5" bgcolor="F00" valign="center" opacity=".7" />
         <label id="LabelRank" pos="6 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center"  textsize="2"/>
         <label id="LabelScore" pos="10 -0.3" z-index="0" size="28 5" text="-:--.---" valign="center2" textfont="RajdhaniMono"  textsize="2"/>
-        <label id="LabelPlayerName" scriptevents="1" style="TextCardRaceRank" pos="28 -0.4" z-index="0" size="27 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2"/>
+        <label id="LabelPlayerName" scriptevents="1" style="TextCardRaceRank" pos="28 -0.4" z-index="0" size="60 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2"/>
     </framemodel>
     <quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
     <frame z-index="500">
@@ -119,7 +119,7 @@
             <label id="LabelLeaderboardCar" pos="0 35" z-index="0" size="30 5" text="StadiumCar" valign="center" textfont="RajdhaniMono" textsize="3" translate="1" halign="center"/>
             <quad id="QuadLeaderboardPrevCar" pos="-20 34.5" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" scriptevents="1"/>
             <quad id="QuadLeaderboardNextCar" pos="20 34.5" z-index="0" size="8 8" halign="center" valign="center" style="UIConstruction_Buttons" substyle="Quit" rot="180" scriptevents="1"/>
-            <frame id="FrameOuterRecords" pos="-27 27" clip="1" clipposn="27 -27.5" clipsizen="54 60" scroll="1" scrollgrid="0 5" scrollmax="0 0">
+            <frame id="FrameOuterRecords" pos="-27 27" clip="1" clipposn="25.5 -27.5" clipsizen="50 60" scroll="1" scrollgrid="0 5" scrollmax="0 0">
                 <frame id="FrameRecords">
                     <frameinstance modelid="FramemodelRecord" />
                     <frameinstance modelid="FramemodelRecord" pos="0 -5" />
