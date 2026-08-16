@@ -123,6 +123,7 @@ public class EnvimixSolo : Envimix
     public const string DisabledCarMessage = "Default car is disabled until completing a different car.";
 
     public bool EnqueuedRespawn;
+    public string EnqueuedRespawnCar = "";
 
     public override void OnServerInit()
     {
@@ -566,6 +567,8 @@ public class EnvimixSolo : Envimix
         {
             EnqueuedRespawn = false;
             var player = GetPlayer();
+            // Net_Car must only change together with the respawn, otherwise it would desync from the actual car model
+            SetValidClientCar(player, EnqueuedRespawnCar);
             var car = Netwrite<string>.For(player);
             var frozen = false;
             var spawned = SpawnEnvimixSoloPlayer(player, car.Get(), frozen);
@@ -700,9 +703,6 @@ public class EnvimixSolo : Envimix
                 {
                     var carName = e.CustomEventData[0];
                     var player = GetPlayer(e.UI);
-                    SetValidClientCar(player, carName);
-
-                    var car = Netwrite<string>.For(player);
 
                     if (e.CustomEventData.Count > 1)
                     {
@@ -710,10 +710,16 @@ public class EnvimixSolo : Envimix
 
                         if (OnlineGhostsTasks.Count > 0)
                         {
+                            // Defer Net_Car together with the respawn, otherwise the player would keep
+                            // driving the old model while Net_Car already reports the newly picked car
+                            EnqueuedRespawnCar = carName;
                             EnqueuedRespawn = true;
                         }
                         else if (respawn)
                         {
+                            SetValidClientCar(player, carName);
+
+                            var car = Netwrite<string>.For(player);
                             var frozen = e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
                             var spawned = SpawnEnvimixSoloPlayer(player, car.Get(), frozen);
                         }
