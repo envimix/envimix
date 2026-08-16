@@ -523,6 +523,14 @@ public class Envimix : UniverseModeBase
         CheckUserInfoRequests();
     }
 
+    public override void WhileSynchro()
+    {
+        CheckEnvimaniaSession();
+        CheckMapInfoUnauthorized();
+        CheckRatings();
+        CheckUserInfoRequests();
+    }
+
     public override void OnLoop()
     {
         CheckEnvimaniaSession();

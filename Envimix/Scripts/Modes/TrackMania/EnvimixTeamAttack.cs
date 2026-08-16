@@ -88,36 +88,8 @@ public class EnvimixTeamAttack : Envimix
         SetLaps(); // Define independent laps or forced amount of laps
 
         PrespawnEnvimixPlayers();
-    }
 
-    public override void OnMapIntroStart()
-    {
-        foreach (var player in Players)
-        {
-            NoticeMessage(UIManager.GetUI(player), "You will be able to switch the car after the intro ends for everyone.");
-        }
-    }
-
-    public override void OnMapIntroEnd()
-    {
-        // Reset notice message for everyone
-        foreach (var player in Players)
-        {
-            NoticeMessage(UIManager.GetUI(player), "");
-        }
-    }
-
-    public override void WhileMapIntro()
-    {
-        foreach (var e in UIManager.PendingEvents)
-        {
-            ProcessGeneralEnvimixEvents(e);
-        }
-    }
-
-    public override void OnGameStart()
-    {
-        // Period to select a starting car once the map is fully loaded
+        // Period to select a starting car
         CarSelectionMode = true;
         TeamSelectionMode = true;
 
@@ -125,62 +97,27 @@ public class EnvimixTeamAttack : Envimix
         {
             NoticeMessage(UIManager.GetUI(player), "$ff0Select your starting car!$g\nYou will be able to change it anytime later.");
         }
+    }
 
+    public override void WhileMapIntro()
+    {
+        ProcessUiEvents();
+    }
+
+    public override void WhileSynchro()
+    {
+        ProcessUiEvents();
+    }
+
+    public override void OnGameStart()
+    {
         // Set the countdown
         CutOffTimeLimit = Now + CarSelectTime * 1000;
-
-        // Might be after car select time instead
-        OpenNewLadder();
 
         // Loop during the countdown
         while (CutOffTimeLimit - Now > 0 && !TerminatedMatch())
         {
-            foreach (var e in UIManager.PendingEvents)
-            {
-                switch (e.Type)
-                {
-                    case CUIConfigEvent.EType.OnLayerCustomEvent:
-                        ProcessGeneralEnvimixEvents(e);
-                        ProcessUpdateSkinEvent(e);
-                        ProcessUpdateCarEvent(e, forceFreeze: true);
-        
-                        switch (e.CustomEventType)
-                        {
-                            case "JoinTeam":
-                                var team = TextLib.ToInteger(e.CustomEventData[0]);
-
-                                if (team == 1 || team == 2)
-                                {
-                                    Dictionary<int, int> teamPlayerCounts = new()
-                                    {
-                                        { 1, 0 },
-                                        { 2, 0 }
-                                    };
-
-                                    foreach (var score in Scores)
-                                    {
-                                        if (teamPlayerCounts.ContainsKey(score.TeamNum))
-                                        {
-                                            teamPlayerCounts[score.TeamNum] += 1;
-                                        }
-                                    }
-
-                                    foreach (var (t, count) in teamPlayerCounts)
-                                    {
-                                        if (teamPlayerCounts[team] < count)
-                                        {
-                                            ChangePlayerClan(GetPlayer(e.UI), team);
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                break;
-                        }
-                        break;
-                }
-                //+++OnUIChatEvent+++
-            }
+            ProcessUiEvents();
 
             foreach (var e in PendingEvents)
             {
@@ -208,6 +145,8 @@ public class EnvimixTeamAttack : Envimix
 
         CarSelectionMode = false;
         TeamSelectionMode = false;
+
+        OpenNewLadder();
 
         foreach (var player in Players)
         {
@@ -453,5 +392,55 @@ public class EnvimixTeamAttack : Envimix
         SetPlayerClan(player, clan);
         var car = Netwrite<string>.For(player);
         SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen: true);
+    }
+
+    private void ProcessUiEvents()
+    {
+        foreach (var e in UIManager.PendingEvents)
+        {
+            switch (e.Type)
+            {
+                case CUIConfigEvent.EType.OnLayerCustomEvent:
+                    ProcessGeneralEnvimixEvents(e);
+                    ProcessUpdateSkinEvent(e);
+                    ProcessUpdateCarEvent(e, forceFreeze: true);
+
+                    switch (e.CustomEventType)
+                    {
+                        case "JoinTeam":
+                            var team = TextLib.ToInteger(e.CustomEventData[0]);
+
+                            if (team == 1 || team == 2)
+                            {
+                                Dictionary<int, int> teamPlayerCounts = new()
+                                    {
+                                        { 1, 0 },
+                                        { 2, 0 }
+                                    };
+
+                                foreach (var score in Scores)
+                                {
+                                    if (teamPlayerCounts.ContainsKey(score.TeamNum))
+                                    {
+                                        teamPlayerCounts[score.TeamNum] += 1;
+                                    }
+                                }
+
+                                foreach (var (t, count) in teamPlayerCounts)
+                                {
+                                    if (teamPlayerCounts[team] < count)
+                                    {
+                                        ChangePlayerClan(GetPlayer(e.UI), team);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            break;
+                    }
+                    break;
+            }
+            //+++OnUIChatEvent+++
+        }
     }
 }

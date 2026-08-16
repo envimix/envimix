@@ -82,8 +82,15 @@ public class UniverseModeBase : CTmMode, IContext
     public virtual void BeforeMapStart()
     {
         var barrier = Synchro_AddBarrier();
-        Wait(() => Synchro_BarrierReached(barrier) || ServerShutdownRequested);
+
+        while (!Synchro_BarrierReached(barrier) && !ServerShutdownRequested)
+        {
+            WhileSynchro();
+            Yield();
+        }
     }
+
+    public virtual void WhileSynchro() { }
 
     public virtual void OnMapStart() { }
     public virtual void OnWarmUpStart() { }
