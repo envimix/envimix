@@ -114,6 +114,17 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
         return $"{car}_{gravity.Get()}_Time";
     }
 
+    Dictionary<string, string> GetPlayerCars()
+    {
+        Dictionary<string, string> playerCars = new();
+        foreach (var player in Players)
+        {
+            var car = Netread<string>.For(player);
+            playerCars[player.User.Login] = car.Get();
+        }
+        return playerCars;
+    }
+
     public void Loop()
     {
         var car = Netread<string>.For(GetPlayer());
@@ -121,13 +132,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
         var playersOfThisCar = GetPlayersOf(car.Get());
         var myLogin = GetPlayer().User.Login;
 
-        Dictionary<string, string> playerCars = new();
-
-        foreach (var player in Players)
-        {
-            var playerCar = Netread<string>.For(player);
-            playerCars[player.User.Login] = playerCar.Get();
-        }
+        var playerCars = GetPlayerCars();
 
         // Switching car resolves the "stuck" state, so any pending poke cooldown for it no longer applies
         foreach (var (login, currentCar) in playerCars)
