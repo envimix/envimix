@@ -2471,9 +2471,21 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
-    /// <summary>
-    /// Re-validates the poke request server-side, mirroring the conditions LiveRankingsCar2 uses to show the poke button, since a client could otherwise send an arbitrary "Poke" event.
-    /// </summary>
+    public int GetPokeFinishThreshold()
+    {
+        if (!MapIsLapRace)
+        {
+            return 3;
+        }
+
+        if (IndependantLaps)
+        {
+            return 4;
+        }
+
+        return 2;
+    }
+
     private bool TryPoke(CTmPlayer? poker, CTmPlayer? target, string suggestedCar)
     {
         if (poker is null || target is null || target.User.Login == poker.User.Login)
@@ -2503,7 +2515,7 @@ public class Envimix : UniverseModeBase
 
         var envimixCarFinishCounts = Netwrite<Dictionary<string, int>>.For(target.Score);
 
-        if (!envimixCarFinishCounts.Get().ContainsKey(targetCar.Get()) || envimixCarFinishCounts.Get()[targetCar.Get()] < 3)
+        if (!envimixCarFinishCounts.Get().ContainsKey(targetCar.Get()) || envimixCarFinishCounts.Get()[targetCar.Get()] < GetPokeFinishThreshold())
         {
             return false;
         }

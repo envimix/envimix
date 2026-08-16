@@ -63,6 +63,21 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
         return !IsInGameMenuDisplayed && GUIPlayer is not null;
     }
 
+    int GetPokeFinishThreshold()
+    {
+        if (!MapIsLapRace)
+        {
+            return 3;
+        }
+
+        if (IndependantLaps)
+        {
+            return 4;
+        }
+
+        return 2;
+    }
+
     public void Main()
     {
         FrameLiveRankingsCar.Visible = IsVisible();
@@ -261,7 +276,7 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
                 {
                     var envimixCarFinishCounts = Netread<Dictionary<string, int>>.For(Scores[scoreIndex]);
 
-                    if (envimixCarFinishCounts.Get().ContainsKey(otherCar) && envimixCarFinishCounts.Get()[otherCar] >= 3)
+                    if (envimixCarFinishCounts.Get().ContainsKey(otherCar) && envimixCarFinishCounts.Get()[otherCar] >= GetPokeFinishThreshold())
                     {
                         showPoke = true;
                     }
