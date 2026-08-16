@@ -223,6 +223,11 @@ public class EnvimixSolo : Envimix
         {
             foreach (var player in PlayersWaiting)
             {
+                if (IsWaitingDueToDisabledDefaultCar(player))
+                {
+                    continue;
+                }
+
                 TrySpawnEnvimixSoloPlayer(player, frozen: false);
             }
         }
@@ -688,6 +693,8 @@ public class EnvimixSolo : Envimix
         {
             spawned = SpawnEnvimixPlayer(player, car, Now + CustomCountdown);
         }
+
+        UpdateDisabledCarNotice(player, DisabledCarMessage);
 
         SpawnPersonalGhost(player);
 

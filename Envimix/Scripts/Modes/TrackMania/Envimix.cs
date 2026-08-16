@@ -1660,7 +1660,10 @@ public class Envimix : UniverseModeBase
 
         SpawnPlayer(player, player.CurrentClan, rst);
 
-        if (raceStartTime == -2)
+        // Disabled default car keeps the same staggered future RaceStartTime as the frozen queue, so the client still treats it as "not started yet" instead of an already-started race
+        var isDisabledDefaultCar = (!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[carName] == GetDefaultCar();
+
+        if (raceStartTime == -2 || isDisabledDefaultCar)
         {
             if (CutOffTimeLimit < 0)
             {
@@ -1671,11 +1674,6 @@ public class Envimix : UniverseModeBase
                 player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(carName) * 3000 + 3000;
             }
 
-            spawned = false;
-        }
-        else if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[carName] == GetDefaultCar())
-        {
-            player.RaceStartTime = -1;
             spawned = false;
         }
 
@@ -1747,6 +1745,29 @@ public class Envimix : UniverseModeBase
         SetValidClientCar(player, clientCar.Get());
     }
 
+    public const string DefaultDisabledCarMessage = "Default car is currently disabled.";
+
+    /// <summary>
+    /// Shows/clears the disabled-default-car notice for the player's currently selected car; must be called after every respawn attempt, not just TrySpawnEnvimixPlayer.
+    /// </summary>
+    public void UpdateDisabledCarNotice(CTmPlayer player, string disabledCarMessage)
+    {
+        var car = Netwrite<string>.For(player);
+
+        if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[car.Get()] == GetDefaultCar())
+        {
+            NoticeMessage(UIManager.GetUI(player), $"{disabledCarMessage}\n$ff0Please select another car.");
+        }
+        else if (CarSelectionMode)
+        {
+            NoticeMessage(UIManager.GetUI(player), $"You have selected $ff0{car.Get()}$g!\nPlease wait before the game starts.");
+        }
+        else
+        {
+            NoticeMessage(UIManager.GetUI(player), "");
+        }
+    }
+
     public bool TrySpawnEnvimixPlayer(CTmPlayer player, int raceStartTime, string disabledCarMessage)
     {
         if (player is null)
@@ -1765,25 +1786,14 @@ public class Envimix : UniverseModeBase
             Log(nameof(Envimix), $"{player.User.Name} spawned");
         }*/
 
-        if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[car.Get()] == GetDefaultCar())
-        {
-            NoticeMessage(UIManager.GetUI(player), $"{disabledCarMessage}\n$ff0Please select another car.");
-        }
-        else if (CarSelectionMode)
-        {
-            NoticeMessage(UIManager.GetUI(player), $"You have selected $ff0{car.Get()}$g!\nPlease wait before the game starts.");
-        }
-        else
-        {
-            NoticeMessage(UIManager.GetUI(player), "");
-        }
+        UpdateDisabledCarNotice(player, disabledCarMessage);
 
         return spawned;
     }
 
     public bool TrySpawnEnvimixPlayer(CTmPlayer player, int raceStartTime)
     {
-        return TrySpawnEnvimixPlayer(player, raceStartTime, "Default car is currently disabled.");
+        return TrySpawnEnvimixPlayer(player, raceStartTime, DefaultDisabledCarMessage);
     }
 
     public bool TrySpawnEnvimixPlayer(CTmPlayer player, bool frozen, string disabledCarMessage)
@@ -2086,20 +2096,47 @@ public class Envimix : UniverseModeBase
 
     private void UpdateDefaultCarAvailability()
     {
-        if (EnableDefaultCar || OverrideEnableDefaultCar)
-        {
-            return;
-        }
+        var disabled = !EnableDefaultCar && !OverrideEnableDefaultCar;
 
+        // SpawnPlayer already ran for these players even while parked/frozen, so they live in Players, not PlayersWaiting
         foreach (var player in Players)
         {
             var car = Netwrite<string>.For(player);
 
-            if (ItemCars[car.Get()] == GetDefaultCar())
+            if (ItemCars[car.Get()] != GetDefaultCar())
             {
-                player.RaceStartTime = -1;
+                continue;
             }
+
+            if (disabled)
+            {
+                if (CutOffTimeLimit < 0)
+                {
+                    player.RaceStartTime = Now + 9999999 + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
+                }
+                else
+                {
+                    player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
+                }
+            }
+            else if (player.RaceStartTime > Now)
+            {
+                // Still parked from being disabled earlier, respawn properly now that the default car is allowed again
+                SpawnEnvimixPlayer(player, car.Get(), frozen: CarSelectionMode);
+            }
+
+            UpdateDisabledCarNotice(player, DefaultDisabledCarMessage);
         }
+    }
+
+    public bool IsWaitingDueToDisabledDefaultCar(CTmPlayer player)
+    {
+        var car = Netwrite<string>.For(player);
+
+        return player.RaceStartTime > Now
+            && (!EnableDefaultCar && !OverrideEnableDefaultCar)
+            && ItemCars.ContainsKey(car.Get())
+            && ItemCars[car.Get()] == GetDefaultCar();
     }
 
     public void PrespawnEnvimixPlayers()

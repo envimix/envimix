@@ -209,28 +209,39 @@ public class EnvimixTimeAttack : Envimix
 
     public bool SpawnEnvimixTimeAttackPlayer(CTmPlayer player, string car, bool frozen)
     {
+        bool spawned;
+
         if (frozen)
         {
-            return SpawnEnvimixPlayer(player, car, frozen);
+            spawned = SpawnEnvimixPlayer(player, car, frozen);
         }
-
-        if (CutOffTimeLimit - Now >= TimeLimit * 1000)
+        else if (CutOffTimeLimit - Now >= TimeLimit * 1000)
         {
-            return SpawnEnvimixPlayer(player, car, CutOffTimeLimit - TimeLimit * 1000);
+            spawned = SpawnEnvimixPlayer(player, car, CutOffTimeLimit - TimeLimit * 1000);
         }
-
-        if (CustomCountdown < 0)
+        else if (CustomCountdown < 0)
         {
-            return SpawnEnvimixPlayer(player, car, -1);
+            spawned = SpawnEnvimixPlayer(player, car, -1);
+        }
+        else
+        {
+            spawned = SpawnEnvimixPlayer(player, car, Now + CustomCountdown);
         }
 
-        return SpawnEnvimixPlayer(player, car, Now + CustomCountdown);
+        UpdateDisabledCarNotice(player, "Default car is currently disabled.");
+
+        return spawned;
     }
 
     public void RespawnAllWaiting()
     {
         foreach (var player in PlayersWaiting)
         {
+            if (IsWaitingDueToDisabledDefaultCar(player))
+            {
+                continue;
+            }
+
             // In game loop and in time attack, this means when full respawn
             TrySpawnEnvimixTimeAttackPlayer(player, frozen: false);
         }
