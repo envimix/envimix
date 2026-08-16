@@ -83,6 +83,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameYourRecord;
     [ManialinkControl] public required CMlQuad QuadRecordsScrollable;
     [ManialinkControl] public required CMlQuad QuadRecordsScrollbar;
+    [ManialinkControl] public required CMlFrame FrameScoreboard;
 
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
@@ -1267,6 +1268,8 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     public void Loop()
     {
         ScoreTableIsVisible = PageIsVisible;
+
+        FrameScoreboard.Visible = !IsInGameMenuDisplayed;
 
         if (PageIsVisible != PrevScoreTableIsVisible)
         {

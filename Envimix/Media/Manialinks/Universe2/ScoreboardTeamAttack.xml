@@ -47,7 +47,7 @@
         <label id="LabelPlayerName" scriptevents="1" style="TextCardRaceRank" pos="28 -0.4" z-index="0" size="60 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2"/>
     </framemodel>
     <quad id="QuadBlur" z-index="-1" size="320 180" halign="center" valign="center" style="Bgs1" substyle="BgDialogBlur" hidden="0"/>
-    <frame z-index="500">
+    <frame id="FrameScoreboard" z-index="500">
         <frame pos="0 47.5">
             <quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center" />
             <label id="LabelYourName" pos="-92.5 0.3" z-index="0" size="45 6" text="$aaa[unknown]" textsize="3" textfont="RajdhaniMono" valign="center" />
