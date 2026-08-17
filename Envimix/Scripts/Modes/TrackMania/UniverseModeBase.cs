@@ -25,7 +25,7 @@ public class UniverseModeBase : CTmMode, IContext
     public ImmutableArray<int> MapQueue;
     public int WarmUpStartTime = -1;
     public bool IsWarmUp = false;
-    public int PodiumStartTime = -1;
+    [Netwrite] public int PodiumStartTime { get; set; }
 
     public required Dictionary<string, CUILayer> Layers;
 
