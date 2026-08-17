@@ -105,7 +105,7 @@ public class EnvimixSingleplayerClient : CManiaAppPlayground, IContext
         Log("Creating manialinks...");
         
         Layer321Go = CreateLayer("321Go", CUILayer.EUILayerType.Normal);
-        LayerDashboard = CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
+        LayerDashboard = CreateLayer("Dashboard2", CUILayer.EUILayerType.Normal);
         LayerMap = CreateLayer("Map", CUILayer.EUILayerType.Normal);
         CreateLayer("Checkpoint2", CUILayer.EUILayerType.Normal);
         CreateLayer("Notice", CUILayer.EUILayerType.Normal);

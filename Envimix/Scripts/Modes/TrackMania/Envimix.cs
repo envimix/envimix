@@ -363,7 +363,7 @@ public class Envimix : UniverseModeBase
         Log(nameof(Envimix), "Creating manialinks...");
 
         CreateLayer("321Go", CUILayer.EUILayerType.Normal);
-        CreateLayer("Dashboard", CUILayer.EUILayerType.Normal);
+        CreateLayer("Dashboard2", CUILayer.EUILayerType.Normal);
         CreateLayer("PrePostLoading", CUILayer.EUILayerType.Normal);
         CreateLayer("TimeLimit", CUILayer.EUILayerType.Normal);
         CreateLayer("LiveRankingsCar2", CUILayer.EUILayerType.Normal);
