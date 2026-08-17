@@ -249,6 +249,10 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
         {
             LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o?";
         }
+        else if (GetPlayer().Distance >= 1000)
+        {
+            LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o{TextLib.FormatReal(GetPlayer().Distance / 1000f, 2, false, false)}$tkm";
+        }
         else
         {
             LabelDistance.Value = $"{TextLib.GetTranslatedText("Distance")}: $o{TextLib.FormatReal(GetPlayer().Distance, 2, false, false)}$tm";
@@ -334,6 +338,8 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
         {
             playerCheckpointCount %= mapCheckpointCount + 1;
         }
+
+        playerCheckpointCount = MathLib.Min(playerCheckpointCount, mapCheckpointCount);
 
         if (mapCheckpointCount == 0)
         {
