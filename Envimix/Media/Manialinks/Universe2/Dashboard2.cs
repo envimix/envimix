@@ -43,6 +43,8 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
     public int RaceTime;
     public int RaceTimeSnapshot;
     public int RespawnAt;
+    public int PrevBestTime = -1;
+    public bool IsFirstFinish;
 
     static string TimeToTextWithMilli(int time)
     {
@@ -77,6 +79,7 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
                         RaceTime = 0;
                         RespawnAt = GameTime;
                     }
+                    IsFirstFinish = false;
                     break;
             }
         };
@@ -212,6 +215,15 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
         LabelSpeed.RelativeScale = rpmRatio * 0.2f + 0.9f;
         GaugeRPM.Ratio = rpmRatio;
         GaugeRPM.RelativeScale = GetPlayer().EngineTurboRatio * 0.15f + 1;
+
+        if (GetPlayer().Score.BestRace.Time != PrevBestTime)
+        {
+            if (PrevBestTime == -1)
+            {
+                IsFirstFinish = !IndependantLaps;
+            }
+            PrevBestTime = GetPlayer().Score.BestRace.Time;
+        }
 
         UpdateDistance();
         UpdateGear();
@@ -409,7 +421,7 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
             latestCheckpoint = GetPlayer().CurLap.Checkpoints[lastIndex];
         }
 
-        if (GetPlayer().Score.BestRace.Checkpoints.Count == 0)
+        if (IsFirstFinish || GetPlayer().Score.BestRace.Checkpoints.Count == 0)
         {
             LabelCP.Value = TimeToTextWithMilli(latestCheckpoint);
             QuadCP.Visible = false;
