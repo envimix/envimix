@@ -483,7 +483,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             }
             else
             {
-                ladderPointsDiff = score.User.LadderPoints - score.User.LadderPoints;
+                ladderPointsDiff = 0;
             }
 
             var diffText = TextLib.FormatReal(ladderPointsDiff, 1, _HideZeroes: false, _HideDot: false);
@@ -1378,7 +1378,20 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
         if (LocalPodiumStartTime != -1 && UI.ScoreTableVisibility != CUIConfig.EVisibility.ForcedVisible)
         {
+            foreach (var score in Scores)
+            {
+                PreviousUserLadderPoints[score.User.Login] = score.User.LadderPoints;
+            }
+
             LocalPodiumStartTime = -1;
+        }
+
+        foreach (var score in Scores)
+        {
+            if (!PreviousUserLadderPoints.ContainsKey(score.User.Login))
+            {
+                PreviousUserLadderPoints[score.User.Login] = score.User.LadderPoints;
+            }
         }
 
         UpdateLadderPoints();
