@@ -68,7 +68,7 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
                     }
                     break;
                 case CTmRaceClientEvent.EType.Respawn:
-                    if (e.Player == GetPlayer() && RaceTime > 0)
+                    if (e.Player == GetPlayer() && RaceTime > 0 && e.Player.CurRace.Time == -1)
                     {
                         for (var i = 0; i < 6; i++)
                         {
