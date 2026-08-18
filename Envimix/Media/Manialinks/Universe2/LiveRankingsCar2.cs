@@ -253,7 +253,8 @@ public class LiveRankingsCar2 : CTmMlScriptIngame, IContext
             var quadPoke = (framePoke.GetFirstChild("QuadPoke") as CMlQuad)!;
 
             labelNickname.Value = Scores[scoreIndex].User.Name;
-
+            
+            quadTeam.Visible = UseClans;
             quadTeam.BgColor = Teams[Scores[scoreIndex].TeamNum - 1].ColorPrimary;
 
             if (car.Get() != "" && playersOfThisCar.ContainsKey(login))
