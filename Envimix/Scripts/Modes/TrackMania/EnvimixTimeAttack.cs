@@ -328,15 +328,14 @@ public class EnvimixTimeAttack : Envimix
         {
             score.LadderRankSortValue = -1 - score.Points;
             score.LadderMatchScoreValue = score.Points * 1f;
-
-            // log spam to understand the behaviour
-            foreach (var s in Scores)
-            {
-                Log(nameof(EnvimixTeamAttack), $"Ladder: {s.User.Login} {s.LadderMatchScoreValue} {s.LadderRankSortValue} {s.User.ReferenceScore}");
-            }
         }
 
         CloseLadder();
+    }
+
+    public override void OnPodiumStart()
+    {
+        UIManager.UIAll.UISequence = CUIConfig.EUISequence.None;
     }
 
     public override void OnPodiumLoop()
@@ -370,24 +369,16 @@ public class EnvimixTimeAttack : Envimix
 
                     var car = Netwrite<string>.For(player);
 
-                    if (e.CustomEventData.Count > 1)
+                    AutoRespawn.Remove(player.User.Login);
+
+                    var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
+                    var spawned = SpawnEnvimixTimeAttackPlayer(player, car.Get(), frozen);
+
+                    var isMenuEscape = e.CustomEventData.Count > 3 && e.CustomEventData[3] == "True";
+
+                    if (spawned || isMenuEscape)
                     {
-                        var respawn = e.CustomEventData[1] == "True";
-
-                        if (respawn)
-                        {
-                            AutoRespawn.Remove(player.User.Login);
-
-                            var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
-                            var spawned = SpawnEnvimixTimeAttackPlayer(player, car.Get(), frozen);
-
-                            var isMenuEscape = e.CustomEventData.Count > 3 && e.CustomEventData[3] == "True";
-
-                            if (spawned || isMenuEscape)
-                            {
-                                RequestEnvimaniaRecords(carName, MathLib.NearestInteger(player.GravityCoef * 10) - 10, GetLaps());
-                            }
-                        }
+                        RequestEnvimaniaRecords(carName, MathLib.NearestInteger(player.GravityCoef * 10) - 10, GetLaps());
                     }
                 }
                 break;
