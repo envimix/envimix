@@ -33,9 +33,6 @@ public class EnvimixTeamAttack : Envimix
         ModeHelp = "OBJECTIVE: Two teams compare collective skill on different cars. Pick any car at any time. Receive points by finishing the track as fast as possible with the most amount of cars possible under a time limit.";
         ModeStatusMessage = ModeHelp;
 
-        Users_SetNbFakeUsers(7, 4);
-
-
         UseClans = true;
         UseForcedClans = true;
         Teams[0].Name = "Team Red";
