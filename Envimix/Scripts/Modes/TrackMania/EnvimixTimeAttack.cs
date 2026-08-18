@@ -5,10 +5,10 @@ namespace Envimix.Scripts.Modes.TrackMania;
 public class EnvimixTimeAttack : Envimix
 {
     [Setting(As = "Time limit")]
-    public int TimeLimit = 600;
+    public int TimeLimit = 900;
 
     [Setting(As = "Car select time")]
-    public int CarSelectTime = 10;
+    public int CarSelectTime = 5;
 
     [Setting(As = "Custom countdown")]
     public int CustomCountdown = -1;
@@ -16,7 +16,7 @@ public class EnvimixTimeAttack : Envimix
     [Setting(As = "Auto-respawn time")]
     public int AutoRespawnTime = 6;
 
-    [Setting(As = "Clear scores on map end (WIP)")]
+    [Setting(As = "<hidden>")]
     public bool ClearScoresOnMapEnd = false;
 
     public required Dictionary<string, int> AutoRespawn;

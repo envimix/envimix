@@ -20,6 +20,9 @@ public class UniverseModeBase : CTmMode, IContext
     [Setting(As = "Enable map intro")]
     public bool EnableMapIntro = false;
 
+    [Setting(As = "<hidden>")]
+    public bool IsChannelServer = false;
+
     public bool Reload = true;
     public bool Terminate = false;
     public ImmutableArray<int> MapQueue;

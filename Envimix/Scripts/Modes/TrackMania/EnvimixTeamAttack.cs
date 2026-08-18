@@ -16,7 +16,7 @@ public class EnvimixTeamAttack : Envimix
     [Setting(As = "Auto-respawn time")]
     public int AutoRespawnTime = 6;
 
-    [Setting(As = "Clear scores on map end (WIP)")]
+    [Setting(As = "<hidden>")]
     public bool ClearScoresOnMapEnd = false;
 
     public required Dictionary<string, int> AutoRespawn;
@@ -49,6 +49,14 @@ public class EnvimixTeamAttack : Envimix
         else
         {
             RespawnBehaviour = CTmMode.ETMRespawnBehaviour.AlwaysGiveUp;
+        }
+    }
+
+    public override void OnServerStart()
+    {
+        if (IsChannelServer)
+        {
+            Ladder_SetResultsVersion(1);
         }
     }
 
