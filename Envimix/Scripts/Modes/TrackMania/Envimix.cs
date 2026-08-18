@@ -2091,7 +2091,12 @@ public class Envimix : UniverseModeBase
     public void PrespawnPlayer(CTmPlayer player)
     {
         var car = Netwrite<string>.For(player);
-        car.Set(ItemCars.KeyOf(MapPlayerModelName));
+
+        // Only fall back to the default car if none was picked yet, otherwise re-prespawning would wipe the player's selection
+        if (car.Get() == "")
+        {
+            car.Set(ItemCars.KeyOf(MapPlayerModelName));
+        }
 
         SpawnEnvimixPlayer(player, car.Get(), frozen: true);
     }
