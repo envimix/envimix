@@ -384,77 +384,57 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
 
     private void UpdateCheckpoint()
     {
+        int currentCount;
         if (IndependantLaps)
         {
-            if (GetPlayer().CurLap.Checkpoints.Count == 0)
-            {
-                LabelCP.Value = "-:--.---";
-                QuadCP.Visible = false;
-            }
-            else if (GetPlayer().Score.BestRace.Checkpoints.Count == 0)
-            {
-                LabelCP.Value = TimeToTextWithMilli(GetPlayer().CurLap.Checkpoints[GetPlayer().CurLap.Checkpoints.Count - 1]);
-                QuadCP.Visible = false;
-            }
-            else
-            {
-                var latestCheckpoint = GetPlayer().CurLap.Checkpoints[GetPlayer().CurLap.Checkpoints.Count - 1];
-                var difference = latestCheckpoint - GetPlayer().Score.BestRace.Checkpoints[GetPlayer().CurLap.Checkpoints.Count - 1];
-
-                if (difference > 0)
-                {
-                    LabelCP.SetText($"+{TimeToTextWithMilli(difference)}");
-                    QuadCP.Colorize = new Vec3(1, 0.1, 0);
-                }
-                else if (difference < 0)
-                {
-                    LabelCP.SetText(TimeToTextWithMilli(difference));
-                    QuadCP.Colorize = new Vec3(0, 0.1, 1);
-                }
-                else
-                {
-                    LabelCP.SetText(TimeToTextWithMilli(difference));
-                    QuadCP.Colorize = new Vec3(1, 0, 1);
-                }
-
-                QuadCP.Visible = true;
-            }
+            currentCount = GetPlayer().CurLap.Checkpoints.Count;
         }
         else
         {
-            if (GetPlayer().CurRace.Checkpoints.Count == 0)
-            {
-                LabelCP.Value = "-:--.---";
-                QuadCP.Visible = false;
-            }
-            else if (GetPlayer().Score.BestRace.Checkpoints.Count == 0)
-            {
-                LabelCP.Value = TimeToTextWithMilli(GetPlayer().CurRace.Checkpoints[GetPlayer().CurRace.Checkpoints.Count - 1]);
-                QuadCP.Visible = false;
-            }
-            else
-            {
-                var latestCheckpoint = GetPlayer().CurRace.Checkpoints[GetPlayer().CurRace.Checkpoints.Count - 1];
-                var difference = latestCheckpoint - GetPlayer().Score.BestRace.Checkpoints[GetPlayer().CurRace.Checkpoints.Count - 1];
-
-                if (difference > 0)
-                {
-                    LabelCP.SetText($"+{TimeToTextWithMilli(difference)}");
-                    QuadCP.Colorize = new Vec3(1, 0.1, 0);
-                }
-                else if (difference < 0)
-                {
-                    LabelCP.SetText(TimeToTextWithMilli(difference));
-                    QuadCP.Colorize = new Vec3(0, 0.1, 1);
-                }
-                else
-                {
-                    LabelCP.SetText(TimeToTextWithMilli(difference));
-                    QuadCP.Colorize = new Vec3(1, 0, 1);
-                }
-
-                QuadCP.Visible = true;
-            }
+            currentCount = GetPlayer().CurRace.Checkpoints.Count;
         }
+
+        if (currentCount == 0)
+        {
+            LabelCP.Value = "-:--.---";
+            QuadCP.Visible = false;
+            return;
+        }
+
+        var lastIndex = currentCount - 1;
+
+        var latestCheckpoint = GetPlayer().CurRace.Checkpoints[lastIndex];
+        if (IndependantLaps)
+        {
+            latestCheckpoint = GetPlayer().CurLap.Checkpoints[lastIndex];
+        }
+
+        if (GetPlayer().Score.BestRace.Checkpoints.Count == 0)
+        {
+            LabelCP.Value = TimeToTextWithMilli(latestCheckpoint);
+            QuadCP.Visible = false;
+            return;
+        }
+
+        var bestCheckpoint = GetPlayer().Score.BestRace.Checkpoints[lastIndex];
+        var difference = latestCheckpoint - bestCheckpoint;
+
+        if (difference > 0)
+        {
+            LabelCP.SetText($"+{TimeToTextWithMilli(difference)}");
+            QuadCP.Colorize = new Vec3(1, 0.1, 0);
+        }
+        else if (difference < 0)
+        {
+            LabelCP.SetText(TimeToTextWithMilli(difference));
+            QuadCP.Colorize = new Vec3(0, 0.1, 1);
+        }
+        else
+        {
+            LabelCP.SetText(TimeToTextWithMilli(difference));
+            QuadCP.Colorize = new Vec3(1, 0, 1);
+        }
+
+        QuadCP.Visible = true;
     }
 }
