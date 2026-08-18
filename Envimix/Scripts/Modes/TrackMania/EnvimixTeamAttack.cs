@@ -324,6 +324,7 @@ public class EnvimixTeamAttack : Envimix
         foreach (var playerToAutoRespawn in autoRespawnToClean)
         {
             AutoRespawn.Remove(playerToAutoRespawn);
+            UIManager.GetUI(GetPlayer(playerToAutoRespawn)).ScoreTableVisibility = CUIConfig.EVisibility.None;
         }
     }
 
@@ -338,12 +339,14 @@ public class EnvimixTeamAttack : Envimix
                 if (e.IsEndRace && AutoRespawnTime > -1)
                 {
                     AutoRespawn[e.Player.User.Login] = Now;
+                    UIManager.GetUI(e.Player).ScoreTableVisibility = CUIConfig.EVisibility.ForcedVisible;
                 }
                 break;
             case CTmModeEvent.EType.GiveUp:
                 if (AutoRespawn.ContainsKey(e.Player.User.Login))
                 {
                     AutoRespawn.Remove(e.Player.User.Login);
+                    UIManager.GetUI(e.Player).ScoreTableVisibility = CUIConfig.EVisibility.None;
                 }
                 break;
         }
@@ -356,10 +359,17 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnGameLoop()
     {
-        // TODO: check why. because of switching to spec while having a notice message displayed?
         foreach (var spectator in Spectators)
         {
+            // TODO: check why. because of switching to spec while having a notice message displayed?
             NoticeMessage(UIManager.GetUI(spectator), "");
+
+            // spectators are removed from autorespawn mechanism immediately
+            if (AutoRespawn.ContainsKey(spectator.User.Login))
+            {
+                AutoRespawn.Remove(spectator.User.Login);
+                UIManager.GetUI(spectator).ScoreTableVisibility = CUIConfig.EVisibility.None;
+            }
         }
 
         RespawnAllWaiting();

@@ -984,19 +984,6 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         {
             return;
         }
-
-        switch (e.Type)
-        {
-            case CTmRaceClientEvent.EType.WayPoint:
-                if (e.IsEndRace)
-                {
-                    ClientUI.ScoreTableVisibility = CUIConfig.EVisibility.ForcedVisible;
-                }
-                break;
-            case CTmRaceClientEvent.EType.Respawn:
-                ClientUI.ScoreTableVisibility = CUIConfig.EVisibility.None;
-                break;
-        }
     }
 
     private void Scoreboard_MouseOver(CMlControl control, string controlId)
