@@ -188,7 +188,12 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
         }
         else
         {
-            if (GameTime - raceStartTime >= 0)
+            if (GetPlayer().RaceState == CTmMlPlayer.ERaceState.Finished)
+            {
+                RaceTime = GetPlayer().CurRace.Time;
+                LabelTime.SetText(TimeToTextWithMilli(RaceTime));
+            }
+            else if (GameTime - raceStartTime >= 0)
             {
                 RaceTime = MathLib.Max(0, GameTime - raceStartTime);
                 LabelTime.SetText(TimeToTextWithMilli(RaceTime));
