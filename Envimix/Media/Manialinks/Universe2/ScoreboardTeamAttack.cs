@@ -1446,11 +1446,11 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             }
             else if (elapsed >= 10000 && elapsed < 10200)
             {
-                scoreLabelScale = AnimLib.EaseOutQuad(elapsed - 10000, 0f, 0.8f, 200);
+                scoreLabelScale = AnimLib.EaseOutQuad(elapsed - 10000, 0f, 0.75f, 200);
             }
             else if (elapsed >= 10200)
             {
-                scoreLabelScale = 0.8f;
+                scoreLabelScale = 0.75f;
             }
         }
 
