@@ -2486,37 +2486,65 @@ public class Envimix : UniverseModeBase
         return 2;
     }
 
+    bool CheckSuggestedCar(CTmPlayer poker, string suggestedCar)
+    {
+        var car = Netwrite<string>.For(poker);
+        if (suggestedCar == "" || suggestedCar != car.Get() || !IsValidCar(suggestedCar))
+        {
+            Log(nameof(Envimix), $"Invalid poke attempt: suggestedCar is invalid: poker={poker.User.Login} (car={car.Get()}), suggestedCar={suggestedCar}");
+            return false;
+        }
+        return true;
+    }
+
+    bool CheckTargetCar(CTmPlayer target, string suggestedCar)
+    {
+        var car = Netwrite<string>.For(target);
+        if (car.Get() == "" || car.Get() == suggestedCar)
+        {
+            Log(nameof(Envimix), $"Invalid poke attempt: target's current car is invalid or already the suggested car: target={target.User.Login}, suggestedCar={suggestedCar}");
+            return false;
+        }
+        return true;
+    }
+
     private bool TryPoke(CTmPlayer? poker, CTmPlayer? target, string suggestedCar)
     {
-        if (poker is null || target is null || target.User.Login == poker.User.Login)
+        if (poker is null || target is null)
         {
+            Log(nameof(Envimix), $"Invalid poke attempt: poker or target are null, suggestedCar={suggestedCar}");
+            return false;
+        }
+
+        if (target.User.Login == poker.User.Login)
+        {
+            Log(nameof(Envimix), $"Invalid poke attempt: poker={poker.User.Login}, target={target.User.Login}, suggestedCar={suggestedCar}");
             return false;
         }
 
         if (poker.Score.TeamNum != target.Score.TeamNum)
         {
+            Log(nameof(Envimix), $"Invalid poke attempt: poker and target are not on the same team: poker={poker.User.Login} ({poker.Score.TeamNum}), target={target.User.Login} ({target.Score.TeamNum})");
             return false;
         }
 
-        var pokerCar = Netwrite<string>.For(poker);
-
-        // The suggested car must always be the poker's own current car, never an arbitrary/forged value
-        if (suggestedCar == "" || suggestedCar != pokerCar.Get() || !IsValidCar(suggestedCar))
+        if (!CheckSuggestedCar(poker, suggestedCar))
         {
             return false;
         }
 
-        var targetCar = Netwrite<string>.For(target);
-
-        if (targetCar.Get() == "" || targetCar.Get() == suggestedCar)
+        if (!CheckTargetCar(target, suggestedCar))
         {
             return false;
         }
+
+        var car = Netwrite<string>.For(target);
 
         var envimixCarFinishCounts = Netwrite<Dictionary<string, int>>.For(target.Score);
 
-        if (!envimixCarFinishCounts.Get().ContainsKey(targetCar.Get()) || envimixCarFinishCounts.Get()[targetCar.Get()] < GetPokeFinishThreshold())
+        if (!envimixCarFinishCounts.Get().ContainsKey(car.Get()) || envimixCarFinishCounts.Get()[car.Get()] < GetPokeFinishThreshold())
         {
+            Log(nameof(Envimix), $"Invalid poke attempt: target has not finished enough times with their current car: poker={poker.User.Login}, target={target.User.Login}, suggestedCar={suggestedCar}");
             return false;
         }
 
@@ -2525,6 +2553,7 @@ public class Envimix : UniverseModeBase
 
         if (envimixBestRace.Get().ContainsKey(key) && envimixBestRace.Get()[key].Time != -1)
         {
+            Log(nameof(Envimix), $"Invalid poke attempt: target has already completed the suggested car: poker={poker.User.Login}, target={target.User.Login}, suggestedCar={suggestedCar}");
             return false;
         }
 
@@ -2532,11 +2561,13 @@ public class Envimix : UniverseModeBase
 
         if (PokeCooldowns.ContainsKey(cooldownKey) && Now - PokeCooldowns[cooldownKey] < 30000)
         {
+            Log(nameof(Envimix), $"Invalid poke attempt: poker is on cooldown for this target: poker={poker.User.Login}, target={target.User.Login}, suggestedCar={suggestedCar}");
             return false;
         }
 
         PokeCooldowns[cooldownKey] = Now;
 
+        UIManager.GetUI(poker).SendChat($"You have poked $<{target.User.Name}$> to try $ff0{suggestedCar}$fff!");
         UIManager.GetUI(target).SendChat($"$<{poker.User.Name}$> thinks you should try $ff0{suggestedCar}$fff!");
 
         return true;
