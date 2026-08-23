@@ -13,6 +13,8 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
     [Netwrite(NetFor.UI)] public required bool ScoreTableIsVisible { get; set; }
 
     public int CheckpointShowTime = -1;
+    public int PrevBestTime = -1;
+    public bool IsFirstFinish;
 
     public Checkpoint3()
     {
@@ -22,6 +24,9 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
             {
                 case CTmRaceClientEvent.EType.WayPoint:
                     Waypoint(e);
+                    break;
+                case CTmRaceClientEvent.EType.Respawn:
+                    IsFirstFinish = false;
                     break;
             }
         };
@@ -103,7 +108,7 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
 
         var framePb = (FrameDifferences.Controls[0] as CMlFrame)!;
 
-        if (e.Player.Score.BestRace.Time == -1)
+        if (IsFirstFinish || e.Player.Score.BestRace.Time == -1)
         {
             framePb.Hide();
         }
@@ -157,6 +162,15 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
 
     public void Loop()
     {
+        if (GetPlayer().Score.BestRace.Time != PrevBestTime)
+        {
+            if (PrevBestTime == -1)
+            {
+                IsFirstFinish = !IndependantLaps;
+            }
+            PrevBestTime = GetPlayer().Score.BestRace.Time;
+        }
+
         if (CheckpointShowTime != -1)
         {
             FrameCheckpoint.Visible = !ScoreTableIsVisible;
