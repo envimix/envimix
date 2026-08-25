@@ -2142,8 +2142,8 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
             }
             else
             {
-                var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
-                if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+                var persistent_EnvimixTotalTime = Persistent<Dictionary<string, int>>.For(Map);
+                if (persistent_EnvimixTotalTime.Get().Count > 0)
                 {
                     foreach (var control in FrameInnerVehicles.Controls)
                     {
@@ -2153,9 +2153,9 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
                         var controlTotalTime = frame.GetFirstChild("LabelTotalTime");
 
-                        if (persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid].ContainsKey(carName))
+                        if (persistent_EnvimixTotalTime.Get().ContainsKey(carName))
                         {
-                            (controlTotalTime as CMlLabel)!.Value = TimeLib.FormatDelta("0", persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][carName].ToString(), TimeLib.EDurationFormats.Abbreviated);
+                            (controlTotalTime as CMlLabel)!.Value = TimeLib.FormatDelta("0", persistent_EnvimixTotalTime.Get()[carName].ToString(), TimeLib.EDurationFormats.Abbreviated);
                             controlTotalTime.Show();
                         }
                         else

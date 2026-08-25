@@ -88,6 +88,117 @@ public class Score : CTmMlScriptIngame, IContext
         return formatted;
     }
 
+    private Dictionary<string, int> GetLegacyFinishes()
+    {
+        var persistent_EnvimixFinishes = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (persistent_EnvimixFinishes.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            return persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid];
+        }
+
+        return new();
+    }
+
+    private Dictionary<string, int> GetLegacyAttempts()
+    {
+        var persistent_EnvimixAttempts = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (persistent_EnvimixAttempts.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            return persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid];
+        }
+
+        return new();
+    }
+
+    private void ResetLegacyFinishes()
+    {
+        var persistent_EnvimixFinishes = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (persistent_EnvimixFinishes.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            persistent_EnvimixFinishes.Get().Remove(Map.MapInfo.MapUid);
+        }
+    }
+
+    private void ResetLegacyAttempts()
+    {
+        var persistent_EnvimixAttempts = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (persistent_EnvimixAttempts.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            persistent_EnvimixAttempts.Get().Remove(Map.MapInfo.MapUid);
+        }
+    }
+
+    private Dictionary<string, int> GetLegacyTotalTime()
+    {
+        var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            return persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid];
+        }
+
+        return new();
+    }
+
+    private Dictionary<string, string> GetLegacyTotalTimeTrackingAt()
+    {
+        var persistent_EnvimixTotalTimeTrackingAt = Persistent<Dictionary<string, Dictionary<string, string>>>.For(LocalUser);
+        if (persistent_EnvimixTotalTimeTrackingAt.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            return persistent_EnvimixTotalTimeTrackingAt.Get()[Map.MapInfo.MapUid];
+        }
+
+        return new();
+    }
+
+    private void ResetLegacyTotalTime()
+    {
+        var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
+        if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            persistent_EnvimixTotalTime.Get().Remove(Map.MapInfo.MapUid);
+        }
+    }
+
+    private void ResetLegacyTotalTimeTrackingAt()
+    {
+        var persistent_EnvimixTotalTimeTrackingAt = Persistent<Dictionary<string, Dictionary<string, string>>>.For(LocalUser);
+        if (persistent_EnvimixTotalTimeTrackingAt.Get().ContainsKey(Map.MapInfo.MapUid))
+        {
+            persistent_EnvimixTotalTimeTrackingAt.Get().Remove(Map.MapInfo.MapUid);
+        }
+    }
+
+    private void MigratePersistentValues()
+    {
+        var persistent_EnvimixFinishes = Persistent<Dictionary<string, int>>.For(Map);
+        if (persistent_EnvimixFinishes.Get().Count == 0)
+        {
+            persistent_EnvimixFinishes.Set(GetLegacyFinishes());
+            ResetLegacyFinishes();
+        }
+
+        var persistent_EnvimixAttempts = Persistent<Dictionary<string, int>>.For(Map);
+        if (persistent_EnvimixAttempts.Get().Count == 0)
+        {
+            persistent_EnvimixAttempts.Set(GetLegacyAttempts());
+            ResetLegacyAttempts();
+        }
+
+        var persistent_EnvimixTotalTime = Persistent<Dictionary<string, int>>.For(Map);
+        if (persistent_EnvimixTotalTime.Get().Count == 0)
+        {
+            persistent_EnvimixTotalTime.Set(GetLegacyTotalTime());
+            ResetLegacyTotalTime();
+        }
+
+        var persistent_EnvimixTotalTimeTrackingAt = Persistent<Dictionary<string, string>>.For(Map);
+        if (persistent_EnvimixTotalTimeTrackingAt.Get().Count == 0)
+        {
+            persistent_EnvimixTotalTimeTrackingAt.Set(GetLegacyTotalTimeTrackingAt());
+            ResetLegacyTotalTimeTrackingAt();
+        }
+    }
+
     private void IncrementFinish()
     {
         if (InputPlayer is null)
@@ -96,16 +207,12 @@ public class Score : CTmMlScriptIngame, IContext
         }
 
         var car = Netread<string>.For(InputPlayer);
-        var persistent_EnvimixFinishes = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
-        if (!persistent_EnvimixFinishes.Get().ContainsKey(Map.MapInfo.MapUid))
+        var persistent_EnvimixFinishes = Persistent<Dictionary<string, int>>.For(Map);
+        if (!persistent_EnvimixFinishes.Get().ContainsKey(car.Get()))
         {
-            persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid] = new();
+            persistent_EnvimixFinishes.Get()[car.Get()] = 0;
         }
-        if (!persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
-        {
-            persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid][car.Get()] = 0;
-        }
-        persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid][car.Get()] = persistent_EnvimixFinishes.Get()[Map.MapInfo.MapUid][car.Get()] + 1;
+        persistent_EnvimixFinishes.Get()[car.Get()] = persistent_EnvimixFinishes.Get()[car.Get()] + 1;
     }
 
     private void IncrementAttempt()
@@ -116,16 +223,12 @@ public class Score : CTmMlScriptIngame, IContext
         }
 
         var car = Netread<string>.For(InputPlayer);
-        var persistent_EnvimixAttempts = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
-        if (!persistent_EnvimixAttempts.Get().ContainsKey(Map.MapInfo.MapUid))
+        var persistent_EnvimixAttempts = Persistent<Dictionary<string, int>>.For(Map);
+        if (!persistent_EnvimixAttempts.Get().ContainsKey(car.Get()))
         {
-            persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid] = new();
+            persistent_EnvimixAttempts.Get()[car.Get()] = 0;
         }
-        if (!persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
-        {
-            persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid][car.Get()] = 0;
-        }
-        persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid][car.Get()] = persistent_EnvimixAttempts.Get()[Map.MapInfo.MapUid][car.Get()] + 1;
+        persistent_EnvimixAttempts.Get()[car.Get()] = persistent_EnvimixAttempts.Get()[car.Get()] + 1;
     }
 
     private void PauseTimer()
@@ -144,12 +247,8 @@ public class Score : CTmMlScriptIngame, IContext
             SessionStartedAt = "";
 
             var car = Netread<string>.For(GetPlayer());
-            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
-            if (!persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
-            {
-                persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid] = new();
-            }
-            persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()] = TotalTimeAtStart;
+            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, int>>.For(Map);
+            persistent_EnvimixTotalTime.Get()[car.Get()] = TotalTimeAtStart;
         }
 
         TimerPaused = true;
@@ -168,6 +267,7 @@ public class Score : CTmMlScriptIngame, IContext
         VisibleTime = -1;
 
         Wait(() => GetPlayer() is not null);
+        MigratePersistentValues();
     }
 
     public void Loop()
@@ -175,10 +275,10 @@ public class Score : CTmMlScriptIngame, IContext
         var car = Netread<string>.For(GetPlayer());
         if (car.Get() != PrevCar)
         {
-            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(GetPlayer().User);
-            if (persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid) && persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
+            var persistent_EnvimixTotalTime = Persistent<Dictionary<string, int>>.For(Map);
+            if (persistent_EnvimixTotalTime.Get().ContainsKey(car.Get()))
             {
-                TotalTimeAtStart = persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()];
+                TotalTimeAtStart = persistent_EnvimixTotalTime.Get()[car.Get()];
             }
             else
             {
@@ -192,14 +292,10 @@ public class Score : CTmMlScriptIngame, IContext
 
             if (InputPlayer is not null)
             {
-                var persistent_EnvimixTotalTimeTrackingAt = Persistent<Dictionary<string, Dictionary<string, string>>>.For(LocalUser);
-                if (!persistent_EnvimixTotalTimeTrackingAt.Get().ContainsKey(Map.MapInfo.MapUid))
+                var persistent_EnvimixTotalTimeTrackingAt = Persistent<Dictionary<string, string>>.For(Map);
+                if (!persistent_EnvimixTotalTimeTrackingAt.Get().ContainsKey(car.Get()))
                 {
-                    persistent_EnvimixTotalTimeTrackingAt.Get()[Map.MapInfo.MapUid] = new();
-                }
-                if (!persistent_EnvimixTotalTimeTrackingAt.Get()[Map.MapInfo.MapUid].ContainsKey(car.Get()))
-                {
-                    persistent_EnvimixTotalTimeTrackingAt.Get()[Map.MapInfo.MapUid][car.Get()] = TimeLib.GetCurrent();
+                    persistent_EnvimixTotalTimeTrackingAt.Get()[car.Get()] = TimeLib.GetCurrent();
                 }
             }
 
@@ -328,12 +424,8 @@ public class Score : CTmMlScriptIngame, IContext
                     // update total time every second
                     if ((GameTime / 1000) != (PrevGameTime / 1000))
                     {
-                        var persistent_EnvimixTotalTime = Persistent<Dictionary<string, Dictionary<string, int>>>.For(LocalUser);
-                        if (!persistent_EnvimixTotalTime.Get().ContainsKey(Map.MapInfo.MapUid))
-                        {
-                            persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid] = new();
-                        }
-                        persistent_EnvimixTotalTime.Get()[Map.MapInfo.MapUid][car.Get()] = totalTime;
+                        var persistent_EnvimixTotalTime = Persistent<Dictionary<string, int>>.For(Map);
+                        persistent_EnvimixTotalTime.Get()[car.Get()] = totalTime;
                     }
 
                     // update session time and total time every half second
