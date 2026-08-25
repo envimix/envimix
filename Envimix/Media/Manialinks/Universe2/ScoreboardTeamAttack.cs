@@ -1433,7 +1433,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         }
         // Point animation end
 
-        // Score label shrinks to 0 right as it swaps to the ladder-points diff at 10s, then grows back in
+        // Score label shrinks before it swaps to the ladder-points diff at 10s, then grows back in
         var scoreLabelScale = 1f;
 
         if (LocalPodiumStartTime != -1)
@@ -1442,11 +1442,11 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
 
             if (elapsed >= 9800 && elapsed < 10000)
             {
-                scoreLabelScale = AnimLib.EaseOutQuad(elapsed - 9800, 1f, -1f, 200);
+                scoreLabelScale = AnimLib.EaseOutQuad(elapsed - 9800, 1f, -0.75f, 200);
             }
             else if (elapsed >= 10000 && elapsed < 10200)
             {
-                scoreLabelScale = AnimLib.EaseOutQuad(elapsed - 10000, 0f, 0.75f, 200);
+                scoreLabelScale = AnimLib.EaseOutQuad(elapsed - 10000, 0.25f, 0.5f, 200);
             }
             else if (elapsed >= 10200)
             {
