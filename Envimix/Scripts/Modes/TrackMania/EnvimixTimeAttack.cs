@@ -16,18 +16,24 @@ public class EnvimixTimeAttack : Envimix
     [Setting(As = "Auto-respawn time")]
     public int AutoRespawnTime = 6;
 
+    [Setting(As = "Show individual ladder points difference")]
+    public bool ShowIndividualLadderPointsDiff = true;
+
     [Setting(As = "<hidden>")]
     public bool ClearScoresOnMapEnd = false;
 
     public required Dictionary<string, int> AutoRespawn;
 
     [Netwrite] public string ModeHelp { get; set; }
+    [Netwrite] public bool ShowIndividualLadderPointsDiffEnabled { get; set; }
 
     public override void OnServerInit()
     {
         //ClientManiaAppUrl = "file://Media/ManiaApps/EnvimixMultiplayerClient.Script.txt";
 
         CreateServersideLayers();
+        CreateLayer("ScoreboardTimeAttack", CUILayer.EUILayerType.ScoresTable);
+        ShowIndividualLadderPointsDiffEnabled = ShowIndividualLadderPointsDiff;
         IndependantLaps = true;
         ModeHelp = "OBJECTIVE: Finish the track as fast as possible with different cars under a time limit. Pick any car at any time.";
         ModeStatusMessage = ModeHelp;
@@ -336,6 +342,7 @@ public class EnvimixTimeAttack : Envimix
     public override void OnPodiumStart()
     {
         UIManager.UIAll.UISequence = CUIConfig.EUISequence.None;
+        UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedVisible;
     }
 
     public override void OnPodiumLoop()
@@ -348,6 +355,7 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnMapEnd()
     {
+        UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.Normal;
         CutOffTimeLimit = -1;
 
         if (ClearScoresOnMapEnd)

@@ -1,30 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
-    <framemodel id="FramemodelScore">
-        <quad id="QuadRowHelper" pos="0.2 0" z-index="-1" size="144.6 6" bgcolor="000" valign="center" opacity=".0" scriptevents="1" />
-        <quad id="QuadTeam" pos="1 0" z-index="0" size="1.5 5" bgcolor="F00" valign="center" opacity=".7" />
-        <label id="LabelRank" pos="7 -0.3" z-index="0" size="7 5" text="--" valign="center2" textfont="RajdhaniMono" halign="center" />
-        <quad id="QuadEchelon" pos="14 0" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Manialinks/Common/Echelons/echelon3.dds" />
-        <quad id="QuadZone" pos="14 -0.4" z-index="1" size="3.25 3.25" valign="center" halign="center" image="file://ZoneFlags/Path/World|Europe|Czech Republic" />
-        <quad id="QuadStatus" pos="14 0" z-index="2" size="5 5" valign="center" halign="center" style="Icons64x64_2" substyle="Disconnected" hidden="1" />
-        <label id="LabelPlayerName" scriptevents="1" style="TextCardRaceRank" pos="18 -0.4" z-index="0" size="26 5" text="$aaa[unknown]" valign="center2" textfont="Oswald" textsize="2.5" />
-        <label id="LabelScore" pos="60 -0.3" z-index="0" size="22 5" text="0" valign="center2" textfont="RajdhaniMono" halign="right" />
-        <frame pos="66 -0.1" id="FrameCarRanks">
-            <label pos="0 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CanyonCar" />
-            <label pos="6 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="StadiumCar" />
-            <label pos="12 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="ValleyCar" />
-            <label pos="18 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="LagoonCar" />
-            <label pos="24 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="TrafficCar" />
-            <label pos="30 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="DesertCar" />
-            <label pos="36 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="SnowCar" />
-            <label pos="42 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="RallyCar" />
-            <label pos="48 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="IslandCar" />
-            <label pos="54 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="BayCar" />
-            <label pos="60 0" z-index="0" size="20 5" text="--" textfont="RajdhaniMono" halign="center" valign="center2" textsize="1.5" data-car="CoastCar" />
-        </frame>
-        <quad id="QuadCurrentCar" z-index="0" size="5 5" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="136 0" scriptevents="1" />
-        <quad id="QuadSpectator" z-index="1" size="5 5" valign="center" halign="center" pos="136 0" style="BgRaceScore2" substyle="Spectator" hidden="1" />
-    </framemodel>
     <framemodel id="FramemodelRating">
         <frame pos="0 2.5" z-index="1">
             <quad id="QuadGlow" z-index="-2" size="64.5 9.5" halign="center" valign="center" style="Bgs1InRace" substyle="BgButtonGlow" opacity="0.1" />
@@ -47,10 +22,10 @@
     </framemodel>
     <framemodel id="FramemodelLeaderboard">
         <quad z-index="-1" size="54 80" style="Bgs1" substyle="BgCardList" valign="center" halign="center" />
-        <quad z-index="0" size="7.5 7.5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="-20 34.5" scriptevents="1"/>
-        <label pos="0 35" z-index="0" size="30 5" text="StadiumCar" valign="center" textfont="RajdhaniMono" textsize="3" translate="1" halign="center" />
+        <quad id="QuadCar" z-index="0" size="7.5 7.5" valign="center" halign="center" image="file://Media/Images/Cars/StadiumCar.png" pos="-20 34.5" scriptevents="1"/>
+        <label id="LabelCar" pos="0 35" z-index="0" size="30 5" text="StadiumCar" valign="center" textfont="RajdhaniMono" textsize="3" translate="1" halign="center" />
         <gauge id="GaugeDifficulty" pos="15 35.5" z-index="3" size="11 6.5" drawbg="0" valign="center" ratio="0"/>
-        <gauge id="GaugeDifficulty" pos="15 33.5" z-index="3" size="11 6.5" drawbg="0" valign="center" ratio="0"/>
+        <gauge id="GaugeQuality" pos="15 33.5" z-index="3" size="11 6.5" drawbg="0" valign="center" ratio="0"/>
         <frame id="FrameOuterRecords" pos="-27 27" clip="1" clipposn="25.5 -27.5" clipsizen="50 60" scroll="1" scrollgrid="0 5" scrollmax="0 0">
             <frame id="FrameRecords">
                 <frameinstance modelid="FramemodelRecord" />
@@ -97,17 +72,17 @@
             </frame>
             <quad pos="76 0" z-index="0" size="45 6.48" halign="center" valign="center" image="file://Media/Images/EnvimixSmall.png" scale="0.75" />
         </frame>
-        <frameinstance pos="-80.2 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="-40 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="0 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="40 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="80.2 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="-83.5 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="-50.1 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="-16.7 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="16.7 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="50.1 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
-        <frameinstance pos="83.5 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard0" pos="-80.2 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard1" pos="-40 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard2" pos="0 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard3" pos="40 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard4" pos="80.2 24.5" scale="0.73" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard5" pos="-83.5 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard6" pos="-50.1 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard7" pos="-16.7 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard8" pos="16.7 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard9" pos="50.1 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
+        <frameinstance id="FrameLeaderboard10" pos="83.5 -29.5" scale="0.605" modelid="FramemodelLeaderboard"/>
         <frame pos="0 -61">
             <quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center" />
             <quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="-92 0" scriptevents="1" />
