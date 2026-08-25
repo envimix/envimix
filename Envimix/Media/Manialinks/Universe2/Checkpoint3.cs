@@ -157,7 +157,7 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
             control.Hide();
         }
 
-        Wait(() => GetPlayer() is not null);
+        Wait(() => GetPlayer() is not null && GetPlayer().Score is not null);
     }
 
     public void Loop()
