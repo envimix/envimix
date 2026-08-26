@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
+	<framemodel id="FramemodelServer">
+        <quad size="115 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" />
+        <quad id="QuadServer" size="115 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -.125" colorize="258" />
+        <label id="LabelServerName" pos="3 -5.2" z-index="1" size="62 5" textfont="RajdhaniMono" valign="center2" />
+        <label id="LabelMode" pos="82.5 -5.2" z-index="1" size="30 5" textfont="RajdhaniMono" textsize="1" valign="center2" halign="center" />
+        <label id="LabelPlayers" pos="111 -5.2" z-index="1" size="18 5" textfont="RajdhaniMono" textsize="2" halign="right" valign="center2" />
+    </framemodel>
+    <frame pos="45 75" clip="1" clipsizen="180 153" clipposn="-90.5 -76">
+        <frame id="FrameOnlinePlayMenu">
+            <quad size="180 135" style="Bgs1" substyle="BgCardList" halign="right" />
+            <quad size="180 135" style="Bgs1" substyle="BgCardList" halign="right" />
+            <frame z-index="1">
+                <frame pos="-150 -2.5">
+                    <quad size="55 112.5" style="Bgs1" substyle="BgCardList" halign="center" />
+                    <frame id="FrameServerPanel" pos="-25 0" z-index="1" clip="1" clipposn="25 -45" clipsizen="50 88">
+                        <label id="LabelPanelName" pos="25 -5" size="45 8" textfont="RajdhaniMono" textsize="3" text="My Server" halign="center" />
+                        <label id="LabelPanelLogin" pos="25 -11" size="45 8" textfont="BiryaniDemiBold" textsize="1" text="my_server" halign="center" textcolor="888" />
+                        <label id="LabelPanelMode" pos="25 -17.5" size="50 29" textfont="RajdhaniMono" text="EnvimixTeamAttack" halign="center" textsize="1.5" />
+                        <label id="LabelPanelPlayers" pos="13 -25" size="50 5" textfont="RajdhaniMono" textsize="2" textprefix="👥 " text="10/255$ff0🔒" halign="center" />
+                        <label id="LabelPanelSpectators" pos="37 -25" size="50 5" textfont="RajdhaniMono" textsize="2" textprefix="📷 " text="10/255$ff0🔒" halign="center" />
+                        <label id="LabelPanelZone" pos="0 -58" size="50 5" textfont="RajdhaniMono" textsize="1" hidden="1" />
+                        <label id="LabelPanelLadder" pos="0 -72" size="50 5" textfont="RajdhaniMono" textsize="1" hidden="1" />
+                        <label id="LabelPanelDescription" pos="2.5 -35" size="45 50" textfont="BiryaniDemiBold" textsize="1" text="Description"  autonewline="1"/>
+                    </frame>
+					<label id="LabelStatus" pos="0 -107.5" z-index="1" size="50 10" text="Waiting for authentication..." textfont="RajdhaniMono" textsize="1" autonewline="1" valign="center2" halign="center" />
+                </frame>
+                <frame pos="-150 -117.5">
+                    <quad id="QuadJoinServerBase" size="55 15" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" colorize="111" />
+                    <quad id="QuadJoinServer" hidden="1" size="55 14.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -.125" />
+                    <label pos="0 -7.75" z-index="1" size="55 10" text="Join Server" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" textprefix="$t" />
+                </frame>
+                <frame>
+                    <frame pos="-5 -2.5">
+                        <quad size="2.5 130" style="Bgs1" substyle="BgCardList" />
+                        <quad id="QuadScroller" size="2.5 10" style="Bgs1" substyle="BgWindow4" z-index="1" opacity="0.8" scriptevents="1" />
+                    </frame>
+                    <frame pos="-120 -2.5" z-index="1" id="FrameServerListScrollable" scroll="1" scrollgrid="0 10" scrollmax="0 0" clip="1" clipposn="59 -65" clipsizen="116 130">
+                        <frame id="FrameServerList">
+                            <frameinstance modelid="FramemodelServer" pos="0 0" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -10" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -20" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -30" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -40" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -50" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -60" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -70" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -80" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -90" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -100" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -110" />
+                            <frameinstance modelid="FramemodelServer" pos="0 -120" />
+                        </frame>
+                    </frame>
+                </frame>
+            </frame>
+            <quad pos="0 -136" size="180 16" style="Bgs1" substyle="BgCardList" halign="right" />
+            <quad pos="0 -136" size="180 16" style="Bgs1" substyle="BgCardList" halign="right" />
+            <frame z-index="1" pos="0 -144">
+                <frame pos="-155 5">
+                    <quad size="40 10" style="Bgs1" substyle="BgCardList" opacity=".9" halign="center" />
+                    <quad id="QuadLegacyMenu" size="40 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -.125" colorize="258" />
+                    <label pos="0 -5.3" z-index="1" size="38 5" text="LEGACY MENU" textfont="RajdhaniMono" valign="center2" halign="center" />
+                </frame>
+                <frame pos="-117.5 5" hidden="1">
+                    <quad size="30 10" style="Bgs1" substyle="BgCardList" opacity=".9" halign="center" />
+                    <quad id="QuadFavorites" size="30 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -.125" colorize="258" />
+                    <label pos="0 -5.3" z-index="1" size="28 5" text="FAVORITES" textfont="RajdhaniMono" valign="center2" halign="center" textsize="1.75" />
+                </frame>
+                <frame pos="-85 5" hidden="1">
+                    <quad size="30 10" style="Bgs1" substyle="BgCardList" opacity=".9" halign="center" />
+                    <quad id="QuadAccess" size="30 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -.125" colorize="258" />
+                    <label id="LabelAccess" pos="0 -5.3" z-index="1" size="28 5" text="ALL" textfont="RajdhaniMono" valign="center2" halign="center" textsize="1.75" />
+                </frame>
+                <frame pos="-52.5 5" hidden="1">
+                    <quad size="30 10" style="Bgs1" substyle="BgCardList" opacity=".9" halign="center" />
+                    <quad id="QuadOrder" size="30 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -.125" colorize="258" />
+                    <label id="LabelOrder" pos="0 -5.3" z-index="1" size="28 5" text="PLAYERS" textfont="RajdhaniMono" valign="center2" halign="center" textsize="1.75" />
+                </frame>
+                <quad id="QuadRefresh" pos="-9 0" size="14 14" style="UIConstruction_Buttons" substyle="Reload" halign="center" valign="center" scriptevents="1" />
+            </frame>
+        </frame>
+    </frame>
+</manialink>

@@ -51,8 +51,6 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             SendCustomEvent("MenuSolo", new[] {""});
             AudioClick.Play();
-            QuadLocal.StyleSelected = false;
-            QuadEditor.StyleSelected = false;
         };
 
         QuadSolo.MouseOver += () =>
@@ -64,8 +62,6 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             SendCustomEvent("MenuLocal", new[] { "" });
-            QuadLocal.StyleSelected = true;
-            QuadEditor.StyleSelected = false;
         };
 
         QuadLocal.MouseOver += () =>
@@ -75,8 +71,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
         QuadInternet.MouseClick += () =>
         {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             SendCustomEvent("MenuInternet", new[] { "" });
-            //QuadLocal.StyleSelected = false;
         };
 
         QuadInternet.MouseOver += () =>
@@ -86,9 +82,8 @@ public class MainMenu : CManiaAppTitleLayer, IContext
 
         QuadEditor.MouseClick += () =>
         {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             SendCustomEvent("MenuEditor", new[] { "" });
-            QuadLocal.StyleSelected = false;
-            QuadEditor.StyleSelected = true;
         };
 
         QuadEditor.MouseOver += () =>
@@ -111,7 +106,6 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             SendCustomEvent("Leaderboards", new[] { "" });
             AudioClick.Play();
-            QuadLocal.StyleSelected = false;
         };
 
         QuadLeaderboards.MouseOver += () =>
@@ -159,6 +153,11 @@ public class MainMenu : CManiaAppTitleLayer, IContext
                 case "AnimateClose":
                     EnableMenuNavigationInputs = false;
                     HideMenuFrame();
+                    break;
+                case "PlayMenuChanged":
+                    if (data.Length < 1)
+                        break;
+                    SetPlayMenuSelection(data[0]);
                     break;
                 case "Totd":
                     if (data.Length < 1)
@@ -366,6 +365,20 @@ public class MainMenu : CManiaAppTitleLayer, IContext
         {
             LabelTotdNextAt.Value = $"$AAAends in {TimeLib.FormatDelta(TimeLib.GetCurrent(), TotdInfo.NextAt, TimeLib.EDurationFormats.Full)}";
         }
+    }
+
+    private void SetPlayMenuSelection(string menu)
+    {
+        QuadLocal.StyleSelected = false;
+        QuadInternet.StyleSelected = false;
+        QuadEditor.StyleSelected = false;
+
+        if (menu == "Local")
+            QuadLocal.StyleSelected = true;
+        else if (menu == "Online")
+            QuadInternet.StyleSelected = true;
+        else if (menu == "Editors")
+            QuadEditor.StyleSelected = true;
     }
 
     private void SetTotd(string json)

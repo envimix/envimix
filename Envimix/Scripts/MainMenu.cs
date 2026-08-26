@@ -201,6 +201,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public CUILayer LoadingLayer;
     public CUILayer LeaderboardsLayer;
     public CUILayer LocalPlayMenuLayer;
+    public CUILayer OnlinePlayMenuLayer;
     public CUILayer EditorsMenuLayer;
 
     public CHttpRequest? SubmitMapsRequest;
@@ -257,6 +258,9 @@ public class MainMenu : CManiaAppTitle, IContext
         LocalPlayMenuLayer = UILayerCreate();
         LocalPlayMenuLayer.ManialinkPage = "file://Media/Manialinks/LocalPlayMenu.xml";
 
+        OnlinePlayMenuLayer = UILayerCreate();
+        OnlinePlayMenuLayer.ManialinkPage = "file://Media/Manialinks/OnlinePlayMenu.xml";
+
         EditorsMenuLayer = UILayerCreate();
         EditorsMenuLayer.ManialinkPage = "file://Media/Manialinks/EditorsMenu.xml";
 
@@ -301,24 +305,27 @@ public class MainMenu : CManiaAppTitle, IContext
                             Log("Switching to Solo Menu...");
                             LayerCustomEvent(SoloMenuLayer, "AnimateOpen", new[] { "" });
                             LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
+                            LayerCustomEvent(MainMenuLayer, "PlayMenuChanged", new[] { "" });
                             LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+                            LayerCustomEvent(OnlinePlayMenuLayer, "AnimateClose", new[] { "" });
                             LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
                             break;
                         case "MenuLocal":
-                            LayerCustomEvent(LocalPlayMenuLayer, "AnimateOpen", new[] { "" });
-                            LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
+                            SwitchToPlayMenu("Local");
                             break;
                         case "MenuLocalLegacy":
                             LoadingLayer.IsVisible = false;
                             Menu_Local();
                             break;
                         case "MenuInternet":
+                            SwitchToPlayMenu("Online");
+                            break;
+                        case "MenuInternetLegacy":
                             LoadingLayer.IsVisible = false;
                             Menu_Internet();
                             break;
                         case "MenuEditor":
-                            LayerCustomEvent(EditorsMenuLayer, "AnimateOpen", new[] { "" });
-                            LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+                            SwitchToPlayMenu("Editors");
                             break;
                         case "MenuEditorLegacy":
                             LoadingLayer.IsVisible = false;
@@ -634,6 +641,7 @@ public class MainMenu : CManiaAppTitle, IContext
                 Log("ManiaPlanet authentication token received.");
                 ManiaPlanetAuthenticationToken = Authentication_Token;
                 ManiaPlanetAuthReceivedAt = Now;
+                LayerCustomEvent(OnlinePlayMenuLayer, "Authenticate", new[] { ManiaPlanetAuthenticationToken });
                 RequestUserToken();
             }
             else
@@ -746,14 +754,45 @@ public class MainMenu : CManiaAppTitle, IContext
         LayerCustomEvent(SoloMenuLayer, "AnimateClose", new[] { "" });
         LayerCustomEvent(LeaderboardsLayer, "AnimateClose", new[] { "" });
         LayerCustomEvent(MainMenuLayer, "AnimateOpen", new[] { "" });
+        LayerCustomEvent(MainMenuLayer, "PlayMenuChanged", new[] { "" });
+        LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(OnlinePlayMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
+    }
+
+    private void SwitchToPlayMenu(string menu)
+    {
+        if (menu == "Local")
+            LayerCustomEvent(LocalPlayMenuLayer, "AnimateOpen", new[] { "" });
+        else
+            LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+
+        if (menu == "Online")
+        {
+            LayerCustomEvent(OnlinePlayMenuLayer, "Authenticate", new[] { ManiaPlanetAuthenticationToken });
+            LayerCustomEvent(OnlinePlayMenuLayer, "AnimateOpen", new[] { "" });
+        }
+        else
+        {
+            LayerCustomEvent(OnlinePlayMenuLayer, "AnimateClose", new[] { "" });
+        }
+
+        if (menu == "Editors")
+            LayerCustomEvent(EditorsMenuLayer, "AnimateOpen", new[] { "" });
+        else
+            LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
+
+        LayerCustomEvent(MainMenuLayer, "PlayMenuChanged", new[] { menu });
     }
 
     private void SwitchToLeaderboards()
     {
         Log("Switching to Leaderboards...");
         LayerCustomEvent(MainMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(MainMenuLayer, "PlayMenuChanged", new[] { "" });
         LayerCustomEvent(LeaderboardsLayer, "AnimateOpen", new[] { "" });
         LayerCustomEvent(LocalPlayMenuLayer, "AnimateClose", new[] { "" });
+        LayerCustomEvent(OnlinePlayMenuLayer, "AnimateClose", new[] { "" });
         LayerCustomEvent(EditorsMenuLayer, "AnimateClose", new[] { "" });
     }
 
