@@ -1904,6 +1904,11 @@ public class Menu : CTmMlScriptIngame, IContext
     {
         if (CurrentZoneIndex == -1)
         {
+            if (LocalReplaysTask is not null)
+            {
+                return;
+            }
+
             Log("Refreshing replays on disk...");
             DataFileMgr.Replay_RefreshFromDisk();
             LocalReplaysTask = DataFileMgr.Replay_GetGameList("", true);
@@ -2885,6 +2890,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 }
             }
 
+            DataFileMgr.TaskResult_Release(LocalReplaysTask.Id);
             LocalReplaysTask = null;
         }
 
