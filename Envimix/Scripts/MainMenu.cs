@@ -597,7 +597,7 @@ public class MainMenu : CManiaAppTitle, IContext
                 LeaderboardRequests[mapUid].Remove(car);
             }
 
-            if (LeaderboardRequests.Count == 0)
+            if (LeaderboardRequests[mapUid].Count == 0)
             {
                 mapUidsToRemove.Add(mapUid);
             }
