@@ -2596,7 +2596,7 @@ public class Menu : CTmMlScriptIngame, IContext
             }
             else if (Players.Count > 5)
             {
-                label.Value = Players[(i + UserShift) % 5].User.Name;
+                label.Value = Players[(i + UserShift) % Players.Count].User.Name;
                 label.Show();
             }
             else
