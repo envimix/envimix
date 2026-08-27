@@ -91,7 +91,9 @@ public class Envimania : CTmMlScriptIngame, IContext
     public string PreviousCar = "";
     public string PreviousEnvimaniaStatusMessage = "";
 
+    public required CMlLabel LabelYourRecordRank;
     public required CMlLabel LabelYourRecordNickname;
+    public required CMlLabel LabelYourRecordTime;
 
     CTmMlPlayer GetPlayer()
     {
@@ -138,8 +140,11 @@ public class Envimania : CTmMlScriptIngame, IContext
         PreviousCar = GetCar();
         PreviousEnvimaniaStatusMessage = EnvimaniaStatusMessage;
 
+        LabelYourRecordRank = (FrameYourRecord.GetFirstChild("LabelRank") as CMlLabel)!;
         LabelYourRecordNickname = (FrameYourRecord.GetFirstChild("LabelNickname") as CMlLabel)!;
-        (FrameYourRecord.GetFirstChild("LabelRank") as CMlLabel)!.SetText("--");
+        LabelYourRecordTime = (FrameYourRecord.GetFirstChild("LabelTime") as CMlLabel)!;
+
+        ResetYourRecord();
     }
 
     public void Loop()
@@ -269,6 +274,39 @@ public class Envimania : CTmMlScriptIngame, IContext
 
     }
 
+    private void ResetYourRecord()
+    {
+        LabelYourRecordRank.SetText("--");
+        LabelYourRecordTime.SetText("-:--.---");
+    }
+
+    private void UpdateYourRecord(SEnvimaniaRecordsResponse recResponse)
+    {
+        ResetYourRecord();
+
+        SEnvimaniaRecord previousRecord = new();
+        var rankOffset = 0;
+
+        for (var i = 0; i < recResponse.Records.Length; i++)
+        {
+            var record = recResponse.Records[i];
+
+            if (i > 0 && record.Time == previousRecord.Time && record.Score == previousRecord.Score && record.NbRespawns == previousRecord.NbRespawns && record.Distance == previousRecord.Distance && record.Speed == previousRecord.Speed)
+            {
+                rankOffset += 1;
+            }
+
+            if (record.User.Login == GetPlayer().User.Login)
+            {
+                LabelYourRecordRank.SetText(TextLib.FormatInteger(i + 1 - rankOffset, 2));
+                LabelYourRecordTime.SetText(TimeToTextWithMilli(record.Time));
+                return;
+            }
+
+            previousRecord = record;
+        }
+    }
+
     private void UpdateRecords()
     {
         if (EnvimaniaStatusMessage is not "")
@@ -278,6 +316,7 @@ public class Envimania : CTmMlScriptIngame, IContext
                 control.Visible = false;
             }
 
+            ResetYourRecord();
             return;
         }
 
@@ -287,10 +326,13 @@ public class Envimania : CTmMlScriptIngame, IContext
         if (!EnvimaniaRecords.ContainsKey(filterKey))
         {
             SetYouCouldBeHere();
+            ResetYourRecord();
             return;
         }
 
         var recResponse = EnvimaniaRecords[filterKey];
+
+        UpdateYourRecord(recResponse);
 
         if (recResponse.Records.Length == 0)
         {
@@ -313,12 +355,12 @@ public class Envimania : CTmMlScriptIngame, IContext
 
             var record = recResponse.Records[i];
 
-            var rank = i + 1 - rankOffset;
-
-            if (record.Time == prevRecord.Time && record.Score == prevRecord.Score && record.NbRespawns == prevRecord.NbRespawns && record.Distance == prevRecord.Distance && record.Speed == prevRecord.Speed)
+            if (i > 0 && record.Time == prevRecord.Time && record.Score == prevRecord.Score && record.NbRespawns == prevRecord.NbRespawns && record.Distance == prevRecord.Distance && record.Speed == prevRecord.Speed)
             {
                 rankOffset += 1;
             }
+
+            var rank = i + 1 - rankOffset;
 
             var labelRank = (frame.GetFirstChild("LabelRank") as CMlLabel)!;
             var labelNickname = (frame.GetFirstChild("LabelNickname") as CMlLabel)!;
