@@ -125,7 +125,7 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
         FrameDashboard.Visible = false;
         PrevIsVisible = IsVisible();
 
-        Wait(() => GetPlayer() is not null);
+        Wait(() => GetPlayer() is not null && GetPlayer().Score is not null);
     }
 
     public void Loop()
