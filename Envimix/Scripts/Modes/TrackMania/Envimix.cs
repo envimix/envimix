@@ -165,6 +165,7 @@ public class Envimix : UniverseModeBase
 
     public required Dictionary<string, Envimania.SRating> UserRatings;
     public required Dictionary<string, Envimania.SRatingServerRequest> UserRatingsToRequest;
+    public required Dictionary<string, Envimania.SRatingServerRequest> UserRatingsInFlight;
     public CHttpRequest? UserRatingRequest;
     public required int UserRatingsUpdatedAt;
     public required Dictionary<string, int> RatingChatLastSentAt;
@@ -178,6 +179,9 @@ public class Envimix : UniverseModeBase
     public override void OnServerInit()
     {
         Log(nameof(Envimix), "Initializing server...");
+
+        EnvimaniaSessionRequestTimeout = -1;
+        EnvimaniaSessionFirstRequestTimeout = -1;
 
         //UIManager.UIAll.OverlayHide321Go = true;
         UIManager.UIAll.OverlayHideChrono = true;
@@ -488,7 +492,7 @@ public class Envimix : UniverseModeBase
         Validations.Clear();
         ValidationsUpdatedAt = 0;
 
-        var requested = RequestEnvimaniaSession();
+        var requested = RequestEnvimaniaSession(false);
 
         if (requested)
         {
@@ -600,6 +604,31 @@ public class Envimix : UniverseModeBase
         return $"{car}_0_Time";
     }
 
+    private static string FormatOrdinal(int number)
+    {
+        if (number % 100 >= 11 && number % 100 <= 13)
+        {
+            return $"{number}th";
+        }
+
+        if (number % 10 == 1)
+        {
+            return $"{number}st";
+        }
+
+        if (number % 10 == 2)
+        {
+            return $"{number}nd";
+        }
+
+        if (number % 10 == 3)
+        {
+            return $"{number}rd";
+        }
+
+        return $"{number}th";
+    }
+
     #region Envimania
 
     public bool ManiaPlanetAuthenticationRequested;
@@ -619,6 +648,7 @@ public class Envimix : UniverseModeBase
     public required ImmutableArray<SEnvimaniaSessionRecordRequest> EnvimaniaSessionRecordRequests;
     public int EnvimaniaRecordsRequestsLastCheck;
     public CHttpRequest? EnvimaniaRecordsRequest;
+    public int EnvimaniaRecordsRequestCount;
     public CHttpRequest? MapInfoUnauthorizedRequest;
 
     private bool HasRemoteConnection()
@@ -668,7 +698,7 @@ public class Envimix : UniverseModeBase
         MapInfoUnauthorizedRequest = Http.CreateGet($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", UseCache: false);
     }
 
-    public bool RequestEnvimaniaSession()
+    public bool RequestEnvimaniaSession(bool preserveCurrentToken)
     {
         if (!HasRemoteConnection())
         {
@@ -678,9 +708,18 @@ public class Envimix : UniverseModeBase
         EnvimaniaSessionRequestTimeout = -1;
         EnvimaniaSessionFirstRequestTimeout = -1;
         EnvimaniaSessionRetryCount = 1;
-        EnvimaniaSessionToken = "";
-        EnvimaniaSessionTokenReceived = -1;
-        EnvimaniaStatusReceived = -1;
+
+        if (!preserveCurrentToken)
+        {
+            EnvimaniaSessionToken = "";
+            EnvimaniaSessionTokenReceived = -1;
+            EnvimaniaStatusReceived = -1;
+        }
+        else
+        {
+            EnvimaniaSessionTokenReceived = Now;
+        }
+
         EnvimaniaRecordsRequestsLastCheck = -1;
 
         if (EnvimixXmlRpc)
@@ -738,36 +777,6 @@ public class Envimix : UniverseModeBase
         RatingEnabled = true;
     }
 
-    public void ProcessXmlRpcEvent(string name, string value)
-    {
-        switch (name)
-        {
-            case "Envimix.Envimania.Session.New":
-                Log(nameof(Envimix), "Received Envimania session (XML-RPC).");
-
-                SEnvimaniaSessionResponse sessionResponse = new();
-
-                if (!sessionResponse.FromJson(value))
-                {
-                    Log(nameof(Envimix), "Envimania session creation failed (JSON issue).");
-                    Log(nameof(Envimix), value);
-                }
-                else if (sessionResponse.ServerLogin != ServerLogin)
-                {
-                    Log(nameof(Envimix), "Envimania session creation failed (server login mismatch).");
-                }
-                else
-                {
-                    EnvimaniaSessionToken = sessionResponse.SessionToken!;
-                    EnvimaniaSessionRetryCount = 1;
-
-                    InitiateRatingsForAllPlayers(sessionResponse);
-                }
-
-                break;
-        }
-    }
-
     /// <summary>
     /// Request leaderboards of certain leaderboard type.
     /// </summary>
@@ -811,6 +820,57 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
+    private void RequestFinishedEnvimaniaRecordsAgain()
+    {
+        ImmutableArray<string> recordsToRequestAgain = new();
+
+        foreach (var (filterKey, finished) in EnvimaniaFinishedRecordsRequests)
+        {
+            if (!EnvimaniaUnfinishedRecordsRequests.ContainsKey(filterKey) && !EnvimaniaRecordsRequests.ContainsKey(filterKey))
+            {
+                recordsToRequestAgain.Add(filterKey);
+            }
+        }
+
+        foreach (var filterKey in recordsToRequestAgain)
+        {
+            var filter = EnvimaniaFinishedRecordsRequests[filterKey];
+            EnvimaniaFinishedRecordsRequests.Remove(filterKey);
+            RequestEnvimaniaRecords(filter.Car, filter.Gravity, filter.Laps);
+        }
+    }
+
+    public void ProcessXmlRpcEvent(string name, string value)
+    {
+        switch (name)
+        {
+            case "Envimix.Envimania.Session.New":
+                Log(nameof(Envimix), "Received Envimania session (XML-RPC).");
+
+                SEnvimaniaSessionResponse sessionResponse = new();
+
+                if (!sessionResponse.FromJson(value))
+                {
+                    Log(nameof(Envimix), "Envimania session creation failed (JSON issue).");
+                    Log(nameof(Envimix), value);
+                }
+                else if (sessionResponse.ServerLogin != ServerLogin)
+                {
+                    Log(nameof(Envimix), "Envimania session creation failed (server login mismatch).");
+                }
+                else
+                {
+                    EnvimaniaSessionToken = sessionResponse.SessionToken!;
+                    EnvimaniaSessionRetryCount = 1;
+
+                    InitiateRatingsForAllPlayers(sessionResponse);
+                    RequestFinishedEnvimaniaRecordsAgain();
+                }
+
+                break;
+        }
+    }
+
     public bool CloseEnvimaniaSession()
     {
         if (EnvimaniaSessionToken is "")
@@ -852,23 +912,17 @@ public class Envimix : UniverseModeBase
             ManiaPlanetAuthenticationRequested = false;
         }
 
-        // EnvimaniaSessionRequestTimeout is not -1 by default, it is protected by the first if statement
+        // The timeout is armed only after a failed session request.
         if (EnvimaniaSessionRequestTimeout != -1 && Now - EnvimaniaSessionRequestTimeout >= 10000)
         {
-            // 5 retries limit before fully bailing out
+            // Pause after 5 retries, then begin a fresh attempt after 30 minutes.
             if (EnvimaniaSessionRetryCount >= 5)
             {
-                EnvimaniaSessionRequestTimeout = -1;
-                EnvimaniaSessionFirstRequestTimeout = -1;
-                EnvimaniaStatusMessage = "Envimania connection failed";
-                Log(nameof(Envimix), "Envimania session creation failed after 5 retries. Giving up.");
-                return;
-            }
+                if (Now - EnvimaniaSessionFirstRequestTimeout >= 1800000)
+                {
+                    RequestEnvimaniaSession(EnvimaniaSessionToken is not "");
+                }
 
-            // Request a new ManiaPlanet token after 30 minutes of failure
-            if (Now - EnvimaniaSessionFirstRequestTimeout >= 1800000)
-            {
-                RequestEnvimaniaSession();
                 return;
             }
 
@@ -891,6 +945,12 @@ public class Envimix : UniverseModeBase
                 if (EnvimaniaSessionFirstRequestTimeout == -1)
                 {
                     EnvimaniaSessionFirstRequestTimeout = Now;
+                }
+
+                if (EnvimaniaSessionRetryCount >= 5)
+                {
+                    EnvimaniaStatusMessage = "Envimania connection failed";
+                    Log(nameof(Envimix), "Envimania session creation failed after 5 retries. Retry in 30 minutes.");
                 }
 
                 ManiaPlanetAuthenticationRequested = true; // Smol hack
@@ -926,6 +986,7 @@ public class Envimix : UniverseModeBase
                 EnvimaniaSessionRetryCount = 1;
 
                 InitiateRatingsForAllPlayers(sessionResponse);
+                RequestFinishedEnvimaniaRecordsAgain();
 
                 Validations = sessionResponse.Validations!;
                 ValidationsUpdatedAt = Now;
@@ -954,7 +1015,7 @@ public class Envimix : UniverseModeBase
             if (Now - EnvimaniaSessionTokenReceived >= 1800000)
             {
                 Log(nameof(Envimix), "Running Envimania session refresh...");
-                RequestEnvimaniaSession();
+                RequestEnvimaniaSession(preserveCurrentToken: true);
             }
             // otherwise status check every 1 minute
             else if (Now - EnvimaniaStatusReceived >= 60000)
@@ -963,22 +1024,6 @@ public class Envimix : UniverseModeBase
                 EnvimaniaStatusRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/status", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}");
             }
 
-            ImmutableArray<string> recordsToRequestAgain = new();
-
-            foreach (var (filterKey, finished) in EnvimaniaFinishedRecordsRequests)
-            {
-                if (EnvimaniaUnfinishedRecordsRequests.ContainsKey(filterKey))
-                {
-                    recordsToRequestAgain.Add(filterKey);
-                }
-            }
-
-            foreach (var filterKey in recordsToRequestAgain)
-            {
-                var filter = EnvimaniaUnfinishedRecordsRequests[filterKey];
-                EnvimaniaFinishedRecordsRequests.Remove(filterKey);
-                RequestEnvimaniaRecords(filter.Car, filter.Gravity, filter.Laps);
-            }
         }
 
         // Status checks
@@ -1025,6 +1070,13 @@ public class Envimix : UniverseModeBase
             {
                 Log(nameof(Envimix), "Envimania session records sent (200).");
 
+                var recordsToRemove = MathLib.Min(EnvimaniaRecordsRequestCount, EnvimaniaSessionRecordRequests.Length);
+
+                for (var i = 0; i < recordsToRemove; i++)
+                {
+                    EnvimaniaSessionRecordRequests.RemoveAt(0);
+                }
+
                 SEnvimaniaSessionRecordResponse response = new();
 
                 if (response.FromJson(EnvimaniaRecordsRequest.Result))
@@ -1059,6 +1111,7 @@ public class Envimix : UniverseModeBase
 
             Http.Destroy(EnvimaniaRecordsRequest);
             EnvimaniaRecordsRequest = null;
+            EnvimaniaRecordsRequestCount = 0;
         }
 
         // Handle records driven - HTTP request every second containing 1 or more new records
@@ -1073,9 +1126,7 @@ public class Envimix : UniverseModeBase
                 var recRequest = EnvimaniaSessionRecordRequests[0];
 
                 EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
-
-                // removes just the one record here
-                EnvimaniaSessionRecordRequests.Clear();
+                EnvimaniaRecordsRequestCount = 1;
             }
             else if (EnvimaniaSessionRecordRequests.Length > 1)
             {
@@ -1100,19 +1151,7 @@ public class Envimix : UniverseModeBase
                 }
 
                 EnvimaniaRecordsRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/records", bulkRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
-
-                // if more than 20 records, remove just the partial requests
-                if (EnvimaniaSessionRecordRequests.Length > 20)
-                {
-                    foreach (var r in partialRequests)
-                    {
-                        EnvimaniaSessionRecordRequests.RemoveAt(0);
-                    }
-                }
-                else
-                {
-                    EnvimaniaSessionRecordRequests.Clear();
-                }
+                EnvimaniaRecordsRequestCount = bulkRequest.Requests.Length;
             }
         }
 
@@ -1383,6 +1422,13 @@ public class Envimix : UniverseModeBase
                         break;
                     }
 
+                    var projectedRank = insertIndex + 1;
+
+                    if (insertIndex == -1)
+                    {
+                        projectedRank = recResponse.Records.Length + 1;
+                    }
+
                     Envimania.SEnvimaniaRecord rec = new()
                     {
                         User = recordRequest.User,
@@ -1422,7 +1468,10 @@ public class Envimix : UniverseModeBase
                     envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
 
-                    UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has set Xth Envimania record with $<$ff8{car.Get()}$>: $<{TimeToTextWithMilli(tempRace.Get().Time)}$>!");
+                    if (projectedRank <= 20)
+                    {
+                        UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has set the {FormatOrdinal(projectedRank)} Envimania record with $<$ff8{car.Get()}$>: $<{TimeToTextWithMilli(tempRace.Get().Time)}$>!");
+                    }
                 }
             }
         }
@@ -2174,10 +2223,12 @@ public class Envimix : UniverseModeBase
         if (UserRatingRequest is null && UserRatingsToRequest.Count > 0 && UserRatingsUpdatedAt + 1000 <= Now)
         {
             ImmutableArray<Envimania.SRatingServerRequest> ratingReqs = new();
+            UserRatingsInFlight.Clear();
 
             foreach (var (key, req) in UserRatingsToRequest)
             {
                 ratingReqs.Add(req);
+                UserRatingsInFlight[key] = req;
 
                 var difficulty = req.Rating.Difficulty;
                 var quality = req.Rating.Quality;
@@ -2190,8 +2241,6 @@ public class Envimix : UniverseModeBase
                     isDifficultyDifferent = UserRatings[key].Difficulty != difficulty;
                     isQualityDifferent = UserRatings[key].Quality != quality;
                 }
-
-                UserRatings[key] = req.Rating;
 
                 var difficultyChatKey = $"{req.User.Login}_Difficulty";
                 var qualityChatKey = $"{req.User.Login}_Quality";
@@ -2268,8 +2317,6 @@ public class Envimix : UniverseModeBase
 
             UserRatingRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/rate", ratingReqs.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
-            UserRatingsToRequest.Clear();
-
             UserRatingsUpdatedAt = Now;
         }
 
@@ -2284,6 +2331,18 @@ public class Envimix : UniverseModeBase
                 if (response.FromJson(UserRatingRequest.Result))
                 {
                     var ratings = Ratings;
+
+                    foreach (var (key, req) in UserRatingsInFlight)
+                    {
+                        UserRatings[key] = req.Rating;
+
+                        if (UserRatingsToRequest.ContainsKey(key)
+                            && UserRatingsToRequest[key].Rating.Difficulty == req.Rating.Difficulty
+                            && UserRatingsToRequest[key].Rating.Quality == req.Rating.Quality)
+                        {
+                            UserRatingsToRequest.Remove(key);
+                        }
+                    }
 
                     foreach (var filteredRating in response.Ratings)
                     {
@@ -2306,6 +2365,7 @@ public class Envimix : UniverseModeBase
 
             Http.Destroy(UserRatingRequest);
             UserRatingRequest = null;
+            UserRatingsInFlight.Clear();
         }
     }
 
@@ -2392,13 +2452,13 @@ public class Envimix : UniverseModeBase
 
         Envimania.SRating rating = new();
 
-        if (UserRatings.ContainsKey(key))
-        {
-            rating = UserRatings[key];
-        }
-        else if (UserRatingsToRequest.ContainsKey(key))
+        if (UserRatingsToRequest.ContainsKey(key))
         {
             rating = UserRatingsToRequest[key].Rating;
+        }
+        else if (UserRatings.ContainsKey(key))
+        {
+            rating = UserRatings[key];
         }
         else
         {
