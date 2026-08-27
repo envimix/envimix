@@ -1604,7 +1604,7 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
 
-            if (i >= filteredLocalGhosts.Length)
+            if (i + scrollOffset >= filteredLocalGhosts.Length)
             {
                 frame.Hide();
                 continue;
@@ -1780,7 +1780,7 @@ public class Menu : CTmMlScriptIngame, IContext
         {
             var frame = (FrameGhosts.Controls[i] as CMlFrame)!;
 
-            if (i >= response.Records.Length)
+            if (i + scrollOffset >= response.Records.Length)
             {
                 frame.Hide();
                 continue;
