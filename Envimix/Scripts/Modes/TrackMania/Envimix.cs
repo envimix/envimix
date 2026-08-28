@@ -39,6 +39,12 @@ public class Envimix : UniverseModeBase
         public Dictionary<string, Envimania.SEnvimaniaRecord> Validations;
     }
 
+    public struct SEnvimaniaSessionTokenResponse
+    {
+        public string SessionToken;
+        public int ExpiresAt;
+    }
+
     public struct SEnvimaniaSessionRecordRequest
     {
         public Envimania.SUserInfo User;
@@ -182,6 +188,7 @@ public class Envimix : UniverseModeBase
 
         EnvimaniaSessionRequestTimeout = -1;
         EnvimaniaSessionFirstRequestTimeout = -1;
+        EnvimaniaSessionExtendRequestedAt = -1;
 
         //UIManager.UIAll.OverlayHide321Go = true;
         UIManager.UIAll.OverlayHideChrono = true;
@@ -641,6 +648,8 @@ public class Envimix : UniverseModeBase
     public int EnvimaniaStatusReceived;
     public CHttpRequest? EnvimaniaStatusRequest;
     public CHttpRequest? EnvimaniaCloseRequest;
+    public CHttpRequest? EnvimaniaSessionExtendRequest;
+    public int EnvimaniaSessionExtendRequestedAt;
     public int EnvimaniaSessionRetryCount;
     public required Dictionary<string, CHttpRequest> EnvimaniaRecordsRequests;
     public required Dictionary<string, Envimania.SEnvimaniaRecordsFilter> EnvimaniaUnfinishedRecordsRequests;
@@ -714,6 +723,13 @@ public class Envimix : UniverseModeBase
             EnvimaniaSessionToken = "";
             EnvimaniaSessionTokenReceived = -1;
             EnvimaniaStatusReceived = -1;
+            EnvimaniaSessionExtendRequestedAt = -1;
+
+            if (EnvimaniaSessionExtendRequest is not null)
+            {
+                Http.Destroy(EnvimaniaSessionExtendRequest);
+                EnvimaniaSessionExtendRequest = null;
+            }
         }
         else
         {
@@ -840,6 +856,38 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    private void RequestEnvimaniaSessionExtension()
+    {
+        Log(nameof(Envimix), "Extending Envimania session...");
+        EnvimaniaSessionExtendRequestedAt = Now;
+
+        if (EnvimixXmlRpc)
+        {
+            XmlRpc.SendCallback("Envimix.Envimania.Session.Extend", EnvimaniaSessionToken);
+        }
+        else
+        {
+            EnvimaniaSessionExtendRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/extend", "", $"Authorization: Bearer {EnvimaniaSessionToken}");
+        }
+    }
+
+    private void ApplyEnvimaniaSessionExtension(string value, string source)
+    {
+        SEnvimaniaSessionTokenResponse response = new();
+
+        if (!response.FromJson(value))
+        {
+            Log(nameof(Envimix), $"Envimania session extension failed ({source}, JSON issue).");
+            Log(nameof(Envimix), value);
+            return;
+        }
+
+        EnvimaniaSessionToken = response.SessionToken!;
+        EnvimaniaSessionTokenReceived = Now;
+        EnvimaniaSessionExtendRequestedAt = -1;
+        Log(nameof(Envimix), $"Envimania session extended ({source}, expires at {response.ExpiresAt}).");
+    }
+
     public void ProcessXmlRpcEvent(string name, string value)
     {
         switch (name)
@@ -867,6 +915,9 @@ public class Envimix : UniverseModeBase
                     RequestFinishedEnvimaniaRecordsAgain();
                 }
 
+                break;
+            case "Envimix.Envimania.Session.Extend":
+                ApplyEnvimaniaSessionExtension(value, "XML-RPC");
                 break;
         }
     }
@@ -1010,12 +1061,12 @@ public class Envimix : UniverseModeBase
                 EnvimaniaStatusReceived = Now;
             }
 
-            // request new ManiaPlanet auth token every 30 minutes, session token expires in 30 minutes but with ~5 minute grace period
-            // no new session, only refreshed internally, swapped token
-            if (Now - EnvimaniaSessionTokenReceived >= 1800000)
+            // Extend the 20-minute session token with a two-minute safety margin.
+            if (Now - EnvimaniaSessionTokenReceived >= 1080000
+                && (EnvimixXmlRpc || EnvimaniaSessionExtendRequest is null)
+                && (EnvimaniaSessionExtendRequestedAt == -1 || Now - EnvimaniaSessionExtendRequestedAt >= 10000))
             {
-                Log(nameof(Envimix), "Running Envimania session refresh...");
-                RequestEnvimaniaSession(preserveCurrentToken: true);
+                RequestEnvimaniaSessionExtension();
             }
             // otherwise status check every 1 minute
             else if (Now - EnvimaniaStatusReceived >= 60000)
@@ -1024,6 +1075,22 @@ public class Envimix : UniverseModeBase
                 EnvimaniaStatusRequest = Http.CreateGet($"{EnvimixWebAPI}/envimania/session/status", UseCache: false, $"Authorization: Bearer {EnvimaniaSessionToken}");
             }
 
+        }
+
+
+        if (EnvimaniaSessionExtendRequest is not null && EnvimaniaSessionExtendRequest.IsCompleted)
+        {
+            if (EnvimaniaSessionExtendRequest.StatusCode == 200)
+            {
+                ApplyEnvimaniaSessionExtension(EnvimaniaSessionExtendRequest.Result, "HTTP");
+            }
+            else
+            {
+                Log(nameof(Envimix), $"Envimania session extension failed ({EnvimaniaSessionExtendRequest.StatusCode}). Retry in 10 seconds.");
+            }
+
+            Http.Destroy(EnvimaniaSessionExtendRequest);
+            EnvimaniaSessionExtendRequest = null;
         }
 
         // Status checks
@@ -1246,7 +1313,10 @@ public class Envimix : UniverseModeBase
 
     public override void OnXmlRpcEvent(CXmlRpcEvent e)
     {
-
+        if (e.Type == CXmlRpcEvent.EType.Callback)
+        {
+            ProcessXmlRpcEvent(e.Param1, e.Param2);
+        }
     }
 
     #endregion
