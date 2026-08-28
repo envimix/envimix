@@ -557,12 +557,12 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
 
         for (var i = 0; i < Scores.Count; i++)
         {
-            var scoreRecords = Netread<Dictionary<string, SRecord>>.For(Scores[i]);
+            var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(Scores[i]);
             var login = Scores[i].User.Login;
             playerTimes[login] = 2147483647;
-            if (scoreRecords.Get().ContainsKey(key))
+            if (envimixBestRace.Get().ContainsKey(key))
             {
-                playerTimes[login] = scoreRecords.Get()[key].Time;
+                playerTimes[login] = envimixBestRace.Get()[key].Time;
             }
             scoreIndices[login] = i;
         }
