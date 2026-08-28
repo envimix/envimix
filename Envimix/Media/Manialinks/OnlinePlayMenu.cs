@@ -346,6 +346,34 @@ public class OnlinePlayMenu : CManiaAppTitleLayer, IContext
         FrameServerPanel.Hide();
     }
 
+    private void FadeInServerList()
+    {
+        foreach (var control in FrameServerList.Controls)
+        {
+            var frame = (control as CMlFrame)!;
+            if (!frame.Visible)
+                continue;
+
+            var background = (frame.Controls[0] as CMlQuad)!;
+            var server = (frame.GetFirstChild("QuadServer") as CMlQuad)!;
+            var name = (frame.GetFirstChild("LabelServerName") as CMlLabel)!;
+            var mode = (frame.GetFirstChild("LabelMode") as CMlLabel)!;
+            var players = (frame.GetFirstChild("LabelPlayers") as CMlLabel)!;
+
+            background.Opacity = 0;
+            server.Opacity = 0;
+            name.Opacity = 0;
+            mode.Opacity = 0;
+            players.Opacity = 0;
+
+            AnimMgr.Add(background, "<quad opacity=\"0.9\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(server, "<quad opacity=\"0.75\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(name, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(mode, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+            AnimMgr.Add(players, "<label opacity=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+    }
+
     private void JoinSelectedServer()
     {
         if (SelectedServerLogin == "")
@@ -481,5 +509,8 @@ public class OnlinePlayMenu : CManiaAppTitleLayer, IContext
         ServersRequest = null;
         UpdateServerList();
         UpdateServerPanel();
+
+        if (!AppendRequest && Servers.Length > 0)
+            FadeInServerList();
     }
 }
