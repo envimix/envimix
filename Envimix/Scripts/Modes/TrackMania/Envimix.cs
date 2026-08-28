@@ -1193,6 +1193,7 @@ public class Envimix : UniverseModeBase
             else
             {
                 Log(nameof(Envimix), $"Records retrieval failed ({recsRequest.StatusCode}, {filter.Car}, G: {filter.Gravity}, Type: Time, Zone: [unknown]).");
+                EnvimaniaStatusMessage = $"Records failed to load (HTTP {recsRequest.StatusCode}).";
             }
 
             recsRequestsToRemove.Add(filterKey);

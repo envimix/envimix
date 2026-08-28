@@ -144,7 +144,8 @@ public class Envimania : CTmMlScriptIngame, IContext
         LabelYourRecordNickname = (FrameYourRecord.GetFirstChild("LabelNickname") as CMlLabel)!;
         LabelYourRecordTime = (FrameYourRecord.GetFirstChild("LabelTime") as CMlLabel)!;
 
-        ResetYourRecord();
+        LabelEnvimaniaStatus.SetText(EnvimaniaStatusMessage);
+        UpdateRecords();
     }
 
     public void Loop()
