@@ -2012,8 +2012,8 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
                 if (RatingEnabled)
                 {
-                    AnimMgr.Add(gaugeDifficulty, "<gauge size=\"11 6.5\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                    AnimMgr.Add(gaugeQuality, "<gauge size=\"11 6.5\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+                    gaugeDifficulty.Size = new Vec2(11, 6.5f);
+                    gaugeQuality.Size = new Vec2(11, 6.5f);
                 }
                 else
                 {
