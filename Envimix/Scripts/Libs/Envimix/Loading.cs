@@ -93,7 +93,8 @@ public static class Loading
             "TIP: Submarine is a trick to gather as much speed as possible in the water. It is a technique used to overcome larger obstacles.",
             "FUN FACT: Track of the Day in the Nadeo Envimix title pack was introduced in 2018, 2 years before Nadeo included Track of the Days in the latest Trackmania. It was included in ENVIMIX Turbo as a reminder of the possible inspiration.",
             "TIP: Stars are manually-given ratings of interesting combinations. It's worth checking them out!",
-            "FUN FACT: Nadeo Envimix is a challenge invented by Poutrel and MrLag in 2014."
+            "FUN FACT: Nadeo Envimix is a challenge invented by Poutrel and MrLag in 2014.",
+            "FUN FACT: Helicopter drops the car 10 degrees lower than in Trackmania Turbo for smoother landings. This was a last minute change done 2 days before the release.",
         };
 
         var randomIndex = MathLib.Rand(0, tips.Length - 1);
