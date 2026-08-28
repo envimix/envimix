@@ -276,6 +276,7 @@ public class EnvimixTimeAttack : Envimix
         foreach (var playerToAutoRespawn in autoRespawnToClean)
         {
             AutoRespawn.Remove(playerToAutoRespawn);
+            UIManager.GetUI(GetPlayer(playerToAutoRespawn)).ScoreTableVisibility = CUIConfig.EVisibility.None;
         }
     }
 
@@ -290,12 +291,14 @@ public class EnvimixTimeAttack : Envimix
                 if (e.IsEndRace && AutoRespawnTime > -1)
                 {
                     AutoRespawn[e.Player.User.Login] = Now;
+                    UIManager.GetUI(e.Player).ScoreTableVisibility = CUIConfig.EVisibility.ForcedVisible;
                 }
                 break;
             case CTmModeEvent.EType.GiveUp:
                 if (AutoRespawn.ContainsKey(e.Player.User.Login))
                 {
                     AutoRespawn.Remove(e.Player.User.Login);
+                    UIManager.GetUI(e.Player).ScoreTableVisibility = CUIConfig.EVisibility.None;
                 }
                 break;
         }
@@ -312,6 +315,12 @@ public class EnvimixTimeAttack : Envimix
         foreach (var spectator in Spectators)
         {
             NoticeMessage(UIManager.GetUI(spectator), "");
+
+            if (AutoRespawn.ContainsKey(spectator.User.Login))
+            {
+                AutoRespawn.Remove(spectator.User.Login);
+                UIManager.GetUI(spectator).ScoreTableVisibility = CUIConfig.EVisibility.None;
+            }
         }
 
         RespawnAllWaiting();
