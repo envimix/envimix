@@ -1276,6 +1276,35 @@ public class Envimix : UniverseModeBase
     {
     }
 
+    private bool TryQueueEnvimaniaRecord(SEnvimaniaSessionRecordRequest recordRequest)
+    {
+        var i = EnvimaniaRecordsRequestCount;
+
+        while (i < EnvimaniaSessionRecordRequests.Length)
+        {
+            var queuedRequest = EnvimaniaSessionRecordRequests[i];
+
+            if (queuedRequest.User.Login != recordRequest.User.Login
+                || queuedRequest.Car != recordRequest.Car
+                || queuedRequest.Gravity != recordRequest.Gravity
+                || queuedRequest.Laps != recordRequest.Laps)
+            {
+                i += 1;
+                continue;
+            }
+
+            if (queuedRequest.Record.Time <= recordRequest.Record.Time)
+            {
+                return false;
+            }
+
+            EnvimaniaSessionRecordRequests.RemoveAt(i);
+        }
+
+        EnvimaniaSessionRecordRequests.Add(recordRequest);
+        return true;
+    }
+
     public override void OnPlayerFinish(CTmModeEvent e)
     {
         var tempRace = Netwrite<Record.SRecord>.For(e.Player.Score);
@@ -1403,7 +1432,12 @@ public class Envimix : UniverseModeBase
 
                     //var envimaniaRecordRequest = Http.CreatePost($"{EnvimixWebAPI}/envimania/session/record", recordRequest.ToJson(), $"Authorization: Bearer {EnvimaniaSessionToken}\nContent-Type: application/json");
 
-                    EnvimaniaSessionRecordRequests.Add(recordRequest);
+                    if (!TryQueueEnvimaniaRecord(recordRequest))
+                    {
+                        Record.ResetTempResult(e);
+                        UpdateScores();
+                        return;
+                    }
 
                     var insertIndex = -1;
 
