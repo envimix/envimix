@@ -444,6 +444,7 @@ public class EnvimixTeamAttack : Envimix
                     var car = Netwrite<string>.For(player);
 
                     AutoRespawn.Remove(player.User.Login);
+                    e.UI.ScoreTableVisibility = CUIConfig.EVisibility.None;
 
                     var frozen = forceFreeze || e.CustomEventData.Count > 2 && e.CustomEventData[2] == "True";
                     var spawned = SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen);
