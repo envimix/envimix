@@ -2030,7 +2030,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
         var ratingsUpdatedAt = Netread<int>.For(Teams[0]);
 
-        if (ratingsUpdatedAt.Get() != PrevRatingsUpdatedAt)
+        if (ratingsUpdatedAt.Get() != PrevRatingsUpdatedAt || validationsUpdatedAt.Get() != PrevValidationsUpdatedAt)
         {
             var ratings = Netread<Dictionary<string, SRating>>.For(Teams[0]);
             var stars = Netread<Dictionary<string, SStar>>.For(Teams[0]);
@@ -2126,6 +2126,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
             }
 
             PrevRatingsUpdatedAt = ratingsUpdatedAt.Get();
+            PrevValidationsUpdatedAt = validationsUpdatedAt.Get();
         }
 
         // every second, update total time from persistent or net if different player
@@ -2168,11 +2169,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
             PrevGameTime = GameTime;
         }
-
-        /*if (validationsUpdatedAt.Get() != PrevValidationsUpdatedAt)
-        {
-            PrevValidationsUpdatedAt = validationsUpdatedAt.Get();
-        }*/
 
         var currentFilterKey = ConstructValidationFilterKey(car.Get());
 

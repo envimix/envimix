@@ -1473,6 +1473,7 @@ public class Envimix : UniverseModeBase
 
                         var validations = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecord>>.For(Teams[0]);
                         validations.Get()[ConstructValidationFilterKey(filter)] = validationRec;
+                        ValidationsUpdatedAt = Now;
                     }
                 }
 

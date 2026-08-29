@@ -47,6 +47,7 @@ public class Rating : CTmMlScriptIngame, IContext
     public int VisibleTime = -1;
     public string PreviousCar = "";
     public int PrevRatingsUpdatedAt = -1;
+    public int PrevValidationsUpdatedAt = -1;
 
     [ManialinkControl] public required CMlFrame FrameRating;
     [ManialinkControl] public required CMlGauge GaugeDifficulty;
@@ -59,6 +60,7 @@ public class Rating : CTmMlScriptIngame, IContext
     [Netread] public required Dictionary<string, SRating> Ratings { get; set; }
     [Netread] public required Dictionary<string, SStar> Stars { get; set; }
     [Netread] public required int RatingsUpdatedAt { get; set; }
+    [Netread] public int ValidationsUpdatedAt { get; set; }
 
     [Netread] public int FinishedAt { get; set; }
     [Netread] public bool Outro { get; set; }
@@ -251,6 +253,13 @@ public class Rating : CTmMlScriptIngame, IContext
             UpdateRatings();
 
             PrevRatingsUpdatedAt = RatingsUpdatedAt;
+        }
+
+        if (ValidationsUpdatedAt != PrevValidationsUpdatedAt)
+        {
+            UpdateRatings();
+
+            PrevValidationsUpdatedAt = ValidationsUpdatedAt;
         }
 
         if (FrameRating.Visible != PreviousVisible)
