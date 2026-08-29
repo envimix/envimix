@@ -1451,6 +1451,8 @@ public class Envimix : UniverseModeBase
                 };
 
                 var filterKey = ConstructRecordsFilterKey(filter);
+                var hasAuthoritativeRecords = EnvimaniaFinishedRecordsRequests.ContainsKey(filterKey)
+                    && envimaniaRecords.Get().ContainsKey(filterKey);
 
                 if (envimaniaRecords.Get().ContainsKey(filterKey))
                 {
@@ -1574,7 +1576,7 @@ public class Envimix : UniverseModeBase
                     envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
 
-                    if (projectedRank <= 20)
+                    if (hasAuthoritativeRecords && projectedRank <= 20)
                     {
                         UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has set the {FormatOrdinal(projectedRank)} Envimania record with $<$ff8{car.Get()}$>: $<{TimeToTextWithMilli(tempRace.Get().Time)}$>!");
                     }
