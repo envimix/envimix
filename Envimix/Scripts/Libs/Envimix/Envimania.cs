@@ -9,6 +9,13 @@ public static class Envimania
         public string Name;
         public string Uid;
         public string Collection;
+        public string AuthorLogin;
+        public string AuthorNickname;
+        public int AuthorTime;
+        public int GoldTime;
+        public int SilverTime;
+        public int BronzeTime;
+        public int Laps;
     }
 
     public struct SRating

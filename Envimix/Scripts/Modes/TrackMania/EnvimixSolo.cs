@@ -641,7 +641,7 @@ public class EnvimixSolo : Envimix
     private void RequestMapVisit()
     {
         var envimixTurboUserToken = Local<string>.For(GetPlayer().User);
-        MapInfoRequest = Http.CreatePost($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", "", $"Authorization: Bearer {envimixTurboUserToken.Get()}");
+        MapInfoRequest = Http.CreatePost($"{EnvimixWebAPI}/maps/{Map.MapInfo.MapUid}", CreateMapInfo().ToJson(), $"Authorization: Bearer {envimixTurboUserToken.Get()}\nContent-Type: application/json");
     }
 
     private void RequestLeaderboard()
@@ -1100,13 +1100,7 @@ public class EnvimixSolo : Envimix
         if (UserRatingRequest is null && UserRatingsToRequest.Count > 0 && (PersonalRatingUpdatedAt == "" || TimeLib.GetDelta(TimeLib.GetCurrent(), PersonalRatingUpdatedAt) > 0))
         {
             SRatingClientRequest ratingReq = new();
-
-            Envimania.SMapInfo mapInfo = new()
-            {
-                Name = Map.MapInfo.Name,
-                Uid = Map.MapInfo.MapUid,
-                Collection = Map.MapInfo.CollectionName,
-            };
+            var mapInfo = CreateMapInfo();
 
             // transform server request to client request because I cant be bothered with this shit xdd
 

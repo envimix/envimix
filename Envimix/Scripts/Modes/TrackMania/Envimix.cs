@@ -24,6 +24,9 @@ public class Envimix : UniverseModeBase
     public struct SEnvimaniaSessionRequest
     {
         public string ServerLogin;
+        public string ServerName;
+        public string ServerModeName;
+        public string TitleId;
         public string ServerToken;
         public Envimania.SMapInfo Map;
         public ImmutableArray<Envimania.SUserInfo> Players;
@@ -665,6 +668,30 @@ public class Envimix : UniverseModeBase
         return (EnvimixXmlRpc && XmlRpc is not null) || (EnvimixWebAPI is not "" && ServerAdmin is not null);
     }
 
+    protected Envimania.SMapInfo CreateMapInfo()
+    {
+        Envimania.SMapInfo mapInfo = new()
+        {
+            Name = Map.MapInfo.Name,
+            Uid = Map.MapInfo.MapUid,
+            Collection = Map.MapInfo.CollectionName,
+            AuthorLogin = Map.MapInfo.AuthorLogin,
+            AuthorNickname = Map.MapInfo.AuthorNickName,
+            AuthorTime = Map.MapInfo.TMObjective_AuthorTime,
+            GoldTime = Map.MapInfo.TMObjective_GoldTime,
+            SilverTime = Map.MapInfo.TMObjective_SilverTime,
+            BronzeTime = Map.MapInfo.TMObjective_BronzeTime,
+            Laps = 1
+        };
+
+        if (Map.MapInfo.TMObjective_IsLapRace)
+        {
+            mapInfo.Laps = Map.MapInfo.TMObjective_NbLaps;
+        }
+
+        return mapInfo;
+    }
+
     void DirectlyRequestEnvimaniaSession()
     {
         ImmutableArray<Envimania.SUserInfo> userInfos = new();
@@ -674,18 +701,14 @@ public class Envimix : UniverseModeBase
             userInfos.Add(CreateUserInfo(player.User));
         }
 
-        Envimania.SMapInfo mapInfo = new()
-        {
-            Name = Map.MapInfo.Name,
-            Collection = Map.MapInfo.CollectionName,
-            Uid = Map.MapInfo.MapUid
-        };
-
         SEnvimaniaSessionRequest sessionRequest = new()
         {
             ServerLogin = ServerLogin,
+            ServerName = ServerName,
+            ServerModeName = ServerModeName,
+            TitleId = LoadedTitle.TitleId,
             ServerToken = ServerAdmin.Authentication_Token,
-            Map = mapInfo,
+            Map = CreateMapInfo(),
             Players = userInfos,
             Cars = DisplayedCars
         };
