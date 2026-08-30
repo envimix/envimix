@@ -45,6 +45,7 @@ public class MainMenu : CManiaAppTitle, IContext
         public int GoldTime;
         public int SilverTime;
         public int BronzeTime;
+        public int Laps;
     }
 
     public struct SSubmitMapsRequest
@@ -1116,8 +1117,16 @@ public class MainMenu : CManiaAppTitle, IContext
                         AuthorTime = map.TMObjective_AuthorTime,
                         GoldTime = map.TMObjective_GoldTime,
                         SilverTime = map.TMObjective_SilverTime,
-                        BronzeTime = map.TMObjective_BronzeTime
+                        BronzeTime = map.TMObjective_BronzeTime,
                     };
+                    if (map.TMObjective_IsLapRace)
+                    {
+                        mapInfo.Laps = map.TMObjective_NbLaps;
+                    }
+                    else 
+                    {
+                        mapInfo.Laps = 1;
+                    }
                     request.Maps!.Add(mapInfo);
                     order += 1;
                 }
