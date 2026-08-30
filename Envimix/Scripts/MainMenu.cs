@@ -39,6 +39,8 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Name;
         public string Uid;
         public string Collection;
+        public string AuthorLogin;
+        public string AuthorNickname;
         public int Order;
         public string Campaign;
         public int AuthorTime;
@@ -1112,6 +1114,8 @@ public class MainMenu : CManiaAppTitle, IContext
                         Name = map.Name,
                         Uid = map.MapUid,
                         Collection = map.CollectionName,
+                        AuthorLogin = map.AuthorLogin,
+                        AuthorNickname = map.AuthorNickName,
                         Order = order,
                         Campaign = campaignName,
                         AuthorTime = map.TMObjective_AuthorTime,
