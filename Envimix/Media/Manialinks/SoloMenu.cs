@@ -1958,6 +1958,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void ViewGhostSelectedMap(string car, string ghostUrl)
     {
+        if (ghostUrl == "")
+        {
+            return;
+        }
+
         SendCustomEvent("ViewGhost", new[] { MapGroupNum.ToString(), MapInfoNum.ToString(), car, ghostUrl });
     }
 
