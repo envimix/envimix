@@ -23,6 +23,11 @@ public static class Record
         public ImmutableArray<SCheckpoint> Checkpoints;
     }
 
+    public static bool IsValid(SRecord record)
+    {
+        return record.Time > 0;
+    }
+
     public static void ToResult(CTmResult result, SRecord record)
     {
         result.Time = record.Time;

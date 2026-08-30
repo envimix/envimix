@@ -1379,6 +1379,13 @@ public class Envimix : UniverseModeBase
     public override void OnPlayerFinish(CTmModeEvent e)
     {
         var tempRace = Netwrite<Record.SRecord>.For(e.Player.Score);
+
+        if (!Record.IsValid(tempRace.Get()))
+        {
+            Record.ResetTempResult(e);
+            return;
+        }
+
         var car = Netwrite<string>.For(e.Player);
         var envimixBestRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
         var envimixPrevRace = Netwrite<Dictionary<string, Record.SRecord>>.For(e.Player.Score);
