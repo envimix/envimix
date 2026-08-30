@@ -732,55 +732,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                     QUAD_BUTTON_SKIN_PLAY();
                 }
                 break;
-            case "QuadGhost":
-                var file = control.Parent.DataAttributeGet("file");
-                var gindex = control.Parent.DataAttributeGet("gindex");
-                var url = control.Parent.DataAttributeGet("url");
-
-                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
-
-                (control as CMlQuad)!.StyleSelected = false;
-
-                if (url is not "")
-                {
-                    if (SelectedGhosts.ContainsKey(url))
-                    {
-                        SelectedGhosts.Remove(url);
-                        SendCustomEvent("RemoveOnlineGhost", new[] { url });
-                    }
-                    else
-                    {
-                        SelectedGhosts[url] = true;
-                        SendCustomEvent("AddOnlineGhost", new[] { url });
-                    }
-
-                    (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(url);
-                }
-                else
-                {
-                    if (SelectedGhosts.ContainsKey(file))
-                    {
-                        SelectedGhosts.Remove(file);
-                        SendCustomEvent("RemoveGhost", new[] { file, gindex });
-                    }
-                    else
-                    {
-                        SelectedGhosts[file] = true;
-                        SendCustomEvent("AddGhost", new[] { file, gindex });
-                    }
-
-                    (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(file);
-                }
-                
-                break;
-            case "QuadSaveGhost":
-                control.Hide();
-                control.Parent.GetFirstChild("QuadSaveGhostOff").Show();
-                var ghostFile = control.Parent.DataAttributeGet("downloadfile");
-                var ghostUrl = control.Parent.DataAttributeGet("url");
-                Log($"Saving ghost locally... {ghostFile}");
-                DownloadGhostTasks[DataFileMgr.Ghost_Download(ghostFile, ghostUrl)] = ghostFile;
-                break;
         }
 
         if (control == QuadJoinRed)
@@ -826,27 +777,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         if (controlId == "QuadSkin")
         {
             Focus3();
-            return;
-        }
-
-        if (controlId == "QuadGhost")
-        {
-            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
-            var file = control.Parent.DataAttributeGet("file");
-
-            if (file is "")
-            {
-                FrameTooltip.Hide();
-                return;
-            }
-
-            IList<string> folders = TextLib.Split("\\", file);
-            var name = folders[folders.Count - 1];
-
-            var car = Netread<string>.For(GetPlayer());
-            name = TextLib.Replace(name, car.Get(), $"$ff0{car.Get()}$z");
-
-            UpdateTooltip(name);
             return;
         }
 

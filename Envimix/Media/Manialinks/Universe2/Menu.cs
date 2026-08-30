@@ -927,49 +927,54 @@ public class Menu : CTmMlScriptIngame, IContext
                 var gindex = control.Parent.DataAttributeGet("gindex");
                 var url = control.Parent.DataAttributeGet("url");
 
-                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
-
-                (control as CMlQuad)!.StyleSelected = false;
-
-                if (url is not "")
+                if (file != "" || url != "")
                 {
-                    if (SelectedGhosts.ContainsKey(url))
+                    Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+
+                    (control as CMlQuad)!.StyleSelected = false;
+
+                    if (url is not "")
                     {
-                        SelectedGhosts.Remove(url);
-                        SendCustomEvent("RemoveOnlineGhost", new[] { url });
+                        if (SelectedGhosts.ContainsKey(url))
+                        {
+                            SelectedGhosts.Remove(url);
+                            SendCustomEvent("RemoveOnlineGhost", new[] { url });
+                        }
+                        else
+                        {
+                            SelectedGhosts[url] = true;
+                            SendCustomEvent("AddOnlineGhost", new[] { url });
+                        }
+
+                        (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(url);
                     }
                     else
                     {
-                        SelectedGhosts[url] = true;
-                        SendCustomEvent("AddOnlineGhost", new[] { url });
-                    }
+                        if (SelectedGhosts.ContainsKey(file))
+                        {
+                            SelectedGhosts.Remove(file);
+                            SendCustomEvent("RemoveGhost", new[] { file, gindex });
+                        }
+                        else
+                        {
+                            SelectedGhosts[file] = true;
+                            SendCustomEvent("AddGhost", new[] { file, gindex });
+                        }
 
-                    (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(url);
-                }
-                else
-                {
-                    if (SelectedGhosts.ContainsKey(file))
-                    {
-                        SelectedGhosts.Remove(file);
-                        SendCustomEvent("RemoveGhost", new[] { file, gindex });
+                        (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(file);
                     }
-                    else
-                    {
-                        SelectedGhosts[file] = true;
-                        SendCustomEvent("AddGhost", new[] { file, gindex });
-                    }
-
-                    (control as CMlQuad)!.StyleSelected = SelectedGhosts.ContainsKey(file);
                 }
-                
                 break;
             case "QuadSaveGhost":
-                control.Hide();
-                control.Parent.GetFirstChild("QuadSaveGhostOff").Show();
-                var ghostFile = control.Parent.DataAttributeGet("downloadfile");
                 var ghostUrl = control.Parent.DataAttributeGet("url");
-                Log($"Saving ghost locally... {ghostFile}");
-                DownloadGhostTasks[DataFileMgr.Ghost_Download(ghostFile, ghostUrl)] = ghostFile;
+                if (ghostUrl != "")
+                {
+                    control.Hide();
+                    control.Parent.GetFirstChild("QuadSaveGhostOff").Show();
+                    var ghostFile = control.Parent.DataAttributeGet("downloadfile");
+                    Log($"Saving ghost locally... {ghostFile}");
+                    DownloadGhostTasks[DataFileMgr.Ghost_Download(ghostFile, ghostUrl)] = ghostFile;
+                }
                 break;
             case "QuadRemoveGhost":
                 var car = Netread<string>.For(GetPlayer());
@@ -1642,6 +1647,7 @@ public class Menu : CTmMlScriptIngame, IContext
             labelAutosave.Visible = TextLib.StartsWith("autosave", metadata.FileName, false, false);
 
             quadGhost.StyleSelected = SelectedGhosts.ContainsKey(metadata.FileName);
+            quadGhost.Opacity = 0.5f;
 
             quadSaveGhost.Hide();
             quadSaveGhostOff.Show();
@@ -1845,9 +1851,22 @@ public class Menu : CTmMlScriptIngame, IContext
             labelTime.SetText(TimeToTextWithMilli(time));
             labelAutosave.Hide();
 
-            quadGhost.StyleSelected = SelectedGhosts.ContainsKey(ghostUrl);
+            if (ghostUrl == "")
+            {
+                quadGhost.Opacity = 0;
+            }
+            else
+            {
+                quadGhost.Opacity = 0.5f;
+            }
+            quadGhost.StyleSelected = ghostUrl != "" && SelectedGhosts.ContainsKey(ghostUrl);
 
-            if (ghostUrl == "" || DownloadedReplayFiles.Contains(fullReplayPath))
+            if (ghostUrl == "")
+            {
+                quadSaveGhost.Hide();
+                quadSaveGhostOff.Hide();
+            }
+            else if (DownloadedReplayFiles.Contains(fullReplayPath))
             {
                 quadSaveGhost.Hide();
                 quadSaveGhostOff.Show();
