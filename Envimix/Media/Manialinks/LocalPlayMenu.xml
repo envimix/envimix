@@ -7,16 +7,37 @@
         <label id="LabelMapName" pos="10.5 -5.3" z-index="1" size="90 5" text="A06" textfont="RajdhaniMono" valign="center2"/>
         <quad id="QuadEnvironment" pos="109.5 -5" z-index="1" size="7 7" halign="center" valign="center" image="file://Media/Images/Environments/LagoonTMT.png"/>
     </framemodel>
+    <framemodel id="FramemodelLanServer">
+        <quad size="115 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" />
+        <quad id="QuadLanServer" size="115 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -.125" colorize="258" />
+        <label id="LabelLanServerName" pos="3 -5.2" z-index="1" size="62 5" textfont="RajdhaniMono" valign="center2" />
+        <label id="LabelLanMode" pos="82.5 -5.2" z-index="1" size="30 5" textfont="RajdhaniMono" textsize="1" valign="center2" halign="center" />
+        <label id="LabelLanPlayers" pos="111 -5.2" z-index="1" size="18 5" textfont="RajdhaniMono" textsize="2" halign="right" valign="center2" />
+    </framemodel>
     <frame pos="45 75" clip="1" clipsizen="180 153" clipposn="-90.5 -76">
         <frame id="FrameLocalPlayMenu">
             <quad z-index="0" size="180 135" style="Bgs1" substyle="BgCardList" halign="right"/>
             <quad z-index="0" size="180 135" style="Bgs1" substyle="BgCardList" halign="right"/>
-            <frame z-index="1">
-                <frame pos="-150 -2.5">
-                    <quad z-index="0" size="55 55" halign="center" style="Bgs1" substyle="BgCardList" />
-                    <quad id="QuadPanelMapThumbnail" pos="0 -1" z-index="1" size="53 53" halign="center" />
-                    <quad pos="0 -57.5" z-index="0" size="55 55" halign="center" style="Bgs1" substyle="BgCardList" />
-                    <frame pos="0 -57.5" id="FramePanelMap" z-index="1" clip="1" clipposn="0 -27.5" clipsizen="50 60">
+            <frame z-index="2" pos="-150 -2.5">
+                <frame pos="0 0">
+                    <quad size="55 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center"/>
+                    <quad id="QuadLocalMaps" halign="center" size="55 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" styleselected="1" />
+                    <label pos="0 -5.3" z-index="1" size="53 5" text="LOCAL MAPS" textfont="RajdhaniMono" valign="center2" halign="center"/>
+                </frame>
+                <frame pos="0 -10">
+                    <quad size="55 10" style="Bgs1" substyle="BgCardList" modulatecolor="258" opacity=".9" halign="center"/>
+                    <quad id="QuadLocalNetwork" halign="center" size="55 9.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" pos="0 -0.125" colorize="258" />
+                    <label pos="0 -5.3" z-index="1" size="53 5" text="LOCAL NETWORK" textfont="RajdhaniMono" valign="center2" halign="center"/>
+                </frame>
+            </frame>
+            <frame id="FrameMapPage" z-index="1">
+                <frame pos="-150 -25">
+                    <quad z-index="0" size="55 32.5" halign="center" style="Bgs1" substyle="BgCardList"  valign="center" pos="0 -16.25"/>
+					<frame pos="0 -16.25" z-index="1" clip="1" clipsizen="53 30.5">
+                    	<quad id="QuadPanelMapThumbnail" size="53 53" halign="center" valign="center"/>
+					</frame>
+                    <quad pos="0 -35" z-index="0" size="55 55" halign="center" style="Bgs1" substyle="BgCardList" />
+                    <frame pos="0 -35" id="FramePanelMap" z-index="1" clip="1" clipposn="0 -27.5" clipsizen="50 55">
                         <quad id="QuadPanelMapEnvironment" pos="-22.5 -5" z-index="1" size="5 5" halign="center" image="file://Media/Images/Environments/CanyonTMT.png" valign="center" />
                         <label id="LabelPanelMapName" pos="-18.5 -5.2" z-index="1" size="300 5" text="A01" textfont="RajdhaniMono" valign="center2" />
                         <label id="LabelPanelAuthor" pos="-18.5 -9.5" z-index="1" size="42 5" text="Nadeo" textfont="RajdhaniMono" valign="center2" textprefix="by " textsize="1" />
@@ -73,6 +94,50 @@
                             <frameinstance modelid="FramemodelItem" pos="0 -100" />
                             <frameinstance modelid="FramemodelItem" pos="0 -110" />
                             <frameinstance modelid="FramemodelItem" pos="0 -120" />
+                        </frame>
+                    </frame>
+                </frame>
+            </frame>
+            <frame id="FrameLanPage" z-index="1" hidden="1">
+                <frame pos="-150 -25">
+                    <quad size="55 90" style="Bgs1" substyle="BgCardList" halign="center" />
+                    <frame id="FrameLanServerPanel" pos="-25 0" z-index="1" clip="1" clipposn="25 -45" clipsizen="50 88">
+                        <label id="LabelLanPanelName" pos="25 -5" size="45 8" textfont="RajdhaniMono" textsize="3" text="My Server" halign="center" />
+                        <label id="LabelLanPanelLogin" pos="25 -11" size="45 8" textfont="GameFontRegular" textsize="1" text="my_server" halign="center" textcolor="888" />
+                        <label id="LabelLanPanelMode" pos="25 -17.5" size="50 29" textfont="RajdhaniMono" text="EnvimixTeamAttack" halign="center" textsize="1.5" />
+                        <label id="LabelLanPanelPlayers" pos="13 -25" size="50 5" textfont="RajdhaniMono" textsize="2" textprefix="👥 " text="10/255$ff0🔒" halign="center" />
+                        <label id="LabelLanPanelSpectators" pos="37 -25" size="50 5" textfont="RajdhaniMono" textsize="2" textprefix="📷 " text="10/255$ff0🔒" halign="center" />
+                        <label id="LabelLanPanelZone" pos="0 -58" size="50 5" textfont="RajdhaniMono" textsize="1" hidden="1" />
+                        <label id="LabelLanPanelLadder" pos="0 -72" size="50 5" textfont="RajdhaniMono" textsize="1" hidden="1" />
+                        <label id="LabelLanPanelDescription" pos="2.5 -35" size="45 50" textfont="GameFontRegular" textsize="1" text="Description" autonewline="1" />
+                    </frame>
+                    <label id="LabelLanStatus" pos="0 -85" z-index="1" size="50 10" text="Searching for local servers..." textfont="RajdhaniMono" textsize="1" autonewline="1" valign="center2" halign="center" />
+                </frame>
+                <frame pos="-150 -117.5">
+                    <quad id="QuadJoinLanServerBase" size="55 15" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" colorize="111" />
+                    <quad id="QuadJoinLanServer" hidden="1" size="55 14.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -.125" />
+                    <label pos="0 -7.75" z-index="1" size="55 10" text="Join Server" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="4" textprefix="$t" />
+                </frame>
+                <frame>
+                    <frame pos="-5 -2.5">
+                        <quad size="2.5 130" style="Bgs1" substyle="BgCardList" />
+                        <quad id="QuadLanScroller" size="2.5 10" style="Bgs1" substyle="BgWindow4" z-index="1" opacity="0.8" scriptevents="1" />
+                    </frame>
+                    <frame pos="-120 -2.5" z-index="1" id="FrameLanServerListScrollable" scroll="1" scrollgrid="0 10" scrollmax="0 0" clip="1" clipposn="59 -65" clipsizen="116 130">
+                        <frame id="FrameLanServerList">
+                            <frameinstance modelid="FramemodelLanServer" pos="0 0" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -10" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -20" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -30" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -40" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -50" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -60" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -70" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -80" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -90" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -100" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -110" />
+                            <frameinstance modelid="FramemodelLanServer" pos="0 -120" />
                         </frame>
                     </frame>
                 </frame>

@@ -4,7 +4,12 @@ namespace Envimix.Media.Manialinks;
 
 public class LocalPlayMenu : CManiaAppTitleLayer, IContext
 {
+    public const int VisibleLanServerCount = 13;
+    public const float LanServerRowHeight = 10;
+
     [ManialinkControl] public required CMlFrame FrameLocalPlayMenu;
+    [ManialinkControl] public required CMlFrame FrameMapPage;
+    [ManialinkControl] public required CMlFrame FrameLanPage;
     [ManialinkControl] public required CMlFrame FrameMapList;
     [ManialinkControl] public required CMlFrame FrameMapListScrollable;
     [ManialinkControl] public required CMlQuad QuadPanelMapThumbnail;
@@ -29,6 +34,23 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelCoastCarTime;
     [ManialinkControl] public required CMlQuad QuadRefresh;
     [ManialinkControl] public required CMlQuad QuadScroller;
+    [ManialinkControl] public required CMlQuad QuadLocalMaps;
+    [ManialinkControl] public required CMlQuad QuadLocalNetwork;
+    [ManialinkControl] public required CMlFrame FrameLanServerList;
+    [ManialinkControl] public required CMlFrame FrameLanServerListScrollable;
+    [ManialinkControl] public required CMlFrame FrameLanServerPanel;
+    [ManialinkControl] public required CMlLabel LabelLanStatus;
+    [ManialinkControl] public required CMlLabel LabelLanPanelName;
+    [ManialinkControl] public required CMlLabel LabelLanPanelLogin;
+    [ManialinkControl] public required CMlLabel LabelLanPanelPlayers;
+    [ManialinkControl] public required CMlLabel LabelLanPanelSpectators;
+    [ManialinkControl] public required CMlLabel LabelLanPanelZone;
+    [ManialinkControl] public required CMlLabel LabelLanPanelMode;
+    [ManialinkControl] public required CMlLabel LabelLanPanelLadder;
+    [ManialinkControl] public required CMlLabel LabelLanPanelDescription;
+    [ManialinkControl] public required CMlQuad QuadJoinLanServer;
+    [ManialinkControl] public required CMlQuad QuadJoinLanServerBase;
+    [ManialinkControl] public required CMlQuad QuadLanScroller;
 
     public CTaskResult_MapList MapListTask;
     public bool MapListLoaded;
@@ -40,6 +62,14 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
     public bool HoldScrollbar;
     public float HoldScrollbarPos;
     public bool ScrollbarMouseOut;
+
+    public bool LocalNetworkMode;
+    public string SelectedLanServerLogin = "";
+    public float PrevLanScrollY;
+    public bool HoldLanScrollbar;
+    public float HoldLanScrollbarPos;
+    public bool LanScrollbarMouseOut;
+    public int LocalServerDiscoveryStartedAt;
 
     public CAudioSource AudioClick;
 
@@ -85,10 +115,53 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
         QuadRefresh.MouseClick += () =>
         {
             Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
-            var folderPath = MapListTask.Path;
-            DataFileMgr.Map_RefreshFromDisk();
-            DataFileMgr.TaskResult_Release(MapListTask.Id);
-            LoadMapList(folderPath);
+            if (LocalNetworkMode)
+            {
+                DiscoverLocalServers();
+            }
+            else
+            {
+                var folderPath = MapListTask.Path;
+                DataFileMgr.Map_RefreshFromDisk();
+                DataFileMgr.TaskResult_Release(MapListTask.Id);
+                LoadMapList(folderPath);
+            }
+        };
+
+        QuadLocalMaps.MouseClick += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+            ShowLocalMaps();
+        };
+
+        QuadLocalNetwork.MouseClick += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+            ShowLocalNetwork();
+        };
+
+        QuadJoinLanServer.MouseClick += () =>
+        {
+            JoinSelectedLanServer();
+        };
+
+        QuadLanScroller.MouseClick += () =>
+        {
+            HoldLanScrollbar = true;
+            HoldLanScrollbarPos = MouseY - (float)QuadLanScroller.RelativePosition_V3.Y;
+        };
+
+        QuadLanScroller.MouseOver += () =>
+        {
+            AnimMgr.Add(QuadLanScroller, "<quad opacity=\"1\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+        };
+
+        QuadLanScroller.MouseOut += () =>
+        {
+            if (HoldLanScrollbar)
+                LanScrollbarMouseOut = true;
+            else
+                AnimMgr.Add(QuadLanScroller, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
         };
 
         QuadScroller.MouseClick += () =>
@@ -157,6 +230,21 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
                 UpdateMapList();
                 UpdateMapPanel();
             }
+            else if (controlId == "QuadLanServer")
+            {
+                var serverLogin = control.DataAttributeGet("login");
+                if (serverLogin == "")
+                    return;
+
+                if (SelectedLanServerLogin == serverLogin)
+                    JoinSelectedLanServer();
+                else
+                    SelectedLanServerLogin = serverLogin;
+
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+                UpdateLanServerList();
+                UpdateLanServerPanel();
+            }
         };
     }
 
@@ -174,6 +262,7 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
 
         LoadMapList("");
 
+        ShowLocalMaps();
         UpdateMapList();
         UpdateMapPanel();
     }
@@ -182,6 +271,20 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
 
     public void Loop()
     {
+        if (LocalNetworkMode)
+        {
+            UpdateLanScrolling();
+            UpdateLanServerList();
+            UpdateLanServerPanel();
+
+            if (TitleControl.LocalServers_CurrentTitle.Count == 0 && Now - LocalServerDiscoveryStartedAt >= 1000)
+                LabelLanStatus.SetText("No local servers found");
+            else
+                LabelLanStatus.SetText("");
+
+            return;
+        }
+
         if (!MapListLoaded && MapListTask is not null && MapListTask.HasSucceeded)
         {
             UpdateMapList();
@@ -223,9 +326,162 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    private void ShowLocalMaps()
+    {
+        LocalNetworkMode = false;
+        QuadLocalMaps.StyleSelected = true;
+        QuadLocalNetwork.StyleSelected = false;
+        FrameMapPage.Show();
+        FrameLanPage.Hide();
+    }
+
+    private void DiscoverLocalServers()
+    {
+        LocalServerDiscoveryStartedAt = Now;
+        LabelLanStatus.SetText("Searching for local servers...");
+        TitleControl.DiscoverLocalServers();
+    }
+
+    private void UpdateLanServerList()
+    {
+        FrameLanServerListScrollable.ScrollMax.Y = MathLib.Max(0, TitleControl.LocalServers_CurrentTitle.Count - VisibleLanServerCount) * LanServerRowHeight * 1f;
+        var scrollOffset = MathLib.NearestInteger((float)FrameLanServerListScrollable.ScrollOffset.Y / LanServerRowHeight);
+
+        if (TitleControl.LocalServers_CurrentTitle.Count > VisibleLanServerCount)
+        {
+            QuadLanScroller.Show();
+            QuadLanScroller.Size.Y = VisibleLanServerCount * 1f / TitleControl.LocalServers_CurrentTitle.Count * 130f;
+            QuadLanScroller.RelativePosition_V3.Y = -(float)FrameLanServerListScrollable.ScrollOffset.Y
+                / FrameLanServerListScrollable.ScrollMax.Y * (130 - QuadLanScroller.Size.Y);
+        }
+        else
+        {
+            QuadLanScroller.Hide();
+        }
+
+        var index = 0;
+        foreach (var control in FrameLanServerList.Controls)
+        {
+            var frame = (control as CMlFrame)!;
+            var serverIndex = index + scrollOffset;
+
+            if (serverIndex >= TitleControl.LocalServers_CurrentTitle.Count)
+            {
+                frame.Hide();
+                index += 1;
+                continue;
+            }
+
+            var server = TitleControl.LocalServers_CurrentTitle[serverIndex];
+            var quadServer = (frame.GetFirstChild("QuadLanServer") as CMlQuad)!;
+            var labelName = (frame.GetFirstChild("LabelLanServerName") as CMlLabel)!;
+            var labelPlayers = (frame.GetFirstChild("LabelLanPlayers") as CMlLabel)!;
+            var labelMode = (frame.GetFirstChild("LabelLanMode") as CMlLabel)!;
+
+            quadServer.DataAttributeSet("login", server.ServerLogin);
+            quadServer.StyleSelected = server.ServerLogin == SelectedLanServerLogin;
+            labelName.SetText(server.ServerName);
+            labelPlayers.SetText($"{server.PlayerCount}$888/{server.MaxPlayerCount}");
+            labelMode.SetText(server.ModeName);
+            if (server.IsPrivate)
+                labelPlayers.SetText($"$ff0🔒 $fff{server.PlayerCount}$888/{server.MaxPlayerCount}");
+            frame.Show();
+            index += 1;
+        }
+    }
+
+    private void UpdateLanServerPanel()
+    {
+        foreach (var server in TitleControl.LocalServers_CurrentTitle)
+        {
+            if (server.ServerLogin != SelectedLanServerLogin)
+                continue;
+
+            LabelLanPanelName.SetText(server.ServerName);
+            LabelLanPanelLogin.SetText(server.ServerLogin);
+            LabelLanPanelPlayers.SetText($"{server.PlayerCount}/{server.MaxPlayerCount}");
+            if (server.IsPrivate)
+                LabelLanPanelPlayers.SetText($"{server.PlayerCount}/{server.MaxPlayerCount}$ff0🔒");
+            LabelLanPanelSpectators.SetText($"{server.SpectatorCount}/{server.MaxSpectatorCount}");
+            if (server.IsPrivateForSpectator)
+                LabelLanPanelSpectators.SetText($"{server.SpectatorCount}/{server.MaxSpectatorCount}$ff0🔒");
+            LabelLanPanelZone.SetText("");
+            LabelLanPanelMode.SetText(server.ModeName);
+            LabelLanPanelLadder.SetText($"Ladder {server.LadderServerLimitMin}-{server.LadderServerLimitMax}");
+            LabelLanPanelDescription.SetText(server.Comment);
+            QuadJoinLanServerBase.Colorize = new Vec3(0, 1, 0);
+            QuadJoinLanServer.Show();
+            FrameLanServerPanel.Show();
+            return;
+        }
+
+        SelectedLanServerLogin = "";
+        QuadJoinLanServerBase.Colorize = new Vec3(0.1, 0.1, 0.1);
+        QuadJoinLanServer.Hide();
+        FrameLanServerPanel.Hide();
+    }
+
+    private void ShowLocalNetwork()
+    {
+        LocalNetworkMode = true;
+        QuadLocalMaps.StyleSelected = false;
+        QuadLocalNetwork.StyleSelected = true;
+        FrameMapPage.Hide();
+        FrameLanPage.Show();
+        SelectedLanServerLogin = "";
+        FrameLanServerListScrollable.ScrollOffset.Y = 0;
+        PrevLanScrollY = 0;
+        FrameLanServerList.RelativePosition_V3.Y = 0;
+        DiscoverLocalServers();
+        UpdateLanServerList();
+        UpdateLanServerPanel();
+    }
+
+    private void JoinSelectedLanServer()
+    {
+        foreach (var server in TitleControl.LocalServers_CurrentTitle)
+        {
+            if (server.ServerLogin == SelectedLanServerLogin)
+            {
+                OpenLink(server.JoinLink, CMlScript.LinkType.Goto);
+                return;
+            }
+        }
+    }
+
+    private void UpdateLanScrolling()
+    {
+        if (HoldLanScrollbar && MouseLeftButton)
+        {
+            var newY = MathLib.Clamp(MouseY - HoldLanScrollbarPos, (float)QuadLanScroller.Size.Y - 130f, 0);
+            var targetScrollOffset = newY / ((float)QuadLanScroller.Size.Y - 130) * (float)FrameLanServerListScrollable.ScrollMax.Y;
+            var stepIndex = MathLib.NearestInteger(targetScrollOffset / LanServerRowHeight);
+            var steppedScrollOffset = MathLib.Clamp(stepIndex * LanServerRowHeight * 1f, 0, (float)FrameLanServerListScrollable.ScrollMax.Y);
+            if (FrameLanServerListScrollable.ScrollMax.Y > 0)
+                QuadLanScroller.RelativePosition_V3.Y = -(steppedScrollOffset / FrameLanServerListScrollable.ScrollMax.Y) * (130 - QuadLanScroller.Size.Y);
+            FrameLanServerListScrollable.ScrollOffset.Y = steppedScrollOffset;
+        }
+        else if (HoldLanScrollbar)
+        {
+            if (LanScrollbarMouseOut)
+            {
+                AnimMgr.Add(QuadLanScroller, "<quad opacity=\"0.8\"/>", 100, CAnimManager.EAnimManagerEasing.QuadOut);
+                LanScrollbarMouseOut = false;
+            }
+            HoldLanScrollbar = false;
+        }
+
+        if (FrameLanServerListScrollable.ScrollOffset.Y != PrevLanScrollY)
+        {
+            PrevLanScrollY = (float)FrameLanServerListScrollable.ScrollOffset.Y;
+            FrameLanServerList.RelativePosition_V3.Y = -PrevLanScrollY;
+            UpdateLanServerList();
+        }
+    }
+
     private void LoadMapList(string folderPath)
     {
-        MapListTask = DataFileMgr.Map_GetFilteredGameList(4, folderPath, false);
+        MapListTask = DataFileMgr.Map_GetFilteredGameList(7, folderPath, false);
         MapListLoaded = false;
     }
 
@@ -233,9 +489,20 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
     {
         var totalCount = 0;
         var hasParentEntry = false;
+        ImmutableArray<string> visibleFolders = new();
         ImmutableArray<CMapInfo> playableMaps = new();
         if (MapListTask is not null)
         {
+            foreach (var subFolder in MapListTask.SubFolders)
+            {
+                if (MapListTask.Path == "" && subFolder == "Campaigns\\")
+                {
+                    continue;
+                }
+
+                visibleFolders.Add(subFolder);
+            }
+
             foreach (var mapInfo in MapListTask.MapInfos)
             {
                 if (mapInfo.IsPlayable)
@@ -244,7 +511,7 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
                 }
             }
             hasParentEntry = MapListTask.Path != "";
-            totalCount = MapListTask.SubFolders.Count + playableMaps.Length;
+            totalCount = visibleFolders.Length + playableMaps.Length;
             if (hasParentEntry)
             {
                 totalCount += 1;
@@ -320,9 +587,9 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (adjustedIndex < MapListTask.SubFolders.Count)
+            if (adjustedIndex < visibleFolders.Length)
             {
-                var subFolder = MapListTask.SubFolders[adjustedIndex];
+                var subFolder = visibleFolders[adjustedIndex];
 
                 var folderName = "";
                 foreach (var folderPath in TextLib.Split("\\", subFolder))
@@ -341,9 +608,9 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
 
                 frame.Visible = true;
             }
-            else if (adjustedIndex - MapListTask.SubFolders.Count < playableMaps.Length)
+            else if (adjustedIndex - visibleFolders.Length < playableMaps.Length)
             {
-                var itemIndex = adjustedIndex - MapListTask.SubFolders.Count;
+                var itemIndex = adjustedIndex - visibleFolders.Length;
                 var mapName = playableMaps[itemIndex].Name;
                 var mapUid = playableMaps[itemIndex].MapUid;
                 var environment = playableMaps[itemIndex].CollectionName;
