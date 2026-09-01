@@ -55,16 +55,6 @@ public class EnvimixSolo : Envimix
         public Dictionary<string, ImmutableArray<int>> Skillpoints;
     }
 
-    [Setting] public new bool EnableDefaultCar = true;
-    [Setting] public new bool EnableStadiumEnvimix = true;
-    [Setting] public new bool EnableUnitedCars = true;
-    [Setting] public new bool EnableTrafficCar = true;
-    [Setting] public new bool EnableTrafficCarInStadium = true;
-    [Setting] public new bool UseUnitedModels = true;
-    [Setting] public new bool AlwaysUseVehicleItems = false;
-    [Setting] public new string EnvimixWebAPI = "https://api.envimix.gbx.tools";
-    [Setting] public new string SkinsFile = "Skins_Turbo.json";
-
     [Setting(As = "Custom countdown")]
     public int CustomCountdown = -1;
 

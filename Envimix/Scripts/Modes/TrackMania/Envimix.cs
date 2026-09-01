@@ -138,6 +138,9 @@ public class Envimix : UniverseModeBase
     [Setting(As = "Envimix XML-RPC")]
     public bool EnvimixXmlRpc = false;
 
+    [Setting(As = "Enable Envimania sessions")]
+    public bool EnableEnvimaniaSessions = false;
+
     [Setting(As = "<hidden>")]
     public bool UseSkillpoints = false;
 
@@ -694,6 +697,11 @@ public class Envimix : UniverseModeBase
 
     void DirectlyRequestEnvimaniaSession()
     {
+        if (!EnableEnvimaniaSessions)
+        {
+            return;
+        }
+
         ImmutableArray<Envimania.SUserInfo> userInfos = new();
 
         foreach (var player in AllPlayers)
@@ -732,7 +740,7 @@ public class Envimix : UniverseModeBase
 
     public bool RequestEnvimaniaSession(bool preserveCurrentToken)
     {
-        if (!HasRemoteConnection())
+        if (!EnableEnvimaniaSessions || !HasRemoteConnection())
         {
             return false;
         }
