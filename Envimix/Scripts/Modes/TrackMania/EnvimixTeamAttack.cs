@@ -338,6 +338,8 @@ public class EnvimixTeamAttack : Envimix
 
     public override void OnEvent(CTmModeEvent e)
     {
+        ProcessExtendCommand(e);
+
         switch (e.Type)
         {
             case CTmModeEvent.EType.OnPlayerAdded:

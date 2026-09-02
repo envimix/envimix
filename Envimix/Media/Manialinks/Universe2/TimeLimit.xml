@@ -5,8 +5,24 @@
 			<quad z-index="0" size="42.5 10" valign="center" halign="center" style="Bgs1" substyle="BgCardList"/>
 			<quad id="QuadMode" z-index="2" size="42 9.75" valign="center" halign="center" style="Bgs1" substyle="BgWindow4" colorize="FC6" opacity=".25" hidden="1"/>
 			<frame id="FrameTimeLimitLabel" z-index="3" clip="1" clipsizen="40 9">
-				<label id="LabelTimeLimit" size="32.5 5" text="0:00" halign="center" valign="center2" textfont="RajdhaniMono" pos="0 -.45" textsize="4.5"/>
+                <label id="LabelTimeLimit" size="32.5 5" text="0:00" halign="center" valign="center2" textfont="RajdhaniMono" pos="0 -.45" textsize="4.5"/>
+				<quad id="QuadExtend" pos="-19 0" z-index="0" size="6 6" valign="center" style="Icons64x64_1" substyle="Add" scriptevents="1"/>
+            </frame>
+			<frame pos="-25.75 0" clip="1" clipsizen="8 10">
+				<frame id="FrameVote">
+					<frame pos="0 2.8" id="FrameYes">
+						<quad size="8 4.5" style="Bgs1InRace" substyle="BgCard" scriptevents="1" halign="center" pos="0 -0.125" colorize="0A0" id="QuadYes" valign="center"/>
+						<label size="20.5 5" text="YES" valign="center2" textfont="RajdhaniMono" textsize="0.8" z-index="1" halign="center" pos="0 -0.2"/>
+					</frame>
+					<frame pos="0 -2.4" id="FrameNo">
+						<quad size="8 4.5" style="Bgs1InRace" substyle="BgCard" scriptevents="1" halign="center" pos="0 -0.125" colorize="A00" id="QuadNo" valign="center"/>
+						<label size="20.5 5" text="NO" valign="center2" textfont="RajdhaniMono" textsize="0.8" z-index="1" halign="center" pos="0 -0.2"/>
+					</frame>
+				</frame>
 			</frame>
+			<label id="LabelVote" pos="-32 0.3" z-index="0" size="20 5" text="Extend?" textfont="RajdhaniMono" halign="right" valign="center" textemboss="1"/>
+			<label id="LabelVoteYes" pos="-25.75 8" z-index="0" size="20 5" text="0" textfont="RajdhaniMono" valign="center" textemboss="1" halign="center" textsize="2" textcolor="0A0"/>
+			<label id="LabelVoteNo" pos="-25.75 -7" z-index="0" size="20 5" text="0" textfont="RajdhaniMono" valign="center" textemboss="1" halign="center" textsize="2" textcolor="A00"/>
 		</frame>
 	</frame>
 </manialink>

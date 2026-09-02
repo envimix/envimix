@@ -2063,6 +2063,38 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    public void ProcessExtendCommand(CTmModeEvent e, int maxTimeLimitDuration)
+    {
+        if (e.Type != CTmModeEvent.EType.OnCommand
+            || e.CommandName != "Envimix.Extend"
+            || IsWarmUp
+            || CarSelectionMode
+            || CutOffTimeLimit < 0
+            || e.CommandValueInteger <= 0)
+        {
+            return;
+        }
+
+        var extendDuration = e.CommandValueInteger * 60 * 1000;
+        if (maxTimeLimitDuration >= 0)
+        {
+            extendDuration = MathLib.Min(extendDuration, maxTimeLimitDuration - (CutOffTimeLimit - Now));
+        }
+
+        if (extendDuration <= 0)
+        {
+            return;
+        }
+
+        CutOffTimeLimit = CutOffTimeLimit + extendDuration;
+        UIManager.UIAll.SendChat($"$<$ff8Map time extended by {TextLib.TimeToText(extendDuration)}.$>");
+    }
+
+    public void ProcessExtendCommand(CTmModeEvent e)
+    {
+        ProcessExtendCommand(e, -1);
+    }
+
     /// <summary>
     /// I never knew why this method exists, but it will continue existing.
     /// </summary>

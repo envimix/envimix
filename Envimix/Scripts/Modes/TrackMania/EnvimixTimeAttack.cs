@@ -16,6 +16,9 @@ public class EnvimixTimeAttack : Envimix
     [Setting(As = "Auto-respawn time")]
     public int AutoRespawnTime = 6;
 
+    [Setting(As = "Extend time (minutes)")]
+    public int ExtendTime = 5;
+
     [Setting(As = "Show individual ladder points difference")]
     public bool ShowIndividualLadderPointsDiff = true;
 
@@ -23,9 +26,15 @@ public class EnvimixTimeAttack : Envimix
     public bool ClearScoresOnMapEnd = false;
 
     public required Dictionary<string, int> AutoRespawn;
+    public Dictionary<string, bool> ExtendVotes = new();
+    public ImmutableArray<string> ExtendVotePlayers = new();
+    public int ExtendVoteStartedAt = -1;
 
     [Netwrite] public string ModeHelp { get; set; }
     [Netwrite] public bool ShowIndividualLadderPointsDiffEnabled { get; set; }
+    [Netwrite] public string VoteType { get; set; } = "";
+    [Netwrite] public int VoteYes { get; set; }
+    [Netwrite] public int VoteNo { get; set; }
 
     public override void OnServerInit()
     {
@@ -54,6 +63,7 @@ public class EnvimixTimeAttack : Envimix
         {
             case CUIConfigEvent.EType.OnLayerCustomEvent:
                 ProcessGeneralEnvimixEvents(e);
+                ProcessExtendVoteUiEvent(e);
                 ProcessUpdateSkinEvent(e);
                 ProcessUpdateCarEvent(e, forceFreeze: false);
                 break;
@@ -113,6 +123,8 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnGameStart()
     {
+        ResetExtendVote();
+
         // Period to select a starting car once the map is fully loaded
         CarSelectionMode = true;
 
@@ -181,7 +193,7 @@ public class EnvimixTimeAttack : Envimix
         }
         else
         {
-            CutOffTimeLimit = Now + TimeLimit * 1000 + 3000;
+            CutOffTimeLimit = Now + MathLib.Min(TimeLimit * 1000 + 3000, 60 * 60 * 1000);
         }
 
         foreach (var player in Players)
@@ -282,6 +294,8 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnEvent(CTmModeEvent e)
     {
+        ProcessExtendCommand(e, 60 * 60 * 1000);
+
         switch (e.Type)
         {
             case CTmModeEvent.EType.OnPlayerAdded:
@@ -311,6 +325,8 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnGameLoop()
     {
+        ResolveExtendVote();
+
         // TODO: check why. because of switching to spec while having a notice message displayed?
         foreach (var spectator in Spectators)
         {
@@ -335,6 +351,7 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnGameEnd()
     {
+        ResetExtendVote();
         AutoRespawn.Clear();
 
         Ladder_ComputeRank(CTmMode.ETmScoreSortOrder.TotalPoints);
@@ -364,6 +381,7 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnMapEnd()
     {
+        ResetExtendVote();
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.Normal;
         CutOffTimeLimit = -1;
 
@@ -371,6 +389,135 @@ public class EnvimixTimeAttack : Envimix
         {
             ClearScores();
         }
+    }
+
+    private void ResetExtendVote()
+    {
+        ExtendVotes.Clear();
+        ExtendVotePlayers.Clear();
+        ExtendVoteStartedAt = -1;
+        VoteType = "";
+        VoteYes = 0;
+        VoteNo = 0;
+    }
+
+    private int GetExtendDuration()
+    {
+        return MathLib.Min(ExtendTime * 60 * 1000, 60 * 60 * 1000 - (CutOffTimeLimit - Now));
+    }
+
+    private void PassExtendVote()
+    {
+        var extendDuration = GetExtendDuration();
+        CutOffTimeLimit = CutOffTimeLimit + extendDuration;
+        UIManager.UIAll.SendChat($"$<$ff8Map time extended by {TextLib.TimeToText(extendDuration)}.$>");
+        ResetExtendVote();
+    }
+
+    private void UpdateExtendVoteCounts()
+    {
+        VoteYes = 0;
+        VoteNo = 0;
+
+        foreach (var (playerLogin, vote) in ExtendVotes)
+        {
+            if (vote)
+            {
+                VoteYes += 1;
+            }
+            else
+            {
+                VoteNo += 1;
+            }
+        }
+    }
+
+    private void ResolveExtendVote()
+    {
+        if (VoteType != "Extend")
+        {
+            return;
+        }
+
+        var requiredVotes = ExtendVotePlayers.Length / 2 + 1;
+        var remainingVotes = ExtendVotePlayers.Length - VoteYes - VoteNo;
+
+        if (VoteYes >= requiredVotes)
+        {
+            PassExtendVote();
+        }
+        else if (VoteYes + remainingVotes < requiredVotes)
+        {
+            UIManager.UIAll.SendChat("$<$f88Map extension vote failed.$>");
+            ResetExtendVote();
+        }
+        else if (Now - ExtendVoteStartedAt >= 30000)
+        {
+            UIManager.UIAll.SendChat("$<$f88Map extension vote timed out.$>");
+            ResetExtendVote();
+        }
+    }
+
+    private void ProcessExtendVoteUiEvent(CUIConfigEvent e)
+    {
+        if (e.CustomEventType != "Extend"
+            || e.CustomEventData.Count != 1
+            || IsWarmUp
+            || CarSelectionMode
+            || CutOffTimeLimit < 0
+            || GetExtendDuration() <= 0)
+        {
+            return;
+        }
+
+        var player = GetPlayer(e.UI);
+        var vote = e.CustomEventData[0];
+
+        if (VoteType == "")
+        {
+            if (vote != "")
+            {
+                return;
+            }
+
+            if (Players.Count == 1)
+            {
+                PassExtendVote();
+                return;
+            }
+
+            ExtendVotes.Clear();
+            ExtendVotePlayers.Clear();
+            foreach (var eligiblePlayer in Players)
+            {
+                ExtendVotePlayers.Add(eligiblePlayer.User.Login);
+            }
+
+            ExtendVotes[player.User.Login] = true;
+            ExtendVoteStartedAt = Now;
+            VoteType = "Extend";
+            UpdateExtendVoteCounts();
+            UIManager.UIAll.SendChat($"$<{player.User.Name}$> started a vote to extend the map by $<$ff8{TextLib.TimeToText(GetExtendDuration())}$>.");
+            ResolveExtendVote();
+            return;
+        }
+
+        if (!ExtendVotePlayers.Contains(player.User.Login)
+            || ExtendVotes.ContainsKey(player.User.Login)
+            || vote != "Yes" && vote != "No")
+        {
+            return;
+        }
+
+        if (Now - ExtendVoteStartedAt >= 30000)
+        {
+            ResolveExtendVote();
+            return;
+        }
+
+        ExtendVotes[player.User.Login] = vote == "Yes";
+        UpdateExtendVoteCounts();
+        ResolveExtendVote();
     }
 
     private void ProcessUpdateCarEvent(CUIConfigEvent e, bool forceFreeze)
