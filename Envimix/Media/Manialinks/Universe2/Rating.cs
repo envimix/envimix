@@ -286,6 +286,9 @@ public class Rating : CTmMlScriptIngame, IContext
 
                 QuadStar.RelativePosition_V3.X = -50;
                 AnimMgr.Add(QuadStar, "<quad pos=\"-25 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
+
+                UpdateRatings();
+                PreviousCar = GetCar();
             }
 
             PreviousVisible = FrameRating.Visible;
