@@ -24,11 +24,25 @@
         <random_map_order>1</random_map_order>
     </filter>
     <mode_script_settings>
+        <setting name="S_EnableTM2Cars" type="boolean" value="true" />
+        <setting name="S_EnableTrafficCar" type="boolean" value="false" />
         <setting name="S_EnableUnitedCars" type="boolean" value="true" />
+        <setting name="S_EnableDefaultCar" type="boolean" value="false" />
         <setting name="S_EnableStadiumEnvimix" type="boolean" value="true" />
+        <setting name="S_EnableTrafficCarInStadium" type="boolean" value="false" />
         <setting name="S_UseUnitedModels" type="boolean" value="true" />
         <setting name="S_VehicleFolder" type="text" value="" />
+        <setting name="S_VehicleFileFormat" type="text" value="%1.Item.Gbx" />
+        <setting name="S_CarsFile" type="text" value="Cars.json" />
         <setting name="S_SkinsFile" type="text" value="Skins.TM2U_Island@adamkoo.json" />
+        <setting name="S_EnvimixWebAPI" type="text" value="https://api.envimix.gbx.tools" />
+        <setting name="S_EnvimixXmlRpc" type="boolean" value="false" />
+        <setting name="S_EnableEnvimaniaSessions" type="boolean" value="false" />
+        <setting name="S_UseLadder" type="boolean" value="true" />
+        <setting name="S_TimeLimit" type="integer" value="900" />
+        <setting name="S_CarSelectTime" type="integer" value="5" />
+        <setting name="S_CustomCountdown" type="integer" value="-1" />
+        <setting name="S_AutoRespawnTime" type="integer" value="6" />
     </mode_script_settings>
     <startindex>0</startindex>
     <map>
