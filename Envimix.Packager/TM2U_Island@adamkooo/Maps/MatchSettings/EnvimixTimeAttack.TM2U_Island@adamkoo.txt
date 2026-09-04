@@ -2,7 +2,7 @@
 <playlist>
     <gameinfos>
         <game_mode>0</game_mode>
-        <script_name><![CDATA[EnvimixTeamAttack.Script.txt]]></script_name>
+        <script_name><![CDATA[EnvimixTimeAttack.Script.txt]]></script_name>
         <title>TM2U_Island@adamkooo</title>
         <chat_time>10000</chat_time>
         <finishtimeout>1</finishtimeout>
@@ -42,6 +42,8 @@
         <setting name="S_CarSelectTime" type="integer" value="5" />
         <setting name="S_CustomCountdown" type="integer" value="-1" />
         <setting name="S_AutoRespawnTime" type="integer" value="6" />
+        <setting name="S_ExtendTime" type="integer" value="5" />
+        <setting name="S_ShowIndividualLadderPointsDiff" type="boolean" value="true" />
     </mode_script_settings>
     <startindex>0</startindex>
     <map>
