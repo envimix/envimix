@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text;
+using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -7,10 +8,13 @@ const string sourceText = "file://Media/Images";
 const string replacementText = "https://envimix.gbx.tools/img";
 
 var repositoryDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+var packagerDirectory = Path.Combine(repositoryDirectory, "Envimix.Packager");
 var envimixProjectDirectory = args.Length > 0
     ? Path.GetFullPath(args[0])
     : Path.Combine(repositoryDirectory, "Envimix");
-const string archivePath = "Envimix.zip";
+var version = args.Length > 1
+    ? args[1]
+    : typeof(BuildSettings).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
 
 if (!Directory.Exists(envimixProjectDirectory))
 {
@@ -37,6 +41,43 @@ var ignoredFilePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     "Scripts/Modes/TrackMania/EnvimixSolo.Script.txt",
     "Scripts/Modes/TrackMania/ViewGhost.Script.txt"
 };
+var settingDefaults = new Dictionary<string, string>
+{
+    ["S_EnableTM2Cars"] = "True",
+    ["S_EnableTrafficCar"] = "False",
+    ["S_EnableUnitedCars"] = "False",
+    ["S_EnableCustomCars"] = "False",
+    ["S_EnableDefaultCar"] = "False",
+    ["S_EnableStadiumEnvimix"] = "False",
+    ["S_EnableTrafficCarInStadium"] = "False",
+    ["S_UseUnitedModels"] = "False",
+    ["S_AlwaysUseVehicleItems"] = "False",
+    ["S_VehicleFolder"] = "\"Vehicles/\"",
+    ["S_VehicleFileFormat"] = "\"%1.Item.Gbx\"",
+    ["S_CarsFile"] = "\"\"",
+    ["S_SkinsFile"] = "\"\"",
+    ["S_EnvimixWebAPI"] = "\"https://api.envimix.gbx.tools\"",
+    ["S_EnvimixXmlRpc"] = "False",
+    ["S_EnableEnvimaniaSessions"] = "False"
+};
+var titleIds = new[]
+{
+    "TM2U_Island@adamkooo",
+    "TMOneAlpine@unbitn",
+    "TMOneSpeed@unbitn"
+};
+
+foreach (var titleId in titleIds)
+{
+    var titlePackDirectory = Path.Combine(packagerDirectory, titleId);
+    if (!Directory.Exists(titlePackDirectory))
+    {
+        Console.Error.WriteLine($"Title pack directory does not exist: {titlePackDirectory}");
+        return 1;
+    }
+}
+
+File.Delete("Envimix.zip");
 
 var stagingDirectory = Path.Combine(Path.GetTempPath(), $"Envimix.Packager-{Guid.NewGuid():N}");
 
@@ -44,22 +85,35 @@ try
 {
     Directory.CreateDirectory(stagingDirectory);
 
-    foreach (var root in roots)
+    foreach (var titleId in titleIds)
     {
-        var sourceDirectory = Path.Combine(outputDirectory, root);
-        if (!Directory.Exists(sourceDirectory))
+        var titlePackDirectory = Path.Combine(packagerDirectory, titleId);
+        var titleStagingDirectory = Path.Combine(stagingDirectory, titleId);
+
+        foreach (var root in roots)
         {
-            Console.Error.WriteLine($"Required package directory does not exist: {sourceDirectory}");
-            return 1;
+            var sourceDirectory = Path.Combine(outputDirectory, root);
+            if (!Directory.Exists(sourceDirectory))
+            {
+                Console.Error.WriteLine($"Required package directory does not exist: {sourceDirectory}");
+                return 1;
+            }
+
+            CopyDirectory(sourceDirectory, Path.Combine(titleStagingDirectory, root), root, ignoredFilePaths);
         }
 
-        CopyDirectory(sourceDirectory, Path.Combine(stagingDirectory, root), root, ignoredFilePaths);
+        CopyDirectory(titlePackDirectory, titleStagingDirectory, string.Empty, new HashSet<string>(), includeAllFiles: true);
+        ApplySettingDefaults(
+            Path.Combine(titleStagingDirectory, "Scripts", "Modes", "TrackMania", "Envimix.Script.txt"),
+            settingDefaults);
+        ReplaceInFiles(titleStagingDirectory, sourceText, replacementText);
+
+        var archivePath = $"Envimix.{titleId}.{version}.zip";
+        File.Delete(archivePath);
+        ZipFile.CreateFromDirectory(titleStagingDirectory, archivePath, CompressionLevel.Fastest, includeBaseDirectory: false);
+
+        Console.WriteLine($"Created {archivePath}");
     }
-
-    ReplaceInFiles(stagingDirectory, sourceText, replacementText);
-
-    File.Delete(archivePath);
-    ZipFile.CreateFromDirectory(stagingDirectory, archivePath, CompressionLevel.Fastest, includeBaseDirectory: false);
 
     return 0;
 }
@@ -101,15 +155,40 @@ static bool IsTextFile(string path)
     return Path.GetExtension(path).ToLowerInvariant() is ".txt" or ".xml" or ".json" or ".yml" or ".yaml";
 }
 
+static void ApplySettingDefaults(string scriptPath, IReadOnlyDictionary<string, string> settingDefaults)
+{
+    var contents = File.ReadAllText(scriptPath);
+
+    foreach (var (settingName, defaultValue) in settingDefaults)
+    {
+        var pattern = $"^(#Setting\\s+{Regex.Escape(settingName)}\\s+)(?:\"(?:\\\\.|[^\"])*\"|\\S+)";
+        var matches = Regex.Matches(contents, pattern, RegexOptions.Multiline);
+        if (matches.Count != 1)
+        {
+            throw new InvalidDataException(
+                $"Expected exactly one declaration for {settingName} in {scriptPath}, found {matches.Count}.");
+        }
+
+        contents = Regex.Replace(
+            contents,
+            pattern,
+            match => match.Groups[1].Value + defaultValue,
+            RegexOptions.Multiline);
+    }
+
+    File.WriteAllText(scriptPath, contents);
+}
+
 static void CopyDirectory(
     string sourceDirectory,
     string destinationDirectory,
     string relativeDirectory,
-    IReadOnlySet<string> ignoredFilePaths)
+    IReadOnlySet<string> ignoredFilePaths,
+    bool includeAllFiles = false)
 {
     Directory.CreateDirectory(destinationDirectory);
 
-    foreach (var filePath in Directory.EnumerateFiles(sourceDirectory).Where(IsTextFile))
+    foreach (var filePath in Directory.EnumerateFiles(sourceDirectory).Where(path => includeAllFiles || IsTextFile(path)))
     {
         var relativeFilePath = $"{relativeDirectory}/{Path.GetFileName(filePath)}";
         if (ignoredFilePaths.Contains(relativeFilePath))
@@ -127,7 +206,8 @@ static void CopyDirectory(
             childDirectory,
             Path.Combine(destinationDirectory, childDirectoryName),
             $"{relativeDirectory}/{childDirectoryName}",
-            ignoredFilePaths);
+            ignoredFilePaths,
+            includeAllFiles);
     }
 }
 

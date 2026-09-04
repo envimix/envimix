@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist>
+    <gameinfos>
+        <game_mode>0</game_mode>
+        <script_name><![CDATA[EnvimixTeamAttack.Script.txt]]></script_name>
+        <title>TM2U_Island@adamkooo</title>
+        <chat_time>10000</chat_time>
+        <finishtimeout>1</finishtimeout>
+        <allwarmupduration>0</allwarmupduration>
+        <disablerespawn>0</disablerespawn>
+        <forceshowallopponents>0</forceshowallopponents>
+    </gameinfos>
+    <hotseat>
+        <game_mode>0</game_mode>
+        <time_limit>300000</time_limit>
+        <rounds_count>5</rounds_count>
+    </hotseat>
+    <filter>
+        <is_lan>1</is_lan>
+        <is_internet>1</is_internet>
+        <is_solo>0</is_solo>
+        <is_hotseat>0</is_hotseat>
+        <sort_index>1000</sort_index>
+        <random_map_order>1</random_map_order>
+    </filter>
+    <mode_script_settings>
+        <setting name="S_EnableUnitedCars" type="boolean" value="true" />
+        <setting name="S_EnableStadiumEnvimix" type="boolean" value="true" />
+        <setting name="S_UseUnitedModels" type="boolean" value="true" />
+        <setting name="S_VehicleFolder" type="text" value="" />
+        <setting name="S_SkinsFile" type="text" value="Skins.TM2U_Island@adamkoo.json" />
+    </mode_script_settings>
+    <startindex>0</startindex>
+    <map>
+        <file>IslandRace/1/RaceA01.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA02.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA03.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA04.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA05.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA06.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA07.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA08.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA09.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA10.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA11.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA12.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA13.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA14.Map.Gbx</file>
+    </map>
+    <map>
+        <file>IslandRace/1/RaceA15.Map.Gbx</file>
+    </map>
+</playlist>
