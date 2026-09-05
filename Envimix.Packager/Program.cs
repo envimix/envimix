@@ -61,20 +61,16 @@ var settingDefaults = new Dictionary<string, string>
     ["S_EnvimixXmlRpc"] = "False",
     ["S_EnableEnvimaniaSessions"] = "False"
 };
-var titleIds = new[]
+var titlePacks = new[]
 {
-    "TM2U_Island@adamkooo",
-    "TMOneAlpine@unbitn",
-    "TMOneSpeed@unbitn"
-};
-var titlePackLoadingImageUrls = new Dictionary<string, string>
-{
-    ["TM2U_Island@adamkooo"] = "file://Media/Images/Graphics/LoadscreenCurrent.png"
+    new TitlePack("TM2U_Island@adamkooo", "file://Media/Images/Graphics/LoadscreenCurrent.png"),
+    new TitlePack("TMOneAlpine@unbitn", "https://envimix.gbx.tools/img/EnvimixTurbo.jpg"),
+    new TitlePack("TMOneSpeed@unbitn", "https://envimix.gbx.tools/img/EnvimixTurbo.jpg")
 };
 
-foreach (var titleId in titleIds)
+foreach (var titlePack in titlePacks)
 {
-    var titlePackDirectory = Path.Combine(packagerDirectory, titleId);
+    var titlePackDirectory = Path.Combine(packagerDirectory, titlePack.Id);
     if (!Directory.Exists(titlePackDirectory))
     {
         Console.Error.WriteLine($"Title pack directory does not exist: {titlePackDirectory}");
@@ -90,11 +86,10 @@ try
 {
     Directory.CreateDirectory(stagingDirectory);
 
-    foreach (var titleId in titleIds)
+    foreach (var titlePack in titlePacks)
     {
-        var titlePackDirectory = Path.Combine(packagerDirectory, titleId);
-        var titleStagingDirectory = Path.Combine(stagingDirectory, titleId);
-        var loadingImageUrl = titlePackLoadingImageUrls[titleId];
+        var titlePackDirectory = Path.Combine(packagerDirectory, titlePack.Id);
+        var titleStagingDirectory = Path.Combine(stagingDirectory, titlePack.Id);
 
         foreach (var root in roots)
         {
@@ -112,10 +107,10 @@ try
         ApplySettingDefaults(
             Path.Combine(titleStagingDirectory, "Scripts", "Modes", "TrackMania", "Envimix.Script.txt"),
             settingDefaults);
-        ReplaceInFiles(titleStagingDirectory, turboImageSourceText, loadingImageUrl);
+        ReplaceInFiles(titleStagingDirectory, turboImageSourceText, titlePack.LoadingImageUrl);
         ReplaceInFiles(titleStagingDirectory, sourceText, replacementText);
 
-        var archivePath = $"Envimix.{titleId}.{version}.zip";
+        var archivePath = $"Envimix.{titlePack.Id}.{version}.zip";
         File.Delete(archivePath);
         ZipFile.CreateFromDirectory(titleStagingDirectory, archivePath, CompressionLevel.Fastest, includeBaseDirectory: false);
 
@@ -251,3 +246,5 @@ internal sealed class BuildSettings
 {
     public string? OutputDir { get; init; }
 }
+
+internal sealed record TitlePack(string Id, string LoadingImageUrl);
