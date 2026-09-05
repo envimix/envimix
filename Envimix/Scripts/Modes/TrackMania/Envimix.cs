@@ -2070,7 +2070,7 @@ public class Envimix : UniverseModeBase
         }
     }
 
-    private void UpdateDisabledDefaultCarRaceStartTimes()
+    protected void UpdateDisabledDefaultCarRaceStartTimes()
     {
         foreach (var player in Players)
         {

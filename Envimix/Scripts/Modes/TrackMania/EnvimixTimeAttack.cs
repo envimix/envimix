@@ -410,6 +410,7 @@ public class EnvimixTimeAttack : Envimix
     {
         var extendDuration = GetExtendDuration();
         CutOffTimeLimit = CutOffTimeLimit + extendDuration;
+        UpdateDisabledDefaultCarRaceStartTimes();
         UIManager.UIAll.SendChat($"$<$ff8Map time extended by {TextLib.TimeToText(extendDuration)}.$>");
         ResetExtendVote();
     }
