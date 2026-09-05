@@ -385,6 +385,11 @@ public class EnvimixTimeAttack : Envimix
     {
         foreach (var e in UIManager.PendingEvents)
         {
+            if (e.Type == CUIConfigEvent.EType.OnLayerCustomEvent)
+            {
+                ProcessGeneralEnvimixEvents(e);
+            }
+
             // +++OnUIChatEvent+++
         }
     }
