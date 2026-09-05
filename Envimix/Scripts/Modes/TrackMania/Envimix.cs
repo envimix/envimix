@@ -138,7 +138,7 @@ public class Envimix : UniverseModeBase
     [Setting(As = "Envimix XML-RPC")]
     public bool EnvimixXmlRpc = false;
 
-    [Setting(As = "Enable Envimania sessions")]
+    [Setting(As = "Enable Envimania sessions", CallOnChange = nameof(UpdateEnvimaniaSessionAvailability))]
     public bool EnableEnvimaniaSessions = false;
 
     [Setting(As = "<hidden>")]
@@ -162,6 +162,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public required Dictionary<string, string> ItemCars { get; set; }
     [Netwrite] public bool CarSelectionMode { get; set; }
     [Netwrite] public bool TeamSelectionMode { get; set; }
+    [Netwrite] public bool CanExtend { get; set; }
     [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
     [Netwrite] public required string EnvimaniaStatusMessage { get; set; }
     [Netwrite] public bool RatingEnabled { get; set; }
@@ -784,6 +785,14 @@ public class Envimix : UniverseModeBase
         }
 
         return true;
+    }
+
+    private void UpdateEnvimaniaSessionAvailability()
+    {
+        if (EnableEnvimaniaSessions)
+        {
+            RequestEnvimaniaSession(false);
+        }
     }
 
     public static string ConstructRecordsFilterKey(Envimania.SEnvimaniaRecordsFilter filter)

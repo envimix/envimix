@@ -328,6 +328,12 @@ public class EnvimixTimeAttack : Envimix
     public override void OnGameLoop()
     {
         ResolveExtendVote();
+        CanExtend = !IsWarmUp
+            && !CarSelectionMode
+            && CutOffTimeLimit >= 0
+            && ExtendTime > 0
+            && CutOffTimeLimit - Now < 60 * 60 * 1000
+            && VoteType == "";
 
         // TODO: check why. because of switching to spec while having a notice message displayed?
         foreach (var spectator in Spectators)
@@ -384,6 +390,7 @@ public class EnvimixTimeAttack : Envimix
     public override void OnMapEnd()
     {
         ResetExtendVote();
+        CanExtend = false;
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.Normal;
         CutOffTimeLimit = -1;
 

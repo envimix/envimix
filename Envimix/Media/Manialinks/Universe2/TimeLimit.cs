@@ -23,6 +23,7 @@ public class TimeLimit : CMlScriptIngame, IContext
     [Netread] public bool CarSelectionMode { get; }
     [Netread] public int CurrentWarmUpNb { get; }
     [Netread] public int CutOffTimeLimit { get; }
+    [Netread] public bool CanExtend { get; }
     [Netread] public string VoteType { get; }
     [Netread] public int VoteYes { get; }
     [Netread] public int VoteNo { get; }
@@ -139,6 +140,8 @@ public class TimeLimit : CMlScriptIngame, IContext
             }
             PreviousVoteType = VoteType;
         }
+
+        QuadExtend.Visible = CanExtend && VoteType == "";
 
         if (CurrentWarmUpNb > 0)
         {
