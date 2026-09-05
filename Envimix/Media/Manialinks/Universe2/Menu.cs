@@ -608,6 +608,16 @@ public class Menu : CTmMlScriptIngame, IContext
         return $"{car}_{gravity.Get()}_{GetLaps()}";
     }
 
+    bool IsDefaultCar(string car)
+    {
+        if (ItemCars.ContainsKey(car))
+        {
+            return ItemCars[car] == MapPlayerModelName;
+        }
+
+        return car == MapPlayerModelName;
+    }
+
     private void UpdateVehicles()
     {
         for (var i = 0; i < FrameInnerVehicles.Controls.Count; i++)
@@ -3031,7 +3041,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 var validationKey = ConstructValidationFilterKey(carName);
 
                 // if validated or is the default car
-                if (validations.Get().ContainsKey(validationKey) || MapPlayerModelName == carName)
+                if (validations.Get().ContainsKey(validationKey) || IsDefaultCar(carName))
                 {
                     gaugeDifficulty.Color = new Vec3(1, 1, 1);
                     gaugeQuality.Color = new Vec3(1, 1, 1);
@@ -3153,7 +3163,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
         var currentFilterKey = ConstructValidationFilterKey(car.Get());
 
-        if (car.Get() == MapPlayerModelName)
+        if (IsDefaultCar(car.Get()))
         {
             LabelValidator.Value = Map.MapInfo.AuthorNickName;
 
