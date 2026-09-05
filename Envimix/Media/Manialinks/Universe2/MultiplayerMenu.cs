@@ -1329,6 +1329,12 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
             (FrameButtonSpectator.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
         }
 
+        if (LoadedTitle.TitleId != "Envimix_Turbo@bigbang1112")
+        {
+            QuadButtonEnableVoiceOnImpact.Parent.Hide();
+            QuadButtonEnableVoiceOnWaypoint.Parent.Hide();
+        }
+
         var persistent_EnvimixVoiceOnImpact = Persistent<float>.For(LocalUser);
         var persistent_EnvimixVoiceOnWaypoint = Persistent<float>.For(LocalUser);
 
