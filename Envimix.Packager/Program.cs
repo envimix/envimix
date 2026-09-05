@@ -6,7 +6,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 const string sourceText = "file://Media/Images";
 const string replacementText = "https://envimix.gbx.tools/img";
-const string turboImageSourceText = "file://Media/Images/EnvimixTurbo.jpg";
+const string turboImageReplacementText = "https://envimix.gbx.tools/img/EnvimixTurbo.jpg";
 
 var repositoryDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
 var packagerDirectory = Path.Combine(repositoryDirectory, "Envimix.Packager");
@@ -64,8 +64,8 @@ var settingDefaults = new Dictionary<string, string>
 var titlePacks = new[]
 {
     new TitlePack("TM2U_Island@adamkooo", "file://Media/Images/Graphics/LoadscreenCurrent.png"),
-    new TitlePack("TMOneAlpine@unbitn", "https://envimix.gbx.tools/img/EnvimixTurbo.jpg"),
-    new TitlePack("TMOneSpeed@unbitn", "https://envimix.gbx.tools/img/EnvimixTurbo.jpg")
+    new TitlePack("TMOneAlpine@unbitn", ""),
+    new TitlePack("TMOneSpeed@unbitn", "")
 };
 
 foreach (var titlePack in titlePacks)
@@ -107,8 +107,13 @@ try
         ApplySettingDefaults(
             Path.Combine(titleStagingDirectory, "Scripts", "Modes", "TrackMania", "Envimix.Script.txt"),
             settingDefaults);
-        ReplaceInFiles(titleStagingDirectory, turboImageSourceText, titlePack.LoadingImageUrl);
+            
         ReplaceInFiles(titleStagingDirectory, sourceText, replacementText);
+
+        if (!string.IsNullOrEmpty(titlePack.LoadingImageUrl))
+        {
+            ReplaceInFiles(titleStagingDirectory, turboImageReplacementText, titlePack.LoadingImageUrl);
+        }
 
         var archivePath = $"Envimix.{titlePack.Id}.{version}.zip";
         File.Delete(archivePath);
