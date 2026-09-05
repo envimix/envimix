@@ -1333,6 +1333,13 @@ public class Envimix : UniverseModeBase
                 Log(nameof(Envimix), $"Retrieved preliminary map info from webapi ({Validations.Count} validations).");
             }
         }
+        else if (MapInfoUnauthorizedRequest.StatusCode == 404 && EnvimaniaSessionToken is "")
+        {
+            Validations = new();
+            ValidationsUpdatedAt = Now;
+
+            Log(nameof(Envimix), "Preliminary map info was not found - using empty validations.");
+        }
         else if (MapInfoUnauthorizedRequest.StatusCode != 200)
         {
             Log(nameof(Envimix), $"Failed to get preliminary map info from webapi (status code: {MapInfoUnauthorizedRequest.StatusCode})");
