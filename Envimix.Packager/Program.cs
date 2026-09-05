@@ -6,6 +6,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 const string sourceText = "file://Media/Images";
 const string replacementText = "https://envimix.gbx.tools/img";
+const string turboImageSourceText = "file://Media/Images/EnvimixTurbo.jpg";
 
 var repositoryDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
 var packagerDirectory = Path.Combine(repositoryDirectory, "Envimix.Packager");
@@ -66,6 +67,10 @@ var titleIds = new[]
     "TMOneAlpine@unbitn",
     "TMOneSpeed@unbitn"
 };
+var titlePackLoadingImageUrls = new Dictionary<string, string>
+{
+    ["TM2U_Island@adamkooo"] = "file://Media/Images/Graphics/LoadscreenCurrent.png"
+};
 
 foreach (var titleId in titleIds)
 {
@@ -89,6 +94,7 @@ try
     {
         var titlePackDirectory = Path.Combine(packagerDirectory, titleId);
         var titleStagingDirectory = Path.Combine(stagingDirectory, titleId);
+        var loadingImageUrl = titlePackLoadingImageUrls[titleId];
 
         foreach (var root in roots)
         {
@@ -106,6 +112,7 @@ try
         ApplySettingDefaults(
             Path.Combine(titleStagingDirectory, "Scripts", "Modes", "TrackMania", "Envimix.Script.txt"),
             settingDefaults);
+        ReplaceInFiles(titleStagingDirectory, turboImageSourceText, loadingImageUrl);
         ReplaceInFiles(titleStagingDirectory, sourceText, replacementText);
 
         var archivePath = $"Envimix.{titleId}.{version}.zip";
