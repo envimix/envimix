@@ -2063,6 +2063,21 @@ public class Envimix : UniverseModeBase
         }
     }
 
+    private void UpdateDisabledDefaultCarRaceStartTimes()
+    {
+        foreach (var player in Players)
+        {
+            var car = Netwrite<string>.For(player);
+
+            if ((!EnableDefaultCar && !OverrideEnableDefaultCar)
+                && ItemCars.ContainsKey(car.Get())
+                && ItemCars[car.Get()] == GetDefaultCar())
+            {
+                player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
+            }
+        }
+    }
+
     public void ProcessExtendCommand(CTmModeEvent e, int maxTimeLimitDuration)
     {
         if (e.Type != CTmModeEvent.EType.OnCommand
@@ -2087,6 +2102,7 @@ public class Envimix : UniverseModeBase
         }
 
         CutOffTimeLimit = CutOffTimeLimit + extendDuration;
+        UpdateDisabledDefaultCarRaceStartTimes();
         UIManager.UIAll.SendChat($"$<$ff8Map time extended by {TextLib.TimeToText(extendDuration)}.$>");
     }
 
