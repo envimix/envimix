@@ -953,6 +953,7 @@ public class Envimix : UniverseModeBase
 
                     InitiateRatingsForAllPlayers(sessionResponse);
                     RequestFinishedEnvimaniaRecordsAgain();
+                    EnvimaniaStatusMessage = "";
                 }
 
                 break;
@@ -1078,6 +1079,7 @@ public class Envimix : UniverseModeBase
 
                 InitiateRatingsForAllPlayers(sessionResponse);
                 RequestFinishedEnvimaniaRecordsAgain();
+                EnvimaniaStatusMessage = "";
 
                 Validations = sessionResponse.Validations!;
                 ValidationsUpdatedAt = Now;
