@@ -1632,7 +1632,11 @@ public class Envimix : UniverseModeBase
                     envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
 
-                    if (hasAuthoritativeRecords && projectedRank <= 20)
+                    if (hasAuthoritativeRecords && recResponse.Records.Length == 1)
+                    {
+                        UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has validated the map with $<$ff8{car.Get()}$>!");
+                    }
+                    else if (hasAuthoritativeRecords && projectedRank <= 20)
                     {
                         UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has set the {FormatOrdinal(projectedRank)} Envimania record with $<$ff8{car.Get()}$>: $<{TimeToTextWithMilli(tempRace.Get().Time)}$>!");
                     }
