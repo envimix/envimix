@@ -83,6 +83,7 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlFrame FrameScoreboard;
 
     public required ImmutableArray<CMlFrame> Leaderboards;
+    public required ImmutableArray<string> LeaderboardCars;
     public required ImmutableArray<CMlFrame> RatingFrames;
     public required CMlLabel LabelDifficulty;
     public required CMlLabel LabelQuality;
@@ -539,9 +540,17 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
         leaderboard.Show();
 
         var quadCar = (leaderboard.GetFirstChild("QuadCar") as CMlQuad)!;
+        var labelCar = (leaderboard.GetFirstChild("LabelCar") as CMlLabel)!;
+        var carOpacity = 0.5f;
+        if (DisplayedCars.Contains(car))
+        {
+            carOpacity = 1;
+        }
         quadCar.ChangeImageUrl($"file://Media/Images/Cars/{car}.png");
         quadCar.DataAttributeSet("car", car);
-        (leaderboard.GetFirstChild("LabelCar") as CMlLabel)!.SetText(car);
+        quadCar.Opacity = carOpacity;
+        labelCar.SetText(car);
+        labelCar.Opacity = carOpacity;
         SetLeaderboardRating(leaderboard, car);
 
         var outerRecords = (leaderboard.GetFirstChild("FrameOuterRecords") as CMlFrame)!;
@@ -680,14 +689,7 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
 
         for (var i = 0; i < Leaderboards.Length; i++)
         {
-            if (i < DisplayedCars.Length)
-            {
-                UpdateLeaderboard(Leaderboards[i], DisplayedCars[i]);
-            }
-            else
-            {
-                Leaderboards[i].Hide();
-            }
+            UpdateLeaderboard(Leaderboards[i], LeaderboardCars[i]);
         }
     }
 
@@ -777,6 +779,18 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
         Leaderboards.Add(FrameLeaderboard8);
         Leaderboards.Add(FrameLeaderboard9);
         Leaderboards.Add(FrameLeaderboard10);
+
+        LeaderboardCars.Add("CanyonCar");
+        LeaderboardCars.Add("StadiumCar");
+        LeaderboardCars.Add("ValleyCar");
+        LeaderboardCars.Add("LagoonCar");
+        LeaderboardCars.Add("TrafficCar");
+        LeaderboardCars.Add("DesertCar");
+        LeaderboardCars.Add("SnowCar");
+        LeaderboardCars.Add("RallyCar");
+        LeaderboardCars.Add("IslandCar");
+        LeaderboardCars.Add("BayCar");
+        LeaderboardCars.Add("CoastCar");
 
         LabelDifficulty = (FrameDifficulty.GetFirstChild("LabelRating") as CMlLabel)!;
         LabelDifficulty.SetText("Difficulty");
