@@ -188,7 +188,8 @@ public class EnvimixTeamAttack : Envimix
             return TrySpawnEnvimixPlayer(player, frozen);
         }
 
-        if (CutOffTimeLimit - Now >= TimeLimit * 1000)
+        if (CutOffTimeLimit - Now >= TimeLimit * 1000
+            && CutOffTimeLimit - Now <= TimeLimit * 1000 + 3000)
         {
             return TrySpawnEnvimixPlayer(player, CutOffTimeLimit - TimeLimit * 1000);
         }
@@ -209,7 +210,8 @@ public class EnvimixTeamAttack : Envimix
         {
             spawned = SpawnEnvimixPlayer(player, car, frozen);
         }
-        else if (CutOffTimeLimit - Now >= TimeLimit * 1000)
+        else if (CutOffTimeLimit - Now >= TimeLimit * 1000
+            && CutOffTimeLimit - Now <= TimeLimit * 1000 + 3000)
         {
             spawned = SpawnEnvimixPlayer(player, car, CutOffTimeLimit - TimeLimit * 1000);
         }
