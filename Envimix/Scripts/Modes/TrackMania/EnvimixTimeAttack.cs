@@ -375,6 +375,7 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnPodiumStart()
     {
+        CanExtend = false;
         UIManager.UIAll.UISequence = CUIConfig.EUISequence.None;
         UIManager.UIAll.ScoreTableVisibility = CUIConfig.EVisibility.ForcedVisible;
     }
