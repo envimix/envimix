@@ -73,6 +73,7 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadEchelonNext;
     [ManialinkControl] public required CMlLabel LabelEchelonCurrent;
     [ManialinkControl] public required CMlLabel LabelEchelonNext;
+    [ManialinkControl] public required CMlFrame FrameMyCar;
     [ManialinkControl] public required CMlFrame FrameDifficulty;
     [ManialinkControl] public required CMlFrame FrameQuality;
     [ManialinkControl] public required CMlQuad QuadMyCar;
@@ -673,6 +674,8 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
         }
 
         var car = GetCar();
+        FrameMyCar.Visible = car != "";
+
         if (car != "")
         {
             QuadMyCar.ChangeImageUrl($"file://Media/Images/Cars/{car}.png");

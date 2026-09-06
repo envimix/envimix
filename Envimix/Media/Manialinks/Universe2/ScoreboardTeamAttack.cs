@@ -65,6 +65,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadEchelonNext;
     [ManialinkControl] public required CMlLabel LabelEchelonCurrent;
     [ManialinkControl] public required CMlLabel LabelEchelonNext;
+    [ManialinkControl] public required CMlFrame FrameMyCar;
     [ManialinkControl] public required CMlFrame FrameDifficulty;
     [ManialinkControl] public required CMlFrame FrameQuality;
     [ManialinkControl] public required CMlQuad QuadMyCar;
@@ -777,7 +778,10 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
     {
         LabelYourName.SetText(LocalUser.Name);
 
-        if (PlayerCars.ContainsKey(LocalUser.Login))
+        var hasFocusedCar = PlayerCars.ContainsKey(LocalUser.Login);
+        FrameMyCar.Visible = hasFocusedCar;
+
+        if (hasFocusedCar)
         {
             var currentCarUrl = $"file://Media/Images/Cars/{PlayerCars[LocalUser.Login]}.png";
 

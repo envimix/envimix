@@ -143,7 +143,7 @@
                 <frameinstance modelid="FramemodelRecord" id="FrameYourRecord" pos="0 -62" />
             </frame>
         </frame>
-        <frame pos="0 -47.5">
+        <frame id="FrameMyCar" pos="0 -47.5">
             <quad halign="center" z-index="-1" size="200 13" style="Bgs1" substyle="BgCardList" valign="center"/>
             <quad id="QuadMyCar" z-index="0" size="10 10" valign="center" halign="center" image="file://Media/Images/Cars/CanyonCar.png" pos="-92 0" scriptevents="1"/>
             <label id="LabelMyCar" pos="-84 -0.3" z-index="0" size="40 8" text="CanyonCar" valign="center2" textfont="RajdhaniMono" textsize="4"/>
