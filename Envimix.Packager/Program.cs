@@ -70,14 +70,14 @@ var settingDefaults = new Dictionary<string, string>
 var titlePacks = new[]
 {
     new TitlePack("TM2U_Island@adamkooo", "file://Media/Images/Graphics/LoadscreenCurrent.png"),
-    new TitlePack("TMOneAlpine@unbitn", ""),
-    new TitlePack("TMOneSpeed@unbitn", ""),
-    new TitlePack("TMOneBay@unbitn", ""),
-    new TitlePack("TMAll@domino54", ""),
+    new TitlePack("TMOneAlpine@unbitn", "file://Media/Images/Unbitn/TMOne/LoadingScreens/0.webp"),
+    new TitlePack("TMOneSpeed@unbitn", "file://Media/Images/Unbitn/TMOne/LoadingScreens/1.webp"),
+    new TitlePack("TMOneBay@unbitn", "file://Media/Unbitn/TMOne/Images/LoadingScreens/25.jpg"),
+    new TitlePack("TMAll@domino54", "file://Media/Images/MenuBg.jpg"),
     // new TitlePack("Nadeo_Envimix@bigbang1112", ""), Script not allowed for this title
-    new TitlePack("TMCanyon@nadeo", ""),
-    new TitlePack("TMValley@nadeo", ""),
-    new TitlePack("TMLagoon@nadeo", "")
+    new TitlePack("TMCanyon@nadeo", "file://Media/Images/CanyonPackImage.jpg"),
+    new TitlePack("TMValley@nadeo", "file://Media/Images/ValleyPackImage.jpg"),
+    new TitlePack("TMLagoon@nadeo", "file://Media/Images/LagoonPackImage.jpg")
 };
 
 foreach (var titlePack in titlePacks)
