@@ -673,6 +673,16 @@ public class Envimix : UniverseModeBase
         return (EnvimixXmlRpc && XmlRpc is not null) || (EnvimixWebAPI is not "" && ServerAdmin is not null);
     }
 
+    private string GetDefaultCar()
+    {
+        if (ItemCars.ContainsValue(MapPlayerModelName))
+        {
+            return ItemCars.KeyOf(MapPlayerModelName);
+        }
+
+        return MapPlayerModelName;
+    }
+
     protected Envimania.SMapInfo CreateMapInfo()
     {
         Envimania.SMapInfo mapInfo = new()
@@ -680,6 +690,7 @@ public class Envimix : UniverseModeBase
             Name = Map.MapInfo.Name,
             Uid = Map.MapInfo.MapUid,
             Collection = Map.MapInfo.CollectionName,
+            DefaultCar = GetDefaultCar(),
             AuthorLogin = Map.MapInfo.AuthorLogin,
             AuthorNickname = Map.MapInfo.AuthorNickName,
             AuthorTime = Map.MapInfo.TMObjective_AuthorTime,
@@ -1642,7 +1653,7 @@ public class Envimix : UniverseModeBase
         var car = Netwrite<string>.For(e.Player);
         if (car.Get() == "")
         {
-            car.Set(ItemCars.KeyOf(GetDefaultCar()));
+            car.Set(ItemCars.KeyOf(MapPlayerModelName));
         }
     }
 
@@ -1723,11 +1734,6 @@ public class Envimix : UniverseModeBase
     {
         var noticeMessage = Netwrite<string>.For(ui);
         noticeMessage.Set(text);
-    }
-
-    public string GetDefaultCar()
-    {
-        return MapPlayerModelName;
     }
 
     public Dictionary<string, Dictionary<string, Ident>> GetAllCars()
@@ -1852,7 +1858,7 @@ public class Envimix : UniverseModeBase
         SpawnPlayer(player, player.CurrentClan, rst);
 
         // Disabled default car keeps the same staggered future RaceStartTime as the frozen queue, so the client still treats it as "not started yet" instead of an already-started race
-        var isDisabledDefaultCar = (!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[carName] == GetDefaultCar();
+        var isDisabledDefaultCar = (!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[carName] == MapPlayerModelName;
 
         if (raceStartTime == -2 || isDisabledDefaultCar)
         {
@@ -1945,7 +1951,7 @@ public class Envimix : UniverseModeBase
     {
         var car = Netwrite<string>.For(player);
 
-        if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[car.Get()] == GetDefaultCar())
+        if ((!EnableDefaultCar && !OverrideEnableDefaultCar) && ItemCars[car.Get()] == MapPlayerModelName)
         {
             NoticeMessage(UIManager.GetUI(player), $"{disabledCarMessage}\n$ff0Please select another car.");
         }
@@ -2065,7 +2071,7 @@ public class Envimix : UniverseModeBase
 
             if ((!EnableDefaultCar && !OverrideEnableDefaultCar)
                 && ItemCars.ContainsKey(car.Get())
-                && ItemCars[car.Get()] == GetDefaultCar())
+                && ItemCars[car.Get()] == MapPlayerModelName)
             {
                 player.RaceStartTime = CutOffTimeLimit + DisplayedCars.IndexOf(car.Get()) * 3000 + 3000;
             }
@@ -2347,7 +2353,7 @@ public class Envimix : UniverseModeBase
         {
             var car = Netwrite<string>.For(player);
 
-            if (ItemCars[car.Get()] != GetDefaultCar())
+            if (ItemCars[car.Get()] != MapPlayerModelName)
             {
                 continue;
             }
@@ -2380,7 +2386,7 @@ public class Envimix : UniverseModeBase
         return player.RaceStartTime > Now
             && (!EnableDefaultCar && !OverrideEnableDefaultCar)
             && ItemCars.ContainsKey(car.Get())
-            && ItemCars[car.Get()] == GetDefaultCar();
+            && ItemCars[car.Get()] == MapPlayerModelName;
     }
 
     public void PrespawnEnvimixPlayers()
