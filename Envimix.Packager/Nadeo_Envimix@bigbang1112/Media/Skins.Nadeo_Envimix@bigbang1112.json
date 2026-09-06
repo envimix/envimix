@@ -1,0 +1,198 @@
+{
+    "CanyonCar": {},
+    "StadiumCar": {},
+    "ValleyCar": {},
+    "LagoonCar": {},
+    "DesertCar": {
+        "Blackdevil": {
+            "File": "AmericanCar/Blackdevil.zip",
+            "Icon": "Images/Skins/AmericanCar/Blackdevil.dds",
+            "Model": ""
+        },
+        "Default": {
+            "File": "AmericanCar/Default.zip",
+            "Icon": "Images/Skins/AmericanCar/Default.dds",
+            "Model": ""
+        },
+        "Funkyrace": {
+            "File": "AmericanCar/Funkyrace.zip",
+            "Icon": "Images/Skins/AmericanCar/Funkyrace.dds",
+            "Model": ""
+        },
+        "Lagoonracer": {
+            "File": "AmericanCar/Lagoonracer.zip",
+            "Icon": "Images/Skins/AmericanCar/Lagoonracer.dds",
+            "Model": ""
+        },
+        "Silvermania": {
+            "File": "AmericanCar/Silvermania.zip",
+            "Icon": "Images/Skins/AmericanCar/Silvermania.dds",
+            "Model": ""
+        },
+        "Toggleindustry": {
+            "File": "AmericanCar/Toggleindustry.zip",
+            "Icon": "Images/Skins/AmericanCar/Toggleindustry.dds",
+            "Model": ""
+        }
+    },
+    "RallyCar": {
+        "DarkVelvet": {
+            "File": "RallyCar/DarkVelvet.zip",
+            "Icon": "Images/Skins/RallyCar/DarkVelvet.dds",
+            "Model": ""
+        },
+        "DeepSeaKing": {
+            "File": "RallyCar/DeepSeaKing.zip",
+            "Icon": "Images/Skins/RallyCar/DeepSeaKing.dds",
+            "Model": ""
+        },
+        "MadCow": {
+            "File": "RallyCar/MadCow.zip",
+            "Icon": "Images/Skins/RallyCar/MadCow.dds",
+            "Model": ""
+        },
+        "PurpleQueen": {
+            "File": "RallyCar/PurpleQueen.zip",
+            "Icon": "Images/Skins/RallyCar/PurpleQueen.dds",
+            "Model": ""
+        },
+        "RoadManns": {
+            "File": "RallyCar/RoadManns.zip",
+            "Icon": "Images/Skins/RallyCar/RoadManns.dds",
+            "Model": ""
+        },
+        "SilverBird": {
+            "File": "RallyCar/SilverBird.zip",
+            "Icon": "Images/Skins/RallyCar/SilverBird.dds",
+            "Model": ""
+        }
+    },
+    "SnowCar": {
+        "Bubblecat": {
+            "File": "SnowCar/Bubblecat.zip",
+            "Icon": "Images/Skins/SnowCar/Bubblecat.dds",
+            "Model": ""
+        },
+        "Cerisier": {
+            "File": "SnowCar/Cerisier.zip",
+            "Icon": "Images/Skins/SnowCar/Cerisier.dds",
+            "Model": ""
+        },
+        "Dragon": {
+            "File": "SnowCar/Dragon.zip",
+            "Icon": "Images/Skins/SnowCar/Dragon.dds",
+            "Model": ""
+        },
+        "Japon": {
+            "File": "SnowCar/Japon.zip",
+            "Icon": "Images/Skins/SnowCar/Japon.dds",
+            "Model": ""
+        },
+        "Jungle": {
+            "File": "SnowCar/Jungle.zip",
+            "Icon": "Images/Skins/SnowCar/Jungle.dds",
+            "Model": ""
+        },
+        "Panda": {
+            "File": "SnowCar/Panda.zip",
+            "Icon": "Images/Skins/SnowCar/Panda.dds",
+            "Model": ""
+        }
+    },
+    "IslandCar": {
+        "U_Black": {
+            "File": "SportCar/U_Black.zip",
+            "Icon": "Images/Skins/SportCar/U_Black.dds",
+            "Model": ""
+        },
+        "U_Blue": {
+            "File": "SportCar/U_Blue.zip",
+            "Icon": "Images/Skins/SportCar/U_Blue.dds",
+            "Model": ""
+        },
+        "U_Green": {
+            "File": "SportCar/U_Green.zip",
+            "Icon": "Images/Skins/SportCar/U_Green.dds",
+            "Model": ""
+        },
+        "U_Red": {
+            "File": "SportCar/U_Red.zip",
+            "Icon": "Images/Skins/SportCar/U_Red.dds",
+            "Model": ""
+        },
+        "U_White": {
+            "File": "SportCar/U_White.zip",
+            "Icon": "Images/Skins/SportCar/U_White.dds",
+            "Model": ""
+        },
+        "U_Yellow": {
+            "File": "SportCar/U_Yellow.zip",
+            "Icon": "Images/Skins/SportCar/U_Yellow.dds",
+            "Model": ""
+        }
+    },
+    "BayCar": {
+        "U_Black": {
+            "File": "BayCar/U_Black.zip",
+            "Icon": "Images/Skins/BayCar/U_Black.dds",
+            "Model": ""
+        },
+        "U_Blue": {
+            "File": "BayCar/U_Blue.zip",
+            "Icon": "Images/Skins/BayCar/U_Blue.dds",
+            "Model": ""
+        },
+        "U_Green": {
+            "File": "BayCar/U_Green.zip",
+            "Icon": "Images/Skins/BayCar/U_Green.dds",
+            "Model": ""
+        },
+        "U_Red": {
+            "File": "BayCar/U_Red.zip",
+            "Icon": "Images/Skins/BayCar/U_Red.dds",
+            "Model": ""
+        },
+        "U_White": {
+            "File": "BayCar/U_White.zip",
+            "Icon": "Images/Skins/BayCar/U_White.dds",
+            "Model": ""
+        },
+        "U_Yellow": {
+            "File": "BayCar/U_Yellow.zip",
+            "Icon": "Images/Skins/BayCar/U_Yellow.dds",
+            "Model": ""
+        }
+    },
+    "CoastCar": {
+        "U_Black": {
+            "File": "CoastCar/U_Black.zip",
+            "Icon": "Images/Skins/CoastCar/U_Black.dds",
+            "Model": ""
+        },
+        "U_Blue": {
+            "File": "CoastCar/U_Blue.zip",
+            "Icon": "Images/Skins/CoastCar/U_Blue.dds",
+            "Model": ""
+        },
+        "U_Green": {
+            "File": "CoastCar/U_Green.zip",
+            "Icon": "Images/Skins/CoastCar/U_Green.dds",
+            "Model": ""
+        },
+        "U_Red": {
+            "File": "CoastCar/U_Red.zip",
+            "Icon": "Images/Skins/CoastCar/U_Red.dds",
+            "Model": ""
+        },
+        "U_White": {
+            "File": "CoastCar/U_White.zip",
+            "Icon": "Images/Skins/CoastCar/U_White.dds",
+            "Model": ""
+        },
+        "U_Yellow": {
+            "File": "CoastCar/U_Yellow.zip",
+            "Icon": "Images/Skins/CoastCar/U_Yellow.dds",
+            "Model": ""
+        }
+    }
+}

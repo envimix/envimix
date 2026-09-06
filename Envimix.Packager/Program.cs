@@ -10,12 +10,17 @@ const string turboImageReplacementText = "https://envimix.gbx.tools/img/EnvimixT
 
 var repositoryDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
 var packagerDirectory = Path.Combine(repositoryDirectory, "Envimix.Packager");
-var envimixProjectDirectory = args.Length > 0
-    ? Path.GetFullPath(args[0])
-    : Path.Combine(repositoryDirectory, "Envimix");
-var version = args.Length > 1
-    ? args[1]
-    : typeof(BuildSettings).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
+var envimixProjectDirectory = Path.Combine(repositoryDirectory, "Envimix");
+if (args.Length > 0)
+{
+    envimixProjectDirectory = Path.GetFullPath(args[0]);
+}
+
+var buildLabel = DateTime.Now.ToString("yyyy-MM-dd-HH_mm");
+if (args.Length > 1)
+{
+    buildLabel = args[1];
+}
 
 if (!Directory.Exists(envimixProjectDirectory))
 {
@@ -65,7 +70,13 @@ var titlePacks = new[]
 {
     new TitlePack("TM2U_Island@adamkooo", "file://Media/Images/Graphics/LoadscreenCurrent.png"),
     new TitlePack("TMOneAlpine@unbitn", ""),
-    new TitlePack("TMOneSpeed@unbitn", "")
+    new TitlePack("TMOneSpeed@unbitn", ""),
+    //new TitlePack("TMOneBay@unbitn", ""),
+    new TitlePack("TMAll@domino54", ""),
+    new TitlePack("Nadeo_Envimix@bigbang1112", ""),
+    new TitlePack("TMCanyon@nadeo", ""),
+    new TitlePack("TMValley@nadeo", ""),
+    new TitlePack("TMLagoon@nadeo", "")
 };
 
 foreach (var titlePack in titlePacks)
@@ -115,7 +126,7 @@ try
             ReplaceInFiles(titleStagingDirectory, turboImageReplacementText, titlePack.LoadingImageUrl);
         }
 
-        var archivePath = $"Envimix.{titlePack.Id}.{version}.zip";
+        var archivePath = $"Envimix.{titlePack.Id}.{buildLabel}.zip";
         File.Delete(archivePath);
         ZipFile.CreateFromDirectory(titleStagingDirectory, archivePath, CompressionLevel.Fastest, includeBaseDirectory: false);
 
