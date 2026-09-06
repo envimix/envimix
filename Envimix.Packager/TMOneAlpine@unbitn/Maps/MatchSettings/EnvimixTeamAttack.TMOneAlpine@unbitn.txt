@@ -27,7 +27,7 @@
         <setting name="S_EnableTM2Cars" type="boolean" value="true" />
         <setting name="S_EnableTrafficCar" type="boolean" value="false" />
         <setting name="S_EnableUnitedCars" type="boolean" value="true" />
-        <setting name="S_EnableDefaultCar" type="boolean" value="false" />
+        <setting name="S_EnableDefaultCar" type="boolean" value="true" />
         <setting name="S_EnableStadiumEnvimix" type="boolean" value="false" />
         <setting name="S_EnableTrafficCarInStadium" type="boolean" value="false" />
         <setting name="S_UseUnitedModels" type="boolean" value="true" />
