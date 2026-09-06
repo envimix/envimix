@@ -89,8 +89,6 @@ foreach (var titlePack in titlePacks)
     }
 }
 
-File.Delete("Envimix.zip");
-
 var stagingDirectory = Path.Combine(Path.GetTempPath(), $"Envimix.Packager-{Guid.NewGuid():N}");
 
 try
@@ -100,7 +98,8 @@ try
     foreach (var titlePack in titlePacks)
     {
         var titlePackDirectory = Path.Combine(packagerDirectory, titlePack.Id);
-        var titleStagingDirectory = Path.Combine(stagingDirectory, titlePack.Id);
+        var archiveStagingDirectory = Path.Combine(stagingDirectory, titlePack.Id);
+        var titleStagingDirectory = Path.Combine(archiveStagingDirectory, "UserData");
 
         foreach (var root in roots)
         {
@@ -126,9 +125,13 @@ try
             ReplaceInFiles(titleStagingDirectory, turboImageReplacementText, titlePack.LoadingImageUrl);
         }
 
-        var archivePath = $"Envimix.{titlePack.Id}.{buildLabel}.zip";
+        File.WriteAllText(
+            Path.Combine(archiveStagingDirectory, "README.txt"),
+            "Extract the UserData folder into your dedicated server directory.\r\n");
+
+        var archivePath = $"ENVIMIX.{titlePack.Id}.{buildLabel}.zip";
         File.Delete(archivePath);
-        ZipFile.CreateFromDirectory(titleStagingDirectory, archivePath, CompressionLevel.Fastest, includeBaseDirectory: false);
+        ZipFile.CreateFromDirectory(archiveStagingDirectory, archivePath, CompressionLevel.Fastest, includeBaseDirectory: false);
 
         Console.WriteLine($"Created {archivePath}");
     }
