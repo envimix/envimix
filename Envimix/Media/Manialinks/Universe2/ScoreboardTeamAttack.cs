@@ -779,7 +779,7 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         LabelYourName.SetText(LocalUser.Name);
 
         var hasFocusedCar = PlayerCars.ContainsKey(LocalUser.Login);
-        FrameMyCar.Visible = hasFocusedCar;
+        FrameMyCar.Visible = hasFocusedCar && LocalPodiumStartTime == -1;
 
         if (hasFocusedCar)
         {
