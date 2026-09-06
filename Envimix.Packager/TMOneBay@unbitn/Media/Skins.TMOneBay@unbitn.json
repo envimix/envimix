@@ -1,0 +1,53 @@
+{
+  "CanyonCar": {},
+  "StadiumCar": {},
+  "ValleyCar": {},
+  "LagoonCar": {},
+  "DesertCar": {},
+  "RallyCar": {},
+  "SnowCar": {},
+  "IslandCar": {},
+  "BayCar": {
+    "Asuna": {
+      "File": "CarCommon/Bay/Bay_Asuna.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/Asuna.png"
+    },
+    "BayPark96": {
+      "File": "CarCommon/Bay/Bay_BayPark96.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/BayPark96.png"
+    },
+    "Floral": {
+      "File": "CarCommon/Bay/Bay_Floral.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/Floral.png"
+    },
+    "Fracture": {
+      "File": "CarCommon/Bay/Bay_Fracture.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/Fracture.png"
+    },
+    "GhostRide": {
+      "File": "CarCommon/Bay/Bay_GhostRide.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/GhostRide.png"
+    },
+    "NoName": {
+      "File": "CarCommon/Bay/Bay_NoName.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/NoName.png"
+    },
+    "PurpleFlame": {
+      "File": "CarCommon/Bay/Bay_PurpleFlame.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/PurpleFlame.png"
+    },
+    "SickBay": {
+      "File": "CarCommon/Bay/Bay_SickBay.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/SickBay.png"
+    },
+    "SkylineHK": {
+      "File": "CarCommon/Bay/Bay_SkylineHK.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/SkylineHK.png"
+    },
+    "UrbanJungle": {
+      "File": "CarCommon/Bay/Bay_UrbanJungle.zip",
+      "Icon": "Unbitn/TMOne/Images/Skins/Icons/UrbanJungle.png"
+    }
+  },
+  "CoastCar": {}
+}

@@ -72,7 +72,7 @@ var titlePacks = new[]
     new TitlePack("TM2U_Island@adamkooo", "file://Media/Images/Graphics/LoadscreenCurrent.png"),
     new TitlePack("TMOneAlpine@unbitn", ""),
     new TitlePack("TMOneSpeed@unbitn", ""),
-    // new TitlePack("TMOneBay@unbitn", ""),
+    new TitlePack("TMOneBay@unbitn", ""),
     new TitlePack("TMAll@domino54", ""),
     // new TitlePack("Nadeo_Envimix@bigbang1112", ""), Script not allowed for this title
     new TitlePack("TMCanyon@nadeo", ""),

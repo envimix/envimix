@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<playlist>
+  <gameinfos>
+    <game_mode>0</game_mode>
+    <script_name><![CDATA[EnvimixTeamAttack.Script.txt]]></script_name>
+    <title>TMOneBay@unbitn</title>
+    <chat_time>10000</chat_time>
+    <finishtimeout>1</finishtimeout>
+    <allwarmupduration>0</allwarmupduration>
+    <disablerespawn>0</disablerespawn>
+    <forceshowallopponents>0</forceshowallopponents>
+  </gameinfos>
+  <hotseat>
+    <game_mode>0</game_mode>
+    <time_limit>300000</time_limit>
+    <rounds_count>5</rounds_count>
+  </hotseat>
+  <filter>
+    <is_lan>1</is_lan>
+    <is_internet>1</is_internet>
+    <is_solo>0</is_solo>
+    <is_hotseat>0</is_hotseat>
+    <sort_index>1000</sort_index>
+    <random_map_order>1</random_map_order>
+  </filter>
+  <mode_script_settings>
+    <setting name="S_EnableTM2Cars" type="boolean" value="true" />
+    <setting name="S_EnableTrafficCar" type="boolean" value="true" />
+    <setting name="S_EnableUnitedCars" type="boolean" value="true" />
+    <setting name="S_EnableDefaultCar" type="boolean" value="false" />
+    <setting name="S_EnableStadiumEnvimix" type="boolean" value="false" />
+    <setting name="S_EnableTrafficCarInStadium" type="boolean" value="false" />
+    <setting name="S_UseUnitedModels" type="boolean" value="true" />
+    <setting name="S_VehicleFolder" type="text" value="" />
+    <setting name="S_VehicleFileFormat" type="text" value="%1.Item.Gbx" />
+    <setting name="S_CarsFile" type="text" value="Cars.json" />
+    <setting name="S_SkinsFile" type="text" value="Skins.TMOneBay@unbitn.json" />
+    <setting name="S_EnvimixXmlRpc" type="boolean" value="false" />
+    <setting name="S_EnableEnvimaniaSessions" type="boolean" value="false" />
+    <setting name="S_UseLadder" type="boolean" value="true" />
+    <setting name="S_TimeLimit" type="integer" value="900" />
+    <setting name="S_CarSelectTime" type="integer" value="5" />
+    <setting name="S_CustomCountdown" type="integer" value="-1" />
+    <setting name="S_AutoRespawnTime" type="integer" value="6" />
+  </mode_script_settings>
+  <startindex>0</startindex>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\1\Bay A10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\2\Bay B10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\3\Bay C10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\4\Bay D10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneBayRace\5\Bay E10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\1\BayA1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\1\BayA2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\1\BayA3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\1\BayA4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\1\BayA5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\2\BayB1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\2\BayB2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\2\BayB3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\2\BayB4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\2\BayB5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\3\BayC1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\3\BayC2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\3\BayC3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\3\BayC4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\3\BayC5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\4\BayD1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\4\BayD2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\4\BayD3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\4\BayD4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\4\BayD5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFRace\5\BayE.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\1\StarBayA1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\1\StarBayA2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\1\StarBayA3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\1\StarBayA4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\1\StarBayA5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\2\StarBayB1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\2\StarBayB2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\2\StarBayB3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\2\StarBayB4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\2\StarBayB5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\3\StarBayC1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\3\StarBayC2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\3\StarBayC3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\3\StarBayC4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\3\StarBayC5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\4\StarBayD1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\4\StarBayD2.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\4\StarBayD3.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\4\StarBayD4.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\4\StarBayD5.Map.Gbx</file></map>
+    <map><file>Campaigns\TMUFStarTracks\5\StarBayE.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A01 Bouncy Alley.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A02 OutOfTheDock.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A03 Forest Jump.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A04 EmperorRoof.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A05 Secret Caves.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A06 Kangourou.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A07 Chaos Area.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A08 CleanLanding.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\1\A09 BipBopSound.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\2\B01 LoopN'Roof.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\2\B02 CentralPark.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\2\B03 CrossOver.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\2\B04 TrickyTrack.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\2\B05 ShoppingCenter.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\3\C01 FollowTheLeader.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\3\C02 DemoRace1.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\3\C03 Crazy8.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\3\C04 OnTheRoofAgain.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\3\C05 Downtown.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\4\D01 Suburbs.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\4\D02 GateOfTheSun.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\4\D03 TunnelEffect.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\4\D04 XRace08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\4\D05 XRace05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\5\E01 WestSide.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\5\E02 Deviation.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\5\E03 BuildingRider.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\5\E04 HighStreet.Map.Gbx</file></map>
+    <map><file>Campaigns\TMSRace\5\E05 HappyBay.Map.Gbx</file></map>
+</playlist>
