@@ -36,6 +36,7 @@ public class Envimix : UniverseModeBase
     public struct SEnvimaniaSessionResponse
     {
         public string ServerLogin;
+        public string SessionId;
         public string SessionToken;
         public ImmutableArray<Envimania.SFilteredRating> Ratings;
         public Dictionary<string, IList<Envimania.SFilteredRating>> UserRatings;
@@ -165,6 +166,7 @@ public class Envimix : UniverseModeBase
     [Netwrite] public bool CanExtend { get; set; }
     [Netwrite] public int EnvimaniaRecordsUpdatedAt { get; set; }
     [Netwrite] public required string EnvimaniaStatusMessage { get; set; }
+    [Netwrite] public string EnvimaniaSessionId { get; set; } = "";
     [Netwrite] public bool RatingEnabled { get; set; }
     [Netwrite] public required Dictionary<string, Envimania.SRating> Ratings { get; set; }
     [Netwrite] public required int RatingsUpdatedAt { get; set; }
@@ -752,6 +754,7 @@ public class Envimix : UniverseModeBase
         if (!preserveCurrentToken)
         {
             EnvimaniaSessionToken = "";
+            EnvimaniaSessionId = "";
             EnvimaniaSessionTokenReceived = -1;
             EnvimaniaStatusReceived = -1;
             EnvimaniaSessionExtendRequestedAt = -1;
@@ -940,6 +943,7 @@ public class Envimix : UniverseModeBase
                 else
                 {
                     EnvimaniaSessionToken = sessionResponse.SessionToken!;
+                    EnvimaniaSessionId = sessionResponse.SessionId!;
                     EnvimaniaSessionRetryCount = 1;
 
                     InitiateRatingsForAllPlayers(sessionResponse);
@@ -1063,6 +1067,7 @@ public class Envimix : UniverseModeBase
             else
             {
                 EnvimaniaSessionToken = sessionResponse.SessionToken!;
+                EnvimaniaSessionId = sessionResponse.SessionId!;
                 EnvimaniaSessionRetryCount = 1;
 
                 InitiateRatingsForAllPlayers(sessionResponse);
@@ -1146,6 +1151,7 @@ public class Envimix : UniverseModeBase
             if (EnvimaniaCloseRequest.StatusCode == 200)
             {
                 EnvimaniaSessionToken = "";
+                EnvimaniaSessionId = "";
                 EnvimaniaSessionTokenReceived = -1;
                 EnvimaniaStatusReceived = -1;
 

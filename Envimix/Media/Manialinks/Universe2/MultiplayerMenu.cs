@@ -92,12 +92,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 	[ManialinkControl] public required CMlQuad QuadButtonContinue;
 	[ManialinkControl(IgnoreValidation = true)] public required CMlFrame FrameVehicles;
 	[ManialinkControl] public required CMlFrame FrameVehicleList;
-    [ManialinkControl] public required CMlFrame FrameTeamMessage;
-    [ManialinkControl] public required CMlFrame FrameRedPlayerCount;
-    [ManialinkControl] public required CMlFrame FrameBluePlayerCount;
-    [ManialinkControl] public required CMlFrame FrameJoinTeam;
-    [ManialinkControl] public required CMlFrame FrameJoinRed;
-    [ManialinkControl] public required CMlFrame FrameJoinBlue;
     [ManialinkControl] public required CMlLabel LabelArrow;
     [ManialinkControl] public required CMlFrame FrameLabelMapName;
     [ManialinkControl] public required CMlFrame FrameLabelMapType;
@@ -107,6 +101,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelPbTime;
     [ManialinkControl] public required CMlLabel LabelServerName;
     [ManialinkControl] public required CMlLabel LabelMode;
+    [ManialinkControl] public required CMlLabel LabelTimeLimit;
     [ManialinkControl] public required CMlLabel LabelPlayerCount;
     [ManialinkControl] public required CMlLabel LabelSpectatorCount;
     [ManialinkControl] public required CMlFrame FramePlayers;
@@ -116,17 +111,13 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelLock;
     [ManialinkControl] public required CMlFrame FrameArrow;
     [ManialinkControl] public required CMlFrame FrameGhostArrow;
-    [ManialinkControl] public required CMlLabel LabelRedPlayerCount;
-    [ManialinkControl] public required CMlLabel LabelBluePlayerCount;
-    [ManialinkControl] public required CMlFrame FrameTeamInfo;
-    [ManialinkControl] public required CMlQuad QuadJoinBlueLock;
-    [ManialinkControl] public required CMlQuad QuadJoinBlue;
-    [ManialinkControl] public required CMlQuad QuadJoinRedLock;
-    [ManialinkControl] public required CMlQuad QuadJoinRed;
     [ManialinkControl] public required CMlQuad QuadButtonSkin;
     [ManialinkControl] public required CMlQuad QuadButtonAdvanced;
     [ManialinkControl] public required CMlQuad QuadButtonModeHelp;
-    [ManialinkControl] public required CMlQuad QuadButtonServerSettings;
+    [ManialinkControl] public required CMlQuad QuadButtonServerDetails;
+    [ManialinkControl] public required CMlQuad QuadButtonSessionDetails;
+    [ManialinkControl] public required CMlLabel LabelButtonServerDetails;
+    [ManialinkControl] public required CMlLabel LabelButtonSessionDetails;
     [ManialinkControl] public required CMlQuad QuadButtonManageServer;
     [ManialinkControl] public required CMlQuad QuadButtonExit;
     [ManialinkControl] public required CMlQuad QuadButtonAdvancedSettings;
@@ -148,7 +139,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadButtonMessageBoxConfirm;
     [ManialinkControl] public required CMlLabel LabelValidator;
     [ManialinkControl] public required CMlQuad QuadStarButton;
-    [ManialinkControl] public required CMlFrame FrameButtonScriptParameters;
     [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnImpact;
     [ManialinkControl] public required CMlQuad QuadButtonEnableVoiceOnWaypoint;
 
@@ -170,7 +160,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     public Vec2 PreviousSkinScrollOffset;
 	public CUIConfig.EUISequence PreviousUISequence;
 	public int MenuOpenTime = -1;
-	public bool PrevUseForcedClans;
     public bool GravityOpen;
     public int PrevGravityValue = 1;
     public IList<CReplayInfo> LocalReplays;
@@ -196,6 +185,9 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     public float HoldSkinsScrollbarPos;
     public bool ScrollbarSkinsMouseOut;
     public int PrevGameTime;
+    public string PreviousEnvimaniaSessionId = "";
+    public bool IsMessageBoxOpen;
+    public CMlQuad MessageBoxReturnControl;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -209,6 +201,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     [Netread] public Dictionary<string, string> ItemCars { get; set; }
     [Netread] public Dictionary<string, Dictionary<string, SSkin>> Skins { get; set; }
     [Netread] public string EnvimixWebAPI { get; set; }
+    [Netread] public string EnvimaniaSessionId { get; set; }
     [Netread] public IList<SGhostMetadata> LocalGhostMetadata { get; }
     [Netread] public int LocalGhostMetadataUpdatedAt { get; }
 
@@ -240,8 +233,35 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         QuadButtonSkinPlay.MouseOver += Focus2;
         QuadButtonSkinBack.MouseOver += Focus2;
         QuadButtonAdvanced.MouseOver += Focus2;
-        QuadButtonModeHelp.MouseOver += Focus3;
-        QuadButtonServerSettings.MouseOver += Focus3;
+        QuadButtonModeHelp.MouseOver += () =>
+        {
+            Focus3();
+            UpdateTooltip("Mode help");
+        };
+        QuadButtonServerDetails.MouseOver += () =>
+        {
+            if (EnvimaniaSessionId == "")
+            {
+                UpdateTooltip("No active Envimania session");
+            }
+            else
+            {
+                Focus3();
+                UpdateTooltip("Server details");
+            }
+        };
+        QuadButtonSessionDetails.MouseOver += () =>
+        {
+            if (EnvimaniaSessionId == "")
+            {
+                UpdateTooltip("No active Envimania session");
+            }
+            else
+            {
+                Focus3();
+                UpdateTooltip("Session details");
+            }
+        };
         QuadButtonManageServer.MouseOver += Focus2;
         QuadButtonExit.MouseOver += Focus2;
         QuadButtonAdvancedSettings.MouseOver += Focus2;
@@ -258,6 +278,20 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         QuadButtonSkinBack.MouseClick += QUAD_BUTTON_SKIN_BACK;
         QuadButtonSettingsBack.MouseClick += QUAD_BUTTON_SETTINGS_BACK;
         QuadButtonModeHelp.MouseClick += ShowCustomModeHelp;
+        QuadButtonServerDetails.MouseClick += () =>
+        {
+            if (EnvimaniaSessionId != "")
+            {
+                OpenLink($"https://envimix.gbx.tools/envimania/servers/{CurrentServerLogin}", CMlScript.LinkType.ExternalBrowser);
+            }
+        };
+        QuadButtonSessionDetails.MouseClick += () =>
+        {
+            if (EnvimaniaSessionId != "")
+            {
+                OpenLink($"https://envimix.gbx.tools/envimania/sessions/{EnvimaniaSessionId}", CMlScript.LinkType.ExternalBrowser);
+            }
+        };
 
         MenuNavigation += Menu_MenuNavigation;
 
@@ -267,6 +301,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         {
             Focus2();
         };
+        QuadButtonMessageBoxConfirm.MouseOver += Focus2;
 
         QuadStarButton.MouseOver += () =>
         {
@@ -356,6 +391,10 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     private void QuadButtonMessageBoxClose_MouseClick()
     {
         AnimMgr.Add(FrameMessageBox, "<frame pos=\"0 -130\" hidden=\"1\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        NavFocusedControl.StyleSelected = false;
+        NavFocusedControl = MessageBoxReturnControl;
+        NavFocusedControl.StyleSelected = true;
+        IsMessageBoxOpen = false;
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
     }
 
@@ -416,6 +455,40 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         var gravity = Netread<int>.For(GetPlayer());
 
         return $"{car}_{gravity.Get()}_{GetLaps()}";
+    }
+
+    private void UpdateEnvimaniaSessionButtons()
+    {
+        var sessionAvailable = EnvimaniaSessionId != "";
+
+        if (sessionAvailable)
+        {
+            QuadButtonServerDetails.Opacity = 1;
+            QuadButtonSessionDetails.Opacity = 1;
+            LabelButtonServerDetails.Opacity = 1;
+            LabelButtonSessionDetails.Opacity = 1;
+            QuadButtonServerDetails.DataAttributeSet("nav", "True");
+            QuadButtonSessionDetails.DataAttributeSet("nav", "True");
+        }
+        else
+        {
+            QuadButtonServerDetails.Opacity = 0;
+            QuadButtonSessionDetails.Opacity = 0;
+            LabelButtonServerDetails.Opacity = 0.5f;
+            LabelButtonSessionDetails.Opacity = 0.5f;
+            QuadButtonServerDetails.DataAttributeSet("nav", "False");
+            QuadButtonSessionDetails.DataAttributeSet("nav", "False");
+            QuadButtonServerDetails.StyleSelected = false;
+            QuadButtonSessionDetails.StyleSelected = false;
+
+            if (NavFocusedControl == QuadButtonServerDetails || NavFocusedControl == QuadButtonSessionDetails)
+            {
+                NavFocusedControl = QuadButtonModeHelp;
+                NavFocusedControl.StyleSelected = true;
+            }
+        }
+
+        PreviousEnvimaniaSessionId = EnvimaniaSessionId;
     }
 
     bool IsDefaultCar(string car)
@@ -744,20 +817,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                 break;
         }
 
-        if (control == QuadJoinRed)
-        {
-            JoinTeam1();
-            SendCustomEvent("JoinTeam", new[] { "1" });
-            control.Parent.Parent.RelativeScale = 1.05f;
-            AnimMgr.Add(control.Parent.Parent, "<frame scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-        }
-        else if (control == QuadJoinBlue)
-        {
-            JoinTeam2();
-            SendCustomEvent("JoinTeam", new[] { "2" });
-            control.Parent.Parent.RelativeScale = 1.05f;
-            AnimMgr.Add(control.Parent.Parent, "<frame scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
-        }
     }
 
     private void UpdateTooltip(string text)
@@ -899,7 +958,11 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         LabelMessageBoxDescription.Value = TextLib.GetTranslatedText("Are you sure you want to close the server?");
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
         AnimMgr.Add(FrameMessageBox, "<frame pos=\"0 0\" hidden=\"0\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        IsMessageBoxOpen = true;
+        MessageBoxReturnControl = QuadButtonExit;
+        NavFocusedControl.StyleSelected = false;
         NavFocusedControl = QuadButtonMessageBoxClose;
+        NavFocusedControl.StyleSelected = true;
     }
 
     private void QUAD_BUTTON_EXIT()
@@ -973,11 +1036,65 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         LabelMessageBoxDescription.Value = ModeHelp;
         Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
         AnimMgr.Add(FrameMessageBox, "<frame pos=\"0 0\" hidden=\"0\"/>", 800, CAnimManager.EAnimManagerEasing.QuadOut);
+        IsMessageBoxOpen = true;
+        MessageBoxReturnControl = QuadButtonModeHelp;
         NavFocusedControl = QuadButtonMessageBoxClose;
+    }
+
+    private bool HandleMessageBoxNavigation(CMlScriptEvent.EMenuNavAction action)
+    {
+        if (!IsMessageBoxOpen)
+        {
+            return false;
+        }
+
+        if (action == CMlScriptEvent.EMenuNavAction.Select)
+        {
+            if (NavFocusedControl == QuadButtonMessageBoxConfirm)
+            {
+                CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.Quit);
+            }
+            else
+            {
+                QuadButtonMessageBoxClose_MouseClick();
+            }
+
+            return true;
+        }
+
+        if (action == CMlScriptEvent.EMenuNavAction.Cancel)
+        {
+            QuadButtonMessageBoxClose_MouseClick();
+            return true;
+        }
+
+        if (FrameMessageBoxConfirm.Visible && (action == CMlScriptEvent.EMenuNavAction.Up || action == CMlScriptEvent.EMenuNavAction.Down || action == CMlScriptEvent.EMenuNavAction.Left || action == CMlScriptEvent.EMenuNavAction.Right))
+        {
+            NavFocusedControl.StyleSelected = false;
+
+            if (NavFocusedControl == QuadButtonMessageBoxClose)
+            {
+                NavFocusedControl = QuadButtonMessageBoxConfirm;
+            }
+            else
+            {
+                NavFocusedControl = QuadButtonMessageBoxClose;
+            }
+
+            NavFocusedControl.StyleSelected = true;
+            Focus2();
+        }
+
+        return true;
     }
 
     private void Menu_MenuNavigation(CMlScriptEvent.EMenuNavAction action)
     {
+        if (HandleMessageBoxNavigation(action))
+        {
+            return;
+        }
+
         switch (action)
         {
             case CMlScriptEvent.EMenuNavAction.Cancel:
@@ -1063,9 +1180,13 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         ShowCustomModeHelp();
                         NavFocusedControl.StyleSelected = true;
                     }
-                    else if (NavFocusedControl == QuadButtonServerSettings)
+                    else if (NavFocusedControl == QuadButtonServerDetails && EnvimaniaSessionId != "")
                     {
-
+                        OpenLink($"https://envimix.gbx.tools/envimania/servers/{CurrentServerLogin}", CMlScript.LinkType.ExternalBrowser);
+                    }
+                    else if (NavFocusedControl == QuadButtonSessionDetails && EnvimaniaSessionId != "")
+                    {
+                        OpenLink($"https://envimix.gbx.tools/envimania/sessions/{EnvimaniaSessionId}", CMlScript.LinkType.ExternalBrowser);
                     }
                     else if (NavFocusedControl == QuadButtonAdvanced)
                     {
@@ -1103,8 +1224,26 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonExit)
                         {
-                            NavFocusedControl = QuadButtonModeHelp; //QuadButtonServerSettings;
-                            Focus2();
+                            if (EnvimaniaSessionId == "")
+                            {
+                                NavFocusedControl = QuadButtonModeHelp;
+                            }
+                            else
+                            {
+                                NavFocusedControl = QuadButtonSessionDetails;
+                            }
+
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonSessionDetails)
+                        {
+                            NavFocusedControl = QuadButtonServerDetails;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonServerDetails)
+                        {
+                            NavFocusedControl = QuadButtonModeHelp;
+                            Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonManageServer)
                         {
@@ -1114,11 +1253,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         else if (NavFocusedControl == QuadButtonModeHelp)
                         {
                             NavFocusedControl = QuadButtonManageServer;
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonServerSettings)
-                        {
-                            NavFocusedControl = QuadButtonModeHelp;
                             Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonAdvanced)
@@ -1169,10 +1303,23 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonModeHelp)
                         {
-                            NavFocusedControl = QuadButtonExit; //QuadButtonServerSettings;
+                            if (EnvimaniaSessionId == "")
+                            {
+                                NavFocusedControl = QuadButtonExit;
+                            }
+                            else
+                            {
+                                NavFocusedControl = QuadButtonServerDetails;
+                            }
+
                             Focus3();
                         }
-                        else if (NavFocusedControl == QuadButtonServerSettings)
+                        else if (NavFocusedControl == QuadButtonServerDetails)
+                        {
+                            NavFocusedControl = QuadButtonSessionDetails;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonSessionDetails)
                         {
                             NavFocusedControl = QuadButtonExit;
                             Focus3();
@@ -1218,23 +1365,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                 }
                 break;
         }
-    }
-
-    private string GetFullZone()
-    {
-        var zone = Zones[0];
-
-        for (var i = 0; i < Zones.Count - 1; i++)
-        {
-            if (i == CurrentZoneIndex)
-            {
-                break;
-            }
-
-            zone = $"{zone}|{Zones[i + 1]}";
-        }
-
-        return zone;
     }
 
     private SEnvimaniaRecordsFilter GetFilter()
@@ -1299,6 +1429,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
         NavFirstControl = QuadButtonContinue;
         NavFocusedControl = NavFirstControl;
+        UpdateEnvimaniaSessionButtons();
 
         if (IsExplore())
         {
@@ -1411,7 +1542,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
         FrameMenu.RelativePosition_V3.X = -110;
         FrameVehicleList.RelativePosition_V3.X = 110;
-        FrameTeamInfo.RelativePosition_V3.Y = -135;
 
         if (ItemCars.ContainsValue(MapPlayerModelName))
         {
@@ -1443,8 +1573,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 		
 	    UpdateVehicles();
 
-        PrevUseForcedClans = UseForcedClans;
-
         Zones = TextLib.Split("|", LocalUser.ZonePath);
 
         for (var i = 0; i < FrameInnerVehicles.Controls.Count; i++)
@@ -1465,6 +1593,11 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         }
 
         var car = Netread<string>.For(GetPlayer());
+
+        if (EnvimaniaSessionId != PreviousEnvimaniaSessionId)
+        {
+            UpdateEnvimaniaSessionButtons();
+        }
 
         if (IsMenuOpen != IsMenuNavigationForeground)
         {
@@ -1501,37 +1634,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
                 FrameVehicleList.RelativePosition_V3.X = 110;
                 AnimMgr.Add(FrameVehicleList, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-
-                FrameTeamInfo.RelativePosition_V3.Y = -135;
-                AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -80\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-
-                for (var i = 0; i < 2; i++)
-                {
-                    //FrameTimeLimit.Controls[i].Size.X = 0;
-                    //AnimMgr.Add(FrameTimeLimit.Controls[i], "<quad size=\"50 7\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-
-                    //FrameTeamMessage.Controls[i].Size.X = 0;
-                    //AnimMgr.Add(FrameTeamMessage.Controls[i], "<quad size=\"55 7\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
-                }
-
-                /*FrameRedPlayerCount.RelativePosition_V3.X = 12.5;
-                FrameRedPlayerCount.Parent.RelativePosition_V3.X = 10;
-                AnimMgr.Add(FrameRedPlayerCount.Parent, "<frame pos=\"-21.5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                AnimMgr.Add(FrameRedPlayerCount, "<frame pos=\"0 0\"/>", 700, CAnimManager.EAnimManagerEasing.QuadOut);
-                FrameBluePlayerCount.RelativePosition_V3.X = -12.5;
-                FrameBluePlayerCount.Parent.RelativePosition_V3.X = -10;
-                AnimMgr.Add(FrameBluePlayerCount.Parent, "<frame pos=\"21.5 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                AnimMgr.Add(FrameBluePlayerCount, "<frame pos=\"0 0\"/>", 700, CAnimManager.EAnimManagerEasing.QuadOut);
-
-                FrameJoinTeam.Controls[0].Size.X = 0;
-                FrameJoinTeam.Controls[1].Size.X = 0;
-                AnimMgr.Add(FrameJoinTeam.Controls[0], "<quad size=\"60 10\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                AnimMgr.Add(FrameJoinTeam.Controls[1], "<quad size=\"60 10\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-
-                FrameJoinRed.RelativePosition_V3.X = 29.5;
-                AnimMgr.Add(FrameJoinRed, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                FrameJoinBlue.RelativePosition_V3.X = -29.5;
-                AnimMgr.Add(FrameJoinBlue, "<frame pos=\"0 0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);*/
 
                 MenuOpenTime = Now;
             }
@@ -1645,6 +1747,24 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         LabelServerName.Value = Playground.ServerInfo.ServerName;
         LabelMode.Value = Playground.ServerInfo.ModeName;
 
+        if (CutOffTimeLimit > 0)
+        {
+            LabelTimeLimit.Show();
+
+            if (CutOffTimeLimit <= GameTime)
+            {
+                LabelTimeLimit.Value = "0:00";
+            }
+            else
+            {
+                LabelTimeLimit.Value = TextLib.TimeToText(CutOffTimeLimit - GameTime);
+            }
+        }
+        else
+        {
+            LabelTimeLimit.Hide();
+        }
+
         if (Playground.ServerInfo.IsPrivate)
         {
             LabelPlayerCount.Value = $"{Playground.ServerInfo.PlayerCount}/{Playground.ServerInfo.MaxPlayerCount}$ff0🔒";
@@ -1662,19 +1782,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         {
             LabelSpectatorCount.Value = $"{Playground.ServerInfo.SpectatorCount}/{Playground.ServerInfo.MaxSpectatorCount}";
         }
-
-        /*if (CutOffTimeLimit == -1)
-        {
-            LabelTimeLimit.Value = "-:--";
-        }
-        else if (CutOffTimeLimit - GameTime < 0)
-        {
-            LabelTimeLimit.Value = "0:00";
-        }
-        else
-        {
-            LabelTimeLimit.Value = TextLib.TimeToText(CutOffTimeLimit - GameTime);
-        }*/
 
         if (Players.Count > 5)
         {
@@ -1834,110 +1941,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                 control.RelativeRotation += Period * 0.2f;
             }
         }
-
-        Dictionary<int, int> playerCounts = new() { { 1, 0 }, { 2, 0 } };
-
-        foreach (var score in Scores)
-        {
-            if (!playerCounts.ContainsKey(score.TeamNum))
-            {
-                playerCounts[score.TeamNum] = 0;
-            }
-
-            playerCounts[score.TeamNum] += 1;
-        }
-
-        if (playerCounts.ContainsKey(1))
-        {
-            LabelRedPlayerCount.Value = playerCounts[1].ToString();
-        }
-        else
-        {
-            LabelRedPlayerCount.Value = "0";
-        }
-
-        if (playerCounts.ContainsKey(2))
-        {
-            LabelBluePlayerCount.Value = playerCounts[2].ToString();
-        }
-        else
-        {
-            LabelBluePlayerCount.Value = "0";
-        }
-
-        /*if (UseClans)
-        {
-            FrameTeamInfo.Show();
-
-            if (MenuKind != PreviousMenuKind)
-            {
-                if (MenuKind == "Skin")
-                {
-                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -135\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                }
-                else
-                {
-                    AnimMgr.Add(FrameTeamInfo, "<frame pos=\"0 -80\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
-                }
-            }
-
-            if (UseForcedClans)
-            {
-                QuadJoinBlueLock.Show();
-                QuadJoinRedLock.Show();
-                QuadJoinBlue.Hide();
-                QuadJoinRed.Hide();
-            }
-            else if (playerCounts.ContainsKey(1) && playerCounts.ContainsKey(2))
-            {
-                if (playerCounts[1] > playerCounts[2])
-                {
-                    QuadJoinBlueLock.Hide();
-                    QuadJoinRedLock.Show();
-                    QuadJoinBlue.Show();
-                    QuadJoinRed.Hide();
-                }
-                else if (playerCounts[2] > playerCounts[1])
-                {
-                    QuadJoinBlueLock.Show();
-                    QuadJoinRedLock.Hide();
-                    QuadJoinBlue.Hide();
-                    QuadJoinRed.Show();
-                }
-                else if (playerCounts[1] == playerCounts[2])
-                {
-                    QuadJoinBlueLock.Show();
-                    QuadJoinRedLock.Show();
-                    QuadJoinBlue.Hide();
-                    QuadJoinRed.Hide();
-                }
-                else
-                {
-                    QuadJoinBlueLock.Hide();
-                    QuadJoinRedLock.Hide();
-                    QuadJoinBlue.Show();
-                    QuadJoinRed.Show();
-                }
-            }
-        }
-        else
-        {
-            FrameTeamInfo.Hide();
-        }*/
-
-        /*if (UseForcedClans != PrevUseForcedClans)
-        {
-            if (UseForcedClans)
-            {
-                AnimMgr.Add(FrameTeamInfo, "<frame scale=\"0.75\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
-            }
-            else
-            {
-                AnimMgr.Add(FrameTeamInfo, "<frame scale=\"1\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
-            }
-
-            PrevUseForcedClans = UseForcedClans;
-        }*/
 
         PreviousMenuKind = MenuKind;
 
