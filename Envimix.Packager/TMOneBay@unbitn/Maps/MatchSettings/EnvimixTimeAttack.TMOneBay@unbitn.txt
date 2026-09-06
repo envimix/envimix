@@ -29,7 +29,7 @@
     <setting name="S_EnableUnitedCars" type="boolean" value="true" />
     <setting name="S_EnableDefaultCar" type="boolean" value="false" />
     <setting name="S_EnableStadiumEnvimix" type="boolean" value="false" />
-    <setting name="S_EnableTrafficCarInStadium" type="boolean" value="false" />
+    <setting name="S_EnableTrafficCarInStadium" type="boolean" value="true" />
     <setting name="S_UseUnitedModels" type="boolean" value="true" />
     <setting name="S_VehicleFolder" type="text" value="" />
     <setting name="S_VehicleFileFormat" type="text" value="%1.Item.Gbx" />
