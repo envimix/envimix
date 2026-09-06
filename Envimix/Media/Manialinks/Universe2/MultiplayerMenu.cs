@@ -1543,7 +1543,12 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         FrameMenu.RelativePosition_V3.X = -110;
         FrameVehicleList.RelativePosition_V3.X = 110;
 
-        if (ItemCars.ContainsValue(MapPlayerModelName))
+        var selectedCar = GetCar();
+        if (DisplayedCars.Contains(selectedCar))
+        {
+            ClientCar = selectedCar;
+        }
+        else if (ItemCars.ContainsValue(MapPlayerModelName))
         {
             ClientCar = ItemCars.KeyOf(MapPlayerModelName);
         }
