@@ -27,7 +27,7 @@
 						<quad hidden="1" z-index="2" size="10 6" valign="center" style="Bgs1InRace" substyle="BgCardInventoryItem" scriptevents="1" colorize="369" opacity=".75"/>
 					</frame>
 					<frame z-index="1" pos="5 0">
-						<label pos="0 0.3" z-index="0" size="7.5 5" text="1st" halign="center" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" id="LabelRank"/>
+						<label pos="0 0.3" z-index="0" size="7.5 5" text="" halign="center" valign="center" textfont="RajdhaniMono" textsize="1.5" translate="1" id="LabelRank"/>
 					</frame>
 				</frame>
 			</frame>

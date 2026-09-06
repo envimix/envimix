@@ -1,46 +1,46 @@
 {
-	"CanyonCar": {},
-	"StadiumCar": {},
-	"ValleyCar": {},
-	"LagoonCar": {},
-	"TrafficCar": {
-        "Topaz": {
-			"File": "TrafficCar/Topaz.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Topaz.webp"
-		},
-		"Silver": {
-			"File": "TrafficCar/Silver.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Silver.webp"
-		},
-		"Ruby": {
-			"File": "TrafficCar/Ruby.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Ruby.webp"
-		},
-		"Purpurite": {
-			"File": "TrafficCar/Purpurite.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Purpurite.webp"
-		},
-		"Peridot": {
-			"File": "TrafficCar/Peridot.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Peridot.webp"
-		},
-		"Lapis": {
-			"File": "TrafficCar/Lapis.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Lapis.webp"
-		},
-		"Charcoal": {
-			"File": "TrafficCar/Charcoal.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Charcoal.webp"
-		},
-		"Marmour": {
-			"File": "TrafficCar/Marmour.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Marmour.webp"
-		}
+  "CanyonCar": {},
+  "StadiumCar": {},
+  "ValleyCar": {},
+  "LagoonCar": {},
+  "TrafficCar": {
+    "Topaz": {
+      "File": "TrafficCar/Topaz.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Topaz.webp"
     },
-	"DesertCar": {},
-	"RallyCar": {},
-	"SnowCar": {},
-	"IslandCar": {},
-	"BayCar": {},
-	"CoastCar": {}
+    "Silver": {
+      "File": "TrafficCar/Silver.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Silver.webp"
+    },
+    "Ruby": {
+      "File": "TrafficCar/Ruby.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Ruby.webp"
+    },
+    "Purpurite": {
+      "File": "TrafficCar/Purpurite.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Purpurite.webp"
+    },
+    "Peridot": {
+      "File": "TrafficCar/Peridot.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Peridot.webp"
+    },
+    "Lapis": {
+      "File": "TrafficCar/Lapis.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Lapis.webp"
+    },
+    "Charcoal": {
+      "File": "TrafficCar/Charcoal.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Charcoal.webp"
+    },
+    "Marmour": {
+      "File": "TrafficCar/Marmour.zip",
+      "Icon": "Data/PlayerModels/TrafficCar/Card/Card_Marmour.webp"
+    }
+  },
+  "DesertCar": {},
+  "RallyCar": {},
+  "SnowCar": {},
+  "IslandCar": {},
+  "BayCar": {},
+  "CoastCar": {}
 }
