@@ -247,10 +247,9 @@ public class Envimix : UniverseModeBase
             {
                 Log(nameof(Envimix), $"NOTE: {SkinsFile} is empty or nonexisting. Skin system is going to be disabled.");
             }
-            else if (!skins.Get().FromJson(skinContent))
+            else
             {
-                skins.Get().Clear();
-                Log(nameof(Envimix), $"NOTE: {SkinsFile} has a JSON issue. Skin system is going to be disabled.");
+                skins.Get().FromJson(skinContent);
             }
         }
 
@@ -915,12 +914,7 @@ public class Envimix : UniverseModeBase
     {
         SEnvimaniaSessionTokenResponse response = new();
 
-        if (!response.FromJson(value))
-        {
-            Log(nameof(Envimix), $"Envimania session extension failed ({source}, JSON issue).");
-            Log(nameof(Envimix), value);
-            return;
-        }
+        response.FromJson(value);
 
         EnvimaniaSessionToken = response.SessionToken!;
         EnvimaniaSessionTokenReceived = Now;
@@ -937,12 +931,9 @@ public class Envimix : UniverseModeBase
 
                 SEnvimaniaSessionResponse sessionResponse = new();
 
-                if (!sessionResponse.FromJson(value))
-                {
-                    Log(nameof(Envimix), "Envimania session creation failed (JSON issue).");
-                    Log(nameof(Envimix), value);
-                }
-                else if (sessionResponse.ServerLogin != ServerLogin)
+                sessionResponse.FromJson(value);
+
+                if (sessionResponse.ServerLogin != ServerLogin)
                 {
                     Log(nameof(Envimix), "Envimania session creation failed (server login mismatch).");
                 }
@@ -1063,12 +1054,9 @@ public class Envimix : UniverseModeBase
 
             SEnvimaniaSessionResponse sessionResponse = new();
 
-            if (!sessionResponse.FromJson(EnvimaniaSessionRequest.Result))
-            {
-                Log(nameof(Envimix), "Envimania session creation failed (JSON issue).");
-                Log(nameof(Envimix), EnvimaniaSessionRequest.Result);
-            }
-            else if (sessionResponse.ServerLogin != ServerLogin)
+            sessionResponse.FromJson(EnvimaniaSessionRequest.Result);
+
+            if (sessionResponse.ServerLogin != ServerLogin)
             {
                 Log(nameof(Envimix), "Envimania session creation failed (server login mismatch).");
             }
@@ -1188,26 +1176,18 @@ public class Envimix : UniverseModeBase
 
                 SEnvimaniaSessionRecordResponse response = new();
 
-                if (response.FromJson(EnvimaniaRecordsRequest.Result))
-                {
-                    foreach (var updatedRecords in response.UpdatedRecords)
-                    {
-                        var filterKey = ConstructRecordsFilterKey(updatedRecords.Filter);
-                        var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
-                        envimaniaRecords.Get()[filterKey] = updatedRecords;
-                        EnvimaniaFinishedRecordsRequests[filterKey] = updatedRecords.Filter;
-                        EnvimaniaRecordsUpdatedAt = Now;
-                    }
+                response.FromJson(EnvimaniaRecordsRequest.Result);
 
-                    EnvimaniaStatusMessage = "";
-                }
-                else
+                foreach (var updatedRecords in response.UpdatedRecords)
                 {
-                    Log(nameof(Envimix), "Envimania session records failed (JSON issue).");
-                    Log(nameof(Envimix), EnvimaniaRecordsRequest.Result);
-
-                    EnvimaniaStatusMessage = "Failed to receive records (JSON issue). Reported in server logs.";
+                    var filterKey = ConstructRecordsFilterKey(updatedRecords.Filter);
+                    var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                    envimaniaRecords.Get()[filterKey] = updatedRecords;
+                    EnvimaniaFinishedRecordsRequests[filterKey] = updatedRecords.Filter;
+                    EnvimaniaRecordsUpdatedAt = Now;
                 }
+
+                EnvimaniaStatusMessage = "";
             }
             else
             {
@@ -1282,22 +1262,14 @@ public class Envimix : UniverseModeBase
 
                 Envimania.SEnvimaniaRecordsResponse response = new();
 
-                if (response.FromJson(recsRequest.Result))
-                {
-                    var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
-                    envimaniaRecords.Get()[filterKey] = response;
+                response.FromJson(recsRequest.Result);
+                
+                var envimaniaRecords = Netwrite<Dictionary<string, Envimania.SEnvimaniaRecordsResponse>>.For(Teams[0]);
+                envimaniaRecords.Get()[filterKey] = response;
 
-                    EnvimaniaStatusMessage = "";
-                    EnvimaniaRecordsUpdatedAt = Now;
-                    EnvimaniaFinishedRecordsRequests[filterKey] = filter;
-                }
-                else
-                {
-                    EnvimaniaStatusMessage = "Records failed to load (JSON issue). Reported in server logs.";
-
-                    Log(nameof(Envimix), $"Records retrieval failed (JSON issue, {filter.Car}, G: {filter.Gravity}, L: {filter.Laps}, Type: Time, Zone: [unknown]).");
-                    Log(nameof(Envimix), recsRequest.Result);
-                }
+                EnvimaniaStatusMessage = "";
+                EnvimaniaRecordsUpdatedAt = Now;
+                EnvimaniaFinishedRecordsRequests[filterKey] = filter;
             }
             else
             {
@@ -1328,21 +1300,15 @@ public class Envimix : UniverseModeBase
         {
             SMapInfoBriefResponse mapInfoResponse = new();
 
-            if (!mapInfoResponse.FromJson(MapInfoUnauthorizedRequest.Result))
-            {
-                Log(nameof(Envimix), "Map info retrieval failed (JSON issue).");
-                Log(nameof(Envimix), MapInfoUnauthorizedRequest.Result);
-            }
-            else
-            {
-                Ratings = BuildRatingsDictionary(mapInfoResponse.Ratings);
-                RatingsUpdatedAt = Now;
-                Validations = mapInfoResponse.Validations;
-                ValidationsUpdatedAt = Now;
-                Stars = mapInfoResponse.Stars;
+            mapInfoResponse.FromJson(MapInfoUnauthorizedRequest.Result);
 
-                Log(nameof(Envimix), $"Retrieved preliminary map info from webapi ({Validations.Count} validations).");
-            }
+            Ratings = BuildRatingsDictionary(mapInfoResponse.Ratings);
+            RatingsUpdatedAt = Now;
+            Validations = mapInfoResponse.Validations;
+            ValidationsUpdatedAt = Now;
+            Stars = mapInfoResponse.Stars;
+
+            Log(nameof(Envimix), $"Retrieved preliminary map info from webapi ({Validations.Count} validations).");
         }
         else if (MapInfoUnauthorizedRequest.StatusCode == 404 && EnvimaniaSessionToken is "")
         {
@@ -2544,35 +2510,29 @@ public class Envimix : UniverseModeBase
 
                 SRatingServerResponse response = new();
 
-                if (response.FromJson(UserRatingRequest.Result))
+                response.FromJson(UserRatingRequest.Result);
+                
+                var ratings = Ratings;
+
+                foreach (var (key, req) in UserRatingsInFlight)
                 {
-                    var ratings = Ratings;
+                    UserRatings[key] = req.Rating;
 
-                    foreach (var (key, req) in UserRatingsInFlight)
+                    if (UserRatingsToRequest.ContainsKey(key)
+                        && UserRatingsToRequest[key].Rating.Difficulty == req.Rating.Difficulty
+                        && UserRatingsToRequest[key].Rating.Quality == req.Rating.Quality)
                     {
-                        UserRatings[key] = req.Rating;
-
-                        if (UserRatingsToRequest.ContainsKey(key)
-                            && UserRatingsToRequest[key].Rating.Difficulty == req.Rating.Difficulty
-                            && UserRatingsToRequest[key].Rating.Quality == req.Rating.Quality)
-                        {
-                            UserRatingsToRequest.Remove(key);
-                        }
+                        UserRatingsToRequest.Remove(key);
                     }
-
-                    foreach (var filteredRating in response.Ratings)
-                    {
-                        ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
-                    }
-
-                    Ratings = ratings;
-                    RatingsUpdatedAt = Now;
                 }
-                else
+
+                foreach (var filteredRating in response.Ratings)
                 {
-                    Log(nameof(Envimix), $"Rating submission failed (JSON issue). Reported in server logs.");
-                    Log(nameof(Envimix), UserRatingRequest.Result);
+                    ratings[ConstructRatingFilterKey(filteredRating.Filter)] = filteredRating.Rating;
                 }
+
+                Ratings = ratings;
+                RatingsUpdatedAt = Now;
             }
             else
             {
@@ -2608,45 +2568,39 @@ public class Envimix : UniverseModeBase
 
                 ImmutableArray<SEnvimaniaSessionUser> users = new();
 
-                if (users.FromJson(UserJoinAdditionalInfoRequest.Result))
+                users.FromJson(UserJoinAdditionalInfoRequest.Result);
+                
+                foreach (var user in users)
                 {
-                    foreach (var user in users)
+                    if (GetPlayer(user.Login) is null)
                     {
-                        if (GetPlayer(user.Login) is null)
+                        continue;
+                    }
+
+                    var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(GetPlayer(user.Login)));
+
+                    foreach (var filteredRating in user.Ratings)
+                    {
+                        var hasMyRating = false;
+
+                        for (int i = 0; i < myRatings.Get().Count; i++)
                         {
-                            continue;
+                            var r = myRatings.Get()[i];
+
+                            if (r.Filter.Car == filteredRating.Filter.Car && r.Filter.Gravity == filteredRating.Filter.Gravity)
+                            {
+                                r.Rating = filteredRating.Rating;
+                                myRatings.Get()[i] = r;
+                                hasMyRating = true;
+                                break;
+                            }
                         }
 
-                        var myRatings = Netwrite<IList<Envimania.SFilteredRating>>.For(UIManager.GetUI(GetPlayer(user.Login)));
-
-                        foreach (var filteredRating in user.Ratings)
+                        if (!hasMyRating)
                         {
-                            var hasMyRating = false;
-
-                            for (int i = 0; i < myRatings.Get().Count; i++)
-                            {
-                                var r = myRatings.Get()[i];
-
-                                if (r.Filter.Car == filteredRating.Filter.Car && r.Filter.Gravity == filteredRating.Filter.Gravity)
-                                {
-                                    r.Rating = filteredRating.Rating;
-                                    myRatings.Get()[i] = r;
-                                    hasMyRating = true;
-                                    break;
-                                }
-                            }
-
-                            if (!hasMyRating)
-                            {
-                                myRatings.Get().Add(filteredRating);
-                            }
+                            myRatings.Get().Add(filteredRating);
                         }
                     }
-                }
-                else
-                {
-                    Log(nameof(Envimix), $"User information submission failed (JSON issue). Reported in server logs.");
-                    Log(nameof(Envimix), UserJoinAdditionalInfoRequest.Result);
                 }
             }
             else

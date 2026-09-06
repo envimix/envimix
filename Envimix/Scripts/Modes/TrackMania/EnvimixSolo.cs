@@ -1133,21 +1133,15 @@ public class EnvimixSolo : Envimix
 
                 SRatingClientResponse response = new();
 
-                if (response.FromJson(UserRatingRequest.Result))
-                {
-                    var ratings = Ratings;
-                    ratings[ConstructRatingFilterKey(response.Rating.Filter)] = response.Rating.Rating;
+                response.FromJson(UserRatingRequest.Result);
+                
+                var ratings = Ratings;
+                ratings[ConstructRatingFilterKey(response.Rating.Filter)] = response.Rating.Rating;
 
-                    Ratings = ratings;
+                Ratings = ratings;
 
-                    // this is overflow simulator but the game is paused during ratings often so Now doesnt update to this properly so this just works okay?? be cool with it
-                    RatingsUpdatedAt = TextLib.ToInteger(TimeLib.GetCurrent());
-                }
-                else
-                {
-                    Log(nameof(Envimix), $"Rating submission failed (JSON issue). Reported in server logs.");
-                    Log(nameof(Envimix), UserRatingRequest.Result);
-                }
+                // this is overflow simulator but the game is paused during ratings often so Now doesnt update to this properly so this just works okay?? be cool with it
+                RatingsUpdatedAt = TextLib.ToInteger(TimeLib.GetCurrent());
             }
             else
             {
