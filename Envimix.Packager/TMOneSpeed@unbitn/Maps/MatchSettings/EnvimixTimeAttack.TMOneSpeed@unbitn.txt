@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist>
+    <gameinfos>
+        <game_mode>0</game_mode>
+        <script_name><![CDATA[EnvimixTimeAttack.Script.txt]]></script_name>
+        <title>TMOneSpeed@unbitn</title>
+        <chat_time>10000</chat_time>
+        <finishtimeout>1</finishtimeout>
+        <allwarmupduration>0</allwarmupduration>
+        <disablerespawn>0</disablerespawn>
+        <forceshowallopponents>0</forceshowallopponents>
+    </gameinfos>
+    <hotseat>
+        <game_mode>0</game_mode>
+        <time_limit>300000</time_limit>
+        <rounds_count>5</rounds_count>
+    </hotseat>
+    <filter>
+        <is_lan>1</is_lan>
+        <is_internet>1</is_internet>
+        <is_solo>0</is_solo>
+        <is_hotseat>0</is_hotseat>
+        <sort_index>1000</sort_index>
+        <random_map_order>1</random_map_order>
+    </filter>
+    <mode_script_settings>
+        <setting name="S_EnableTM2Cars" type="boolean" value="true" />
+        <setting name="S_EnableTrafficCar" type="boolean" value="false" />
+        <setting name="S_EnableUnitedCars" type="boolean" value="true" />
+        <setting name="S_EnableDefaultCar" type="boolean" value="false" />
+        <setting name="S_EnableStadiumEnvimix" type="boolean" value="false" />
+        <setting name="S_EnableTrafficCarInStadium" type="boolean" value="false" />
+        <setting name="S_UseUnitedModels" type="boolean" value="true" />
+        <setting name="S_VehicleFolder" type="text" value="Vehicles/" />
+        <setting name="S_VehicleFileFormat" type="text" value="%1.Item.Gbx" />
+        <setting name="S_CarsFile" type="text" value="Cars.json" />
+        <setting name="S_SkinsFile" type="text" value="" />
+        <setting name="S_EnvimixXmlRpc" type="boolean" value="false" />
+        <setting name="S_EnableEnvimaniaSessions" type="boolean" value="false" />
+        <setting name="S_UseLadder" type="boolean" value="true" />
+        <setting name="S_TimeLimit" type="integer" value="600" />
+        <setting name="S_CarSelectTime" type="integer" value="5" />
+        <setting name="S_CustomCountdown" type="integer" value="-1" />
+        <setting name="S_ExtendTime" type="integer" value="5" />
+        <setting name="S_ShowIndividualLadderPointsDiff" type="boolean" value="true" />
+    </mode_script_settings>
+    <startindex>0</startindex>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\1\Speed A10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\2\Speed B10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\3\Speed C10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\4\Speed D10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedRace\5\Speed E10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\1\Speed Platform A01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\1\Speed Platform A02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\1\Speed Platform A03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\1\Speed Platform A04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\1\Speed Platform A05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\2\Speed Platform B01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\2\Speed Platform B02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\2\Speed Platform B03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\2\Speed Platform B04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\2\Speed Platform B05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\3\Speed Platform C01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\3\Speed Platform C02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\3\Speed Platform C03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\3\Speed Platform C04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\3\Speed Platform C05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\4\Speed Platform D01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\4\Speed Platform D02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\4\Speed Platform D03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\4\Speed Platform D04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\4\Speed Platform D05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\5\Speed Platform E01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\5\Speed Platform E02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\5\Speed Platform E03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\5\Speed Platform E04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneSpeedPlatform\5\Speed Platform E05.Map.Gbx</file></map>
+</playlist>

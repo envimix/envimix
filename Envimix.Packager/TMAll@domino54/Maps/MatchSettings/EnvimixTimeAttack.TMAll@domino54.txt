@@ -45,7 +45,5 @@
         <setting name="S_ShowIndividualLadderPointsDiff" type="boolean" value="true" />
     </mode_script_settings>
     <startindex>0</startindex>
-    <map>
-        <file>CCP01_-_reflex_comeback.Map.Gbx</file>
-    </map>
+    <map><file>CCP01_-_reflex_comeback.Map.Gbx</file></map>
 </playlist>

@@ -44,7 +44,5 @@
         <setting name="S_AutoRespawnTime" type="integer" value="6" />
     </mode_script_settings>
     <startindex>0</startindex>
-    <map>
-        <file>CCP01_-_reflex_comeback.Map.Gbx</file>
-    </map>
+    <map><file>CCP01_-_reflex_comeback.Map.Gbx</file></map>
 </playlist>

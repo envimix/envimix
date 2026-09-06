@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist>
+    <gameinfos>
+        <game_mode>0</game_mode>
+        <script_name><![CDATA[EnvimixTeamAttack.Script.txt]]></script_name>
+        <title>TMLagoon@nadeo</title>
+        <chat_time>10000</chat_time>
+        <finishtimeout>1</finishtimeout>
+        <allwarmupduration>0</allwarmupduration>
+        <disablerespawn>0</disablerespawn>
+        <forceshowallopponents>0</forceshowallopponents>
+    </gameinfos>
+    <hotseat>
+        <game_mode>0</game_mode>
+        <time_limit>300000</time_limit>
+        <rounds_count>5</rounds_count>
+    </hotseat>
+    <filter>
+        <is_lan>1</is_lan>
+        <is_internet>1</is_internet>
+        <is_solo>0</is_solo>
+        <is_hotseat>0</is_hotseat>
+        <sort_index>1000</sort_index>
+        <random_map_order>1</random_map_order>
+    </filter>
+    <mode_script_settings>
+        <setting name="S_EnableTM2Cars" type="boolean" value="true" />
+        <setting name="S_EnableTrafficCar" type="boolean" value="false" />
+        <setting name="S_EnableUnitedCars" type="boolean" value="true" />
+        <setting name="S_EnableDefaultCar" type="boolean" value="false" />
+        <setting name="S_EnableStadiumEnvimix" type="boolean" value="false" />
+        <setting name="S_EnableTrafficCarInStadium" type="boolean" value="false" />
+        <setting name="S_UseUnitedModels" type="boolean" value="true" />
+        <setting name="S_VehicleFolder" type="text" value="Vehicles/" />
+        <setting name="S_VehicleFileFormat" type="text" value="%1.Item.Gbx" />
+        <setting name="S_CarsFile" type="text" value="Cars.json" />
+        <setting name="S_SkinsFile" type="text" value="" />
+        <setting name="S_EnvimixXmlRpc" type="boolean" value="false" />
+        <setting name="S_EnableEnvimaniaSessions" type="boolean" value="false" />
+        <setting name="S_UseLadder" type="boolean" value="true" />
+        <setting name="S_TimeLimit" type="integer" value="600" />
+        <setting name="S_CarSelectTime" type="integer" value="5" />
+        <setting name="S_CustomCountdown" type="integer" value="-1" />
+        <setting name="S_AutoRespawnTime" type="integer" value="6" />
+    </mode_script_settings>
+    <startindex>0</startindex>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\1\Alpine A10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\2\Alpine B10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\3\Alpine C10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\4\Alpine D10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpineRace\5\Alpine E10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\1\Alpine Platform A01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\1\Alpine Platform A02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\1\Alpine Platform A03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\1\Alpine Platform A04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\1\Alpine Platform A05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\2\Alpine Platform B01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\2\Alpine Platform B02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\2\Alpine Platform B03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\2\Alpine Platform B04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\2\Alpine Platform B05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\3\Alpine Platform C01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\3\Alpine Platform C02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\3\Alpine Platform C03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\3\Alpine Platform C04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\3\Alpine Platform C05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\4\Alpine Platform D01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\4\Alpine Platform D02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\4\Alpine Platform D03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\4\Alpine Platform D04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\4\Alpine Platform D05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\5\Alpine Platform E01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\5\Alpine Platform E02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\5\Alpine Platform E03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\5\Alpine Platform E04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneAlpinePlatform\5\Alpine Platform E05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\1\StarAlpineA10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\2\StarAlpineB10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\3\StarAlpineC10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\4\StarAlpineD10.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE01.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE02.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE03.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE04.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE05.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE06.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE07.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE08.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE09.Map.Gbx</file></map>
+    <map><file>Campaigns\TMOneStarAlpine\5\StarAlpineE10.Map.Gbx</file></map>
+</playlist>

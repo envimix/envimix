@@ -45,7 +45,8 @@ var roots = new[]
 var ignoredFilePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 {
     "Scripts/Modes/TrackMania/EnvimixSolo.Script.txt",
-    "Scripts/Modes/TrackMania/ViewGhost.Script.txt"
+    "Scripts/Modes/TrackMania/ViewGhost.Script.txt",
+    "Media/Manialinks/Universe2/Menu.xml"
 };
 var settingDefaults = new Dictionary<string, string>
 {
@@ -71,9 +72,9 @@ var titlePacks = new[]
     new TitlePack("TM2U_Island@adamkooo", "file://Media/Images/Graphics/LoadscreenCurrent.png"),
     new TitlePack("TMOneAlpine@unbitn", ""),
     new TitlePack("TMOneSpeed@unbitn", ""),
-    //new TitlePack("TMOneBay@unbitn", ""),
+    // new TitlePack("TMOneBay@unbitn", ""),
     new TitlePack("TMAll@domino54", ""),
-    new TitlePack("Nadeo_Envimix@bigbang1112", ""),
+    // new TitlePack("Nadeo_Envimix@bigbang1112", ""), Script not allowed for this title
     new TitlePack("TMCanyon@nadeo", ""),
     new TitlePack("TMValley@nadeo", ""),
     new TitlePack("TMLagoon@nadeo", "")
@@ -127,7 +128,7 @@ try
 
         File.WriteAllText(
             Path.Combine(archiveStagingDirectory, "README.txt"),
-            "Extract the UserData folder into your dedicated server directory.\r\n");
+            "Extract the UserData folder into your dedicated server directory. To host the gamemode from ManiaPlanet client, extract the contents of the UserData directory into your ManiaPlanet directory in Documents.");
 
         var archivePath = $"ENVIMIX.{titlePack.Id}.{buildLabel}.zip";
         File.Delete(archivePath);
