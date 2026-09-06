@@ -1,236 +1,40 @@
 {
-	"CanyonCar": {
-		"Ace": {
-			"File": "CanyonCar/Ace.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Ace.webp",
-			"Model": ""
-		},
-		"Defrag": {
-			"File": "CanyonCar/Defrag.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Defrag.webp",
-			"Model": ""
-		},
-		"Duke": {
-			"File": "CanyonCar/Duke.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Duke.webp",
-			"Model": ""
-		},
-		"EXD": {
-			"File": "CanyonCar/EXD.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_EXD.webp",
-			"Model": ""
-		},
-		"ForTOne": {
-			"File": "CanyonCar/ForTOne.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_ForTOne.webp",
-			"Model": ""
-		},
-		"Fusi5n": {
-			"File": "CanyonCar/Fusi5n.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Fusi5n.webp",
-			"Model": ""
-		},
-		"Gramberg": {
-			"File": "CanyonCar/Gramberg.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Gramberg.webp",
-			"Model": ""
-		},
-		"GT500": {
-			"File": "CanyonCar/GT500.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_GT500.webp",
-			"Model": ""
-		},
-		"JustForward": {
-			"File": "CanyonCar/JustForward.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_JustForward.webp",
-			"Model": ""
-		},
-		"Liberty": {
-			"File": "CanyonCar/Liberty.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Liberty.webp",
-			"Model": ""
-		},
-		"Magma": {
-			"File": "CanyonCar/Magma.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Magma.webp",
-			"Model": ""
-		},
-		"MP": {
-			"File": "CanyonCar/MP.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_MP.webp",
-			"Model": ""
-		},
-		"NTeam": {
-			"File": "CanyonCar/NTeam.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_NTeam.webp",
-			"Model": ""
-		},
-		"SafetyCar": {
-			"File": "CanyonCar/SafetyCar.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_SafetyCar.webp",
-			"Model": ""
-		},
-		"Tecnivals": {
-			"File": "CanyonCar/Tecnivals.zip",
-			"Icon": "Data/PlayerModels/TMCanyon/Card/Card_Tecnivals.webp",
-			"Model": ""
-		}
-	},
+	"CanyonCar": {},
 	"StadiumCar": {},
-	"ValleyCar": {
-		"AzurSwift": {
-			"File": "ValleyCar/AzurSwift.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_AzurSwift.webp",
-			"Model": ""
-		},
-		"Grass99TM": {
-			"File": "ValleyCar/Grass99TM.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_Grass99TM.webp",
-			"Model": ""
-		},
-		"KingMustard": {
-			"File": "ValleyCar/KingMustard.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_KingMustard.webp",
-			"Model": ""
-		},
-		"RedTurn": {
-			"File": "ValleyCar/RedTurn.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_RedTurn.webp",
-			"Model": ""
-		},
-		"ShadowMantis": {
-			"File": "ValleyCar/ShadowMantis.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_ShadowMantis.webp",
-			"Model": ""
-		},
-		"StraightBlue": {
-			"File": "ValleyCar/StraightBlue.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_StraightBlue.webp",
-			"Model": ""
-		},
-		"TheWasp": {
-			"File": "ValleyCar/TheWasp.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_TheWasp.webp",
-			"Model": ""
-		},
-		"TriGen": {
-			"File": "ValleyCar/TriGen.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_TriGen.webp",
-			"Model": ""
-		},
-		"WhiteLegend": {
-			"File": "ValleyCar/WhiteLegend.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_WhiteLegend.webp",
-			"Model": ""
-		},
-		"Windleaf": {
-			"File": "ValleyCar/Windleaf.zip",
-			"Icon": "Data/PlayerModels/TMValley/Card/Card_Windleaf.webp",
-			"Model": ""
-		}
-	},
-	"LagoonCar": {
-		"Aloha": {
-			"File": "LagoonCar/Aloha.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Aloha.webp",
-			"Model": ""
-		},
-		"Coral": {
-			"File": "LagoonCar/Coral.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Coral.webp",
-			"Model": ""
-		},
-		"Farewell": {
-			"File": "LagoonCar/Farewell.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Farewell.webp",
-			"Model": ""
-		},
-		"jellyfish": {
-			"File": "LagoonCar/jellyfish.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_jellyfish.webp",
-			"Model": ""
-		},
-		"Ocean": {
-			"File": "LagoonCar/Ocean.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Ocean.webp",
-			"Model": ""
-		},
-		"Orchid": {
-			"File": "LagoonCar/Orchid.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Orchid.webp",
-			"Model": ""
-		},
-		"R3D": {
-			"File": "LagoonCar/R3D.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_R3D.webp",
-			"Model": ""
-		},
-		"Ray": {
-			"File": "LagoonCar/Ray.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Ray.webp",
-			"Model": ""
-		},
-		"Samurai": {
-			"File": "LagoonCar/Samurai.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Samurai.webp",
-			"Model": ""
-		},
-		"Shark": {
-			"File": "LagoonCar/Shark.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Shark.webp",
-			"Model": ""
-		},
-		"Thunder": {
-			"File": "LagoonCar/Thunder.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Thunder.webp",
-			"Model": ""
-		},
-		"Wave": {
-			"File": "LagoonCar/Wave.zip",
-			"Icon": "Data/PlayerModels/TMLagoon/Card/Card_Wave.webp",
-			"Model": ""
-		}
-	},
+	"ValleyCar": {},
+	"LagoonCar": {},
 	"TrafficCar": {
         "Topaz": {
 			"File": "TrafficCar/Topaz.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Topaz.webp",
-			"Model": ""
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Topaz.webp"
 		},
 		"Silver": {
 			"File": "TrafficCar/Silver.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Silver.webp",
-			"Model": ""
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Silver.webp"
 		},
 		"Ruby": {
 			"File": "TrafficCar/Ruby.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Ruby.webp",
-			"Model": ""
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Ruby.webp"
 		},
 		"Purpurite": {
 			"File": "TrafficCar/Purpurite.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Purpurite.webp",
-			"Model": ""
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Purpurite.webp"
 		},
 		"Peridot": {
 			"File": "TrafficCar/Peridot.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Peridot.webp",
-			"Model": ""
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Peridot.webp"
 		},
 		"Lapis": {
 			"File": "TrafficCar/Lapis.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Lapis.webp",
-			"Model": ""
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Lapis.webp"
 		},
 		"Charcoal": {
 			"File": "TrafficCar/Charcoal.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Charcoal.webp",
-			"Model": ""
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Charcoal.webp"
 		},
-		"Amber": {
-			"File": "TrafficCar/Amber.zip",
-			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Amber.webp",
-			"Model": ""
+		"Marmour": {
+			"File": "TrafficCar/Marmour.zip",
+			"Icon": "Data/PlayerModels/TrafficCar/Card/Card_Marmour.webp"
 		}
     },
 	"DesertCar": {},
