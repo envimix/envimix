@@ -16,7 +16,7 @@ public class EnvimixTeamAttack : Envimix
     [Setting(As = "Auto-respawn time")]
     public int AutoRespawnTime = 6;
 
-    [Setting(As = "<hidden>")]
+    [Setting(As = "* Clear scores on map end")]
     public bool ClearScoresOnMapEnd = false;
 
     public required Dictionary<string, int> AutoRespawn;

@@ -12,8 +12,8 @@ public class ViewGhost : CTmMode, IContext
         public int CheckpointInRace;
     }
 
-    [Setting(As = "<hidden>")] public string Car = "";
-    [Setting(As = "<hidden>")] public string GhostUrl = "";
+    [Setting(As = "Car")] public string Car = "";
+    [Setting(As = "Ghost URL")] public string GhostUrl = "";
 
     [Netwrite] public required int RaceStartTime { get; set; }
     [Netwrite] public required int CurrentNbLaps { get; set; }

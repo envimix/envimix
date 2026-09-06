@@ -22,7 +22,7 @@ public class EnvimixTimeAttack : Envimix
     [Setting(As = "Show individual ladder points difference")]
     public bool ShowIndividualLadderPointsDiff = true;
 
-    [Setting(As = "<hidden>")]
+    [Setting(As = "* Clear scores on map end")]
     public bool ClearScoresOnMapEnd = false;
 
     public required Dictionary<string, int> AutoRespawn;

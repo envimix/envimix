@@ -142,7 +142,7 @@ public class Envimix : UniverseModeBase
     [Setting(As = "Enable Envimania sessions", CallOnChange = nameof(UpdateEnvimaniaSessionAvailability))]
     public bool EnableEnvimaniaSessions = false;
 
-    [Setting(As = "<hidden>")]
+    [Setting(As = "Use skillpoints")]
     public bool UseSkillpoints = false;
 
     [Setting(As = "Use ladder")]
@@ -151,7 +151,7 @@ public class Envimix : UniverseModeBase
     [Setting(As = "Allow respawn")]
     public bool AllowRespawn = true;
 
-    [Setting(As = "<hidden>", ReloadOnChange = true)]
+    [Setting(As = "* Menu as normal layer", ReloadOnChange = true)]
     public bool MenuAsNormalLayer = false;
 
     public required Dictionary<string, Dictionary<string, Ident>> Cars;

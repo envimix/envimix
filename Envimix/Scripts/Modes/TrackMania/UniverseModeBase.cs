@@ -20,7 +20,7 @@ public class UniverseModeBase : CTmMode, IContext
     [Setting(As = "Enable map intro")]
     public bool EnableMapIntro = false;
 
-    [Setting(As = "<hidden>")]
+    [Setting(As = "Is channel server")]
     public bool IsChannelServer = false;
 
     public bool Reload = true;
