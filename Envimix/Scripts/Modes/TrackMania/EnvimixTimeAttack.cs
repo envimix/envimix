@@ -296,7 +296,10 @@ public class EnvimixTimeAttack : Envimix
 
     public override void OnEvent(CTmModeEvent e)
     {
-        ProcessExtendCommand(e, 60 * 60 * 1000);
+        if (ExtendTime > 0)
+        {
+            ProcessExtendCommand(e, 60 * 60 * 1000);
+        }
 
         switch (e.Type)
         {
