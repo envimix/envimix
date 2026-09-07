@@ -451,6 +451,12 @@ public class EnvimixTimeAttack : Envimix
             return;
         }
 
+        if (ExtendTime <= 0 || GetExtendDuration() <= 0)
+        {
+            ResetExtendVote();
+            return;
+        }
+
         var requiredVotes = ExtendVotePlayers.Length / 2 + 1;
         var remainingVotes = ExtendVotePlayers.Length - VoteYes - VoteNo;
 
