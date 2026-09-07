@@ -676,6 +676,60 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         FramePersonalCompletion.GetFirstChild("FrameMedals").Hide();
     }
 
+    private void UpdateMedalIcons(CMlFrame frameMedals, SPlayerMedals medals)
+    {
+        IList<int> medalArray = new[] { medals.D, medals.ST, medals.SG, medals.SS, medals.SB, medals.A, medals.G, medals.S, medals.B };
+        var currentMedalIndex = 0;
+
+        for (var i = 0; i < frameMedals.Controls.Count; i++)
+        {
+            var medalControl = frameMedals.Controls[frameMedals.Controls.Count - i - 1];
+            var medalQuad = (medalControl as CMlQuad)!;
+
+            while (medalArray[currentMedalIndex] == 0 && currentMedalIndex < medalArray.Count - 1)
+            {
+                currentMedalIndex += 1;
+            }
+
+            medalQuad.Visible = medalArray[currentMedalIndex] > 0;
+            medalQuad.ImageUrl = "";
+            medalQuad.Substyle = "";
+
+            switch (currentMedalIndex)
+            {
+                case 0:
+                    medalQuad.ImageUrl = "file://Media/Images/Medals/duck.png";
+                    break;
+                case 1:
+                    medalQuad.ImageUrl = "file://Media/Images/Medals/stm.png";
+                    break;
+                case 2:
+                    medalQuad.ImageUrl = "file://Media/Images/Medals/supergold.png";
+                    break;
+                case 3:
+                    medalQuad.ImageUrl = "file://Media/Images/Medals/supersilver.png";
+                    break;
+                case 4:
+                    medalQuad.ImageUrl = "file://Media/Images/Medals/superbronze.png";
+                    break;
+                case 5:
+                    medalQuad.Substyle = "MedalNadeo";
+                    break;
+                case 6:
+                    medalQuad.Substyle = "MedalGold";
+                    break;
+                case 7:
+                    medalQuad.Substyle = "MedalSilver";
+                    break;
+                case 8:
+                    medalQuad.Substyle = "MedalBronze";
+                    break;
+            }
+
+            currentMedalIndex += 1;
+        }
+    }
+
     private void UpdateCompletionLeaderboard(Dictionary<string, STitleUserInfo> leaderboardsUserInfos, IList<SPlayerMedals> completionLeaderboard)
     {
         IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
@@ -768,57 +822,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             frameMedals.DataAttributeSet("Medals", playerCompletion.ToJson());
             frameMedals.RelativePosition_V3.X = completionOffsetX + 6;
             frameMedals.Show();
-
-            IList<int> medalArray = new[] { playerCompletion.D, playerCompletion.ST, playerCompletion.SG, playerCompletion.SS, playerCompletion.SB, playerCompletion.A, playerCompletion.G, playerCompletion.S, playerCompletion.B };
-            var currentMedalIndex = 0;
-
-            for (var i = 0; i < frameMedals.Controls.Count; i++)
-            {
-                var medalControl = frameMedals.Controls[frameMedals.Controls.Count - i - 1];
-                var medalQuad = (medalControl as CMlQuad)!;
-
-                while (medalArray[currentMedalIndex] == 0 && currentMedalIndex < medalArray.Count - 1)
-                {
-                    currentMedalIndex += 1;
-                }
-
-                medalQuad.Visible = medalArray[currentMedalIndex] > 0;
-                medalQuad.ImageUrl = "";
-                medalQuad.Substyle = "";
-
-                switch (currentMedalIndex)
-                {
-                    case 0:
-                        medalQuad.ImageUrl = "file://Media/Images/Medals/duck.png";
-                        break;
-                    case 1:
-                        medalQuad.ImageUrl = "file://Media/Images/Medals/stm.png";
-                        break;
-                    case 2:
-                        medalQuad.ImageUrl = "file://Media/Images/Medals/supergold.png";
-                        break;
-                    case 3:
-                        medalQuad.ImageUrl = "file://Media/Images/Medals/supersilver.png";
-                        break;
-                    case 4:
-                        medalQuad.ImageUrl = "file://Media/Images/Medals/superbronze.png";
-                        break;
-                    case 5:
-                        medalQuad.Substyle = "MedalNadeo";
-                        break;
-                    case 6:
-                        medalQuad.Substyle = "MedalGold";
-                        break;
-                    case 7:
-                        medalQuad.Substyle = "MedalSilver";
-                        break;
-                    case 8:
-                        medalQuad.Substyle = "MedalBronze";
-                        break;
-                }
-
-                currentMedalIndex += 1;
-            }
+            UpdateMedalIcons(frameMedals, playerCompletion);
 
             frame.GetFirstChild("QuadHighlight")!.Visible = LocalUser.Login == playerCompletion.L;
 
@@ -832,6 +836,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         var completionRank = 0;
         var completionScore = -1;
         var completionJson = "";
+        SPlayerMedals personalMedals = new();
         foreach (var player in completionLeaderboard)
         {
             if (completionZone != "World" && leaderboardsUserInfos.ContainsKey(player.L) && !TextLib.StartsWith(completionZone, leaderboardsUserInfos[player.L].Z))
@@ -844,6 +849,7 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
             {
                 completionScore = player.D + player.ST + player.SG + player.SS + player.SB + player.A + player.G + player.S + player.B;
                 completionJson = player.ToJson();
+                personalMedals = player;
                 break;
             }
         }
@@ -878,13 +884,15 @@ public class Leaderboards : CManiaAppTitleLayer, IContext
         if (completionScore == -1)
         {
             framePersonalMedals.DataAttributeSet("Medals", "");
+            framePersonalMedals.Hide();
         }
         else
         {
             framePersonalMedals.DataAttributeSet("Medals", completionJson);
+            framePersonalMedals.RelativePosition_V3.X = completionOffsetX + 6;
+            framePersonalMedals.Show();
+            UpdateMedalIcons(framePersonalMedals, personalMedals);
         }
-        framePersonalMedals.RelativePosition_V3.X = completionOffsetX + 6;
-        framePersonalMedals.Show();
     }
 
     private void UpdateCompletionLeaderboard(Dictionary<string, STitleUserInfo> leaderboardsUserInfos)
