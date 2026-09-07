@@ -1017,7 +1017,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
     private void ViewGhost(int mapGroupNum, int mapInfoNum, string car, string ghostUrl)
     {
-        if (ghostUrl == "" || DataFileMgr.Campaigns.Count == 0)
+        if (DataFileMgr.Campaigns.Count == 0)
         {
             return;
         }

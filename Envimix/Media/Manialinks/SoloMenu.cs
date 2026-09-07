@@ -152,6 +152,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public CMlQuad SelectedCampaignQuad;
 
     public CMlQuad? FocusedControl;
+    public CMlFrame? SelectedRecordFrame;
+    public string SelectedRecordCar = "";
+    public string SelectedRecordGhostUrl = "";
+    public CMlFrame? SelectedPersonalBestFrame;
+    public string SelectedPersonalBestCar = "";
+    public string SelectedPersonalBestTime = "";
 
     public bool VRCampaignReleased;
     public bool VROffzoneCampaignReleased;
@@ -337,13 +343,36 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 MapClick(control);
                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
             }
-            if (control.Parent.ControlId == "FrameRecords")
+            if (control.Parent.Parent.ControlId == "FrameRecords")
             {
                 var car = control.DataAttributeGet("Car");
                 var ghostUrl = control.DataAttributeGet("GhostUrl");
                 if (ghostUrl != "")
                 {
-                    ViewGhostSelectedMap(car, ghostUrl);
+                    var recordFrame = (control.Parent as CMlFrame)!;
+                    var recordQuad = (recordFrame.Controls[1] as CMlQuad)!;
+
+                    if (SelectedRecordFrame == recordFrame)
+                    {
+                        recordQuad.Hide();
+                        SelectedRecordFrame = null;
+                        SelectedRecordCar = "";
+                        SelectedRecordGhostUrl = "";
+                        ViewGhostSelectedMap(car, ghostUrl);
+                    }
+                    else
+                    {
+                        if (SelectedRecordFrame is not null)
+                        {
+                            var selectedRecordQuad = (SelectedRecordFrame.Controls[1] as CMlQuad)!;
+                            selectedRecordQuad.Hide();
+                        }
+
+                        recordQuad.Show();
+                        SelectedRecordFrame = recordFrame;
+                        SelectedRecordCar = car;
+                        SelectedRecordGhostUrl = ghostUrl;
+                    }
                 }
             }
             if (controlId == "LabelPersonalBest")
@@ -352,7 +381,30 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 var time = control.DataAttributeGet("Time");
                 if (time != "-1")
                 {
-                    ViewGhostSelectedMap(car, "");
+                    var personalBestFrame = (control.Parent as CMlFrame)!;
+                    var personalBestLabel = (control as CMlLabel)!;
+
+                    if (SelectedPersonalBestFrame == personalBestFrame)
+                    {
+                        personalBestLabel.TextColor = new Vec3(1, 1, 1);
+                        SelectedPersonalBestFrame = null;
+                        SelectedPersonalBestCar = "";
+                        SelectedPersonalBestTime = "";
+                        ViewGhostSelectedMap(car, "");
+                    }
+                    else
+                    {
+                        if (SelectedPersonalBestFrame is not null)
+                        {
+                            var selectedPersonalBestLabel = (SelectedPersonalBestFrame.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
+                            selectedPersonalBestLabel.TextColor = new Vec3(1, 1, 1);
+                        }
+
+                        personalBestLabel.TextColor = new Vec3(0.5f, 0.8f, 1);
+                        SelectedPersonalBestFrame = personalBestFrame;
+                        SelectedPersonalBestCar = car;
+                        SelectedPersonalBestTime = time;
+                    }
                 }
             }
             if (FocusedControl is not null)
@@ -950,6 +1002,16 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void ResetPBs()
     {
+        if (SelectedPersonalBestFrame is not null)
+        {
+            var selectedPersonalBestLabel = (SelectedPersonalBestFrame.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
+            selectedPersonalBestLabel.TextColor = new Vec3(1, 1, 1);
+        }
+
+        SelectedPersonalBestFrame = null;
+        SelectedPersonalBestCar = "";
+        SelectedPersonalBestTime = "";
+
         foreach (var control in FrameLeaderboards.Controls)
         {
             if (control is not CMlFrame frameLeaderboard)
@@ -1027,6 +1089,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void UpdatePBs(CMapInfo mapInfo, ImmutableArray<string> cars)
     {
+        if (SelectedPersonalBestFrame is not null)
+        {
+            var selectedPersonalBestLabel = (SelectedPersonalBestFrame.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
+            selectedPersonalBestLabel.TextColor = new Vec3(1, 1, 1);
+            SelectedPersonalBestFrame = null;
+        }
+
         var carIndex = 0;
         foreach (var control in FrameLeaderboards.Controls)
         {
@@ -1051,6 +1120,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             var labelPersonalBest = (frameLeaderboard.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
             labelPersonalBest.DataAttributeSet("Car", carName);
+            labelPersonalBest.TextColor = new Vec3(1, 1, 1);
+
+            var personalBestFrame = (frameLeaderboard.GetFirstChild("FramePersonalBest") as CMlFrame)!;
 
             var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
             labelPersonalBest.DataAttributeSet("Time", time.ToString());
@@ -1062,6 +1134,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             else
             {
                 labelPersonalBest.SetText(TimeToTextWithMilli(time));
+            }
+
+            if (SelectedPersonalBestCar == carName && SelectedPersonalBestTime == time.ToString())
+            {
+                labelPersonalBest.TextColor = new Vec3(0.5f, 0.8f, 1);
+                SelectedPersonalBestFrame = personalBestFrame;
             }
 
             carIndex += 1;
@@ -1328,6 +1406,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return;
         }
 
+        if (SelectedRecordFrame is not null)
+        {
+            var selectedRecordQuad = (SelectedRecordFrame.Controls[1] as CMlQuad)!;
+            selectedRecordQuad.Hide();
+            SelectedRecordFrame = null;
+        }
+
         Campaign = GetCampaignForMaps();
         var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
 
@@ -1403,10 +1488,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             if (lb.Records.Length == 0)
             {
-                var labelYouCouldBeHere = (frameRecords.Controls[0] as CMlLabel)!;
+                var firstRecordFrame = (frameRecords.Controls[0] as CMlFrame)!;
+                var labelYouCouldBeHere = (firstRecordFrame.Controls[0] as CMlLabel)!;
                 labelYouCouldBeHere.SetText("01 -:--.---  $i$888you could be here!");
                 labelYouCouldBeHere.DataAttributeSet("Car", carName);
                 labelYouCouldBeHere.DataAttributeSet("GhostUrl", "");
+                firstRecordFrame.Show();
                 labelYouCouldBeHere.Show();
                 labelYouCouldBeHere.Opacity = 1;
 
@@ -1441,11 +1528,20 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     rankOffset = 0;
                 }
 
-                var labelRec = (controlRec as CMlLabel)!;
+                var recordFrame = (controlRec as CMlFrame)!;
+                var labelRec = (recordFrame.Controls[0] as CMlLabel)!;
                 labelRec.SetText($"{TextLib.FormatInteger(rankIndex + 1 - rankOffset, 2)} {TimeToTextWithMilli(record.Time)}  {record.User.Nickname}");
                 labelRec.DataAttributeSet("Car", carName);
                 labelRec.DataAttributeSet("GhostUrl", record.GhostUrl);
+                recordFrame.Show();
                 labelRec.Show();
+
+                if (SelectedRecordCar == carName && SelectedRecordGhostUrl == record.GhostUrl)
+                {
+                    var recordQuad = (recordFrame.Controls[1] as CMlQuad)!;
+                    recordQuad.Show();
+                    SelectedRecordFrame = recordFrame;
+                }
 
                 if (record.Removed)
                 {
@@ -1466,6 +1562,29 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1)
         {
             return;
+        }
+
+        if (showLoader)
+        {
+            if (SelectedRecordFrame is not null)
+            {
+                var selectedRecordQuad = (SelectedRecordFrame.Controls[1] as CMlQuad)!;
+                selectedRecordQuad.Hide();
+            }
+
+            SelectedRecordFrame = null;
+            SelectedRecordCar = "";
+            SelectedRecordGhostUrl = "";
+
+            if (SelectedPersonalBestFrame is not null)
+            {
+                var selectedPersonalBestLabel = (SelectedPersonalBestFrame.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
+                selectedPersonalBestLabel.TextColor = new Vec3(1, 1, 1);
+            }
+
+            SelectedPersonalBestFrame = null;
+            SelectedPersonalBestCar = "";
+            SelectedPersonalBestTime = "";
         }
 
         LeaderboardsLoadedOrLoading = true;
@@ -1920,6 +2039,16 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void UnloadLeaderboards()
     {
+        if (SelectedRecordFrame is not null)
+        {
+            var selectedRecordQuad = (SelectedRecordFrame.Controls[1] as CMlQuad)!;
+            selectedRecordQuad.Hide();
+        }
+
+        SelectedRecordFrame = null;
+        SelectedRecordCar = "";
+        SelectedRecordGhostUrl = "";
+
         foreach (var control in FrameLeaderboards.Controls)
         {
             if (control is not CMlFrame frameLeaderboard)
@@ -1958,7 +2087,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void ViewGhostSelectedMap(string car, string ghostUrl)
     {
-        if (ghostUrl == "")
+        if (MapGroupNum == -1 || MapInfoNum == -1)
         {
             return;
         }
