@@ -372,19 +372,18 @@ public class LocalPlayMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            var server = TitleControl.LocalServers_CurrentTitle[serverIndex];
             var quadServer = (frame.GetFirstChild("QuadLanServer") as CMlQuad)!;
             var labelName = (frame.GetFirstChild("LabelLanServerName") as CMlLabel)!;
             var labelPlayers = (frame.GetFirstChild("LabelLanPlayers") as CMlLabel)!;
             var labelMode = (frame.GetFirstChild("LabelLanMode") as CMlLabel)!;
 
-            quadServer.DataAttributeSet("login", server.ServerLogin);
-            quadServer.StyleSelected = server.ServerLogin == SelectedLanServerLogin;
-            labelName.SetText(server.ServerName);
-            labelPlayers.SetText($"{server.PlayerCount}$888/{server.MaxPlayerCount}");
-            labelMode.SetText(server.ModeName);
-            if (server.IsPrivate)
-                labelPlayers.SetText($"$ff0🔒 $fff{server.PlayerCount}$888/{server.MaxPlayerCount}");
+            quadServer.DataAttributeSet("login", TitleControl.LocalServers_CurrentTitle[serverIndex].ServerLogin);
+            quadServer.StyleSelected = TitleControl.LocalServers_CurrentTitle[serverIndex].ServerLogin == SelectedLanServerLogin;
+            labelName.SetText(TitleControl.LocalServers_CurrentTitle[serverIndex].ServerName);
+            labelPlayers.SetText($"{TitleControl.LocalServers_CurrentTitle[serverIndex].PlayerCount}$888/{TitleControl.LocalServers_CurrentTitle[serverIndex].MaxPlayerCount}");
+            labelMode.SetText(TitleControl.LocalServers_CurrentTitle[serverIndex].ModeName);
+            if (TitleControl.LocalServers_CurrentTitle[serverIndex].IsPrivate)
+                labelPlayers.SetText($"$ff0🔒 $fff{TitleControl.LocalServers_CurrentTitle[serverIndex].PlayerCount}$888/{TitleControl.LocalServers_CurrentTitle[serverIndex].MaxPlayerCount}");
             frame.Show();
             index += 1;
         }
