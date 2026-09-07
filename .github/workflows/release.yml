@@ -25,7 +25,7 @@ jobs:
         run: echo "BUILD_LABEL=$(date '+%Y-%m-%d-%H_%M')" >> "$GITHUB_ENV"
 
       - name: Direct generated scripts to the workspace
-        run: "echo 'OutputDir: out' > Envimix/buildsettings.yml"
+        run: "printf 'OutputDir: %s\\n' \"$GITHUB_WORKSPACE/Envimix/out\" > Envimix/buildsettings.yml"
 
       - name: Restore Envimix dependencies
         run: dotnet restore Envimix/Envimix.csproj
