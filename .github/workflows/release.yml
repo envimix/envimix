@@ -1,0 +1,48 @@
+name: Release Envimix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Set build label
+        run: echo "BUILD_LABEL=$(date '+%Y-%m-%d-%H_%M')" >> "$GITHUB_ENV"
+
+      - name: Direct generated scripts to the workspace
+        run: "echo 'OutputDir: out' > Envimix/buildsettings.yml"
+
+      - name: Restore Envimix dependencies
+        run: dotnet restore Envimix/Envimix.csproj
+
+      - name: Restore packager dependencies
+        run: dotnet restore Envimix.Packager/Envimix.Packager.csproj
+
+      - name: Build Envimix scripts
+        run: dotnet build Envimix/Envimix.csproj --no-restore
+
+      - name: Build packager
+        run: dotnet build Envimix.Packager/Envimix.Packager.csproj --no-restore
+
+      - name: Create archives
+        run: dotnet run --project Envimix.Packager/Envimix.Packager.csproj --no-build -- Envimix "$BUILD_LABEL"
+
+      - name: Create GitHub release
+        run: gh release create "$BUILD_LABEL" "ENVIMIX.*.$BUILD_LABEL.zip" --title "$BUILD_LABEL"
+        env:
+          GH_TOKEN: ${{ github.token }}
