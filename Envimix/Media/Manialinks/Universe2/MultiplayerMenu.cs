@@ -300,9 +300,16 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
         QuadButtonMessageBoxClose.MouseOver += () =>
         {
+            QuadButtonMessageBoxConfirm.StyleSelected = false;
+            NavFocusedControl = QuadButtonMessageBoxClose;
             Focus2();
         };
-        QuadButtonMessageBoxConfirm.MouseOver += Focus2;
+        QuadButtonMessageBoxConfirm.MouseOver += () =>
+        {
+            QuadButtonMessageBoxClose.StyleSelected = false;
+            NavFocusedControl = QuadButtonMessageBoxConfirm;
+            Focus2();
+        };
 
         QuadStarButton.MouseOver += () =>
         {
