@@ -20,10 +20,10 @@ public class UniverseModeBase : CTmMode, IContext
     [Setting(As = "Enable map intro")]
     public bool EnableMapIntro = false;
 
-    [Setting(As = "Is channel server")]
+    [Setting(As = "Is channel server", Hidden = true)]
     public bool IsChannelServer = false;
 
-    [Setting(As = "Use script callbacks")]
+    [Setting(As = "Use script callbacks", Hidden = true)]
     public bool UseScriptCallbacks = false;
 
     public bool Reload = true;

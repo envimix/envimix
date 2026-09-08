@@ -127,31 +127,31 @@ public class Envimix : UniverseModeBase
     [Setting(As = "* Vehicle file format", ReloadOnChange = true)]
     public string VehicleFileFormat = "%1.Item.Gbx"; // Wrong usage can crash scripts
 
-    [Setting(As = "* Cars.json file", ReloadOnChange = true)]
+    [Setting(As = "* Cars.json file", ReloadOnChange = true, Hidden = true)]
     public string CarsFile = "Cars.json";
 
     [Setting(As = "* Skins.json file", ReloadOnChange = true)]
     public string SkinsFile = "Skins_Turbo.json";
 
-    [Setting(As = "Envimix Web API")]
+    [Setting(As = "Envimix Web API", Hidden = true)]
     public string EnvimixWebAPI = "https://api.envimix.gbx.tools";
 
-    [Setting(As = "Envimix XML-RPC")]
+    [Setting(As = "Envimix XML-RPC", Hidden = true)]
     public bool EnvimixXmlRpc = false;
 
     [Setting(As = "Enable Envimania sessions", CallOnChange = nameof(UpdateEnvimaniaSessionAvailability))]
     public bool EnableEnvimaniaSessions = false;
 
-    [Setting(As = "Use skillpoints")]
+    [Setting(As = "Use skillpoints", Hidden = true)]
     public bool UseSkillpoints = false;
 
     [Setting(As = "Use ladder")]
     public bool UseLadder = true;
 
-    [Setting(As = "Allow respawn")]
+    [Setting(As = "Allow respawn", Hidden = true)]
     public bool AllowRespawn = true;
 
-    [Setting(As = "* Menu as normal layer", ReloadOnChange = true)]
+    [Setting(As = "* Menu as normal layer", ReloadOnChange = true, Hidden = true)]
     public bool MenuAsNormalLayer = false;
 
     public required Dictionary<string, Dictionary<string, Ident>> Cars;
