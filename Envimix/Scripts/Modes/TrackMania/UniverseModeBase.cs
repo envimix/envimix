@@ -445,11 +445,11 @@ public class UniverseModeBase : CTmMode, IContext
         }
     }
 
-    private void SendXmlRpcCallbackArray(string callbackName, string[] data)
+    private void SendXmlRpcCallbackArray(string callbackName, IList<string> data)
     {
         if (UseScriptCallbacks)
         {
-            XmlRpc.SendCallbackArray(callbackName, data);
+            XmlRpc.SendCallbackArray(callbackName, (string[])data);
         }
     }
 
@@ -469,15 +469,25 @@ public class UniverseModeBase : CTmMode, IContext
 
         if (includeCount)
         {
-            payload += $"\"count\":{MapCount},";
+            payload = $"{payload}\"count\":{MapCount},";
         }
 
         if (includeRestarted)
         {
-            payload += "\"restarted\":false,";
+            payload = $"{payload}\"restarted\":false,";
         }
 
-        payload += $"\"time\":{Now},\"map\":{{\"uid\":\"{Map.MapInfo.MapUid}\",\"name\":\"{Map.MapInfo.Name}\",\"filename\":\"{Map.MapInfo.FileName}\",\"author\":\"{Map.MapInfo.AuthorLogin}\",\"environment\":\"{Map.MapInfo.CollectionName}\",\"mood\":\"{Map.DecorationName}\",\"bronzetime\":{Map.MapInfo.TMObjective_BronzeTime},\"silvertime\":{Map.MapInfo.TMObjective_SilverTime},\"goldtime\":{Map.MapInfo.TMObjective_GoldTime},\"authortime\":{Map.MapInfo.TMObjective_AuthorTime},\"copperprice\":{Map.MapInfo.CopperPrice},\"laprace\":{Map.MapInfo.TMObjective_IsLapRace.ToString().ToLower()},\"nblaps\":{Map.TMObjective_NbLaps},\"maptype\":\"{Map.MapInfo.MapType}\",\"mapstyle\":\"{Map.MapInfo.MapStyle}\"}}}}";
+        string isLapRace;
+        if (Map.MapInfo.TMObjective_IsLapRace)
+        {
+            isLapRace = "true";
+        }
+        else
+        {
+            isLapRace = "false";
+        }
+
+        payload = $"{payload}\"time\":{Now},\"map\":{{\"uid\":\"{Map.MapInfo.MapUid}\",\"name\":\"{Map.MapInfo.Name}\",\"filename\":\"{Map.MapInfo.FileName}\",\"author\":\"{Map.MapInfo.AuthorLogin}\",\"environment\":\"{Map.MapInfo.CollectionName}\",\"mood\":\"{Map.DecorationName}\",\"bronzetime\":{Map.MapInfo.TMObjective_BronzeTime},\"silvertime\":{Map.MapInfo.TMObjective_SilverTime},\"goldtime\":{Map.MapInfo.TMObjective_GoldTime},\"authortime\":{Map.MapInfo.TMObjective_AuthorTime},\"copperprice\":{Map.MapInfo.CopperPrice},\"laprace\":{isLapRace},\"nblaps\":{Map.TMObjective_NbLaps},\"maptype\":\"{Map.MapInfo.MapType}\",\"mapstyle\":\"{Map.MapInfo.MapStyle}\"}}}}";
         return payload;
     }
 
