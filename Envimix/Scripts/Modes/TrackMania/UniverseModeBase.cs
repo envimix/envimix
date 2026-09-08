@@ -23,11 +23,17 @@ public class UniverseModeBase : CTmMode, IContext
     [Setting(As = "Is channel server")]
     public bool IsChannelServer = false;
 
+    [Setting(As = "Use script callbacks")]
+    public bool UseScriptCallbacks = false;
+
     public bool Reload = true;
     public bool Terminate = false;
     public ImmutableArray<int> MapQueue;
     public int WarmUpStartTime = -1;
     public bool IsWarmUp = false;
+    public int MatchCount;
+    public int MapCount;
+    public int PlayLoopCount;
     [Netwrite] public int PodiumStartTime { get; set; }
 
     public required Dictionary<string, CUILayer> Layers;
@@ -431,6 +437,118 @@ public class UniverseModeBase : CTmMode, IContext
         }
     }
 
+    private void SendXmlRpcCallback(string callbackName, string payload)
+    {
+        if (UseScriptCallbacks)
+        {
+            XmlRpc.SendCallback(callbackName, payload);
+        }
+    }
+
+    private void SendXmlRpcCallbackArray(string callbackName, string[] data)
+    {
+        if (UseScriptCallbacks)
+        {
+            XmlRpc.SendCallbackArray(callbackName, data);
+        }
+    }
+
+    private string GetXmlRpcTimePayload()
+    {
+        return $"{{\"time\":{Now}}}";
+    }
+
+    private string GetXmlRpcCountPayload(int count)
+    {
+        return $"{{\"count\":{count},\"time\":{Now}}}";
+    }
+
+    private string GetXmlRpcMapPayload(bool includeCount, bool includeRestarted)
+    {
+        var payload = "{";
+
+        if (includeCount)
+        {
+            payload += $"\"count\":{MapCount},";
+        }
+
+        if (includeRestarted)
+        {
+            payload += "\"restarted\":false,";
+        }
+
+        payload += $"\"time\":{Now},\"map\":{{\"uid\":\"{Map.MapInfo.MapUid}\",\"name\":\"{Map.MapInfo.Name}\",\"filename\":\"{Map.MapInfo.FileName}\",\"author\":\"{Map.MapInfo.AuthorLogin}\",\"environment\":\"{Map.MapInfo.CollectionName}\",\"mood\":\"{Map.DecorationName}\",\"bronzetime\":{Map.MapInfo.TMObjective_BronzeTime},\"silvertime\":{Map.MapInfo.TMObjective_SilverTime},\"goldtime\":{Map.MapInfo.TMObjective_GoldTime},\"authortime\":{Map.MapInfo.TMObjective_AuthorTime},\"copperprice\":{Map.MapInfo.CopperPrice},\"laprace\":{Map.MapInfo.TMObjective_IsLapRace.ToString().ToLower()},\"nblaps\":{Map.TMObjective_NbLaps},\"maptype\":\"{Map.MapInfo.MapType}\",\"mapstyle\":\"{Map.MapInfo.MapStyle}\"}}}}";
+        return payload;
+    }
+
+    private void SendXmlRpcEventCallbacks(CTmModeEvent e)
+    {
+        switch (e.Type)
+        {
+            case CTmModeEvent.EType.StartLine:
+                SendXmlRpcCallbackArray("LibXmlRpc_OnStartLine", new[] { e.Player.User.Login });
+                break;
+            case CTmModeEvent.EType.WayPoint:
+                SendXmlRpcCallbackArray("LibXmlRpc_OnWayPoint", new[]
+                {
+                    e.Player.User.Login,
+                    e.BlockId.ToString(),
+                    e.RaceTime.ToString(),
+                    e.CheckpointInRace.ToString(),
+                    e.IsEndRace.ToString(),
+                    e.LapTime.ToString(),
+                    e.CheckpointInLap.ToString(),
+                    e.IsEndLap.ToString()
+                });
+
+                if (e.IsEndRace || (e.IsEndLap && IndependantLaps))
+                {
+                    var finishTime = e.RaceTime;
+                    if (IndependantLaps)
+                    {
+                        finishTime = e.LapTime;
+                    }
+
+                    SendXmlRpcCallbackArray("LibXmlRpc_OnPlayerFinish", new[]
+                    {
+                        e.Player.User.Login,
+                        e.BlockId.ToString(),
+                        finishTime.ToString()
+                    });
+                }
+
+                break;
+            case CTmModeEvent.EType.GiveUp:
+                SendXmlRpcCallbackArray("LibXmlRpc_OnGiveUp", new[] { e.Player.User.Login });
+                break;
+            case CTmModeEvent.EType.Respawn:
+                SendXmlRpcCallbackArray("LibXmlRpc_OnRespawn", new[]
+                {
+                    e.Player.User.Login,
+                    e.BlockId.ToString(),
+                    e.CheckpointInRace.ToString(),
+                    e.CheckpointInLap.ToString(),
+                    e.NbRespawns.ToString()
+                });
+                break;
+            case CTmModeEvent.EType.Stunt:
+                SendXmlRpcCallbackArray("LibXmlRpc_OnStunt", new[]
+                {
+                    e.Player.User.Login,
+                    e.Points.ToString(),
+                    e.Combo.ToString(),
+                    e.StuntsScore.ToString(),
+                    e.Factor.ToString(),
+                    e.StuntFigure.ToString(),
+                    e.Angle.ToString(),
+                    e.IsStraight.ToString(),
+                    e.IsReverse.ToString(),
+                    e.IsMasterJump.ToString()
+                });
+                break;
+        }
+    }
+
     public void Main()
     {
         // nothing
@@ -440,19 +558,25 @@ public class UniverseModeBase : CTmMode, IContext
     {
         Reload = false;
 
+        SendXmlRpcCallback("Maniaplanet.StartServer_Start", $"{{\"restarted\":false,\"mode\":{{\"updated\":false,\"name\":\"{nameof(UniverseModeBase)}\"}},\"time\":{Now}}}");
         BeforeServerInit();
         Settings();
         OnServerInit();
 
         BeforeServerStart();
         OnServerStart();
+        SendXmlRpcCallback("Maniaplanet.StartServer_End", $"{{\"restarted\":false,\"mode\":{{\"updated\":false,\"name\":\"{nameof(UniverseModeBase)}\"}},\"time\":{Now}}}");
 
         while (!Terminated())
         {
+            MatchCount += 1;
+            SendXmlRpcCallback("Maniaplanet.StartMatch_Start", GetXmlRpcCountPayload(MatchCount));
+            MapCount += 1;
             BeforeMapInit();
             OnMapInit();
 
             BeforeMapLoad();
+            SendXmlRpcCallback("Maniaplanet.LoadingMap_Start", $"{{\"restarted\":false,\"time\":{Now}}}");
             RequestLoadMap();
 
             while (!MapLoaded)
@@ -462,6 +586,8 @@ public class UniverseModeBase : CTmMode, IContext
             }
 
             OnMapLoad();
+            SendXmlRpcCallback("Maniaplanet.LoadingMap_End", GetXmlRpcMapPayload(false, true));
+            SendXmlRpcCallback("Maniaplanet.StartMap_Start", GetXmlRpcMapPayload(true, true));
 
             if (EnableMapIntro)
             {
@@ -479,6 +605,9 @@ public class UniverseModeBase : CTmMode, IContext
 
             BeforeMapStart();
             OnMapStart();
+            SendXmlRpcCallback("Maniaplanet.StartMap_End", GetXmlRpcMapPayload(true, true));
+            PlayLoopCount += 1;
+            SendXmlRpcCallback("Maniaplanet.StartPlayLoop", GetXmlRpcCountPayload(PlayLoopCount));
 
             // If warmups are set
             if (WarmUpNb > 0)
@@ -496,7 +625,11 @@ public class UniverseModeBase : CTmMode, IContext
             {
                 BeforeEvent();
 
-                foreach (var _E in PendingEvents) OnEvent(_E);
+                foreach (var _E in PendingEvents)
+                {
+                    SendXmlRpcEventCallbacks(_E);
+                    OnEvent(_E);
+                }
                 foreach (var _E in UIManager.PendingEvents) OnUIEvent(_E);
                 foreach (var _E in XmlRpc.PendingEvents) OnXmlRpcEvent(_E);
                 foreach (var _E in Http.PendingEvents) OnHttpEvent(_E);
@@ -542,7 +675,9 @@ public class UniverseModeBase : CTmMode, IContext
                 Yield();
             }
 
+            SendXmlRpcCallback("Maniaplanet.EndPlayLoop", GetXmlRpcCountPayload(PlayLoopCount));
             OnGameEnd();
+            SendXmlRpcCallback("Maniaplanet.EndMatch_Start", GetXmlRpcCountPayload(MatchCount));
 
             if (!Terminated())
             {
@@ -553,6 +688,7 @@ public class UniverseModeBase : CTmMode, IContext
                 UIManager.UIAll.UISequence = CUIConfig.EUISequence.Podium;
 
                 OnPodiumStart();
+                SendXmlRpcCallback("Maniaplanet.Podium_Start", GetXmlRpcTimePayload());
 
                 while (!Terminated() && Now - PodiumStartTime < ChatTime * 1000)
                 {
@@ -561,13 +697,22 @@ public class UniverseModeBase : CTmMode, IContext
                 }
 
                 OnPodiumEnd();
+                SendXmlRpcCallback("Maniaplanet.Podium_End", GetXmlRpcTimePayload());
             }
 
+            SendXmlRpcCallback("Maniaplanet.EndMap_Start", GetXmlRpcMapPayload(true, false));
             BeforeMapEnd();
             OnMapEnd();
+            SendXmlRpcCallback("Maniaplanet.EndMap_End", GetXmlRpcMapPayload(true, false));
 
+            SendXmlRpcCallback("Maniaplanet.UnloadingMap_Start", GetXmlRpcMapPayload(false, false));
             RequestUnloadMap();
             Wait(() => !MapLoaded);
+            SendXmlRpcCallback("Maniaplanet.UnloadingMap_End", GetXmlRpcTimePayload());
+            SendXmlRpcCallback("Maniaplanet.EndMatch_End", GetXmlRpcCountPayload(MatchCount));
         }
+
+        SendXmlRpcCallback("Maniaplanet.EndServer_Start", GetXmlRpcTimePayload());
+        SendXmlRpcCallback("Maniaplanet.EndServer_End", GetXmlRpcTimePayload());
     }
 }
