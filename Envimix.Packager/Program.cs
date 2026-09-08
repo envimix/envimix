@@ -118,7 +118,8 @@ try
         ApplySettingDefaults(
             Path.Combine(titleStagingDirectory, "Scripts", "Modes", "TrackMania", "Envimix.Script.txt"),
             settingDefaults);
-            
+        ApplyBuildLabelToScriptVersions(titleStagingDirectory, buildLabel);
+
         ReplaceInFiles(titleStagingDirectory, sourceText, replacementText);
 
         if (!string.IsNullOrEmpty(titlePack.LoadingImageUrl))
@@ -204,6 +205,27 @@ static void ApplySettingDefaults(string scriptPath, IReadOnlyDictionary<string, 
     }
 
     File.WriteAllText(scriptPath, contents);
+}
+
+static void ApplyBuildLabelToScriptVersions(string directory, string buildLabel)
+{
+    const string pattern = "^(#Const\\s+Version\\s+)\"(?:\\\\.|[^\"])*\"";
+
+    foreach (var scriptPath in Directory.EnumerateFiles(directory, "*.Script.txt", SearchOption.AllDirectories))
+    {
+        var contents = File.ReadAllText(scriptPath);
+        if (!Regex.IsMatch(contents, pattern, RegexOptions.Multiline))
+        {
+            continue;
+        }
+
+        contents = Regex.Replace(
+            contents,
+            pattern,
+            match => $"{match.Groups[1].Value}\"{buildLabel}\"",
+            RegexOptions.Multiline);
+        File.WriteAllText(scriptPath, contents);
+    }
 }
 
 static void CopyDirectory(
