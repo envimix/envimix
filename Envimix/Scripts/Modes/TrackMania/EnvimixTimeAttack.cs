@@ -4,6 +4,9 @@ namespace Envimix.Scripts.Modes.TrackMania;
 
 public class EnvimixTimeAttack : Envimix
 {
+    [Constant(IncludePrefix = false)]
+    public const string Version = "2026-09-09";
+    
     [Setting(As = "Time limit")]
     public int TimeLimit = 900;
 
