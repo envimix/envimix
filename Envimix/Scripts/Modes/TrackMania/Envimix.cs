@@ -1616,7 +1616,7 @@ public class Envimix : UniverseModeBase
                     envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
 
-                    if (hasAuthoritativeRecords && isFirstEnvimaniaRecord)
+                    if (hasAuthoritativeRecords && isFirstEnvimaniaRecord && car.Get() != GetDefaultCar())
                     {
                         UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has validated the map with $<$ff8{car.Get()}$>!");
                     }
