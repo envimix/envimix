@@ -188,6 +188,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     public string PreviousEnvimaniaSessionId = "";
     public bool IsMessageBoxOpen;
     public CMlQuad MessageBoxReturnControl;
+    public bool PreviousIsSpectatorClient;
 
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
     [Netwrite(NetFor.UI)] public Dictionary<string, string> UserSkins { get; set; }
@@ -930,16 +931,10 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 		if (parent.DataAttributeGet("checked") == "True")
 		{
 			RequestSpectatorClient(false);
-			parent.DataAttributeSet("startanimate", "-1");
-			(parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
-			parent.DataAttributeSet("checked", "False");
 		}
 		else
 		{
 			RequestSpectatorClient(true);
-			parent.DataAttributeSet("startanimate", Now.ToString());
-			(parent.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
-			parent.DataAttributeSet("checked", "True");
 		}
 
 		Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
@@ -1419,6 +1414,22 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         return result;
     }
 
+    private void UpdateSpectatorButton()
+    {
+        FrameButtonSpectator.DataAttributeSet("checked", IsSpectatorClient.ToString());
+
+        if (IsSpectatorClient)
+        {
+            FrameButtonSpectator.DataAttributeSet("startanimate", Now.ToString());
+            (FrameButtonSpectator.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
+        }
+        else
+        {
+            FrameButtonSpectator.DataAttributeSet("startanimate", "-1");
+            (FrameButtonSpectator.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
+        }
+    }
+
     public void Main()
     {
         Page.GetClassChildren("LOADING", Page.MainFrame, Recursive: true);
@@ -1447,18 +1458,8 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
         PreviousEnableDefaultCar = EnableDefaultCar || OverrideEnableDefaultCar;
 
-        FrameButtonSpectator.DataAttributeSet("checked", IsSpectatorClient.ToString());
-
-        if (IsSpectatorClient)
-        {
-            FrameButtonSpectator.DataAttributeSet("startanimate", Now.ToString());
-            (FrameButtonSpectator.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
-        }
-        else
-        {
-            FrameButtonSpectator.DataAttributeSet("startanimate", "-1");
-            (FrameButtonSpectator.GetFirstChild("LABEL") as CMlLabel)!.Value = "  $t" + TextLib.GetTranslatedText("Spectator");
-        }
+        UpdateSpectatorButton();
+        PreviousIsSpectatorClient = IsSpectatorClient;
 
         if (LoadedTitle.TitleId != "Envimix_Turbo@bigbang1112")
         {
@@ -1595,6 +1596,12 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         if (ShowMenuLittleLater != -1 && Now - ShowMenuLittleLater > 100 && Now - ShowMenuLittleLater < 300)
         {
             ShowInGameMenu();
+        }
+
+        if (IsSpectatorClient != PreviousIsSpectatorClient)
+        {
+            UpdateSpectatorButton();
+            PreviousIsSpectatorClient = IsSpectatorClient;
         }
 
         var car = Netread<string>.For(GetPlayer());
