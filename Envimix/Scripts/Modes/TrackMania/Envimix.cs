@@ -1552,6 +1552,7 @@ public class Envimix : UniverseModeBase
                         return;
                     }
 
+                    var isFirstEnvimaniaRecord = recResponse.Records.Length == 0;
                     var insertIndex = -1;
 
                     for (int i = 0; i < recResponse.Records.Length; i++)
@@ -1615,7 +1616,7 @@ public class Envimix : UniverseModeBase
                     envimaniaRecords.Get()[filterKey] = recResponse;
                     EnvimaniaRecordsUpdatedAt = Now;
 
-                    if (hasAuthoritativeRecords && recResponse.Records.Length == 1)
+                    if (hasAuthoritativeRecords && isFirstEnvimaniaRecord)
                     {
                         UIManager.UIAll.SendChat($"$<{e.Player.User.Name}$> has validated the map with $<$ff8{car.Get()}$>!");
                     }
