@@ -126,9 +126,14 @@ try
             ReplaceInFiles(titleStagingDirectory, turboImageReplacementText, titlePack.LoadingImageUrl);
         }
 
+        File.Copy(
+            Path.Combine(repositoryDirectory, "LICENSE.txt"),
+            Path.Combine(archiveStagingDirectory, "LICENSE.txt"),
+            overwrite: true);
+
         File.WriteAllText(
             Path.Combine(archiveStagingDirectory, "README.txt"),
-            "Extract the UserData folder into your dedicated server directory. To host the gamemode from ManiaPlanet client, extract the contents of the UserData directory into your ManiaPlanet directory in Documents.");
+            "Extract the UserData folder into your dedicated server directory. To host the gamemode from ManiaPlanet client, extract the contents of the UserData directory into your ManiaPlanet directory in Documents.\n\nEnvimix is licensed under the MIT License; see LICENSE.txt. Third-party title pack content remains subject to its respective owner's terms.");
 
         var archivePath = $"ENVIMIX.{titlePack.Id}.{buildLabel}.zip";
         File.Delete(archivePath);
