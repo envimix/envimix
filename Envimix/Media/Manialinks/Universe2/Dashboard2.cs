@@ -426,7 +426,7 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
             latestCheckpoint = GetPlayer().CurLap.Checkpoints[lastIndex];
         }
 
-        if (IsFirstFinish || GetPlayer().Score.BestRace.Checkpoints.Count == 0)
+        if (IsFirstFinish || GetPlayer().Score.BestRace.Checkpoints.Count <= lastIndex)
         {
             LabelCP.Value = TimeToTextWithMilli(latestCheckpoint);
             QuadCP.Visible = false;
