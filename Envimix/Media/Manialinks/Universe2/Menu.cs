@@ -672,8 +672,18 @@ public class Menu : CTmMlScriptIngame, IContext
         return Map.MapInfo.CollectionName == "Stadium" && (carName == "CanyonCar" || carName == "LagoonCar" || carName == "ValleyCar");
     }
 
+    private bool HasDisplayedCar()
+    {
+        return VehicleIndex >= 0 && VehicleIndex < DisplayedCars.Length;
+    }
+
     private void UpdateSkins()
     {
+        if (!HasDisplayedCar())
+        {
+            return;
+        }
+
         var carName = DisplayedCars[VehicleIndex];
 
         LabelSkinCar.Value = carName;
@@ -771,6 +781,11 @@ public class Menu : CTmMlScriptIngame, IContext
 
     private void QUAD_BUTTON_SKIN_PLAY()
     {
+        if (!HasDisplayedCar())
+        {
+            return;
+        }
+
         AnimMgr.Add(FrameMenu, "<frame pos=\"-110 0\" hidden=\"0\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameSkins, "<frame pos=\"-110 0\" hidden=\"1\"/>", 500, CAnimManager.EAnimManagerEasing.QuadOut);
         MenuKind = "";
@@ -1308,7 +1323,7 @@ public class Menu : CTmMlScriptIngame, IContext
             case CMlScriptEvent.EMenuNavAction.Select:
                 if (NavOnVehicle)
                 {
-                    if (VehicleIndex < DisplayedCars.Length)
+                    if (HasDisplayedCar())
                     {
                         if (IsSpectator)
                         {
@@ -2432,7 +2447,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 NavFocusedControl.StyleSelected = false;
 
                 // Multiplayer specific spawning
-                if (CutOffTimeLimit != -1 && InputPlayer.RaceStartTime > CutOffTimeLimit && !IsSpectator)
+                if (CutOffTimeLimit != -1 && InputPlayer.RaceStartTime > CutOffTimeLimit && !IsSpectator && HasDisplayedCar())
                 {
                     SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True", "False", "True" });
                 }
@@ -2441,7 +2456,7 @@ public class Menu : CTmMlScriptIngame, IContext
                 {
                     // Solo specific spawning
                     // TODO: 3000 should be compatible with custom countdown
-                    if (InputPlayer.RaceStartTime - 3000 > GameTime || HaveSelectedGhostsChanged())
+                    if ((InputPlayer.RaceStartTime - 3000 > GameTime || HaveSelectedGhostsChanged()) && HasDisplayedCar())
                     {
                         SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True" });
                     }
@@ -2677,7 +2692,7 @@ public class Menu : CTmMlScriptIngame, IContext
             HoldSkinsScrollbar = false;
         }
 
-        if (Skins.ContainsKey(DisplayedCars[VehicleIndex]))
+        if (HasDisplayedCar() && Skins.ContainsKey(DisplayedCars[VehicleIndex]))
         {
             var skinsForCar = Skins[DisplayedCars[VehicleIndex]];
 
@@ -2720,12 +2735,15 @@ public class Menu : CTmMlScriptIngame, IContext
 
         if (VehicleIndex != PreviousVehicleIndex)
         {
-            ClientCar = DisplayedCars[VehicleIndex];
-            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
-            UpdateVehicles();
-            UpdateSkins();
+            if (HasDisplayedCar())
+            {
+                ClientCar = DisplayedCars[VehicleIndex];
+                Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+                UpdateVehicles();
+                UpdateSkins();
+            }
             PreviousVehicleIndex = VehicleIndex;
-            if ((InputPlayer.RaceStartTime == 0 || GameTime - InputPlayer.RaceStartTime < 0) && DisplayedCars.Length > VehicleIndex && !IsSpectator)
+            if ((InputPlayer.RaceStartTime == 0 || GameTime - InputPlayer.RaceStartTime < 0) && HasDisplayedCar() && !IsSpectator)
             {
                 SendCustomEvent("Car", new[] { DisplayedCars[VehicleIndex], "True", "True" });
             }
