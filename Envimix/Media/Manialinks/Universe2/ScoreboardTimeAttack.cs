@@ -674,7 +674,7 @@ public class ScoreboardTimeAttack : CTmMlScriptIngame, IContext
         }
 
         var car = GetCar();
-        FrameMyCar.Visible = car != "";
+        FrameMyCar.Visible = car != "" && GUIPlayer is not null;
 
         if (car != "")
         {
