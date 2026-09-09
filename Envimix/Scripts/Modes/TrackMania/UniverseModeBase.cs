@@ -437,7 +437,7 @@ public class UniverseModeBase : CTmMode, IContext
         }
     }
 
-    private void SendXmlRpcCallback(string callbackName, string payload)
+    protected void SendXmlRpcCallback(string callbackName, string payload)
     {
         if (UseScriptCallbacks)
         {
@@ -445,7 +445,7 @@ public class UniverseModeBase : CTmMode, IContext
         }
     }
 
-    private void SendXmlRpcCallbackArray(string callbackName, IList<string> data)
+    protected void SendXmlRpcCallbackArray(string callbackName, IList<string> data)
     {
         if (UseScriptCallbacks)
         {

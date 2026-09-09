@@ -206,6 +206,13 @@ public class EnvimixTimeAttack : Envimix
 
             TrySpawnEnvimixTimeAttackPlayer(player, frozen: false);
         }
+
+        SendXmlRpcCallbackArray("Envimix.TimeAttack.GameStart", new[]
+        {
+            TimeLimit.ToString(),
+            CutOffTimeLimit.ToString(),
+            Players.Count.ToString()
+        });
     }
 
     private bool TrySpawnEnvimixTimeAttackPlayer(CTmPlayer player, bool frozen)
@@ -285,6 +292,11 @@ public class EnvimixTimeAttack : Envimix
             if (Now > whenFinished + AutoRespawnTime * 1000)
             {
                 TrySpawnEnvimixTimeAttackPlayer(GetPlayer(playerToAutoRespawn), frozen: false);
+                SendXmlRpcCallbackArray("Envimix.TimeAttack.AutoRespawn", new[]
+                {
+                    playerToAutoRespawn,
+                    whenFinished.ToString()
+                });
 
                 autoRespawnToClean.Add(playerToAutoRespawn);
             }
@@ -428,6 +440,11 @@ public class EnvimixTimeAttack : Envimix
         var extendDuration = GetExtendDuration();
         CutOffTimeLimit = CutOffTimeLimit + extendDuration;
         UpdateDisabledDefaultCarRaceStartTimes();
+        SendXmlRpcCallbackArray("Envimix.TimeAttack.ExtendVotePassed", new[]
+        {
+            extendDuration.ToString(),
+            CutOffTimeLimit.ToString()
+        });
         UIManager.UIAll.SendChat($"$<$ff8Map time extended by {TextLib.TimeToText(extendDuration)}.$>");
         ResetExtendVote();
     }
@@ -521,6 +538,13 @@ public class EnvimixTimeAttack : Envimix
             ExtendVoteStartedAt = Now;
             VoteType = "Extend";
             UpdateExtendVoteCounts();
+            SendXmlRpcCallbackArray("Envimix.TimeAttack.ExtendVoteStarted", new[]
+            {
+                player.User.Login,
+                GetExtendDuration().ToString(),
+                ExtendVotePlayers.Length.ToString(),
+                (ExtendVotePlayers.Length / 2 + 1).ToString()
+            });
             UIManager.UIAll.SendChat($"$<{player.User.Name}$> started a vote to extend the map by $<$ff8{TextLib.TimeToText(GetExtendDuration())}$>.");
             ResolveExtendVote();
             return;

@@ -1464,6 +1464,17 @@ public class Envimix : UniverseModeBase
             envimixRecordUpdated.Set(Now);
 
             OnPlayerFirstFinishOrImprovement(e);
+            SendXmlRpcCallbackArray("Envimix.PlayerRecord", new[]
+            {
+                e.Player.User.Login,
+                car.Get(),
+                tempRace.Get().Time.ToString(),
+                tempRace.Get().Score.ToString(),
+                tempRace.Get().Distance.ToString(),
+                tempRace.Get().Speed.ToString(),
+                tempRace.Get().NbRespawns.ToString(),
+                GetLaps().ToString()
+            });
 
             // Runs only in multiplayer with Envimania
             if (EnvimaniaSessionToken is not "")

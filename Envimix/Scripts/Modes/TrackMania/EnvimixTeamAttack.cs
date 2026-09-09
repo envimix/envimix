@@ -182,6 +182,31 @@ public class EnvimixTeamAttack : Envimix
 
             TrySpawnEnvimixTeamAttackPlayer(player, frozen: false);
         }
+
+        var redTeamPlayers = 0;
+        var blueTeamPlayers = 0;
+
+        foreach (var score in Scores)
+        {
+            if (score.TeamNum == 1)
+            {
+                redTeamPlayers += 1;
+            }
+            else if (score.TeamNum == 2)
+            {
+                blueTeamPlayers += 1;
+            }
+        }
+
+        SendXmlRpcCallbackArray("Envimix.TeamAttack.GameStart", new[]
+        {
+            TimeLimit.ToString(),
+            CutOffTimeLimit.ToString(),
+            Teams[0].Name,
+            redTeamPlayers.ToString(),
+            Teams[1].Name,
+            blueTeamPlayers.ToString()
+        });
     }
 
     private bool TrySpawnEnvimixTeamAttackPlayer(CTmPlayer player, bool frozen)
@@ -234,10 +259,17 @@ public class EnvimixTeamAttack : Envimix
 
     public void ChangePlayerClan(CTmPlayer player, int clan)
     {
+        var previousClan = player.Score.TeamNum;
         UnspawnPlayer(player);
         SetPlayerClan(player, clan);
         var car = Netwrite<string>.For(player);
         SpawnEnvimixTeamAttackPlayer(player, car.Get(), frozen: true);
+        SendXmlRpcCallbackArray("Envimix.TeamAttack.TeamChanged", new[]
+        {
+            player.User.Login,
+            previousClan.ToString(),
+            clan.ToString()
+        });
     }
 
     private void AutobalanceTeams()
@@ -329,6 +361,11 @@ public class EnvimixTeamAttack : Envimix
             if (Now > whenFinished + AutoRespawnTime * 1000)
             {
                 TrySpawnEnvimixTeamAttackPlayer(GetPlayer(playerToAutoRespawn), frozen: false);
+                SendXmlRpcCallbackArray("Envimix.TeamAttack.AutoRespawn", new[]
+                {
+                    playerToAutoRespawn,
+                    whenFinished.ToString()
+                });
 
                 autoRespawnToClean.Add(playerToAutoRespawn);
             }
