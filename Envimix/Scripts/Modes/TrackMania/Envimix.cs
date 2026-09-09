@@ -1442,6 +1442,7 @@ public class Envimix : UniverseModeBase
         if (!envimixBestRace.Get().ContainsKey(key) || envimixBestRace.Get()[key].Time == -1)
         {
             envimixBestRace.Get()[key] = tempRace.Get();
+            e.Player.Score.BestRace = e.Player.CurRace; // ensures to pass the validation ghost
             Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
             //log("first finish");
             firstFinishOrImprovement = true;
@@ -1449,6 +1450,7 @@ public class Envimix : UniverseModeBase
         else if (tempRace.Get().Time < envimixBestRace.Get()[key].Time)
         {
             envimixBestRace.Get()[key] = tempRace.Get();
+            e.Player.Score.BestRace = e.Player.CurRace; // ensures to pass the validation ghost
             Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
             //log("improvement");
             firstFinishOrImprovement = true;
