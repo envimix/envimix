@@ -5,6 +5,9 @@ namespace Envimix.Scripts.Modes.TrackMania;
 public class EnvimixTeamAttack : Envimix
 {
     [Constant(IncludePrefix = false)]
+    public const string ScriptName = "EnvimixTeamAttack.Script.txt";
+
+    [Constant(IncludePrefix = false)]
     public const string Version = "2026-09-09";
 
     [Setting(As = "Time limit")]
