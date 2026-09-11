@@ -455,20 +455,23 @@ public class EnvimixTimeAttack : Envimix
 
     private void UpdateExtendVoteCounts()
     {
-        VoteYes = 0;
-        VoteNo = 0;
+        var voteYes = 0;
+        var voteNo = 0;
 
         foreach (var (playerLogin, vote) in ExtendVotes)
         {
             if (vote)
             {
-                VoteYes += 1;
+                voteYes += 1;
             }
             else
             {
-                VoteNo += 1;
+                voteNo += 1;
             }
         }
+
+        VoteYes = voteYes;
+        VoteNo = voteNo;
     }
 
     private void ResolveExtendVote()
