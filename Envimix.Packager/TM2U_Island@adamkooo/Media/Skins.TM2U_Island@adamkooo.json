@@ -3,6 +3,48 @@
   "StadiumCar": {},
   "ValleyCar": {},
   "LagoonCar": {},
+  "TrafficCar": {
+    "9thArrow": {
+      "File": "CarCommon/TrafficCar/9thArrow.zip",
+      "Icon": "Icon/TrafficCar/9thArrow.dds"
+    },
+    "Amber": {
+      "File": "CarCommon/TrafficCar/Amber.zip",
+      "Icon": "Icon/TrafficCar/Amber.dds"
+    },
+    "Charcoal": {
+      "File": "CarCommon/TrafficCar/Charcoal.zip",
+      "Icon": "Icon/TrafficCar/Charcoal.dds"
+    },
+    "Lapis": {
+      "File": "CarCommon/TrafficCar/Lapis.zip",
+      "Icon": "Icon/TrafficCar/Lapis.dds"
+    },
+    "Marmour": {
+      "File": "CarCommon/TrafficCar/Marmour.zip",
+      "Icon": "Icon/TrafficCar/Marmour.dds"
+    },
+    "Peridot": {
+      "File": "CarCommon/TrafficCar/Peridot.zip",
+      "Icon": "Icon/TrafficCar/Peridot.dds"
+    },
+    "Purpurite": {
+      "File": "CarCommon/TrafficCar/Purpurite.zip",
+      "Icon": "Icon/TrafficCar/Purpurite.dds"
+    },
+    "Ruby": {
+      "File": "CarCommon/TrafficCar/Ruby.zip",
+      "Icon": "Icon/TrafficCar/Ruby.dds"
+    },
+    "Silver": {
+      "File": "CarCommon/TrafficCar/Silver.zip",
+      "Icon": "Icon/TrafficCar/Silver.dds"
+    },
+    "Topaz": {
+      "File": "CarCommon/TrafficCar/Topaz.zip",
+      "Icon": "Icon/TrafficCar/Topaz.dds"
+    }
+  },
   "DesertCar": {
     "Blackdevil": {
       "File": "CarCommon/DesertCar/Blackdevil.zip",
