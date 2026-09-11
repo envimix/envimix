@@ -441,6 +441,7 @@ public class EnvimixTimeAttack : Envimix
     private void PassExtendVote()
     {
         var extendDuration = GetExtendDuration();
+        Log(nameof(EnvimixTimeAttack), $"Extension vote passed. Extending by {extendDuration} ms from cutoff {CutOffTimeLimit}.");
         CutOffTimeLimit = CutOffTimeLimit + extendDuration;
         UpdateDisabledDefaultCarRaceStartTimes();
         SendXmlRpcCallbackArray("Envimix.TimeAttack.ExtendVotePassed", new[]
@@ -479,6 +480,7 @@ public class EnvimixTimeAttack : Envimix
 
         if (ExtendTime <= 0 || GetExtendDuration() <= 0)
         {
+            Log(nameof(EnvimixTimeAttack), $"Resetting active extension vote because extension is unavailable. ExtendTime={ExtendTime}, duration={GetExtendDuration()}.");
             ResetExtendVote();
             return;
         }
@@ -488,15 +490,18 @@ public class EnvimixTimeAttack : Envimix
 
         if (VoteYes >= requiredVotes)
         {
+            Log(nameof(EnvimixTimeAttack), $"Resolving extension vote as passed. Yes={VoteYes}, No={VoteNo}, required={requiredVotes}.");
             PassExtendVote();
         }
         else if (VoteYes + remainingVotes < requiredVotes)
         {
+            Log(nameof(EnvimixTimeAttack), $"Resolving extension vote as failed. Yes={VoteYes}, No={VoteNo}, remaining={remainingVotes}, required={requiredVotes}.");
             UIManager.UIAll.SendChat("$<$f88Map extension vote failed.$>");
             ResetExtendVote();
         }
         else if (Now - ExtendVoteStartedAt >= 30000)
         {
+            Log(nameof(EnvimixTimeAttack), $"Resolving extension vote as timed out. Yes={VoteYes}, No={VoteNo}, remaining={remainingVotes}, required={requiredVotes}.");
             UIManager.UIAll.SendChat("$<$f88Map extension vote timed out.$>");
             ResetExtendVote();
         }
@@ -504,28 +509,58 @@ public class EnvimixTimeAttack : Envimix
 
     private void ProcessExtendVoteUiEvent(CUIConfigEvent e)
     {
-        if (e.CustomEventType != "Extend"
-            || e.CustomEventData.Count != 1
-            || IsWarmUp
-            || CarSelectionMode
-            || CutOffTimeLimit < 0
-            || GetExtendDuration() <= 0)
+        if (e.CustomEventType != "Extend")
         {
+            return;
+        }
+
+        Log(nameof(EnvimixTimeAttack), $"Received extension UI event with {e.CustomEventData.Count} data item(s). VoteType='{VoteType}'.");
+
+        if (e.CustomEventData.Count != 1)
+        {
+            Log(nameof(EnvimixTimeAttack), "Ignored extension UI event: expected exactly one data item.");
             return;
         }
 
         var player = GetPlayer(e.UI);
         var vote = e.CustomEventData[0];
+        Log(nameof(EnvimixTimeAttack), $"Extension UI event from '{player.User.Login}' with vote '{vote}'.");
+
+        if (IsWarmUp)
+        {
+            Log(nameof(EnvimixTimeAttack), "Ignored extension UI event: warm-up is active.");
+            return;
+        }
+
+        if (CarSelectionMode)
+        {
+            Log(nameof(EnvimixTimeAttack), "Ignored extension UI event: car selection is active.");
+            return;
+        }
+
+        if (CutOffTimeLimit < 0)
+        {
+            Log(nameof(EnvimixTimeAttack), $"Ignored extension UI event: cutoff is disabled ({CutOffTimeLimit}).");
+            return;
+        }
+
+        if (GetExtendDuration() <= 0)
+        {
+            Log(nameof(EnvimixTimeAttack), $"Ignored extension UI event: extension duration is {GetExtendDuration()} ms.");
+            return;
+        }
 
         if (VoteType == "")
         {
             if (vote != "")
             {
+                Log(nameof(EnvimixTimeAttack), $"Ignored extension vote '{vote}' from '{player.User.Login}': no vote is active.");
                 return;
             }
 
             if (Players.Count == 1)
             {
+                Log(nameof(EnvimixTimeAttack), $"Passing extension immediately for sole player '{player.User.Login}'.");
                 PassExtendVote();
                 return;
             }
@@ -541,6 +576,7 @@ public class EnvimixTimeAttack : Envimix
             ExtendVoteStartedAt = Now;
             VoteType = "Extend";
             UpdateExtendVoteCounts();
+            Log(nameof(EnvimixTimeAttack), $"Extension vote started by '{player.User.Login}'. Eligible={ExtendVotePlayers.Length}, Yes={VoteYes}, No={VoteNo}.");
             SendXmlRpcCallbackArray("Envimix.TimeAttack.ExtendVoteStarted", new[]
             {
                 player.User.Login,
@@ -557,17 +593,20 @@ public class EnvimixTimeAttack : Envimix
             || ExtendVotes.ContainsKey(player.User.Login)
             || vote != "Yes" && vote != "No")
         {
+            Log(nameof(EnvimixTimeAttack), $"Ignored extension vote '{vote}' from '{player.User.Login}'. Eligible={ExtendVotePlayers.Contains(player.User.Login)}, alreadyVoted={ExtendVotes.ContainsKey(player.User.Login)}.");
             return;
         }
 
         if (Now - ExtendVoteStartedAt >= 30000)
         {
+            Log(nameof(EnvimixTimeAttack), $"Extension vote '{vote}' from '{player.User.Login}' arrived after the voting window.");
             ResolveExtendVote();
             return;
         }
 
         ExtendVotes[player.User.Login] = vote == "Yes";
         UpdateExtendVoteCounts();
+        Log(nameof(EnvimixTimeAttack), $"Recorded extension vote '{vote}' from '{player.User.Login}'. Yes={VoteYes}, No={VoteNo}, eligible={ExtendVotePlayers.Length}.");
         ResolveExtendVote();
     }
 

@@ -37,14 +37,17 @@ public class TimeLimit : CMlScriptIngame, IContext
     {
         QuadExtend.MouseClick += () =>
         {
+            Log("Sending extension vote start request.");
             SendCustomEvent("Extend", new[]{ "" });
         };
         QuadYes.MouseClick += () =>
         {
+            Log("Sending extension vote: Yes.");
             SendCustomEvent("Extend", new[]{ "Yes" });
         };
         QuadNo.MouseClick += () =>
         {
+            Log("Sending extension vote: No.");
             SendCustomEvent("Extend", new[]{ "No" });
         };
     }
