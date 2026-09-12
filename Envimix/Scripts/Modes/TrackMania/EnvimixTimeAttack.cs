@@ -510,6 +510,19 @@ public class EnvimixTimeAttack : Envimix
         }
     }
 
+    private bool IsEligibleForExtendVote(CTmPlayer player)
+    {
+        foreach (var spectator in Spectators)
+        {
+            if (spectator.User.Login == player.User.Login)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void ProcessExtendVoteUiEvent(CUIConfigEvent e)
     {
         if (e.CustomEventType != "Extend")
@@ -528,6 +541,12 @@ public class EnvimixTimeAttack : Envimix
         var player = GetPlayer(e.UI);
         var vote = e.CustomEventData[0];
         Log(nameof(EnvimixTimeAttack), $"Extension UI event from '{player.User.Login}' with vote '{vote}'.");
+
+        if (!IsEligibleForExtendVote(player))
+        {
+            Log(nameof(EnvimixTimeAttack), $"Ignored extension UI event from spectator '{player.User.Login}'.");
+            return;
+        }
 
         if (IsWarmUp)
         {
@@ -572,7 +591,10 @@ public class EnvimixTimeAttack : Envimix
             ExtendVotePlayers.Clear();
             foreach (var eligiblePlayer in Players)
             {
-                ExtendVotePlayers.Add(eligiblePlayer.User.Login);
+                if (IsEligibleForExtendVote(eligiblePlayer))
+                {
+                    ExtendVotePlayers.Add(eligiblePlayer.User.Login);
+                }
             }
 
             ExtendVotes[player.User.Login] = true;

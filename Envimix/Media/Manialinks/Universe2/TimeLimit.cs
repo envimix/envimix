@@ -54,6 +54,12 @@ public class TimeLimit : CMlScriptIngame, IContext
 
     private void ShowVote()
     {
+        if (IsSpectator)
+        {
+            HideVote();
+            return;
+        }
+
         FrameVote.Show();
         FrameVote.RelativePosition_V3.X = 25;
         AnimMgr.Add(FrameVote, "<frame pos=\"0 0\"/>", Duration: 800, CAnimManager.EAnimManagerEasing.QuadOut);
@@ -144,7 +150,7 @@ public class TimeLimit : CMlScriptIngame, IContext
             PreviousVoteType = VoteType;
         }
 
-        QuadExtend.Visible = CanExtend && VoteType == "";
+        QuadExtend.Visible = !IsSpectator && CanExtend && VoteType == "";
 
         if (CurrentWarmUpNb > 0)
         {
