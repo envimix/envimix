@@ -52,6 +52,14 @@ public class TimeLimit : CMlScriptIngame, IContext
         };
     }
 
+    private void HideVote()
+    {
+        FrameVote.Hide();
+        LabelVote.Hide();
+        LabelVoteYes.Hide();
+        LabelVoteNo.Hide();
+    }
+
     private void ShowVote()
     {
         if (IsSpectator)
@@ -77,14 +85,6 @@ public class TimeLimit : CMlScriptIngame, IContext
         {
             LabelVote.Value = "Extend?";
         }
-    }
-
-    private void HideVote()
-    {
-        FrameVote.Hide();
-        LabelVote.Hide();
-        LabelVoteYes.Hide();
-        LabelVoteNo.Hide();
     }
 
     public void Main()
@@ -150,7 +150,7 @@ public class TimeLimit : CMlScriptIngame, IContext
             PreviousVoteType = VoteType;
         }
 
-        QuadExtend.Visible = !IsSpectator && CanExtend && VoteType == "";
+        QuadExtend.Visible = !IsSpectator && !CarSelectionMode && CanExtend && VoteType == "";
 
         if (CurrentWarmUpNb > 0)
         {
