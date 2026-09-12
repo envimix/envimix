@@ -184,7 +184,7 @@ public class Checkpoint : CTmMlScriptIngame, IContext
             FrameLap.Hide();
         }
 
-        if (e.Player.Score.BestRace.Checkpoints.Count <= 0)
+        if (e.Player.Score is null || e.Player.Score.BestRace is null || e.Player.Score.BestRace.Checkpoints.Count <= 0)
         {
             FrameDifferences.Hide();
             return;

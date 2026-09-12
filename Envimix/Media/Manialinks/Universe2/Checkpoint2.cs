@@ -263,6 +263,12 @@ public class Checkpoint2 : CTmMlScriptIngame, IContext
 
         var key = ConstructFilterKey(GetPlayer());
 
+        if (GetPlayer().Score is null)
+        {
+            FrameDifferences.Hide();
+            return;
+        }
+
         var envimixBestRace = Netread<Dictionary<string, SRecord>>.For(GetPlayer().Score);
 
         var framePb = (FrameDifferences.Controls[0] as CMlFrame)!;

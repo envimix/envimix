@@ -1769,7 +1769,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         }
 
         LabelPbNickname.Value = GetPlayer().User.Name;
-        if (GetPlayer().Score is null || GetPlayer().Score.BestRace.Time < 0)
+        if (GetPlayer().Score is null || GetPlayer().Score.BestRace is null || GetPlayer().Score.BestRace.Time < 0)
         {
             LabelPbTime.Value = "-.--.---";
         }

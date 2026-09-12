@@ -259,7 +259,7 @@ public class Endscreen : CTmMlScriptIngame, IContext
                     }
                     break;
                 case CTmRaceClientEvent.EType.Respawn:
-                    if (e.Player.Score.BestRace.Checkpoints.Count > 0)
+                    if (e.Player.Score is not null && e.Player.Score.BestRace is not null && e.Player.Score.BestRace.Checkpoints.Count > 0)
                     {
                         BestTime = e.Player.Score.BestRace.Checkpoints[e.Player.Score.BestRace.Checkpoints.Count - 1];
                     }
@@ -904,7 +904,12 @@ public class Endscreen : CTmMlScriptIngame, IContext
             rankIndex += 1;
         }
 
-        var pbTime = GetPlayer().Score.BestRace.Time;
+        var pbTime = -1;
+
+        if (GetPlayer().Score is not null && GetPlayer().Score.BestRace is not null)
+        {
+            pbTime = GetPlayer().Score.BestRace.Time;
+        }
 
         var pbCounting = true;
         var pbRankCounter = 0;

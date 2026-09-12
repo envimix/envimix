@@ -330,7 +330,7 @@ public class Score : CTmMlScriptIngame, IContext
             FrameInnerScore.ClipWindowSize.X = AnimLib.EaseOutQuad(Now - VisibleTime - 200, 0, 40, 300);
         }
 
-        if (GetPlayer().Score is null)
+        if (GetPlayer().Score is null || GetPlayer().Score.BestRace is null)
         {
             LabelBestTime.Value = "-:--.---";
             LabelLastTime.Value = "-:--.---";

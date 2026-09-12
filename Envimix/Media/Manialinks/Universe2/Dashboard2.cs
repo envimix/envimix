@@ -221,7 +221,7 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
         GaugeRPM.Ratio = rpmRatio;
         GaugeRPM.RelativeScale = GetPlayer().EngineTurboRatio * 0.15f + 1;
 
-        if (GetPlayer().Score.BestRace.Time != PrevBestTime)
+        if (GetPlayer().Score is not null && GetPlayer().Score.BestRace is not null && GetPlayer().Score.BestRace.Time != PrevBestTime)
         {
             if (PrevBestTime == -1)
             {
@@ -426,7 +426,7 @@ public class Dashboard2 : CTmMlScriptIngame, IContext
             latestCheckpoint = GetPlayer().CurLap.Checkpoints[lastIndex];
         }
 
-        if (IsFirstFinish || GetPlayer().Score.BestRace.Checkpoints.Count <= lastIndex)
+        if (IsFirstFinish || GetPlayer().Score is null || GetPlayer().Score.BestRace is null || GetPlayer().Score.BestRace.Checkpoints.Count <= lastIndex)
         {
             LabelCP.Value = TimeToTextWithMilli(latestCheckpoint);
             QuadCP.Visible = false;

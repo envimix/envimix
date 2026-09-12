@@ -108,7 +108,7 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
 
         var framePb = (FrameDifferences.Controls[0] as CMlFrame)!;
 
-        if (IsFirstFinish || e.Player.Score.BestRace.Time == -1)
+        if (e.Player.Score is null || e.Player.Score.BestRace is null || IsFirstFinish || e.Player.Score.BestRace.Time == -1)
         {
             framePb.Hide();
         }
@@ -162,6 +162,11 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
 
     public void Loop()
     {
+        if (GetPlayer().Score is null || GetPlayer().Score.BestRace is null)
+        {
+            return;
+        }
+
         if (GetPlayer().Score.BestRace.Time != PrevBestTime)
         {
             if (PrevBestTime == -1)

@@ -471,7 +471,7 @@ public class Menu : CTmMlScriptIngame, IContext
 
         LabelPbTime.MouseOver += () =>
         {
-            if (Map.MapInfo.TMObjective_BronzeTime > 0 && (GetPlayer().Score is null || GetPlayer().Score.BestRace.Time < 0 || GetPlayer().Score.BestRace.Time > Map.MapInfo.TMObjective_BronzeTime))
+            if (Map.MapInfo.TMObjective_BronzeTime > 0 && (GetPlayer().Score is null || GetPlayer().Score.BestRace is null || GetPlayer().Score.BestRace.Time < 0 || GetPlayer().Score.BestRace.Time > Map.MapInfo.TMObjective_BronzeTime))
             {
                 AnimMgr.Add(FrameOuterMedals, "<frame pos=\"0 0\"/>", 300, CAnimManager.EAnimManagerEasing.QuadOut);
             }
@@ -2572,7 +2572,12 @@ public class Menu : CTmMlScriptIngame, IContext
             FrameButtonSpectator.GetFirstChild("LABEL").RelativeScale = 1;
         }
 
-        var bestRaceTime = GetPlayer().Score.BestRace.Time;
+        var bestRaceTime = -1;
+
+        if (GetPlayer().Score is not null && GetPlayer().Score.BestRace is not null)
+        {
+            bestRaceTime = GetPlayer().Score.BestRace.Time;
+        }
 
         LabelPbNickname.Value = GetPlayer().User.Name;
         if (GetPlayer().Score is null || bestRaceTime < 0)

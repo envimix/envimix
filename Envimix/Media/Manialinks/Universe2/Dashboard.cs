@@ -130,7 +130,7 @@ public class Dashboard : CTmMlScriptIngame, IContext
             return;
         }
 
-        if (e.Player.Score.BestRace.Checkpoints.Count == 0)
+        if (e.Player.Score.BestRace is null || e.Player.Score.BestRace.Checkpoints.Count == 0)
         {
             LabelCP.Opacity = 0;
             AnimMgr.Add(LabelCP, "<label opacity=\"1\"/>", Duration: 200, CAnimManager.EAnimManagerEasing.QuadOut);

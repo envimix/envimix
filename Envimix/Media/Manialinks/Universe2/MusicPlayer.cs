@@ -58,7 +58,7 @@ public class MusicPlayer : CTmMlScriptIngame, IContext
                         {
                             int difference;
 
-                            if (e.Player.Score.BestRace is null || e.Player.Score.BestRace.Checkpoints.Count == 0)
+                            if (e.Player.Score is null || e.Player.Score.BestRace is null || e.Player.Score.BestRace.Checkpoints.Count == 0)
                             {
                                 difference = 0;
                             }
