@@ -18,7 +18,7 @@ public class TimeLimit : CMlScriptIngame, IContext
     [ManialinkControl] public required CMlLabel LabelVoteNo;
     [ManialinkControl] public required CMlQuad QuadYes;
     [ManialinkControl] public required CMlQuad QuadNo;
-    [ManialinkControl] public required CMlQuad QuadExtend;
+    [ManialinkControl] public required CMlFrame FrameExtend;
 
     [Netread] public bool CarSelectionMode { get; }
     [Netread] public int CurrentWarmUpNb { get; }
@@ -35,10 +35,13 @@ public class TimeLimit : CMlScriptIngame, IContext
 
     public TimeLimit()
     {
-        QuadExtend.MouseClick += () =>
+        MouseClick += (control, controlId) =>
         {
-            Log("Sending extension vote start request.");
-            SendCustomEvent("Extend", new[]{ "" });
+            if (control.Parent.ControlId == "FrameExtend")
+            {
+                Log("Sending extension vote start request.");
+                SendCustomEvent("Extend", new[]{ "" });
+            }
         };
         QuadYes.MouseClick += () =>
         {
@@ -150,7 +153,7 @@ public class TimeLimit : CMlScriptIngame, IContext
             PreviousVoteType = VoteType;
         }
 
-        QuadExtend.Visible = !IsSpectator && !CarSelectionMode && CanExtend && VoteType == "";
+        FrameExtend.Visible = !IsSpectator && !CarSelectionMode && CanExtend && VoteType == "";
 
         if (CurrentWarmUpNb > 0)
         {
