@@ -1408,7 +1408,7 @@ public class Envimix : UniverseModeBase
         return true;
     }
 
-    public override void OnPlayerFinish(CTmModeEvent e)
+    private void ProcessFinish(CTmModeEvent e)
     {
         var tempRace = Netwrite<Record.SRecord>.For(e.Player.Score);
 
@@ -1641,9 +1641,14 @@ public class Envimix : UniverseModeBase
             }
         }
 
-        Record.ResetTempResult(e);
-
         UpdateScores();
+    }
+
+    public override void OnPlayerFinish(CTmModeEvent e)
+    {
+        ProcessFinish(e);
+
+        Record.ResetTempResult(e);
     }
 
     public override void OnPlayerAdded(CTmModeEvent e)
