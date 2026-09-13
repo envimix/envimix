@@ -118,14 +118,22 @@ public class Checkpoint3 : CTmMlScriptIngame, IContext
             var labelTime = (frameTime.GetFirstChild("LabelTime") as CMlLabel)!;
             var quadColor = ((frameTime.GetFirstChild("FrameBackground") as CMlFrame)!.GetFirstChild("QuadColor") as CMlQuad)!;
 
-            int difference;
+            var checkpointIndex = e.CheckpointInRace;
             if (IndependantLaps)
             {
-                difference = e.LapTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInLap];
+                checkpointIndex = e.CheckpointInLap;
             }
-            else
+
+            if (checkpointIndex < 0 || checkpointIndex >= e.Player.Score.BestRace.Checkpoints.Count)
             {
-                difference = e.RaceTime - e.Player.Score.BestRace.Checkpoints[e.CheckpointInRace];
+                framePb.Hide();
+                return;
+            }
+
+            var difference = e.RaceTime - e.Player.Score.BestRace.Checkpoints[checkpointIndex];
+            if (IndependantLaps)
+            {
+                difference = e.LapTime - e.Player.Score.BestRace.Checkpoints[checkpointIndex];
             }
 
             if (difference > 0)
