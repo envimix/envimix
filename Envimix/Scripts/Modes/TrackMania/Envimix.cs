@@ -1379,6 +1379,14 @@ public class Envimix : UniverseModeBase
     {
     }
 
+    private bool IsSameEnvimaniaRecordFilter(SEnvimaniaSessionRecordRequest first, SEnvimaniaSessionRecordRequest second)
+    {
+        return first.User.Login == second.User.Login
+            && first.Car == second.Car
+            && first.Gravity == second.Gravity
+            && first.Laps == second.Laps;
+    }
+
     private bool TryQueueEnvimaniaRecord(SEnvimaniaSessionRecordRequest recordRequest)
     {
         var i = EnvimaniaRecordsRequestCount;
@@ -1387,10 +1395,7 @@ public class Envimix : UniverseModeBase
         {
             var queuedRequest = EnvimaniaSessionRecordRequests[i];
 
-            if (queuedRequest.User.Login != recordRequest.User.Login
-                || queuedRequest.Car != recordRequest.Car
-                || queuedRequest.Gravity != recordRequest.Gravity
-                || queuedRequest.Laps != recordRequest.Laps)
+            if (!IsSameEnvimaniaRecordFilter(queuedRequest, recordRequest))
             {
                 i += 1;
                 continue;
@@ -1401,7 +1406,21 @@ public class Envimix : UniverseModeBase
                 return false;
             }
 
-            EnvimaniaSessionRecordRequests.RemoveAt(i);
+            i += 1;
+        }
+
+        i = EnvimaniaSessionRecordRequests.Length - 1;
+
+        while (i >= EnvimaniaRecordsRequestCount)
+        {
+            var queuedRequest = EnvimaniaSessionRecordRequests[i];
+
+            if (IsSameEnvimaniaRecordFilter(queuedRequest, recordRequest))
+            {
+                EnvimaniaSessionRecordRequests.RemoveAt(i);
+            }
+
+            i -= 1;
         }
 
         EnvimaniaSessionRecordRequests.Add(recordRequest);
