@@ -1056,6 +1056,20 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
         }
     }
 
+    private void SetLadderDisplay(float points, int rank, int total, float nextEchelonPercent)
+    {
+        LabelLadderPoints.SetText(TextLib.FormatReal(points, 1, _HideZeroes: false, _HideDot: false));
+        if (rank == -1)
+        {
+            LabelLadderZone.Value = "Not ranked";
+        }
+        else
+        {
+            LabelLadderZone.Value = $"{TextLib.GetTranslatedText(LocalUser.LadderZoneName)}: $ff0{rank}$aaa / {total}";
+        }
+        QuadEchelonPercent.Size.X = nextEchelonPercent / 100f * 50;
+    }
+
     public void Main()
     {
         Difficulty = -1;
@@ -1360,19 +1374,35 @@ public class ScoreboardTeamAttack : CTmMlScriptIngame, IContext
             PrevScoreTableIsVisible = PageIsVisible;
         }
 
-        if (PodiumStartTime != PrevPodiumStartTime && LocalPodiumStartTime == -1 && UI.ScoreTableVisibility == CUIConfig.EVisibility.ForcedVisible)
+        // PodiumStartTime is -1 outside of a podium, e.g. during the next match where the score table
+        // can also be forced visible. Only a positive value marks a real podium.
+        if (PodiumStartTime != -1 && PodiumStartTime != PrevPodiumStartTime && LocalPodiumStartTime == -1 && UI.ScoreTableVisibility == CUIConfig.EVisibility.ForcedVisible)
         {
             LocalPodiumStartTime = Now;
             PrevPodiumStartTime = PodiumStartTime;
+            IsLadderPointsAnimating = false;
             IsLadderPointsAnimationDone = false;
         }
 
-        if (LocalPodiumStartTime != -1 && UI.ScoreTableVisibility != CUIConfig.EVisibility.ForcedVisible)
+        // The podium is over once the score table is no longer forced visible, or once the server
+        // has initialized the next map (PodiumStartTime reset to -1), whichever signal arrives first.
+        if (LocalPodiumStartTime != -1 && (UI.ScoreTableVisibility != CUIConfig.EVisibility.ForcedVisible || PodiumStartTime == -1))
         {
             foreach (var score in Scores)
             {
                 PreviousUserLadderPoints[score.User.Login] = score.User.LadderPoints;
             }
+
+            // Finalize the display with the real values in case the podium ended before the
+            // animation finished, so it never stays stuck on the pre-podium numbers.
+            SetLadderDisplay(LocalUser.LadderPoints, LocalUser.LadderRank, LocalUser.LadderTotal, LocalUser.NextEchelonPercent * 1f);
+            SetEchelon();
+            PreviousLadderPoints = LocalUser.LadderPoints;
+            PreviousLadderRank = LocalUser.LadderRank;
+            PreviousLadderTotal = LocalUser.LadderTotal;
+            PreviousNextEchelonPercent = LocalUser.NextEchelonPercent;
+            IsLadderPointsAnimating = false;
+            IsLadderPointsAnimationDone = true;
 
             LocalPodiumStartTime = -1;
         }

@@ -312,6 +312,20 @@ public class EnvimixTimeAttack : Envimix
         }
     }
 
+    public void ResetAutoRespawn()
+    {
+        foreach (var (login, whenFinished) in AutoRespawn)
+        {
+            var player = GetPlayer(login);
+            if (player is not null)
+            {
+                UIManager.GetUI(player).ScoreTableVisibility = CUIConfig.EVisibility.None;
+            }
+        }
+
+        AutoRespawn.Clear();
+    }
+
     public override void OnEvent(CTmModeEvent e)
     {
         if (ExtendTime > 0)
@@ -381,7 +395,7 @@ public class EnvimixTimeAttack : Envimix
     public override void OnGameEnd()
     {
         ResetExtendVote();
-        AutoRespawn.Clear();
+        ResetAutoRespawn();
 
         Ladder_ComputeRank(CTmMode.ETmScoreSortOrder.TotalPoints);
 
