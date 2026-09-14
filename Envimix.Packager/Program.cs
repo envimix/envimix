@@ -80,6 +80,49 @@ var titlePacks = new[]
     new TitlePack("TMLagoon@nadeo", "file://Media/Images/LagoonPackImage.jpg")
 };
 
+static string CreatePackageReadme(string titlePackId)
+{
+     return $$"""
+          ENVIMIX installation guide
+          ==========================
+
+          This archive contains the UserData folder for the {{titlePackId}} title pack.
+          It can coexist with Envimix installations for other title packs.
+
+          1. Docker Compose with ManiaServerManager and Envimix Control
+          -------------------------------------------------------------------------
+          ManiaServerManager can download and update the dedicated server, title pack,
+          and ENVIMIX files when its container starts.
+
+          Envimix Control can submit record, validation, and session replays to
+          Envimania.
+
+          This is the recommended way to set up the ENVIMIX server.
+          See up-to-date guide here: https://envimix.gbx.tools/tm2/scripts#installation
+
+          2. Manual dedicated server
+          --------------------------
+          1. Install or prepare a ManiaPlanet dedicated server with the
+              {{titlePackId}} title pack.
+          2. Extract this archive's UserData folder into the dedicated server
+              directory and merge it with the existing UserData folder.
+          3. Start the Time Attack mode with:
+
+              ./ManiaPlanetServer /title={{titlePackId}} /dedicated_cfg=dedicated_cfg.txt /game_settings=MatchSettings/EnvimixTimeAttack.{{titlePackId}}.txt
+
+          3. ManiaPlanet client
+          ---------------------
+          1. Extract the contents of this archive's UserData folder into
+              Documents\ManiaPlanet.
+          2. Start ManiaPlanet and the {{titlePackId}} title pack.
+          3. Create a server, choose an Envimix gamemode, and select
+              EnvimixTimeAttack.{{titlePackId}}.txt from MatchSettings.
+
+          Released under GNU General Public License v3.0 or later. See LICENSE.txt.
+          Third-party title-pack content remains subject to its respective owner's terms.
+        """;
+}
+
 foreach (var titlePack in titlePacks)
 {
     var titlePackDirectory = Path.Combine(packagerDirectory, titlePack.Id);
@@ -134,7 +177,7 @@ try
 
         File.WriteAllText(
             Path.Combine(archiveStagingDirectory, "README.txt"),
-            "Extract the UserData folder into your dedicated server directory. To host the gamemode from ManiaPlanet client, extract the contents of the UserData directory into your ManiaPlanet directory in Documents.\n\nEnvimix is licensed under the MIT License; see LICENSE.txt. Third-party title pack content remains subject to its respective owner's terms.");
+            CreatePackageReadme(titlePack.Id));
 
         var archivePath = $"ENVIMIX.{titlePack.Id}.{buildLabel}.zip";
         File.Delete(archivePath);
