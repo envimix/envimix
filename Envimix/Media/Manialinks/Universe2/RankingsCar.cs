@@ -146,6 +146,13 @@ public class RankingsCar : CTmMlScriptIngame, IContext
             if (!EnableDefaultCar && car == MapPlayerModelName)
             {
                 iOffset += 1;
+
+                if (DisplayedCars.Length <= i + iOffset)
+                {
+                    frame.Hide();
+                    continue;
+                }
+
                 car = DisplayedCars[i + iOffset];
             }
 
