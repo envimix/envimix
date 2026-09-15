@@ -31,7 +31,7 @@
         <setting name="S_EnableStadiumEnvimix" type="boolean" value="true" />
         <setting name="S_EnableTrafficCarInStadium" type="boolean" value="false" />
         <setting name="S_UseUnitedModels" type="boolean" value="true" />
-        <setting name="S_VehicleFolder" type="text" value="Vehicles/" />
+        <setting name="S_VehicleFolder" type="text" value="Vehicles\" />
         <setting name="S_VehicleFileFormat" type="text" value="%1.Item.Gbx" />
         <setting name="S_CarsFile" type="text" value="Cars.json" />
         <setting name="S_SkinsFile" type="text" value="Skins.Nadeo_Envimix@bigbang1112.json" />

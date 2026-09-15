@@ -122,7 +122,7 @@ public class Envimix : UniverseModeBase
     public bool AlwaysUseVehicleItems = false; // Wrong usage can crash scripts
 
     [Setting(As = "* Vehicle folder", ReloadOnChange = true)]
-    public string VehicleFolder = "Vehicles/"; // Wrong usage can crash scripts
+    public string VehicleFolder = "Vehicles\\"; // Wrong usage can crash scripts
 
     [Setting(As = "* Vehicle file format", ReloadOnChange = true)]
     public string VehicleFileFormat = "%1.Item.Gbx"; // Wrong usage can crash scripts
@@ -682,6 +682,7 @@ public class Envimix : UniverseModeBase
             return ItemCars.KeyOf(MapPlayerModelName);
         }
 
+        Log(nameof(Envimix), $"PROBLEM: Default car ({MapPlayerModelName}) not found in ItemCars {ItemCars}. This can cause issues.");
         return MapPlayerModelName;
     }
 
