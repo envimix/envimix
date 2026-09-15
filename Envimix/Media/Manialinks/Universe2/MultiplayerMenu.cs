@@ -473,7 +473,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         if (sessionAvailable)
         {
             QuadButtonSessionDetails.Opacity = 1;
-            LabelButtonSessionDetails.Opacity = 1;
+            LabelButtonSessionDetails.Opacity = 0.8f;
             QuadButtonSessionDetails.DataAttributeSet("nav", "True");
         }
         else
