@@ -116,7 +116,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     [ManialinkControl] public required CMlQuad QuadButtonModeHelp;
     [ManialinkControl] public required CMlQuad QuadButtonServerDetails;
     [ManialinkControl] public required CMlQuad QuadButtonSessionDetails;
-    [ManialinkControl] public required CMlLabel LabelButtonServerDetails;
     [ManialinkControl] public required CMlLabel LabelButtonSessionDetails;
     [ManialinkControl] public required CMlQuad QuadButtonManageServer;
     [ManialinkControl] public required CMlQuad QuadButtonExit;
@@ -222,6 +221,18 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
 
+    private void QUAD_BUTTON_DISCORD()
+    {
+        OpenLink("https://discord.envimix.gbx.tools", CMlScript.LinkType.ExternalBrowser);
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+    }
+
+    private void QUAD_BUTTON_MANAGESERVER()
+    {
+        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.ServerSettings);
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+    }
+
     public MultiplayerMenu()
     {
         MouseOver += Menu_MouseOver;
@@ -241,15 +252,8 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         };
         QuadButtonServerDetails.MouseOver += () =>
         {
-            if (EnvimaniaSessionId == "")
-            {
-                UpdateTooltip("No active Envimania session");
-            }
-            else
-            {
-                Focus3();
-                UpdateTooltip("Server details");
-            }
+            Focus3();
+            UpdateTooltip("Discord");
         };
         QuadButtonSessionDetails.MouseOver += () =>
         {
@@ -279,13 +283,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
         QuadButtonSkinBack.MouseClick += QUAD_BUTTON_SKIN_BACK;
         QuadButtonSettingsBack.MouseClick += QUAD_BUTTON_SETTINGS_BACK;
         QuadButtonModeHelp.MouseClick += ShowCustomModeHelp;
-        QuadButtonServerDetails.MouseClick += () =>
-        {
-            if (EnvimaniaSessionId != "")
-            {
-                OpenLink($"https://envimix.gbx.tools/envimania/servers/{CurrentServerLogin}", CMlScript.LinkType.ExternalBrowser);
-            }
-        };
+        QuadButtonServerDetails.MouseClick += QUAD_BUTTON_DISCORD;
         QuadButtonSessionDetails.MouseClick += () =>
         {
             if (EnvimaniaSessionId != "")
@@ -469,29 +467,25 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
     {
         var sessionAvailable = EnvimaniaSessionId != "";
 
+        QuadButtonServerDetails.Opacity = 1;
+        QuadButtonServerDetails.DataAttributeSet("nav", "True");
+
         if (sessionAvailable)
         {
-            QuadButtonServerDetails.Opacity = 1;
             QuadButtonSessionDetails.Opacity = 1;
-            LabelButtonServerDetails.Opacity = 1;
             LabelButtonSessionDetails.Opacity = 1;
-            QuadButtonServerDetails.DataAttributeSet("nav", "True");
             QuadButtonSessionDetails.DataAttributeSet("nav", "True");
         }
         else
         {
-            QuadButtonServerDetails.Opacity = 0;
             QuadButtonSessionDetails.Opacity = 0;
-            LabelButtonServerDetails.Opacity = 0.5f;
-            LabelButtonSessionDetails.Opacity = 0.5f;
-            QuadButtonServerDetails.DataAttributeSet("nav", "False");
+            LabelButtonSessionDetails.Opacity = 0.3f;
             QuadButtonSessionDetails.DataAttributeSet("nav", "False");
-            QuadButtonServerDetails.StyleSelected = false;
             QuadButtonSessionDetails.StyleSelected = false;
 
-            if (NavFocusedControl == QuadButtonServerDetails || NavFocusedControl == QuadButtonSessionDetails)
+            if (NavFocusedControl == QuadButtonSessionDetails)
             {
-                NavFocusedControl = QuadButtonModeHelp;
+                NavFocusedControl = QuadButtonServerDetails;
                 NavFocusedControl.StyleSelected = true;
             }
         }
@@ -962,12 +956,6 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
 		Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
 	}
 
-    private void QUAD_BUTTON_MANAGESERVER()
-	{
-        CloseInGameMenu(CTmMlScriptIngame.EInGameMenuResult.ServerSettings);
-        Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
-    }
-
     private void ShowCloseServerMessageBox()
     {
         FrameMessageBoxConfirm.Show();
@@ -1197,9 +1185,9 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         ShowCustomModeHelp();
                         NavFocusedControl.StyleSelected = true;
                     }
-                    else if (NavFocusedControl == QuadButtonServerDetails && EnvimaniaSessionId != "")
+                    else if (NavFocusedControl == QuadButtonServerDetails)
                     {
-                        OpenLink($"https://envimix.gbx.tools/envimania/servers/{CurrentServerLogin}", CMlScript.LinkType.ExternalBrowser);
+                        QUAD_BUTTON_DISCORD();
                     }
                     else if (NavFocusedControl == QuadButtonSessionDetails && EnvimaniaSessionId != "")
                     {
@@ -1243,7 +1231,7 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         {
                             if (EnvimaniaSessionId == "")
                             {
-                                NavFocusedControl = QuadButtonModeHelp;
+                                NavFocusedControl = QuadButtonServerDetails;
                             }
                             else
                             {
@@ -1320,20 +1308,20 @@ public class MultiplayerMenu : CTmMlScriptIngame, IContext
                         }
                         else if (NavFocusedControl == QuadButtonModeHelp)
                         {
+                            NavFocusedControl = QuadButtonServerDetails;
+                            Focus3();
+                        }
+                        else if (NavFocusedControl == QuadButtonServerDetails)
+                        {
                             if (EnvimaniaSessionId == "")
                             {
                                 NavFocusedControl = QuadButtonExit;
                             }
                             else
                             {
-                                NavFocusedControl = QuadButtonServerDetails;
+                                NavFocusedControl = QuadButtonSessionDetails;
                             }
 
-                            Focus3();
-                        }
-                        else if (NavFocusedControl == QuadButtonServerDetails)
-                        {
-                            NavFocusedControl = QuadButtonSessionDetails;
                             Focus3();
                         }
                         else if (NavFocusedControl == QuadButtonSessionDetails)
