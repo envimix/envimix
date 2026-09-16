@@ -1465,7 +1465,10 @@ public class Envimix : UniverseModeBase
             {
                 envimixBestRace.Get()[key] = tempRace.Get();
                 e.Player.Score.BestRace = e.Player.CurRace; // ensures to pass the validation ghost
-                //Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
+                if (IsSolo())
+                {
+                    Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
+                }
                 //log("first finish");
                 firstFinishOrImprovement = true;
             }
@@ -1473,7 +1476,10 @@ public class Envimix : UniverseModeBase
             {
                 envimixBestRace.Get()[key] = tempRace.Get();
                 e.Player.Score.BestRace = e.Player.CurRace; // ensures to pass the validation ghost
-                //Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
+                if (IsSolo())
+                {
+                    Record.ToResult(e.Player.Score.BestRace, tempRace.Get());
+                }
                 //log("improvement");
                 firstFinishOrImprovement = true;
             }
