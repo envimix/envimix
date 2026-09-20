@@ -1394,7 +1394,7 @@ public class Envimix : UniverseModeBase
     {
         var i = EnvimaniaRecordsRequestCount;
 
-        while (i < EnvimaniaSessionRecordRequests.Length)
+        while (i >= 0 && i < EnvimaniaSessionRecordRequests.Length)
         {
             var queuedRequest = EnvimaniaSessionRecordRequests[i];
 
@@ -1414,7 +1414,9 @@ public class Envimix : UniverseModeBase
 
         i = EnvimaniaSessionRecordRequests.Length - 1;
 
-        while (i >= EnvimaniaRecordsRequestCount)
+        while (i >= EnvimaniaRecordsRequestCount
+            && i >= 0
+            && i < EnvimaniaSessionRecordRequests.Length)
         {
             var queuedRequest = EnvimaniaSessionRecordRequests[i];
 
