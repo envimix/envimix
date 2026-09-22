@@ -1398,15 +1398,12 @@ public class Envimix : UniverseModeBase
         {
             var queuedRequest = EnvimaniaSessionRecordRequests[i];
 
-            if (!IsSameEnvimaniaRecordFilter(queuedRequest, recordRequest))
+            if (IsSameEnvimaniaRecordFilter(queuedRequest, recordRequest))
             {
-                i += 1;
-                continue;
-            }
-
-            if (queuedRequest.Record.Time <= recordRequest.Record.Time)
-            {
-                return false;
+                if (queuedRequest.Record.Time <= recordRequest.Record.Time)
+                {
+                    return false;
+                }
             }
 
             i += 1;
