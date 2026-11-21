@@ -80,10 +80,16 @@
             <frame pos="-60 7">
                 <quad size="40 6" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" />
                 <quad size="40 5.75" z-index="1" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" id="QuadVRCampaign" />
-                <label id="LabelVRCampaign" pos="0 -3.3" z-index="2" size="55 10" text="VR campaign" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
+                <label id="LabelVRCampaign" pos="-2.5 -3.3" z-index="2" size="55 10" text="VR campaign" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
+                <quad id="QuadVROffzoneCampaign" size="5.5 5.5" pos="15 0" halign="center" style="UIConstruction_Buttons" substyle="OffZone" z-index="2" scriptevents="1" />
+                <quad id="QuadVROffzoneDisabled" size="7 7" pos="15 1" halign="center" style="Icons64x64_1" substyle="QuitRace" z-index="3" colorize="F00" hidden="1"/>
             </frame>
-            <frame pos="-36 7.5">
-                <quad id="QuadVROffzoneCampaign" size="7 7" pos="0 0" halign="center" style="UIConstruction_Buttons" substyle="OffZone" z-index="2" scriptevents="1" />
+            <frame pos="-20 7">
+                <quad size="40 6" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="258" />
+                <quad size="40 5.75" z-index="1" style="Bgs1" substyle="BgCardInventoryItem" colorize="258" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125" id="QuadOpreaxCampaign" />
+                <label pos="0 -3.3" z-index="2" size="55 10" text="World of Opreax" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
+            </frame>
+            <frame pos="-36 7.5" hidden="1">
                 <label id="LabelVROffzoneCountdown" pos="4 -3.75" z-index="2" size="55 10" text="0s" valign="center2" textfont="RajdhaniMono" translate="1" textsize="1.6" />
             </frame>
             <frame pos="53 7">
@@ -100,55 +106,61 @@
             </frame>
             <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>
             <quad z-index="0" size="310 120" style="Bgs1" substyle="BgCardList" halign="center"/>
-            <quad pos="-115.5 0" z-index="1" size="78 40" halign="center" image="file://Media/Images/Menu/CanyonBg.png"/>
-            <quad pos="-38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/ValleyBg.png"/>
-            <quad pos="38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/LagoonBg.png"/>
-            <quad pos="115.5 0" z-index="1" size="78 40" halign="center" image="file://Media/Images/Menu/StadiumBg.png"/>
-            <label pos="-115 -6.5" z-index="2" size="75 8" text="Canyon Grand Drift" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
-            <label pos="-38.25 -6.5" z-index="2" size="75 8" text="Down &amp; Dirty Valley" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
-            <label pos="38.25 -6.5" z-index="2" size="75 8" text="Rollercoaster Lagoon" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
-            <label pos="115 -6.5" z-index="2" size="75 8" text="International Stadium" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o"/>
-            <frame z-index="2" pos="0 -13" clip="1" clipsizen="309 106" clipposn="0 -53.25" scroll="1" scrollgrid="0 11" scrollmax="0 58.75" id="FrameCampaign">
-                <frame>
-                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75"/>
-                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
-                    <quad hidden="1" />
+            <frame id="FrameCampaignMaps" z-index="1">
+                <quad pos="-115.5 0" z-index="1" size="78 40" halign="center" image="file://Media/Images/Menu/CanyonBg.png" />
+                <quad pos="-38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/ValleyBg.png" />
+                <quad pos="38.25 0" z-index="1" size="76.5 40" halign="center" image="file://Media/Images/Menu/LagoonBg.png" />
+                <quad pos="115.5 0" z-index="1" size="78 40" halign="center" image="file://Media/Images/Menu/StadiumBg.png" />
+                <label pos="-115 -6.5" z-index="2" size="75 8" text="Canyon Grand Drift" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o" />
+                <label pos="-38.25 -6.5" z-index="2" size="75 8" text="Down &amp; Dirty Valley" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o" />
+                <label pos="38.25 -6.5" z-index="2" size="75 8" text="Rollercoaster Lagoon" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o" />
+                <label pos="115 -6.5" z-index="2" size="75 8" text="International Stadium" halign="center" valign="center" textsize="4" textfont="Oswald" textprefix="$t$o" />
+                <frame z-index="2" pos="0 -13" clip="1" clipsizen="309 106" clipposn="0 -53.25" scroll="1" scrollgrid="0 11" scrollmax="0 58.75" id="FrameCampaign">
+                    <frame>
+                        <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                        <quad hidden="1" />
+                    </frame>
+                    <frame pos="0 -33">
+                        <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="0F0" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                        <quad hidden="1" />
+                    </frame>
+                    <frame pos="0 -66">
+                        <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="00F" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                        <quad hidden="1" />
+                    </frame>
+                    <frame pos="0 -99">
+                        <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="F00" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                        <quad hidden="1" />
+                    </frame>
+                    <frame pos="0 -132">
+                        <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="111" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
+                        <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
+                        <quad hidden="1" />
+                    </frame>
                 </frame>
-                <frame pos="0 -33">
-                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="0F0"/>
-                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
-                    <quad hidden="1" />
-                </frame>
-                <frame pos="0 -66">
-                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="00F"/>
-                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
-                    <quad hidden="1" />
-                </frame>
-                <frame pos="0 -99">
-                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="F00"/>
-                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
-                    <quad hidden="1" />
-                </frame>
-                <frame pos="0 -132">
-                    <quad pos="0 0" z-index="-1" size="309 33" halign="center" scriptevents="1" style="Bgs1" substyle="BgWindow4" opacity="0.75" colorize="111"/>
-                    <frameinstance modelid="FramemodelMapGroup" pos="-115 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="-38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="38.25 -9" />
-                    <frameinstance modelid="FramemodelMapGroup" pos="115 -9" />
-                    <quad hidden="1" />
-                </frame>
+            </frame>
+            <frame id="FrameWorld" z-index="1" hidden="1">
+                <quad pos="0 -1" z-index="0" size="307.5 117.5" image="file://Media/Images/World.jpg" halign="center"/>
+                <quad pos="40 -80" z-index="1" size="5 5" halign="center" valign="center" style="Icons64x64_1" substyle="Check" scriptevents="1"/>
             </frame>
         </frame>
     </frame>

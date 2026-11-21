@@ -88,6 +88,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameCampaignOverview;
     [ManialinkControl] public required CMlFrame FrameMapOverview;
     [ManialinkControl] public required CMlFrame FrameCampaign;
+    [ManialinkControl] public required CMlFrame FrameCampaignMaps;
+    [ManialinkControl] public required CMlFrame FrameWorld;
     [ManialinkControl] public required CMlLabel LabelSelectedMapName;
     [ManialinkControl] public required CMlQuad QuadPlay;
     [ManialinkControl] public required CMlQuad QuadExplore;
@@ -104,6 +106,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadVRCampaign;
     [ManialinkControl] public required CMlLabel LabelVRCampaign;
     [ManialinkControl] public required CMlQuad QuadVROffzoneCampaign;
+    [ManialinkControl] public required CMlQuad QuadVROffzoneDisabled;
+    [ManialinkControl] public required CMlQuad QuadOpreaxCampaign;
     [ManialinkControl] public required CMlLabel LabelVROffzoneCountdown;
 
     [ManialinkControl] public required CMlFrame FrameTooltip;
@@ -161,6 +165,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     public bool VRCampaignReleased;
     public bool VROffzoneCampaignReleased;
+    public bool VROffzoneEnabled = true;
     public bool LeaderboardsLoadedOrLoading;
 
     public Dictionary<CMlFrame, float> PrevLeaderboardScrollY;
@@ -260,12 +265,24 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         QuadVROffzoneCampaign.MouseClick += () =>
         {
-            SelectVROffzoneCampaign();
+            ToggleVROffzoneCampaign();
         };
 
         QuadVROffzoneCampaign.MouseOver += () =>
         {
-            UpdateTooltip("VR campaign (offzone mode)");
+            if (VROffzoneEnabled)
+            {
+                UpdateTooltip("Disable offzone mode");
+            }
+            else
+            {
+                UpdateTooltip("Enable offzone mode");
+            }
+        };
+
+        QuadOpreaxCampaign.MouseClick += () =>
+        {
+            SelectOpreaxCampaign();
         };
 
         PluginCustomEvent += (type, data) =>
@@ -409,7 +426,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
             if (FocusedControl is not null)
             {
-                FocusedControl.StyleSelected = false;
+                FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
                 FocusedControl = null;
             }
         };
@@ -444,6 +461,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         MenuNavigation += (action) =>
         {
+            if (SelectedCampaignQuad == QuadOpreaxCampaign && FocusedControl is null)
+            {
+                FocusedControl = QuadOpreaxCampaign;
+            }
+
             switch (action)
             {
                 case CMlScriptEvent.EMenuNavAction.Cancel:
@@ -524,11 +546,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         SetupCampaign(false, true);
                         UnloadLeaderboards();
                     }
-                    else if (FocusedControl == QuadQuickplay || FocusedControl == QuadOfficialCampaign || FocusedControl == QuadVRCampaign)
+                    else if (SelectedCampaignQuad != QuadOpreaxCampaign)
                     {
                         SetupCampaign(false, false);
                         UnloadLeaderboards();
-                        FocusedControl.StyleSelected = SelectedCampaignQuad == FocusedControl;
+                        FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
                         FocusedControl = null;
                     }
                     if (FocusedControl is not null)
@@ -571,11 +593,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     }
                     else
                     {
-                        FocusedControl.StyleSelected = SelectedCampaignQuad == FocusedControl;
+                        FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
                     }
                     if (FocusedControl == QuadQuickplay)
                     {
-                        FocusedControl = QuadVROffzoneCampaign;
+                        FocusedControl = QuadOpreaxCampaign;
                     }
                     else if (FocusedControl == QuadOfficialCampaign)
                     {
@@ -588,6 +610,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     else if (FocusedControl == QuadVROffzoneCampaign)
                     {
                         FocusedControl = QuadVRCampaign;
+                    }
+                    else if (FocusedControl == QuadOpreaxCampaign)
+                    {
+                        FocusedControl = QuadVROffzoneCampaign;
                     }
                     if (FocusedControl is not null)
                     {
@@ -629,7 +655,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     }
                     else
                     {
-                        FocusedControl.StyleSelected = SelectedCampaignQuad == FocusedControl;
+                        FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
                     }
                     if (FocusedControl == QuadQuickplay)
                     {
@@ -644,6 +670,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         FocusedControl = QuadVROffzoneCampaign;
                     }
                     else if (FocusedControl == QuadVROffzoneCampaign)
+                    {
+                        FocusedControl = QuadOpreaxCampaign;
+                    }
+                    else if (FocusedControl == QuadOpreaxCampaign)
                     {
                         FocusedControl = QuadQuickplay;
                     }
@@ -683,7 +713,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         }
                         else if (FocusedControl == QuadVROffzoneCampaign)
                         {
-                            SelectVROffzoneCampaign();
+                            ToggleVROffzoneCampaign();
+                        }
+                        else if (FocusedControl == QuadOpreaxCampaign)
+                        {
+                            SelectOpreaxCampaign();
                         }
                     }
                     break;
@@ -1780,16 +1814,26 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    private bool IsCampaignSelected(CMlQuad quad)
+    {
+        return SelectedCampaignQuad == quad || (quad == QuadVRCampaign && SelectedCampaignQuad == QuadVROffzoneCampaign);
+    }
+
     private void SetupCampaign(bool optimizedMode, bool focusOnSelected)
     {
-        if (DataFileMgr.Campaigns.Count == 0)
+        QuadOfficialCampaign.StyleSelected = SelectedCampaignQuad == QuadOfficialCampaign;
+        QuadVRCampaign.StyleSelected = IsCampaignSelected(QuadVRCampaign);
+        QuadVROffzoneCampaign.StyleSelected = SelectedCampaignQuad == QuadVROffzoneCampaign;
+        QuadOpreaxCampaign.StyleSelected = SelectedCampaignQuad == QuadOpreaxCampaign;
+        QuadVROffzoneDisabled.Visible = !VROffzoneEnabled;
+
+        FrameWorld.Visible = SelectedCampaignQuad == QuadOpreaxCampaign;
+        FrameCampaignMaps.Visible = !FrameWorld.Visible;
+
+        if (FrameWorld.Visible || DataFileMgr.Campaigns.Count == 0)
         {
             return;
         }
-
-        QuadOfficialCampaign.StyleSelected = SelectedCampaignQuad == QuadOfficialCampaign;
-        QuadVRCampaign.StyleSelected = SelectedCampaignQuad == QuadVRCampaign;
-        QuadVROffzoneCampaign.StyleSelected = SelectedCampaignQuad == QuadVROffzoneCampaign;
 
         Campaign = GetCampaignForMaps();
 
@@ -2142,76 +2186,65 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         AudioClick.Play();
     }
 
+    private void SelectCampaign(CMlQuad quad, string campaignName)
+    {
+        if (SelectedCampaignQuad == quad)
+        {
+            return;
+        }
+
+        MapGroupNum = -1;
+        MapInfoNum = -1;
+        MapSelectedAt = -1;
+
+        AudioPlayClick();
+        SelectedCampaignQuad = quad;
+
+        var selectedCampaign = Local<string>.For(Page);
+        selectedCampaign.Set(campaignName);
+
+        SetupCampaign(false, false);
+        ResetPBs();
+        ResetValidators();
+        ResetRatings();
+        ResetStars();
+        ResetRanks();
+        UnloadLeaderboards();
+        FrameCampaign.ScrollOffset.Y = 0;
+        FrameTooltip.Hide();
+    }
+
     private void SelectOfficialCampaign()
     {
-        if (SelectedCampaignQuad != QuadOfficialCampaign)
-        {
-            MapGroupNum = -1;
-            MapInfoNum = -1;
-            MapSelectedAt = -1;
-
-            AudioPlayClick();
-            SelectedCampaignQuad = QuadOfficialCampaign;
-            SetupCampaign(false, false);
-            ResetPBs();
-            ResetValidators();
-            ResetRatings();
-            ResetStars();
-            ResetRanks();
-            UnloadLeaderboards();
-            FrameCampaign.ScrollOffset.Y = 0;
-
-            var selectedCampaign = Local<string>.For(Page);
-            selectedCampaign.Set("");
-        }
+        SelectCampaign(QuadOfficialCampaign, "");
     }
 
     private void SelectVRCampaign()
     {
-        if (VRCampaignReleased && SelectedCampaignQuad != QuadVRCampaign)
+        if (VROffzoneEnabled && VROffzoneCampaignReleased)
         {
-            MapGroupNum = -1;
-            MapInfoNum = -1;
-            MapSelectedAt = -1;
-
-            AudioPlayClick();
-            SelectedCampaignQuad = QuadVRCampaign;
-            SetupCampaign(false, false);
-            ResetPBs();
-            ResetValidators();
-            ResetRatings();
-            ResetStars();
-            ResetRanks();
-            UnloadLeaderboards();
-            FrameCampaign.ScrollOffset.Y = 0;
-
-            var selectedCampaign = Local<string>.For(Page);
-            selectedCampaign.Set("VR");
+            SelectCampaign(QuadVROffzoneCampaign, "VROffzone");
+        }
+        else if (!VROffzoneEnabled && VRCampaignReleased)
+        {
+            SelectCampaign(QuadVRCampaign, "VR");
         }
     }
 
-    private void SelectVROffzoneCampaign()
+    private void ToggleVROffzoneCampaign()
     {
-        if (VROffzoneCampaignReleased && SelectedCampaignQuad != QuadVROffzoneCampaign)
+        if ((VROffzoneEnabled && !VRCampaignReleased) || (!VROffzoneEnabled && !VROffzoneCampaignReleased))
         {
-            MapGroupNum = -1;
-            MapInfoNum = -1;
-            MapSelectedAt = -1;
-
-            AudioPlayClick();
-            SelectedCampaignQuad = QuadVROffzoneCampaign;
-            SetupCampaign(false, false);
-            ResetPBs();
-            ResetValidators();
-            ResetRatings();
-            ResetStars();
-            ResetRanks();
-            UnloadLeaderboards();
-            FrameCampaign.ScrollOffset.Y = 0;
-
-            var selectedCampaign = Local<string>.For(Page);
-            selectedCampaign.Set("VROffzone");
+            return;
         }
+
+        VROffzoneEnabled = !VROffzoneEnabled;
+        SelectVRCampaign();
+    }
+
+    private void SelectOpreaxCampaign()
+    {
+        SelectCampaign(QuadOpreaxCampaign, "Opreax");
     }
 
     private void UpdateTooltip(string text)
