@@ -65,7 +65,7 @@
         <quad id="QuadLoadingLeaderboard" pos="21 -20" z-index="0" size="20 20" halign="center" valign="center" style="BgRaceScore2" substyle="SandTimer" class="LOADING" hidden="1" />
         <label id="LabelStatus" pos="21 -20" z-index="0" size="40 5" text="...confirm map to load..." halign="center" valign="center" textsize="2" textfont="BiryaniDemiBold"/>
     </framemodel>
-    <frame clip="1" clipsizen="320 130" clipposn="0 25">
+    <frame pos="0 -1.5" clip="1" clipsizen="320 130" clipposn="0 25">
         <frame pos="0 80" id="FrameCampaignOverview">
             <frame pos="-140 7">
                 <quad size="30 6" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" modulatecolor="0F0"/>
@@ -164,7 +164,7 @@
             </frame>
         </frame>
     </frame>
-    <frame clip="1" clipsizen="320 50" clipposn="0 -65">
+    <frame pos="0 -1.5" clip="1" clipsizen="320 50" clipposn="0 -65">
         <frame pos="-155 -41" id="FrameMapOverview">
             <quad z-index="0" size="310 40" style="Bgs1" substyle="BgCardList"/>
             <quad z-index="0" size="310 40" style="Bgs1" substyle="BgCardList"/>
