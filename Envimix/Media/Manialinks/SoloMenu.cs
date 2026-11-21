@@ -89,6 +89,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameMapOverview;
     [ManialinkControl] public required CMlFrame FrameCampaign;
     [ManialinkControl] public required CMlFrame FrameCampaignMaps;
+    [ManialinkControl] public required CMlFrame FrameCampaignGrid;
     [ManialinkControl] public required CMlFrame FrameWorld;
     [ManialinkControl] public required CMlLabel LabelSelectedMapName;
     [ManialinkControl] public required CMlQuad QuadPlay;
@@ -728,6 +729,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public void Main()
     {
         FrameCampaignOverview.RelativePosition_V3.Y = -50;
+        FrameCampaignGrid.RelativePosition_V3.Y = -50;
         FrameMapOverview.RelativePosition_V3.Y = 10;
 
         TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
@@ -1005,12 +1007,15 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     private void ShowCampaignOverviewFrame()
     {
         FrameCampaignOverview.RelativePosition_V3.Y = -50;
+        FrameCampaignGrid.RelativePosition_V3.Y = -50;
         AnimMgr.Add(FrameCampaignOverview, "<frame pos=\"0 80\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameCampaignGrid, "<frame pos=\"0 80\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
     }
 
     private void HideCampaignOverviewFrame()
     {
         AnimMgr.Add(FrameCampaignOverview, "<frame pos=\"0 -50\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameCampaignGrid, "<frame pos=\"0 -50\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
     }
 
     private void ShowMapOverviewFrame()
@@ -1829,6 +1834,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         FrameWorld.Visible = SelectedCampaignQuad == QuadOpreaxCampaign;
         FrameCampaignMaps.Visible = !FrameWorld.Visible;
+        FrameCampaignGrid.Visible = !FrameWorld.Visible;
 
         if (FrameWorld.Visible || DataFileMgr.Campaigns.Count == 0)
         {
