@@ -2145,6 +2145,8 @@ public class Menu : CTmMlScriptIngame, IContext
         }
 
         QuadMedalList.Size.X = medalListWidth + 10;
+        // 5 per medal row + 2.5 margin on top and bottom, so the panel shrinks when there are fewer super medals
+        QuadMedalList.Size.Y = medalNames.Length * 5f + 5f;
 
         for (var i = 0; i < FrameMedals.Controls.Count; i++)
         {
