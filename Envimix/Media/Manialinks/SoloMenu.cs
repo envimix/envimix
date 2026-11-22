@@ -802,6 +802,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     {
         FrameCampaignOverview.RelativePosition_V3.Y = -50;
         FrameCampaignGrid.RelativePosition_V3.Y = -50;
+        FrameWorldDiamonds.RelativePosition_V3.Y = -50;
         FrameMapOverview.RelativePosition_V3.Y = 10;
 
         WorldMapPanelHeight = 12;
@@ -1110,14 +1111,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     {
         FrameCampaignOverview.RelativePosition_V3.Y = -50;
         FrameCampaignGrid.RelativePosition_V3.Y = -50;
+        FrameWorldDiamonds.RelativePosition_V3.Y = -50;
         AnimMgr.Add(FrameCampaignOverview, "<frame pos=\"0 80\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameCampaignGrid, "<frame pos=\"0 80\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameWorldDiamonds, "<frame pos=\"0 80\"/>", 600, CAnimManager.EAnimManagerEasing.QuadOut);
     }
 
     private void HideCampaignOverviewFrame()
     {
         AnimMgr.Add(FrameCampaignOverview, "<frame pos=\"0 -50\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(FrameCampaignGrid, "<frame pos=\"0 -50\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(FrameWorldDiamonds, "<frame pos=\"0 -50\"/>", 400, CAnimManager.EAnimManagerEasing.QuadOut);
     }
 
     private void ShowMapOverviewFrame()
@@ -2224,6 +2228,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         QuadVROffzoneDisabled.Visible = !VROffzoneEnabled;
 
         FrameWorld.Visible = SelectedCampaignQuad == QuadOpreaxCampaign;
+        FrameWorldDiamonds.Visible = FrameWorld.Visible;
         FrameCampaignMaps.Visible = !FrameWorld.Visible;
         FrameCampaignGrid.Visible = !FrameWorld.Visible;
 

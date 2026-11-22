@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <manialink version="3" xmlns="manialink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="manialink https://raw.githubusercontent.com/reaby/manialink-xsd/main/manialink_v3_ns.xsd">
     <framemodel id="FramemodelWorldDiamond">
-        <quad size="10 10" halign="center" valign="center" style="Bgs1" substyle="Glow" modulatecolor="0A3" pos="0 0.5" z-index="0" opacity="0.7" hidden="1"/>
+        <quad size="10 10" halign="center" valign="center" style="Bgs1" substyle="Glow" modulatecolor="0A5" pos="0 0.5" z-index="0" opacity="0.7" hidden="1"/>
         <quad class="WorldDiamond" size="5 5" halign="center" valign="center" scriptevents="1" image="file://Media/Images/DO.png" z-index="1"/>
     </framemodel>
     <framemodel id="FramemodelMap">
@@ -159,164 +159,166 @@
             <frame id="FrameWorld" z-index="1" hidden="1">
                 <quad class="WorldMapBackground" pos="0 -1" z-index="0" size="307.5 117.5" image="file://Media/Images/World.jpg" halign="center" scriptevents="1"/>
                 <label id="LabelWorldUnlockProgress" pos="152 -114.5" z-index="1" size="150 5" text="...collect medals with the default car to unlock more maps" halign="right" textfont="Oswald" textsize="1"/>
-                <frame id="FrameWorldDiamonds" z-index="1">
-                    <frame pos="-132.06 -17.52" data-mapuid="qm4qMkxCUjc8Cd3ZxCVgTMTURBO" data-location="USA, Alaska" data-unlock="0">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-89.98 -20.58" data-mapuid="LIZI4099GnuvUUeB80veTMTURBO" data-location="Canada" data-unlock="0">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-79.95 -31.75" data-mapuid="K2EaDDQd5cPL1ksbwdORTMTURBO" data-location="USA, Minnesota" data-unlock="8" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-75.42 -35.73" data-mapuid="JlrFGB1FL26qgUs9HUt2TMTURBO" data-location="USA, Chicago" data-unlock="8" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-64.09 -38.48" data-mapuid="FH0z__NJSgXs1gcd6p6yTMTURBO" data-location="USA, New York" data-unlock="16" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-98.72 -41.24" data-mapuid="THYtaeE39_Spwoihp30JTMTURBO" data-location="USA, Los Angeles" data-unlock="16" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-91.93 -40.78" data-mapuid="Tb2_NdGGan7AI1LwKjwKTMTURBO" data-location="USA, Colorado" data-unlock="24" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-84.97 -54.40" data-mapuid="M4HuZAxxu_f_gd9SLuVZTMTURBO" data-location="Mexico" data-unlock="24" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-66.52 -49.50" data-mapuid="TjHdT1r1xrHjrYvfmtU7TMTURBO" data-location="Bahamas" data-unlock="32" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-36.90 -45.83" data-mapuid="c4mdGFlk4F4FT0EkL6fETMTURBO" data-location="Atlantic Ocean" data-unlock="32" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-56.81 -73.83" data-mapuid="ySJx3IfCQFNxhGhCKkVmTMTURBO" data-location="Brazil, Amazonas" data-unlock="40" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-39.33 -87.60" data-mapuid="Jw0QwyUofX3uijy8jgaCTMTURBO" data-location="Brazil, Sao Paulo" data-unlock="40" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-47.74 -96.16" data-mapuid="8odRvq4WyV_sqVsnl7qTTMTURBO" data-location="South America, Uruguay" data-unlock="48" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-63.93 -106.72" data-mapuid="ihun8AHBm6O4y9m_uoORTMTURBO" data-location="South America, Chile" data-unlock="48" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-36.41 -10.18" data-mapuid="w1ruUp7wIbsr_Ybk7hSkTMTURBO" data-location="Orbit above Greenland" data-unlock="56" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-16.02 -17.22" data-mapuid="38sAjTmh1LyJnJyzPNrRTMTURBO" data-location="Iceland" data-unlock="56" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-3.40 -24.10" data-mapuid="czdY4_Lz_YNRUCH5w8T9TMTURBO" data-location="United Kingdom, Scotland" data-unlock="64" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="8.90 -18.75" data-mapuid="5VWCUH4L3VcpUcsN0JSOTMTURBO" data-location="Europe, Norway" data-unlock="64" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="22.82 -16.61" data-mapuid="Ttf45yPaq1W4MFnF3RmxTMTURBO" data-location="Europe, Finland" data-unlock="72" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="1.13 -31.75" data-mapuid="43doNYSu46xeyjJcmksWTMTURBO" data-location="Europe, France" data-unlock="72" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="7.93 -31.75" data-mapuid="CfdKSp3sK689K_bdSQQMTMTURBO" data-location="Europe, Switzerland" data-unlock="80" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="15.54 -29.46" data-mapuid="btXULk5WVsZq69LW2YiJTMTURBO" data-location="Europe, Slovakia" data-unlock="80" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="13.59 -36.49" data-mapuid="F09SSH59va3VKnLPiq1CTMTURBO" data-location="Europe, Italy" data-unlock="88" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-5.34 -37.72" data-mapuid="0AVzLiwx_VuKPORxZc9GTMTURBO" data-location="Europe, Spain" data-unlock="88" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="32.21 -38.02" data-mapuid="_wGneICovRh1iwKShrn5TMTURBO" data-location="Turkey" data-unlock="96" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="43.05 -23.03" data-mapuid="xmcKnqiip1OipnR5GwwLTMTURBO" data-location="Russia" data-unlock="96" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="76.55 -26.09" data-mapuid="WVEe12QtLNq8wEnu9r48TMTURBO" data-location="Russia" data-unlock="104" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="88.04 -13.55" data-mapuid="Kaaoijm5yPVkBjcEPA3lJlx_733" data-location="Russia" data-unlock="104" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="55.35 -32.98" data-mapuid="XUMYikhpsSndTR19tsz_TMTURBO" data-location="Kazakhstan" data-unlock="112" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="88.85 -34.81" data-mapuid="x7O7McVNsBr5IvtC5RWaTMTURBO" data-location="Mongolia" data-unlock="112" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="-7.28 -53.02" data-mapuid="wpR8Ddh8yl9gCeQ1QbxXTMTURBO" data-location="Africa, Mauritania" data-unlock="120" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="22.17 -47.97" data-mapuid="twjTGC99uTtrqAO7IjGmTMTURBO" data-location="Africa, Egypt" data-unlock="120" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="11.81 -69.85" data-mapuid="IGebhZZ85mjz0cBLbFh4TMTURBO" data-location="Africa, Congo" data-unlock="128" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="17.64 -79.95" data-mapuid="iZ5erVbrAg5QbS3MbCVRTMTURBO" data-location="Africa, Angola" data-unlock="128" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="40.14 -85.61" data-mapuid="ifyxlUafrayf_9hLqGKNWKAR2f0" data-location="Africa, Madagascar" data-unlock="136" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="47.58 -49.50" data-mapuid="jlm9XyRHO9RBJxB0u3A6TMTURBO" data-location="Saudi Arabia" data-unlock="136" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="67 -51.64" data-mapuid="Trm5dmbXNASGoReEUoyuTMTURBO" data-location="India" data-unlock="144" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="93.54 -45.67" data-mapuid="CuCRh9imBOQiYAwoQW81TMTURBO" data-location="China" data-unlock="144" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="101.64 -49.04" data-mapuid="HowCvnE26Vaxq5kvFBSCTMTURBO" data-location="China" data-unlock="152" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="96.94 -51.34" data-mapuid="0tUeKU57LzsTPYUUnF3CTMTURBO" data-location="Hong Kong" data-unlock="152" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="92.41 -58.53" data-mapuid="M89dbCaKzxC4vw4g0gycTMTURBO" data-location="Vietnam" data-unlock="160" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="109.57 -40.93" data-mapuid="WITVQFRvHTeWdklb2e6nTMTURBO" data-location="South Korea" data-unlock="160" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="119.28 -40.63" data-mapuid="F2byCHXG0h6lCY_RvQMOTMTURBO" data-location="Japan, Tokyo" data-unlock="168" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="122.03 -34.20" data-mapuid="wdQRzlgfzrez3v9zTIPJTMTURBO" data-location="Japan" data-unlock="168" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="98.08 -66.33" data-mapuid="LSwCRWoP0OvMw9fgGYh2TMTURBO" data-location="Malaysia" data-unlock="176" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="88.53 -68.16" data-mapuid="0sBuHdqVUq1wX5Tf6AgeTMTURBO" data-location="Singapore" data-unlock="176" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="100.67 -72.14" data-mapuid="yYMaPbllr8HjgZN4YOlZTMTURBO" data-location="Indonesia" data-unlock="184" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="65.71 -94.79" data-mapuid="1nD6MqwUMS8N3fm_WwHJTMTURBO" data-location="Indian Ocean" data-unlock="184" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="99.53 -94.94" data-mapuid="C2NO66yRk6DD0uFdt3GeTMTURBO" data-location="Australia, Perth" data-unlock="192" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="128.66 -97.08" data-mapuid="vosJ1m6wtz6GImIpjyacTMTURBO" data-location="Australia, Sydney" data-unlock="192" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="144.85 -105.80" data-mapuid="rBMeaDjecQ7UjWYZ5uZGTMTURBO" data-location="New Zealand" data-unlock="200" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                    <frame pos="146.14 -70.77" data-mapuid="enPZiDalpD6u7bXEuXOJTMTURBO" data-location="Pacific Ocean, Kiribati" data-unlock="200" hidden="1">
-                        <frameinstance modelid="FramemodelWorldDiamond"/>
-                    </frame>
-                </frame>
+            </frame>
+        </frame>
+    </frame>
+    <frame pos="0 -1.5" z-index="1" clip="1" clipsizen="320 130" clipposn="0 25">
+        <frame id="FrameWorldDiamonds" pos="0 80" hidden="1">
+            <frame pos="-132.06 -17.52" data-mapuid="qm4qMkxCUjc8Cd3ZxCVgTMTURBO" data-location="USA, Alaska" data-unlock="0">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-89.98 -20.58" data-mapuid="LIZI4099GnuvUUeB80veTMTURBO" data-location="Canada" data-unlock="0">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-79.95 -31.75" data-mapuid="K2EaDDQd5cPL1ksbwdORTMTURBO" data-location="USA, Minnesota" data-unlock="8" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-75.42 -35.73" data-mapuid="JlrFGB1FL26qgUs9HUt2TMTURBO" data-location="USA, Chicago" data-unlock="8" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-64.09 -38.48" data-mapuid="FH0z__NJSgXs1gcd6p6yTMTURBO" data-location="USA, New York" data-unlock="16" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-98.72 -41.24" data-mapuid="THYtaeE39_Spwoihp30JTMTURBO" data-location="USA, Los Angeles" data-unlock="16" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-91.93 -40.78" data-mapuid="Tb2_NdGGan7AI1LwKjwKTMTURBO" data-location="USA, Colorado" data-unlock="24" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-84.97 -54.40" data-mapuid="M4HuZAxxu_f_gd9SLuVZTMTURBO" data-location="Mexico" data-unlock="24" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-66.52 -49.50" data-mapuid="TjHdT1r1xrHjrYvfmtU7TMTURBO" data-location="Bahamas" data-unlock="32" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-36.90 -45.83" data-mapuid="c4mdGFlk4F4FT0EkL6fETMTURBO" data-location="Atlantic Ocean" data-unlock="32" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-56.81 -73.83" data-mapuid="ySJx3IfCQFNxhGhCKkVmTMTURBO" data-location="Brazil, Amazonas" data-unlock="40" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-39.33 -87.60" data-mapuid="Jw0QwyUofX3uijy8jgaCTMTURBO" data-location="Brazil, Sao Paulo" data-unlock="40" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-47.74 -96.16" data-mapuid="8odRvq4WyV_sqVsnl7qTTMTURBO" data-location="South America, Uruguay" data-unlock="48" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-63.93 -106.72" data-mapuid="ihun8AHBm6O4y9m_uoORTMTURBO" data-location="South America, Chile" data-unlock="48" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-36.41 -10.18" data-mapuid="w1ruUp7wIbsr_Ybk7hSkTMTURBO" data-location="Orbit above Greenland" data-unlock="56" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-16.02 -17.22" data-mapuid="38sAjTmh1LyJnJyzPNrRTMTURBO" data-location="Iceland" data-unlock="56" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-3.40 -24.10" data-mapuid="czdY4_Lz_YNRUCH5w8T9TMTURBO" data-location="United Kingdom, Scotland" data-unlock="64" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="8.90 -18.75" data-mapuid="5VWCUH4L3VcpUcsN0JSOTMTURBO" data-location="Europe, Norway" data-unlock="64" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="22.82 -16.61" data-mapuid="Ttf45yPaq1W4MFnF3RmxTMTURBO" data-location="Europe, Finland" data-unlock="72" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="1.13 -31.75" data-mapuid="43doNYSu46xeyjJcmksWTMTURBO" data-location="Europe, France" data-unlock="72" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="7.93 -31.75" data-mapuid="CfdKSp3sK689K_bdSQQMTMTURBO" data-location="Europe, Switzerland" data-unlock="80" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="15.54 -29.46" data-mapuid="btXULk5WVsZq69LW2YiJTMTURBO" data-location="Europe, Slovakia" data-unlock="80" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="13.59 -36.49" data-mapuid="F09SSH59va3VKnLPiq1CTMTURBO" data-location="Europe, Italy" data-unlock="88" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-5.34 -37.72" data-mapuid="0AVzLiwx_VuKPORxZc9GTMTURBO" data-location="Europe, Spain" data-unlock="88" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="32.21 -38.02" data-mapuid="_wGneICovRh1iwKShrn5TMTURBO" data-location="Turkey" data-unlock="96" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="43.05 -23.03" data-mapuid="xmcKnqiip1OipnR5GwwLTMTURBO" data-location="Russia" data-unlock="96" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="76.55 -26.09" data-mapuid="WVEe12QtLNq8wEnu9r48TMTURBO" data-location="Russia" data-unlock="104" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="88.04 -13.55" data-mapuid="Kaaoijm5yPVkBjcEPA3lJlx_733" data-location="Russia" data-unlock="104" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="55.35 -32.98" data-mapuid="XUMYikhpsSndTR19tsz_TMTURBO" data-location="Kazakhstan" data-unlock="112" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="88.85 -34.81" data-mapuid="x7O7McVNsBr5IvtC5RWaTMTURBO" data-location="Mongolia" data-unlock="112" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="-7.28 -53.02" data-mapuid="wpR8Ddh8yl9gCeQ1QbxXTMTURBO" data-location="Africa, Mauritania" data-unlock="120" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="22.17 -47.97" data-mapuid="twjTGC99uTtrqAO7IjGmTMTURBO" data-location="Africa, Egypt" data-unlock="120" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="11.81 -69.85" data-mapuid="IGebhZZ85mjz0cBLbFh4TMTURBO" data-location="Africa, Congo" data-unlock="128" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="17.64 -79.95" data-mapuid="iZ5erVbrAg5QbS3MbCVRTMTURBO" data-location="Africa, Angola" data-unlock="128" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="40.14 -85.61" data-mapuid="ifyxlUafrayf_9hLqGKNWKAR2f0" data-location="Africa, Madagascar" data-unlock="136" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="47.58 -49.50" data-mapuid="jlm9XyRHO9RBJxB0u3A6TMTURBO" data-location="Saudi Arabia" data-unlock="136" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="67 -51.64" data-mapuid="Trm5dmbXNASGoReEUoyuTMTURBO" data-location="India" data-unlock="144" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="93.54 -45.67" data-mapuid="CuCRh9imBOQiYAwoQW81TMTURBO" data-location="China" data-unlock="144" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="101.64 -49.04" data-mapuid="HowCvnE26Vaxq5kvFBSCTMTURBO" data-location="China" data-unlock="152" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="96.94 -51.34" data-mapuid="0tUeKU57LzsTPYUUnF3CTMTURBO" data-location="Hong Kong" data-unlock="152" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="92.41 -58.53" data-mapuid="M89dbCaKzxC4vw4g0gycTMTURBO" data-location="Vietnam" data-unlock="160" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="109.57 -40.93" data-mapuid="WITVQFRvHTeWdklb2e6nTMTURBO" data-location="South Korea" data-unlock="160" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="119.28 -40.63" data-mapuid="F2byCHXG0h6lCY_RvQMOTMTURBO" data-location="Japan, Tokyo" data-unlock="168" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="122.03 -34.20" data-mapuid="wdQRzlgfzrez3v9zTIPJTMTURBO" data-location="Japan" data-unlock="168" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="98.08 -66.33" data-mapuid="LSwCRWoP0OvMw9fgGYh2TMTURBO" data-location="Malaysia" data-unlock="176" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="88.53 -68.16" data-mapuid="0sBuHdqVUq1wX5Tf6AgeTMTURBO" data-location="Singapore" data-unlock="176" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="100.67 -72.14" data-mapuid="yYMaPbllr8HjgZN4YOlZTMTURBO" data-location="Indonesia" data-unlock="184" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="65.71 -94.79" data-mapuid="1nD6MqwUMS8N3fm_WwHJTMTURBO" data-location="Indian Ocean" data-unlock="184" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="99.53 -94.94" data-mapuid="C2NO66yRk6DD0uFdt3GeTMTURBO" data-location="Australia, Perth" data-unlock="192" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="128.66 -97.08" data-mapuid="vosJ1m6wtz6GImIpjyacTMTURBO" data-location="Australia, Sydney" data-unlock="192" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="144.85 -105.80" data-mapuid="rBMeaDjecQ7UjWYZ5uZGTMTURBO" data-location="New Zealand" data-unlock="200" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <frame pos="146.14 -70.77" data-mapuid="enPZiDalpD6u7bXEuXOJTMTURBO" data-location="Pacific Ocean, Kiribati" data-unlock="200" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
         </frame>
     </frame>
