@@ -78,6 +78,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         public int STM;
     }
 
+    public struct SWorldMapMedals
+    {
+        public int Author;
+        public int Gold;
+        public int Silver;
+        public int Bronze;
+    }
+
     [ManialinkControl] public required CMlQuad QuadBack;
     [ManialinkControl] public required CMlFrame FrameCars;
     [ManialinkControl] public required CMlFrame FrameValidations;
@@ -91,6 +99,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameCampaignMaps;
     [ManialinkControl] public required CMlFrame FrameCampaignGrid;
     [ManialinkControl] public required CMlFrame FrameWorld;
+    [ManialinkControl] public required CMlFrame FrameWorldDiamonds;
+    [ManialinkControl] public required CMlLabel LabelWorldUnlockProgress;
     [ManialinkControl] public required CMlFrame FrameWorldMapPanel;
     [ManialinkControl] public required CMlFrame FrameWorldMapPanelClip;
     [ManialinkControl] public required CMlQuad QuadWorldMapPanelBackground;
@@ -182,6 +192,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public float WorldMapPanelWidth;
     public int WorldMapPanelOpenAt = -1;
     public bool WorldMapPanelFlipped;
+
+    public Dictionary<string, int> WorldMapUnlocks;
+    public Dictionary<string, SWorldMapMedals> WorldMapMedals;
+    public int WorldMapMedalsCampaignCount = -1;
+    public int WorldMedalPoints;
+    public bool WorldUnlocksInitialized;
 
     public CMlQuad? FocusedControl;
     public CMlFrame? SelectedRecordFrame;
@@ -319,6 +335,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 case "AnimateOpen":
                     EnableMenuNavigationInputs = true;
+                    // delayed so the reveal happens after the menu slides in
+                    UpdateWorldUnlocks(700);
                     if (FrameWorld.Visible)
                     {
                         UpdateWorldMapPanel();
@@ -347,6 +365,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         UpdateGeneralStats(GetCampaignForMaps().MapGroups[MapGroupNum].MapInfos[MapInfoNum]);
                     }
                     SetupCampaign(false, false);
+                    UpdateWorldUnlocks(0);
                     break;
                 case "Skillpoints":
                     ExpectedSkillpoints = TextLib.ToInteger(data[0]);
@@ -800,8 +819,19 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         SelectedCampaignQuad = QuadOfficialCampaign;
 
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            WorldMapUnlocks[location.DataAttributeGet("mapuid")] = TextLib.ToInteger(location.DataAttributeGet("unlock"));
+        }
+
         SwitchCars(false);
         SetupCampaign(false, false);
+        UpdateWorldUnlocks(0);
 
         SuperMedalsRequest = Http.CreateGet("file://Media/Medals.json");
     }
@@ -886,6 +916,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
 
             LoadLeaderboards(false);
+            UpdateWorldUnlocks(0);
 
             SendCustomEvent("Stats", new[] { "" });
 
@@ -2689,9 +2720,175 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         SelectVRCampaign();
     }
 
+    private void RevealWorldDiamond(CMlFrame location, int delay)
+    {
+        var icon = ((location.Controls[0] as CMlFrame)!.Controls[1] as CMlQuad)!;
+
+        location.DataAttributeSet("revealed", "1");
+
+        AnimMgr.Flush(location);
+        AnimMgr.Flush(icon);
+        location.RelativeScale = 4;
+        icon.Opacity = 0;
+        location.Show();
+
+        AnimMgr.Add(location, "<frame scale=\"1\"/>", Now + delay, 700, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(icon, "<quad opacity=\"1\"/>", Now + delay, 500, CAnimManager.EAnimManagerEasing.QuadOut);
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: delay);
+    }
+
+    private void LoadWorldMapMedals()
+    {
+        if (DataFileMgr.Campaigns.Count == WorldMapMedalsCampaignCount)
+        {
+            return;
+        }
+
+        WorldMapMedalsCampaignCount = DataFileMgr.Campaigns.Count;
+        WorldMapMedals.Clear();
+
+        foreach (var campaign in DataFileMgr.Campaigns)
+        {
+            foreach (var mapGroup in campaign.MapGroups)
+            {
+                foreach (var mapInfo in mapGroup.MapInfos)
+                {
+                    if (!WorldMapUnlocks.ContainsKey(mapInfo.MapUid) || WorldMapMedals.ContainsKey(mapInfo.MapUid))
+                    {
+                        continue;
+                    }
+
+                    SWorldMapMedals medals = new()
+                    {
+                        Author = mapInfo.TMObjective_AuthorTime,
+                        Gold = mapInfo.TMObjective_GoldTime,
+                        Silver = mapInfo.TMObjective_SilverTime,
+                        Bronze = mapInfo.TMObjective_BronzeTime
+                    };
+                    WorldMapMedals[mapInfo.MapUid] = medals;
+                }
+            }
+        }
+    }
+
+    private int GetWorldMapMedalPoints(string mapUid)
+    {
+        if (!WorldMapMedals.ContainsKey(mapUid))
+        {
+            return 0;
+        }
+
+        // default car only
+        var time = ScoreMgr.Map_GetRecord(null, mapUid, ScoreContextPrefix);
+        if (time < 0)
+        {
+            return 0;
+        }
+
+        var medals = WorldMapMedals[mapUid];
+        if (time <= medals.Author)
+        {
+            return 5;
+        }
+        if (time <= medals.Gold)
+        {
+            return 3;
+        }
+        if (time <= medals.Silver)
+        {
+            return 2;
+        }
+        if (time <= medals.Bronze)
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    private void UpdateWorldUnlocks(int revealDelay)
+    {
+        LoadWorldMapMedals();
+
+        var points = 0;
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            points += GetWorldMapMedalPoints(location.DataAttributeGet("mapuid"));
+        }
+
+        WorldMedalPoints = points;
+
+        // only animate newly unlocked pairs when the player can actually see them, otherwise keep them hidden until then
+        var canAnimate = WorldUnlocksInitialized && FrameWorld.Visible && EnableMenuNavigationInputs;
+        var nextUnlock = -1;
+        var revealCount = 0;
+
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            var unlock = TextLib.ToInteger(location.DataAttributeGet("unlock"));
+
+            if (unlock > points)
+            {
+                if (nextUnlock == -1 || unlock < nextUnlock)
+                {
+                    nextUnlock = unlock;
+                }
+                location.Hide();
+                location.DataAttributeSet("revealed", "");
+                continue;
+            }
+
+            if (location.DataAttributeGet("revealed") == "1")
+            {
+                continue;
+            }
+
+            if (!WorldUnlocksInitialized)
+            {
+                location.DataAttributeSet("revealed", "1");
+                location.Show();
+                continue;
+            }
+
+            if (!canAnimate)
+            {
+                continue;
+            }
+
+            RevealWorldDiamond(location, revealDelay + revealCount * 250);
+            revealCount += 1;
+        }
+
+        // the first pass with loaded campaigns shows already unlocked maps without animation
+        if (DataFileMgr.Campaigns.Count > 0)
+        {
+            WorldUnlocksInitialized = true;
+        }
+
+        if (nextUnlock == -1)
+        {
+            LabelWorldUnlockProgress.SetText($"All maps unlocked! Medal points: $o{points}");
+        }
+        else
+        {
+            LabelWorldUnlockProgress.SetText($"...collect medals with the default car to unlock more maps   $o{points} / {nextUnlock} points");
+        }
+    }
+
     private void SelectOpreaxCampaign()
     {
         SelectCampaign(QuadOpreaxCampaign, "Opreax");
+        // reveals pairs unlocked while the world map wasn't shown
+        UpdateWorldUnlocks(300);
     }
 
     private void UpdateTooltip(string text)
