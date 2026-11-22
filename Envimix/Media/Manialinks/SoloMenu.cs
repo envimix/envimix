@@ -91,6 +91,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameCampaignMaps;
     [ManialinkControl] public required CMlFrame FrameCampaignGrid;
     [ManialinkControl] public required CMlFrame FrameWorld;
+    [ManialinkControl] public required CMlFrame FrameWorldMapPanel;
+    [ManialinkControl] public required CMlFrame FrameWorldMapPanelClip;
+    [ManialinkControl] public required CMlQuad QuadWorldMapPanelBackground;
+    [ManialinkControl] public required CMlQuad QuadWorldMapPanelBackgroundOverlay;
+    [ManialinkControl] public required CMlLabel LabelWorldMapName;
+    [ManialinkControl] public required CMlLabel LabelWorldMapLocation;
+    [ManialinkControl] public required CMlQuad QuadWorldMapThumbnail;
+    [ManialinkControl] public required CMlLabel LabelWorldMapEnvironment;
+    [ManialinkControl] public required CMlLabel LabelWorldMapVehicle;
+    [ManialinkControl] public required CMlLabel LabelWorldMapStyle;
+    [ManialinkControl] public required CMlLabel LabelWorldMapTrackmaster;
     [ManialinkControl] public required CMlLabel LabelSelectedMapName;
     [ManialinkControl] public required CMlQuad QuadPlay;
     [ManialinkControl] public required CMlQuad QuadExplore;
@@ -155,6 +166,22 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public CAudioSource AudioClick;
 
     public CMlQuad SelectedCampaignQuad;
+
+    public CMlFrame? HoveredWorldDiamond;
+    public CMlFrame? SelectedWorldDiamond;
+    public CMlFrame? WorldMapPanelDiamond;
+    public string HoveredWorldMapUid = "";
+    public string SelectedWorldMapUid = "";
+    public string DisplayedWorldMapUid = "";
+    public int WorldMapCampaignNum = -1;
+    public int WorldDiamondSelectedAt = -1;
+    public float WorldMapPanelHeight;
+    public float WorldMapPanelFromHeight;
+    public float WorldMapPanelTargetHeight;
+    public int WorldMapPanelResizeAt = -1;
+    public float WorldMapPanelWidth;
+    public int WorldMapPanelOpenAt = -1;
+    public bool WorldMapPanelFlipped;
 
     public CMlQuad? FocusedControl;
     public CMlFrame? SelectedRecordFrame;
@@ -292,11 +319,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 case "AnimateOpen":
                     EnableMenuNavigationInputs = true;
+                    if (FrameWorld.Visible)
+                    {
+                        UpdateWorldMapPanel();
+                    }
                     ShowCampaignOverviewFrame();
                     ShowMapOverviewFrame();
                     break;
                 case "AnimateClose":
                     EnableMenuNavigationInputs = false;
+                    ClearWorldDiamondHover(false);
+                    FrameWorldMapPanel.Hide();
                     HideCampaignOverviewFrame();
                     HideMapOverviewFrame();
                     break;
@@ -356,6 +389,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         MouseClick += (control, controlId) =>
         {
+            if (control.HasClass("WorldMapBackground") && FrameWorld.Visible && EnableMenuNavigationInputs)
+            {
+                DeselectWorldDiamond();
+                ClearWorldDiamondHover(false);
+                WorldMapPanelDiamond = null;
+                FrameWorldMapPanel.Hide();
+                SetWorldMapPanelExpanded(false);
+            }
+            if (control.HasClass("WorldDiamond") && FrameWorld.Visible && EnableMenuNavigationInputs)
+            {
+                SelectWorldDiamond((control.Parent as CMlFrame)!);
+            }
             if (controlId == "QuadMapButton")
             {
                 MapClick(control);
@@ -434,6 +479,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         MouseOver += (control, controlId) =>
         {
+            if (control.HasClass("WorldDiamond") && FrameWorld.Visible && EnableMenuNavigationInputs)
+            {
+                HoverWorldDiamond((control.Parent as CMlFrame)!);
+            }
             if (controlId == "QuadMapButton")
             {
                 MapSelect(control);
@@ -453,6 +502,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         MouseOut += (control, controlId) =>
         {
+            if (control.HasClass("WorldDiamond") && control.Parent == HoveredWorldDiamond)
+            {
+                ClearWorldDiamondHover(true);
+            }
             if (control.Parent.ControlId == "FrameStars")
             {
                 AnimMgr.Add(control, "<quad scale=\"1\"/>", 200, CAnimManager.EAnimManagerEasing.QuadOut);
@@ -732,6 +785,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         FrameCampaignGrid.RelativePosition_V3.Y = -50;
         FrameMapOverview.RelativePosition_V3.Y = 10;
 
+        WorldMapPanelHeight = 12;
+        WorldMapPanelFromHeight = 12;
+        WorldMapPanelTargetHeight = 12;
+
         TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
         TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
         FunnyCars = new() { "HighlandCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
@@ -751,6 +808,20 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     public void Loop()
     {
+        UpdateWorldMapPanelAnimation();
+        if (FrameWorldMapPanel.Visible)
+        {
+            UpdateWorldMapPanelPosition();
+        }
+
+        if (SelectedWorldDiamond is not null && FrameWorld.Visible && EnableMenuNavigationInputs)
+        {
+            var diamondIcon = (SelectedWorldDiamond.Controls[1] as CMlQuad)!;
+            var elapsed = Now - WorldDiamondSelectedAt;
+            var amplitude = MathLib.Min(1f, elapsed / 180f) * 5f;
+            diamondIcon.RelativeRotation = MathLib.Sin(elapsed * 0.006f) * amplitude;
+        }
+
         foreach (var control in Page.GetClassChildren_Result)
         {
             if (control.Visible)
@@ -1435,6 +1506,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return DataFileMgr.Campaigns[24];
         }
 
+        if (SelectedCampaignQuad == QuadOpreaxCampaign && WorldMapCampaignNum != -1)
+        {
+            return DataFileMgr.Campaigns[WorldMapCampaignNum];
+        }
+
         return DataFileMgr.Campaigns[0];
     }
 
@@ -1599,6 +1675,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     private void LoadLeaderboards(bool showLoader)
     {
         if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1)
+        {
+            return;
+        }
+
+        if (SelectedCampaignQuad == QuadOpreaxCampaign && MapSelectedAt == -1)
         {
             return;
         }
@@ -1824,6 +1905,285 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         return SelectedCampaignQuad == quad || (quad == QuadVRCampaign && SelectedCampaignQuad == QuadVROffzoneCampaign);
     }
 
+    private void UnloadLeaderboards()
+    {
+        if (SelectedRecordFrame is not null)
+        {
+            var selectedRecordQuad = (SelectedRecordFrame.Controls[1] as CMlQuad)!;
+            selectedRecordQuad.Hide();
+        }
+
+        SelectedRecordFrame = null;
+        SelectedRecordCar = "";
+        SelectedRecordGhostUrl = "";
+
+        foreach (var control in FrameLeaderboards.Controls)
+        {
+            if (control is not CMlFrame frameLeaderboard)
+            {
+                continue;
+            }
+
+            var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
+            var labelStatus = (frameLeaderboard.GetFirstChild("LabelStatus") as CMlLabel)!;
+            var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
+            var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
+
+            frameScrollRecords.ScrollOffset.Y = 0;
+
+            quadLoadingLeaderboard.Hide();
+            labelStatus.Show();
+
+            foreach (var controlRec in frameRecords.Controls)
+            {
+                controlRec.Hide();
+            }
+        }
+
+        LeaderboardsLoadedOrLoading = false;
+    }
+
+    private void ResolveWorldMap(string mapUid)
+    {
+        for (var campaignNum = 0; campaignNum < DataFileMgr.Campaigns.Count; campaignNum++)
+        {
+            var campaign = DataFileMgr.Campaigns[campaignNum];
+            for (var groupNum = 0; groupNum < campaign.MapGroups.Count; groupNum++)
+            {
+                var mapGroup = campaign.MapGroups[groupNum];
+                for (var infoNum = 0; infoNum < mapGroup.MapInfos.Count; infoNum++)
+                {
+                    if (mapGroup.MapInfos[infoNum].MapUid == mapUid)
+                    {
+                        WorldMapCampaignNum = campaignNum;
+                        MapGroupNum = groupNum;
+                        MapInfoNum = infoNum;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private void SetWorldMapPanelExpanded(bool expanded)
+    {
+        var targetHeight = 12f;
+        if (expanded)
+        {
+            targetHeight = 40f;
+        }
+
+        if (WorldMapPanelTargetHeight == targetHeight)
+        {
+            return;
+        }
+
+        WorldMapPanelFromHeight = WorldMapPanelHeight;
+        WorldMapPanelTargetHeight = targetHeight;
+        WorldMapPanelResizeAt = Now;
+    }
+
+    private void ApplyWorldMapPanelWidth()
+    {
+        var left = 0f;
+        if (WorldMapPanelFlipped)
+        {
+            left = 65 - WorldMapPanelWidth;
+        }
+
+        QuadWorldMapPanelBackground.Size.X = WorldMapPanelWidth;
+        QuadWorldMapPanelBackgroundOverlay.Size.X = WorldMapPanelWidth;
+        QuadWorldMapPanelBackground.RelativePosition_V3.X = left;
+        QuadWorldMapPanelBackgroundOverlay.RelativePosition_V3.X = left;
+        FrameWorldMapPanelClip.ClipWindowSize.X = WorldMapPanelWidth;
+        FrameWorldMapPanelClip.ClipWindowRelativePosition.X = left + WorldMapPanelWidth * 0.5f;
+    }
+
+    private void OpenWorldMapPanel()
+    {
+        WorldMapPanelWidth = 0;
+        WorldMapPanelOpenAt = Now;
+        ApplyWorldMapPanelWidth();
+    }
+
+    private void UpdateWorldMapPanelAnimation()
+    {
+        if (WorldMapPanelOpenAt != -1)
+        {
+            var openingElapsed = MathLib.Clamp(Now - WorldMapPanelOpenAt, 0, 220);
+            var width = AnimLib.EaseOutQuad(openingElapsed, 0, 65, 220);
+            WorldMapPanelWidth = width;
+            ApplyWorldMapPanelWidth();
+
+            if (openingElapsed >= 220)
+            {
+                WorldMapPanelOpenAt = -1;
+            }
+        }
+
+        if (WorldMapPanelResizeAt == -1)
+        {
+            return;
+        }
+
+        var elapsed = MathLib.Clamp(Now - WorldMapPanelResizeAt, 0, 220);
+        var height = AnimLib.EaseOutQuad(elapsed, WorldMapPanelFromHeight, WorldMapPanelTargetHeight - WorldMapPanelFromHeight, 220);
+        WorldMapPanelHeight = height;
+        QuadWorldMapPanelBackground.Size.Y = height;
+        QuadWorldMapPanelBackgroundOverlay.Size.Y = height;
+        FrameWorldMapPanelClip.ClipWindowSize.Y = height;
+        FrameWorldMapPanelClip.ClipWindowRelativePosition.Y = 4 - height * 0.5f;
+
+        if (elapsed >= 220)
+        {
+            WorldMapPanelResizeAt = -1;
+        }
+    }
+
+    private void UpdateWorldMapPanelPosition()
+    {
+        if (WorldMapPanelDiamond is null)
+        {
+            return;
+        }
+
+        var diamondPosition = WorldMapPanelDiamond.AbsolutePosition_V3;
+        var worldPosition = FrameWorld.AbsolutePosition_V3;
+        var worldScale = (float)FrameWorld.AbsoluteScale;
+        var panelScale = (float)FrameWorldMapPanel.AbsoluteScale;
+        var panelWidth = 65 * panelScale;
+        var padding = worldScale;
+        var gap = 5 * worldScale;
+        var left = (float)worldPosition.X - 153.75f * worldScale + padding;
+        var right = (float)worldPosition.X + 153.75f * worldScale - padding;
+        var top = (float)worldPosition.Y - worldScale - padding;
+        var bottom = (float)worldPosition.Y - 118.5f * worldScale + padding;
+
+        var x = (float)diamondPosition.X + gap;
+        var flipped = x + panelWidth > right;
+        if (WorldMapPanelFlipped != flipped)
+        {
+            WorldMapPanelFlipped = flipped;
+            ApplyWorldMapPanelWidth();
+        }
+        if (flipped)
+        {
+            x = (float)diamondPosition.X - gap - panelWidth;
+        }
+        x = MathLib.Clamp(x, left, right - panelWidth);
+        var y = MathLib.Clamp((float)diamondPosition.Y + 1.7f * worldScale, bottom + (WorldMapPanelHeight - 4) * panelScale, top - 4 * panelScale);
+        FrameWorldMapPanel.RelativePosition_V3 = new Vec2(x, y);
+    }
+
+    private void UpdateWorldMapDetails(CMapInfo mapInfo)
+    {
+        LabelWorldMapName.SetText(mapInfo.Name);
+        var diamond = SelectedWorldDiamond;
+        if (diamond is null)
+        {
+            diamond = HoveredWorldDiamond;
+        }
+        if (diamond is not null)
+        {
+            WorldMapPanelDiamond = diamond;
+            LabelWorldMapLocation.SetText(diamond.Parent.DataAttributeGet("location"));
+        }
+
+        var thumbnailUrl = $"file://Thumbnails/MapUid/{mapInfo.MapUid}";
+        if (QuadWorldMapThumbnail.ImageUrl != thumbnailUrl)
+        {
+            QuadWorldMapThumbnail.ChangeImageUrl(thumbnailUrl);
+        }
+        LabelWorldMapEnvironment.SetText(mapInfo.CollectionName);
+        LabelWorldMapVehicle.SetText($"{mapInfo.CollectionName}Car");
+        if (mapInfo.MapStyle == "")
+        {
+            LabelWorldMapStyle.SetText("Unspecified");
+        }
+        else
+        {
+            LabelWorldMapStyle.SetText(mapInfo.MapStyle);
+        }
+        if (mapInfo.TMObjective_AuthorTime < 0)
+        {
+            LabelWorldMapTrackmaster.SetText("-:--.---");
+        }
+        else
+        {
+            LabelWorldMapTrackmaster.SetText(TimeToTextWithMilli(mapInfo.TMObjective_AuthorTime));
+        }
+
+        var showPanel = FrameWorld.Visible && EnableMenuNavigationInputs && diamond is not null;
+        if (showPanel && !FrameWorldMapPanel.Visible)
+        {
+            OpenWorldMapPanel();
+        }
+        FrameWorldMapPanel.Visible = showPanel;
+        SetWorldMapPanelExpanded(SelectedWorldDiamond is not null && SelectedWorldMapUid == mapInfo.MapUid);
+        UpdateWorldMapPanelPosition();
+    }
+
+    private void UpdateWorldMapPanel()
+    {
+        var mapUid = SelectedWorldMapUid;
+        if (mapUid == "")
+        {
+            mapUid = DisplayedWorldMapUid;
+            if (HoveredWorldMapUid != "")
+            {
+                mapUid = HoveredWorldMapUid;
+            }
+        }
+
+        var mapChanged = mapUid != DisplayedWorldMapUid || WorldMapCampaignNum == -1 || MapGroupNum == -1 || MapInfoNum == -1;
+        if (mapChanged)
+        {
+            DisplayedWorldMapUid = mapUid;
+            WorldMapCampaignNum = -1;
+            MapGroupNum = -1;
+            MapInfoNum = -1;
+            MapSelectedAt = -1;
+            UnloadLeaderboards();
+
+            if (mapUid != "")
+            {
+                ResolveWorldMap(mapUid);
+            }
+
+            var worldMapCampaignNum = Local<int>.For(Page);
+            worldMapCampaignNum.Set(WorldMapCampaignNum);
+        }
+
+        if (WorldMapCampaignNum == -1)
+        {
+            FrameWorldMapPanel.Hide();
+            SetWorldMapPanelExpanded(false);
+            LabelSelectedMapName.SetText("...");
+            QuadPlay.Hide();
+            QuadExplore.Hide();
+            ResetPBs();
+            ResetValidators();
+            ResetRatings();
+            ResetStars();
+            ResetRanks();
+            return;
+        }
+
+        Campaign = GetCampaignForMaps();
+        var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+        LabelSelectedMapName.SetText(mapInfo.Name);
+        QuadPlay.Show();
+        QuadExplore.Show();
+        UpdateGeneralStats(mapInfo);
+        UpdateWorldMapDetails(mapInfo);
+
+        if (mapUid == SelectedWorldMapUid && MapSelectedAt == -1)
+        {
+            MapSelectedAt = Now;
+            LoadLeaderboards(true);
+        }
+    }
+
     private void SetupCampaign(bool optimizedMode, bool focusOnSelected)
     {
         QuadOfficialCampaign.StyleSelected = SelectedCampaignQuad == QuadOfficialCampaign;
@@ -1836,7 +2196,19 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         FrameCampaignMaps.Visible = !FrameWorld.Visible;
         FrameCampaignGrid.Visible = !FrameWorld.Visible;
 
-        if (FrameWorld.Visible || DataFileMgr.Campaigns.Count == 0)
+        if (!FrameWorld.Visible)
+        {
+            FrameWorldMapPanel.Hide();
+            SetWorldMapPanelExpanded(false);
+        }
+
+        if (FrameWorld.Visible)
+        {
+            UpdateWorldMapPanel();
+            return;
+        }
+
+        if (DataFileMgr.Campaigns.Count == 0)
         {
             return;
         }
@@ -2072,6 +2444,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             LabelSelectedMapName.SetText(TextLib.FormatInteger(selectedNum + 1, 3));
             QuadPlay.Visible = true;
+            QuadExplore.Visible = true;
 
             UpdateGeneralStats(selectedMapInfo);
         }
@@ -2079,50 +2452,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             LabelSelectedMapName.SetText("...");
             QuadPlay.Visible = false;
+            QuadExplore.Visible = false;
 
             ResetPBs();
             ResetValidators();
             ResetRatings();
             ResetStars();
         }
-    }
-
-    private void UnloadLeaderboards()
-    {
-        if (SelectedRecordFrame is not null)
-        {
-            var selectedRecordQuad = (SelectedRecordFrame.Controls[1] as CMlQuad)!;
-            selectedRecordQuad.Hide();
-        }
-
-        SelectedRecordFrame = null;
-        SelectedRecordCar = "";
-        SelectedRecordGhostUrl = "";
-
-        foreach (var control in FrameLeaderboards.Controls)
-        {
-            if (control is not CMlFrame frameLeaderboard)
-            {
-                continue;
-            }
-
-            var quadLoadingLeaderboard = (frameLeaderboard.GetFirstChild("QuadLoadingLeaderboard") as CMlQuad)!;
-            var labelStatus = (frameLeaderboard.GetFirstChild("LabelStatus") as CMlLabel)!;
-            var frameScrollRecords = (frameLeaderboard.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
-            var frameRecords = (frameLeaderboard.GetFirstChild("FrameRecords") as CMlFrame)!;
-
-            frameScrollRecords.ScrollOffset.Y = 0;
-
-            quadLoadingLeaderboard.Hide();
-            labelStatus.Show();
-
-            foreach (var controlRec in frameRecords.Controls)
-            {
-                controlRec.Hide();
-            }
-        }
-
-        LeaderboardsLoadedOrLoading = false;
     }
 
     private void PlaySelectedMap()
@@ -2192,6 +2528,106 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         AudioClick.Play();
     }
 
+    private void ClearWorldDiamondHover(bool updatePanel)
+    {
+        if (HoveredWorldDiamond is not null)
+        {
+            AnimMgr.Flush(HoveredWorldDiamond);
+            AnimMgr.Add(HoveredWorldDiamond, "<frame scale=\"1\"/>", 180, CAnimManager.EAnimManagerEasing.QuadOut);
+        }
+
+        HoveredWorldDiamond = null;
+        HoveredWorldMapUid = "";
+        if (updatePanel && FrameWorld.Visible && SelectedWorldDiamond is null)
+        {
+            UpdateWorldMapPanel();
+        }
+    }
+
+    private void HoverWorldDiamond(CMlFrame diamond)
+    {
+        if (HoveredWorldDiamond == diamond)
+        {
+            return;
+        }
+
+        ClearWorldDiamondHover(false);
+        HoveredWorldDiamond = diamond;
+        HoveredWorldMapUid = diamond.Parent.DataAttributeGet("mapuid");
+        AnimMgr.Flush(diamond);
+        AnimMgr.Add(diamond, "<frame scale=\"1.2\"/>", 180, CAnimManager.EAnimManagerEasing.QuadOut);
+        if (SelectedWorldDiamond is null)
+        {
+            UpdateWorldMapPanel();
+        }
+        Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 1, 1);
+    }
+
+    private void DeselectWorldDiamond()
+    {
+        if (SelectedWorldDiamond is null)
+        {
+            return;
+        }
+
+        var glow = (SelectedWorldDiamond.Controls[0] as CMlQuad)!;
+        var icon = (SelectedWorldDiamond.Controls[1] as CMlQuad)!;
+        AnimMgr.Flush(glow);
+        AnimMgr.Add(glow, "<quad scale=\"0\"/>", 180, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(glow, "<quad hidden=\"1\"/>", Now + 180, 0, CAnimManager.EAnimManagerEasing.Linear);
+        AnimMgr.Flush(icon);
+        AnimMgr.Add(icon, "<quad rot=\"0\"/>", 180, CAnimManager.EAnimManagerEasing.QuadOut);
+
+        SelectedWorldDiamond = null;
+        SelectedWorldMapUid = "";
+        WorldDiamondSelectedAt = -1;
+        MapSelectedAt = -1;
+        UnloadLeaderboards();
+    }
+
+    private void SelectWorldDiamond(CMlFrame diamond)
+    {
+        if (HoveredWorldDiamond != diamond)
+        {
+            ClearWorldDiamondHover(false);
+        }
+
+        if (SelectedWorldDiamond == diamond)
+        {
+            if (Now - WorldDiamondSelectedAt < 500)
+            {
+                PlaySelectedMap();
+            }
+            else
+            {
+                DeselectWorldDiamond();
+                UpdateWorldMapPanel();
+            }
+            AudioPlayClick();
+            return;
+        }
+
+        DeselectWorldDiamond();
+
+        SelectedWorldDiamond = diamond;
+        SelectedWorldMapUid = diamond.Parent.DataAttributeGet("mapuid");
+        WorldDiamondSelectedAt = Now;
+
+        var glow = (diamond.Controls[0] as CMlQuad)!;
+        var icon = (diamond.Controls[1] as CMlQuad)!;
+        AnimMgr.Flush(icon);
+        icon.RelativeRotation = 0;
+        AnimMgr.Flush(glow);
+        if (!glow.Visible)
+        {
+            glow.RelativeScale = 0;
+        }
+        glow.Show();
+        AnimMgr.Add(glow, "<quad scale=\"1\"/>", 180, CAnimManager.EAnimManagerEasing.QuadOut);
+        UpdateWorldMapPanel();
+        AudioPlayClick();
+    }
+
     private void SelectCampaign(CMlQuad quad, string campaignName)
     {
         if (SelectedCampaignQuad == quad)
@@ -2199,9 +2635,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return;
         }
 
+        ClearWorldDiamondHover(false);
+
         MapGroupNum = -1;
         MapInfoNum = -1;
         MapSelectedAt = -1;
+
+        DisplayedWorldMapUid = "";
+        WorldMapCampaignNum = -1;
 
         AudioPlayClick();
         SelectedCampaignQuad = quad;
@@ -2209,7 +2650,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         var selectedCampaign = Local<string>.For(Page);
         selectedCampaign.Set(campaignName);
 
-        SetupCampaign(false, false);
         ResetPBs();
         ResetValidators();
         ResetRatings();
@@ -2218,6 +2658,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         UnloadLeaderboards();
         FrameCampaign.ScrollOffset.Y = 0;
         FrameTooltip.Hide();
+        SetupCampaign(false, false);
     }
 
     private void SelectOfficialCampaign()

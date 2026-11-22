@@ -840,6 +840,16 @@ public class MainMenu : CManiaAppTitle, IContext
             return DataFileMgr.Campaigns[24];
         }
 
+        if (selectedCampaign.Get() == "Opreax")
+        {
+            var worldMapCampaignNum = Local<int>.For(SoloMenuLayer.LocalPage);
+            var campaignNum = worldMapCampaignNum.Get();
+            if (campaignNum >= 0 && campaignNum < DataFileMgr.Campaigns.Count)
+            {
+                return DataFileMgr.Campaigns[campaignNum];
+            }
+        }
+
         return DataFileMgr.Campaigns[0];
     }
 
