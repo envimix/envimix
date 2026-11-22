@@ -76,6 +76,10 @@
             <frame pos="3 0" z-index="1">
                 <label id="LabelWorldMapName" size="60 5" text="Desert Catacombs" textfont="RajdhaniMono" valign="center" textsize="2"/>
                 <label id="LabelWorldMapLocation" pos="0 -4.1" size="60 5" text="Africa, Mauritania" textfont="OswaldMono" valign="center" textsize="1"/>
+				<quad id="QuadWorldMapMedalBronze" pos="56 -2" z-index="0" size="8 8" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze"/>
+				<quad id="QuadWorldMapMedalSilver" pos="55 -2" z-index="1" size="8 8" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver"/>
+				<quad id="QuadWorldMapMedalGold" pos="54 -2" z-index="2" size="8 8" halign="center" valign="center" style="MedalsBig" substyle="MedalGold"/>
+				<quad id="QuadWorldMapMedalAuthor" pos="53 -2" z-index="3" size="8 8" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo"/>
                 <quad id="QuadWorldMapThumbnail" pos="-0.3 -8.5" z-index="0" size="25 25" bgcolor="FFFA"/>
                 <label id="LabelWorldMapEnvironment" pos="27 -11" z-index="0" size="35 5" text="Canyon" textfont="Oswald" textsize="1" valign="center2" textprefix="Environment: $o"/>
                 <label id="LabelWorldMapVehicle" pos="27 -15" z-index="0" size="35 5" text="StadiumCar" textfont="Oswald" textsize="1" valign="center2" textprefix="Vehicle: $o"/>

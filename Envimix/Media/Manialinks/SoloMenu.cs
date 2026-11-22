@@ -114,6 +114,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelWorldMapVehicle;
     [ManialinkControl] public required CMlLabel LabelWorldMapStyle;
     [ManialinkControl] public required CMlLabel LabelWorldMapTrackmaster;
+    [ManialinkControl] public required CMlQuad QuadWorldMapMedalAuthor;
+    [ManialinkControl] public required CMlQuad QuadWorldMapMedalGold;
+    [ManialinkControl] public required CMlQuad QuadWorldMapMedalSilver;
+    [ManialinkControl] public required CMlQuad QuadWorldMapMedalBronze;
     [ManialinkControl] public required CMlLabel LabelSelectedMapName;
     [ManialinkControl] public required CMlQuad QuadPlay;
     [ManialinkControl] public required CMlQuad QuadExplore;
@@ -1844,6 +1848,31 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         FrameWorldMapPanel.RelativePosition_V3 = new Vec2(x, y);
     }
 
+    private void UpdateWorldMapMedals(CMapInfo mapInfo)
+    {
+        // default car medals stack up like a pile, unearned ones are hidden
+        var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, ScoreContextPrefix);
+        var hasTime = time >= 0;
+        var hasBronze = hasTime && time <= mapInfo.TMObjective_BronzeTime;
+
+        QuadWorldMapMedalAuthor.Visible = hasTime && time <= mapInfo.TMObjective_AuthorTime;
+        QuadWorldMapMedalGold.Visible = hasTime && time <= mapInfo.TMObjective_GoldTime;
+        QuadWorldMapMedalSilver.Visible = hasTime && time <= mapInfo.TMObjective_SilverTime;
+
+        // bronze quad doubles as the empty slot when no medal is earned yet
+        QuadWorldMapMedalBronze.Show();
+        if (hasBronze)
+        {
+            QuadWorldMapMedalBronze.Substyle = "MedalBronze";
+            QuadWorldMapMedalBronze.Opacity = 1;
+        }
+        else
+        {
+            QuadWorldMapMedalBronze.Substyle = "MedalSlot";
+            QuadWorldMapMedalBronze.Opacity = 0.5f;
+        }
+    }
+
     private void UpdateWorldMapDetails(CMapInfo mapInfo)
     {
         LabelWorldMapName.SetText(mapInfo.Name);
@@ -1891,6 +1920,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             LabelWorldMapTrackmaster.SetText(TimeToTextWithMilli(mapInfo.TMObjective_AuthorTime));
         }
+
+        UpdateWorldMapMedals(mapInfo);
 
         var showPanel = FrameWorld.Visible && EnableMenuNavigationInputs && diamond is not null;
         if (showPanel && !FrameWorldMapPanel.Visible)
