@@ -374,7 +374,12 @@ public class MainMenu : CManiaAppTitle, IContext
                             lbRequestCars.FromJson(e.CustomEventData[2]);
                             break;
                         case "Quickplay":
-                            Quickplay();
+                            ImmutableArray<string> unlockedMapUids = new();
+                            foreach (var mapUid in e.CustomEventData)
+                            {
+                                unlockedMapUids.Add(mapUid);
+                            }
+                            Quickplay(unlockedMapUids);
                             break;
                         case "PlayLocalMap":
                             PlayLocalMap(e.CustomEventData[0]);
@@ -1432,9 +1437,11 @@ public class MainMenu : CManiaAppTitle, IContext
         }
     }
 
-    private void Quickplay()
+    private void Quickplay(IList<string> unlockedMapUids)
     {
-        if (MathLib.Rand(0, 50) == 0)
+        var selectedCampaign = Local<string>.For(SoloMenuLayer.LocalPage);
+        var isOpreax = selectedCampaign.Get() == "Opreax";
+        if (!isOpreax && MathLib.Rand(0, 50) == 0)
         {
             Log("Going to a mysterious place...");
             var xml = "<?xml version='1.0' encoding='utf-8' ?>";
@@ -1457,12 +1464,24 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         var campaign = GetCampaignForMaps();
+        if (isOpreax)
+        {
+            if (DataFileMgr.Campaigns.Count <= 36)
+            {
+                return;
+            }
+            campaign = DataFileMgr.Campaigns[36];
+        }
         ImmutableArray<CMapInfo> mapInfos = new();
 
         foreach (var mapGroup in campaign.MapGroups)
         {
             foreach (var mapInfo in mapGroup.MapInfos)
             {
+                if (isOpreax && !unlockedMapUids.Contains(mapInfo.MapUid))
+                {
+                    continue;
+                }
                 mapInfos.Add(mapInfo);
             }
         }

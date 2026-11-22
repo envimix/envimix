@@ -291,7 +291,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         QuadQuickplay.MouseClick += () =>
         {
             AudioPlayClick();
-            SendCustomEvent("Quickplay", new[] { "" });
+            Quickplay();
         };
 
         QuadQuickplay.MouseOver += () =>
@@ -776,7 +776,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     {
                         if (FocusedControl == QuadQuickplay)
                         {
-                            SendCustomEvent("Quickplay", new[] { "" });
+                            Quickplay();
                         }
                         else if (FocusedControl == QuadOfficialCampaign)
                         {
@@ -798,276 +798,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     break;
             }
         };
-    }
-
-    public void Main()
-    {
-        FrameCampaignOverview.RelativePosition_V3.Y = -50;
-        FrameCampaignGrid.RelativePosition_V3.Y = -50;
-        FrameWorldDiamonds.RelativePosition_V3.Y = -50;
-        FrameMapOverview.RelativePosition_V3.Y = 10;
-
-        WorldMapPanelHeight = 12;
-        WorldMapPanelFromHeight = 12;
-        WorldMapPanelTargetHeight = 12;
-
-        TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
-        TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
-        FunnyCars = new() { "HighlandCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
-        AllCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
-
-        Page.GetClassChildren("LOADING", Page.MainFrame, true);
-
-        AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
-
-        SelectedCampaignQuad = QuadOfficialCampaign;
-
-        foreach (var control in FrameWorldDiamonds.Controls)
-        {
-            if (control is not CMlFrame location)
-            {
-                continue;
-            }
-
-            WorldMapUnlocks[location.DataAttributeGet("mapuid")] = TextLib.ToInteger(location.DataAttributeGet("unlock"));
-        }
-
-        SwitchCars(false);
-        SetupCampaign(false, false);
-        UpdateWorldUnlocks(0);
-
-        SuperMedalsRequest = Http.CreateGet("file://Media/Medals.json");
-    }
-
-    public void Loop()
-    {
-        UpdateWorldMapPanelAnimation();
-        if (FrameWorldMapPanel.Visible)
-        {
-            UpdateWorldMapPanelPosition();
-        }
-
-        if (SelectedWorldDiamond is not null && FrameWorld.Visible && EnableMenuNavigationInputs)
-        {
-            var diamondIcon = (SelectedWorldDiamond.Controls[1] as CMlQuad)!;
-            var elapsed = Now - WorldDiamondSelectedAt;
-            var amplitude = MathLib.Min(1f, elapsed / 180f) * 5f;
-            diamondIcon.RelativeRotation = MathLib.Sin(elapsed * 0.006f) * amplitude;
-        }
-
-        foreach (var control in Page.GetClassChildren_Result)
-        {
-            if (control.Visible)
-            {
-                control.RelativeRotation += Period * 0.2f;
-            }
-        }
-
-        if (FrameTooltip.Visible)
-        {
-            FrameTooltip.RelativePosition_V3 = new Vec2(MouseX, MouseY);
-        }
-
-        // Update stats every minute
-        if (StatsAt == -1 || (Now - StatsAt) > 60000)
-        {
-            Log("Updating stats...");
-
-            var finishedEnvimixCount = 0;
-            var totalEnvimixCount = 0;
-
-            // takes the official campaign only
-            for (var i = 0; i < MathLib.Min(12, DataFileMgr.Campaigns.Count); i++)
-            {
-                var campaign = DataFileMgr.Campaigns[i];
-
-                foreach (var mapGroup in campaign.MapGroups)
-                {
-                    foreach (var mapInfo in mapGroup.MapInfos)
-                    {
-                        if (campaign.ScoreContext == ScoreContextPrefix)
-                        {
-                            continue;
-                        }
-
-                        // a bit of a hack but clientside on turbo maps it works - ensures no false positives
-                        if (mapInfo.CollectionName == "Canyon" && campaign.ScoreContext == ScoreContextPrefix + "CanyonCar")
-                        {
-                            continue;
-                        }
-                        if (mapInfo.CollectionName == "Stadium" && campaign.ScoreContext == ScoreContextPrefix + "StadiumCar")
-                        {
-                            continue;
-                        }
-                        if (mapInfo.CollectionName == "Valley" && campaign.ScoreContext == ScoreContextPrefix + "ValleyCar")
-                        {
-                            continue;
-                        }
-                        if (mapInfo.CollectionName == "Lagoon" && campaign.ScoreContext == ScoreContextPrefix + "LagoonCar")
-                        {
-                            continue;
-                        }
-
-                        if (ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, campaign.ScoreContext) != -1)
-                        {
-                            finishedEnvimixCount += 1;
-                        }
-
-                        totalEnvimixCount += 1;
-                    }
-                }
-            }
-
-            LoadLeaderboards(false);
-            UpdateWorldUnlocks(0);
-
-            SendCustomEvent("Stats", new[] { "" });
-
-            if (totalEnvimixCount == 0)
-            {
-                ExpectedCompletionPercentage = 0;
-            }
-            else
-            {
-                ExpectedCompletionPercentage = finishedEnvimixCount * 1f / totalEnvimixCount * 100;
-            }
-
-            StatsAt = Now;
-            StatsLocalAt = Now;
-        }
-
-        if (StatsLocalAt != -1)
-        {
-            var duration = 1000;
-            var time = Now - StatsLocalAt;
-
-            var percentageDiff = ExpectedCompletionPercentage - CurrentCompletionPercentage;
-            var percentage = AnimLib.EaseOutQuad(time, CurrentCompletionPercentage, percentageDiff, duration);
-
-            var percentageText = TextLib.FormatReal(percentage, 2, false, true);
-
-            LabelCompletionPercentage.Value = $"Envimix $ff0Turbo$g completion: $o{percentageText}%";
-
-            if (time >= duration)
-            {
-                StatsLocalAt = -1;
-                CurrentCompletionPercentage = ExpectedCompletionPercentage;
-            }
-        }
-
-        if (SkillpointsReceivedAt != -1)
-        {
-            var duration = 1000;
-            var time = Now - SkillpointsReceivedAt;
-
-            var skillpointsDiff = ExpectedSkillpoints - CurrentSkillpoints;
-            var skillpoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentSkillpoints), MathLib.ToReal(skillpointsDiff), duration));
-
-            LabelSkillpoints.Value = FormatNumberSpace(skillpoints);
-
-            var noPointDiff = skillpointsDiff == 0;
-
-            if (time >= duration || noPointDiff)
-            {
-                SkillpointsReceivedAt = -1;
-                CurrentSkillpoints = ExpectedSkillpoints;
-            }
-        }
-
-        if (ActivityPointsReceivedAt != -1)
-        {
-            var duration = 1000;
-            var time = Now - ActivityPointsReceivedAt;
-
-            var activityPointsDiff = ExpectedActivityPoints - CurrentActivityPoints;
-            var activityPoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentActivityPoints), MathLib.ToReal(activityPointsDiff), duration));
-
-            LabelActivityPoints.Value = FormatNumberSpace(activityPoints);
-
-            var noPointDiff = activityPointsDiff == 0;
-
-            if (time >= duration || noPointDiff)
-            {
-                ActivityPointsReceivedAt = -1;
-                CurrentActivityPoints = ExpectedActivityPoints;
-            }
-        }
-
-        /*if (CampaignsReleasedAt.ContainsKey("VR"))
-        {
-            var releasedAt = CampaignsReleasedAt["VR"];
-
-            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
-            {
-                LabelVRCampaign.Value = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
-            }
-            else
-            {
-                LabelVRCampaign.Value = "VR campaign";
-                VRCampaignReleased = true;
-            }
-        }
-
-        if (CampaignsReleasedAt.ContainsKey("VROffzone"))
-        {
-            var releasedAt = CampaignsReleasedAt["VROffzone"];
-
-            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
-            {
-                LabelVROffzoneCountdown.Value = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
-                LabelVROffzoneCountdown.Show();
-            }
-            else
-            {
-                VROffzoneCampaignReleased = true;
-                LabelVROffzoneCountdown.Hide();
-            }
-        }
-        else
-        {
-            LabelVROffzoneCountdown.Visible = false;
-        }*/
-
-        LabelVRCampaign.Value = "VR campaign";
-        VRCampaignReleased = true;
-
-        VROffzoneCampaignReleased = true;
-        LabelVROffzoneCountdown.Hide();
-
-        foreach (var control in FrameLeaderboards.Controls)
-        {
-            var frameScrollRecords = ((control as CMlFrame)!.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
-
-            if (!PrevLeaderboardScrollY.ContainsKey(frameScrollRecords))
-            {
-                PrevLeaderboardScrollY[frameScrollRecords] = 0;
-            }
-
-            if (frameScrollRecords.ScrollOffset.Y != PrevLeaderboardScrollY[frameScrollRecords])
-            {
-                PrevLeaderboardScrollY[frameScrollRecords] = (float)frameScrollRecords.ScrollOffset.Y;
-
-                var frameRecords = (frameScrollRecords.GetFirstChild("FrameRecords") as CMlFrame)!;
-                var quadRecordsScrollArea = (frameScrollRecords.GetFirstChild("QuadRecordsScrollArea") as CMlQuad)!;
-
-                frameRecords.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
-                quadRecordsScrollArea.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
-
-                UpdateLeaderboards(false);
-            }
-        }
-
-        if (SuperMedalsRequest is not null && SuperMedalsRequest.IsCompleted)
-        {
-            if (SuperMedalsRequest.StatusCode == 200)
-            {
-                SuperMedals.FromJson(SuperMedalsRequest.Result);
-            }
-            Http.Destroy(SuperMedalsRequest);
-            SuperMedalsRequest = null;
-
-            SetupCampaign(false, false);
-        }
     }
 
     static string TimeToTextWithMilli(int time)
@@ -1484,7 +1214,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     private void UpdateStars(CMapInfo mapInfo)
     {
         var carIndex = 0;
-        
+
         foreach (var car in AllCars)
         {
             var controlStar = FrameStars.Controls[carIndex];
@@ -2907,6 +2637,302 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             LabelWorldUnlockProgress.SetText($"...collect medals with the default car to unlock more maps   $o{points} / {nextUnlock} points");
         }
+    }
+
+    public void Main()
+    {
+        FrameCampaignOverview.RelativePosition_V3.Y = -50;
+        FrameCampaignGrid.RelativePosition_V3.Y = -50;
+        FrameWorldDiamonds.RelativePosition_V3.Y = -50;
+        FrameMapOverview.RelativePosition_V3.Y = 10;
+
+        WorldMapPanelHeight = 12;
+        WorldMapPanelFromHeight = 12;
+        WorldMapPanelTargetHeight = 12;
+
+        TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
+        TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
+        FunnyCars = new() { "HighlandCar", "DumpsterCar", "ToasterCar", "FunnyCar" };
+        AllCars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
+
+        Page.GetClassChildren("LOADING", Page.MainFrame, true);
+
+        AudioClick = Audio.CreateSound("file://Media/Sounds/Click.wav");
+
+        SelectedCampaignQuad = QuadOfficialCampaign;
+
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            WorldMapUnlocks[location.DataAttributeGet("mapuid")] = TextLib.ToInteger(location.DataAttributeGet("unlock"));
+        }
+
+        SwitchCars(false);
+        SetupCampaign(false, false);
+        UpdateWorldUnlocks(0);
+
+        SuperMedalsRequest = Http.CreateGet("file://Media/Medals.json");
+    }
+
+    public void Loop()
+    {
+        UpdateWorldMapPanelAnimation();
+        if (FrameWorldMapPanel.Visible)
+        {
+            UpdateWorldMapPanelPosition();
+        }
+
+        if (SelectedWorldDiamond is not null && FrameWorld.Visible && EnableMenuNavigationInputs)
+        {
+            var diamondIcon = (SelectedWorldDiamond.Controls[1] as CMlQuad)!;
+            var elapsed = Now - WorldDiamondSelectedAt;
+            var amplitude = MathLib.Min(1f, elapsed / 180f) * 5f;
+            diamondIcon.RelativeRotation = MathLib.Sin(elapsed * 0.006f) * amplitude;
+        }
+
+        foreach (var control in Page.GetClassChildren_Result)
+        {
+            if (control.Visible)
+            {
+                control.RelativeRotation += Period * 0.2f;
+            }
+        }
+
+        if (FrameTooltip.Visible)
+        {
+            FrameTooltip.RelativePosition_V3 = new Vec2(MouseX, MouseY);
+        }
+
+        // Update stats every minute
+        if (StatsAt == -1 || (Now - StatsAt) > 60000)
+        {
+            Log("Updating stats...");
+
+            var finishedEnvimixCount = 0;
+            var totalEnvimixCount = 0;
+
+            // takes the official campaign only
+            for (var i = 0; i < MathLib.Min(12, DataFileMgr.Campaigns.Count); i++)
+            {
+                var campaign = DataFileMgr.Campaigns[i];
+
+                foreach (var mapGroup in campaign.MapGroups)
+                {
+                    foreach (var mapInfo in mapGroup.MapInfos)
+                    {
+                        if (campaign.ScoreContext == ScoreContextPrefix)
+                        {
+                            continue;
+                        }
+
+                        // a bit of a hack but clientside on turbo maps it works - ensures no false positives
+                        if (mapInfo.CollectionName == "Canyon" && campaign.ScoreContext == ScoreContextPrefix + "CanyonCar")
+                        {
+                            continue;
+                        }
+                        if (mapInfo.CollectionName == "Stadium" && campaign.ScoreContext == ScoreContextPrefix + "StadiumCar")
+                        {
+                            continue;
+                        }
+                        if (mapInfo.CollectionName == "Valley" && campaign.ScoreContext == ScoreContextPrefix + "ValleyCar")
+                        {
+                            continue;
+                        }
+                        if (mapInfo.CollectionName == "Lagoon" && campaign.ScoreContext == ScoreContextPrefix + "LagoonCar")
+                        {
+                            continue;
+                        }
+
+                        if (ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, campaign.ScoreContext) != -1)
+                        {
+                            finishedEnvimixCount += 1;
+                        }
+
+                        totalEnvimixCount += 1;
+                    }
+                }
+            }
+
+            LoadLeaderboards(false);
+            UpdateWorldUnlocks(0);
+
+            SendCustomEvent("Stats", new[] { "" });
+
+            if (totalEnvimixCount == 0)
+            {
+                ExpectedCompletionPercentage = 0;
+            }
+            else
+            {
+                ExpectedCompletionPercentage = finishedEnvimixCount * 1f / totalEnvimixCount * 100;
+            }
+
+            StatsAt = Now;
+            StatsLocalAt = Now;
+        }
+
+        if (StatsLocalAt != -1)
+        {
+            var duration = 1000;
+            var time = Now - StatsLocalAt;
+
+            var percentageDiff = ExpectedCompletionPercentage - CurrentCompletionPercentage;
+            var percentage = AnimLib.EaseOutQuad(time, CurrentCompletionPercentage, percentageDiff, duration);
+
+            var percentageText = TextLib.FormatReal(percentage, 2, false, true);
+
+            LabelCompletionPercentage.Value = $"Envimix $ff0Turbo$g completion: $o{percentageText}%";
+
+            if (time >= duration)
+            {
+                StatsLocalAt = -1;
+                CurrentCompletionPercentage = ExpectedCompletionPercentage;
+            }
+        }
+
+        if (SkillpointsReceivedAt != -1)
+        {
+            var duration = 1000;
+            var time = Now - SkillpointsReceivedAt;
+
+            var skillpointsDiff = ExpectedSkillpoints - CurrentSkillpoints;
+            var skillpoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentSkillpoints), MathLib.ToReal(skillpointsDiff), duration));
+
+            LabelSkillpoints.Value = FormatNumberSpace(skillpoints);
+
+            var noPointDiff = skillpointsDiff == 0;
+
+            if (time >= duration || noPointDiff)
+            {
+                SkillpointsReceivedAt = -1;
+                CurrentSkillpoints = ExpectedSkillpoints;
+            }
+        }
+
+        if (ActivityPointsReceivedAt != -1)
+        {
+            var duration = 1000;
+            var time = Now - ActivityPointsReceivedAt;
+
+            var activityPointsDiff = ExpectedActivityPoints - CurrentActivityPoints;
+            var activityPoints = MathLib.FloorInteger(AnimLib.EaseOutQuad(time, MathLib.ToReal(CurrentActivityPoints), MathLib.ToReal(activityPointsDiff), duration));
+
+            LabelActivityPoints.Value = FormatNumberSpace(activityPoints);
+
+            var noPointDiff = activityPointsDiff == 0;
+
+            if (time >= duration || noPointDiff)
+            {
+                ActivityPointsReceivedAt = -1;
+                CurrentActivityPoints = ExpectedActivityPoints;
+            }
+        }
+
+        /*if (CampaignsReleasedAt.ContainsKey("VR"))
+        {
+            var releasedAt = CampaignsReleasedAt["VR"];
+
+            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
+            {
+                LabelVRCampaign.Value = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
+            }
+            else
+            {
+                LabelVRCampaign.Value = "VR campaign";
+                VRCampaignReleased = true;
+            }
+        }
+
+        if (CampaignsReleasedAt.ContainsKey("VROffzone"))
+        {
+            var releasedAt = CampaignsReleasedAt["VROffzone"];
+
+            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
+            {
+                LabelVROffzoneCountdown.Value = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
+                LabelVROffzoneCountdown.Show();
+            }
+            else
+            {
+                VROffzoneCampaignReleased = true;
+                LabelVROffzoneCountdown.Hide();
+            }
+        }
+        else
+        {
+            LabelVROffzoneCountdown.Visible = false;
+        }*/
+
+        LabelVRCampaign.Value = "VR campaign";
+        VRCampaignReleased = true;
+
+        VROffzoneCampaignReleased = true;
+        LabelVROffzoneCountdown.Hide();
+
+        foreach (var control in FrameLeaderboards.Controls)
+        {
+            var frameScrollRecords = ((control as CMlFrame)!.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
+
+            if (!PrevLeaderboardScrollY.ContainsKey(frameScrollRecords))
+            {
+                PrevLeaderboardScrollY[frameScrollRecords] = 0;
+            }
+
+            if (frameScrollRecords.ScrollOffset.Y != PrevLeaderboardScrollY[frameScrollRecords])
+            {
+                PrevLeaderboardScrollY[frameScrollRecords] = (float)frameScrollRecords.ScrollOffset.Y;
+
+                var frameRecords = (frameScrollRecords.GetFirstChild("FrameRecords") as CMlFrame)!;
+                var quadRecordsScrollArea = (frameScrollRecords.GetFirstChild("QuadRecordsScrollArea") as CMlQuad)!;
+
+                frameRecords.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
+                quadRecordsScrollArea.RelativePosition_V3.Y = -PrevLeaderboardScrollY[frameScrollRecords];
+
+                UpdateLeaderboards(false);
+            }
+        }
+
+        if (SuperMedalsRequest is not null && SuperMedalsRequest.IsCompleted)
+        {
+            if (SuperMedalsRequest.StatusCode == 200)
+            {
+                SuperMedals.FromJson(SuperMedalsRequest.Result);
+            }
+            Http.Destroy(SuperMedalsRequest);
+            SuperMedalsRequest = null;
+
+            SetupCampaign(false, false);
+        }
+    }
+
+    private void Quickplay()
+    {
+        if (SelectedCampaignQuad != QuadOpreaxCampaign)
+        {
+            SendCustomEvent("Quickplay", new[] { "" });
+            return;
+        }
+
+        UpdateWorldUnlocks(0);
+        ImmutableArray<string> unlockedMapUids = new();
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            var mapUid = location.DataAttributeGet("mapuid");
+            if (WorldMapMedals.ContainsKey(mapUid) && WorldMapUnlocks[mapUid] <= WorldMedalPoints)
+            {
+                unlockedMapUids.Add(mapUid);
+            }
+        }
+        SendCustomEvent("Quickplay", (string[])(IList<string>)unlockedMapUids);
     }
 
     private void SelectOpreaxCampaign()
