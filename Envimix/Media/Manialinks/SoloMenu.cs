@@ -4,6 +4,8 @@ namespace Envimix.Media.Manialinks;
 
 public class SoloMenu : CManiaAppTitleLayer, IContext
 {
+    public const int OpreaxCampaignNum = 36;
+
     public struct STitleUserInfo
     {
         public string N;
@@ -1980,21 +1982,23 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void ResolveWorldMap(string mapUid)
     {
-        for (var campaignNum = 0; campaignNum < DataFileMgr.Campaigns.Count; campaignNum++)
+        if (DataFileMgr.Campaigns.Count <= OpreaxCampaignNum)
         {
-            var campaign = DataFileMgr.Campaigns[campaignNum];
-            for (var groupNum = 0; groupNum < campaign.MapGroups.Count; groupNum++)
+            return;
+        }
+
+        var campaign = DataFileMgr.Campaigns[OpreaxCampaignNum];
+        for (var groupNum = 0; groupNum < campaign.MapGroups.Count; groupNum++)
+        {
+            var mapGroup = campaign.MapGroups[groupNum];
+            for (var infoNum = 0; infoNum < mapGroup.MapInfos.Count; infoNum++)
             {
-                var mapGroup = campaign.MapGroups[groupNum];
-                for (var infoNum = 0; infoNum < mapGroup.MapInfos.Count; infoNum++)
+                if (mapGroup.MapInfos[infoNum].MapUid == mapUid)
                 {
-                    if (mapGroup.MapInfos[infoNum].MapUid == mapUid)
-                    {
-                        WorldMapCampaignNum = campaignNum;
-                        MapGroupNum = groupNum;
-                        MapInfoNum = infoNum;
-                        return;
-                    }
+                    WorldMapCampaignNum = OpreaxCampaignNum;
+                    MapGroupNum = groupNum;
+                    MapInfoNum = infoNum;
+                    return;
                 }
             }
         }
@@ -2160,6 +2164,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     private void UpdateWorldMapPanel()
     {
+        LabelSelectedMapName.TextSizeReal = 3;
+        LabelSelectedMapName.RelativePosition_V3.Y = -3;
+
         var mapUid = SelectedWorldMapUid;
         if (mapUid == "")
         {
@@ -2207,6 +2214,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         Campaign = GetCampaignForMaps();
         var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
         LabelSelectedMapName.SetText(mapInfo.Name);
+        var nameWidth = LabelSelectedMapName.ComputeWidth("$o" + mapInfo.Name);
+        if (nameWidth > LabelSelectedMapName.Size.X)
+        {
+            LabelSelectedMapName.TextSizeReal *= (float)LabelSelectedMapName.Size.X / nameWidth;
+        }
         QuadPlay.Show();
         QuadExplore.Show();
         UpdateGeneralStats(mapInfo);
@@ -2234,6 +2246,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         if (!FrameWorld.Visible)
         {
+            LabelSelectedMapName.TextSizeReal = 9;
+            LabelSelectedMapName.RelativePosition_V3.Y = 0;
             FrameWorldMapPanel.Hide();
             SetWorldMapPanelExpanded(false);
         }
@@ -2630,15 +2644,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         if (SelectedWorldDiamond == diamond)
         {
-            if (Now - WorldDiamondSelectedAt < 500)
-            {
-                PlaySelectedMap();
-            }
-            else
-            {
-                DeselectWorldDiamond();
-                UpdateWorldMapPanel();
-            }
+            PlaySelectedMap();
             AudioPlayClick();
             return;
         }
@@ -2752,26 +2758,29 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         WorldMapMedalsCampaignCount = DataFileMgr.Campaigns.Count;
         WorldMapMedals.Clear();
 
-        foreach (var campaign in DataFileMgr.Campaigns)
+        if (DataFileMgr.Campaigns.Count <= OpreaxCampaignNum)
         {
-            foreach (var mapGroup in campaign.MapGroups)
-            {
-                foreach (var mapInfo in mapGroup.MapInfos)
-                {
-                    if (!WorldMapUnlocks.ContainsKey(mapInfo.MapUid) || WorldMapMedals.ContainsKey(mapInfo.MapUid))
-                    {
-                        continue;
-                    }
+            return;
+        }
 
-                    SWorldMapMedals medals = new()
-                    {
-                        Author = mapInfo.TMObjective_AuthorTime,
-                        Gold = mapInfo.TMObjective_GoldTime,
-                        Silver = mapInfo.TMObjective_SilverTime,
-                        Bronze = mapInfo.TMObjective_BronzeTime
-                    };
-                    WorldMapMedals[mapInfo.MapUid] = medals;
+        var campaign = DataFileMgr.Campaigns[OpreaxCampaignNum];
+        foreach (var mapGroup in campaign.MapGroups)
+        {
+            foreach (var mapInfo in mapGroup.MapInfos)
+            {
+                if (!WorldMapUnlocks.ContainsKey(mapInfo.MapUid))
+                {
+                    continue;
                 }
+
+                SWorldMapMedals medals = new()
+                {
+                    Author = mapInfo.TMObjective_AuthorTime,
+                    Gold = mapInfo.TMObjective_GoldTime,
+                    Silver = mapInfo.TMObjective_SilverTime,
+                    Bronze = mapInfo.TMObjective_BronzeTime
+                };
+                WorldMapMedals[mapInfo.MapUid] = medals;
             }
         }
     }
@@ -2839,6 +2848,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
+            if (!WorldMapMedals.ContainsKey(location.DataAttributeGet("mapuid")))
+            {
+                location.Hide();
+                location.DataAttributeSet("revealed", "");
+                continue;
+            }
+
             var unlock = TextLib.ToInteger(location.DataAttributeGet("unlock"));
 
             if (unlock > points)
@@ -2874,12 +2890,16 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
 
         // the first pass with loaded campaigns shows already unlocked maps without animation
-        if (DataFileMgr.Campaigns.Count > 0)
+        if (DataFileMgr.Campaigns.Count > OpreaxCampaignNum)
         {
             WorldUnlocksInitialized = true;
         }
 
-        if (nextUnlock == -1)
+        if (WorldMapMedals.Count == 0)
+        {
+            LabelWorldUnlockProgress.SetText("...waiting for the Opreax campaign maps...");
+        }
+        else if (nextUnlock == -1)
         {
             LabelWorldUnlockProgress.SetText($"All maps unlocked! Medal points: $o{points}");
         }
