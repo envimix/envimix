@@ -1864,7 +1864,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             QuadWorldMapThumbnail.ChangeImageUrl(thumbnailUrl);
         }
         LabelWorldMapEnvironment.SetText(mapInfo.CollectionName);
-        LabelWorldMapVehicle.SetText($"{mapInfo.CollectionName}Car");
+        // map player model isn't exposed by CMapInfo, so it's stored on the diamond
+        var vehicle = "";
+        if (diamond is not null)
+        {
+            vehicle = diamond.Parent.DataAttributeGet("car");
+        }
+        if (vehicle == "")
+        {
+            vehicle = $"{mapInfo.CollectionName}Car";
+        }
+        LabelWorldMapVehicle.SetText(vehicle);
         if (mapInfo.MapStyle == "")
         {
             LabelWorldMapStyle.SetText("Unspecified");

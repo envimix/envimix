@@ -164,25 +164,100 @@
     </frame>
     <frame pos="0 -1.5" z-index="1" clip="1" clipsizen="320 130" clipposn="0 25">
         <frame id="FrameWorldDiamonds" pos="0 80" hidden="1">
-            <frame pos="-39.33 -87.60" data-mapuid="Bxhb1D1zZINzPkbWiZGQPE56Mm8" data-location="Brazil, Sao Paulo" data-unlock="0">
+            <!-- Metropolis -->
+            <frame pos="-39.33 -87.60" data-mapuid="BQBJicP5twORuaF3JXpRkQlcXIh" data-location="Brazil, Sao Paulo" data-car="LagoonCar" data-unlock="0">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <frame pos="22.82 -16.61" data-mapuid="f4rWWXixebbz901VMEkbmmJiI32" data-location="Europe, Finland" data-unlock="0">
+            <!-- Astral Rift -->
+            <frame pos="22.82 -16.61" data-mapuid="f4rWWXixebbz901VMEkbmmJiI32" data-location="Europe, Finland" data-car="ValleyCar" data-unlock="0">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <frame pos="7.93 -31.75" data-mapuid="J1AqdJ3VNtbOUmqK5KLORBV4Yvd" data-location="Europe, Switzerland" data-unlock="8" hidden="1">
+            <!-- Castle On The Jade Peak -->
+            <frame pos="7.93 -31.75" data-mapuid="J1AqdJ3VNtbOUmqK5KLORBV4Yvd" data-location="Europe, Switzerland" data-car="ValleyCar" data-unlock="8" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <frame pos="-5.34 -37.72" data-mapuid="zA906S0ZRgGed5UAmE93agMUQVh" data-location="Europe, Spain" data-unlock="8" hidden="1">
+            <!-- Botanical Gardens -->
+            <frame pos="-5.34 -37.72" data-mapuid="zA906S0ZRgGed5UAmE93agMUQVh" data-location="Europe, Spain" data-car="StadiumCar" data-unlock="8" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <frame pos="-7.28 -53.02" data-mapuid="kAr2i9L2Ami51Hxls0hOhXJZm_2" data-location="Africa, Mauritania" data-unlock="16" hidden="1">
+            <!-- Desert Catacombs -->
+            <frame pos="-7.28 -53.02" data-mapuid="CG12yY4wUAqiVSRXzJjFP6CWmfi" data-location="Africa, Mauritania" data-car="StadiumCar" data-unlock="16" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <frame pos="93.54 -45.67" data-mapuid="txuUnyAR_p5V_uop31PaoibbU26" data-location="China" data-unlock="16" hidden="1">
+            <!-- Altima -->
+            <frame pos="93.54 -45.67" data-mapuid="txuUnyAR_p5V_uop31PaoibbU26" data-location="China" data-car="CanyonCar" data-unlock="16" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <frame pos="88.53 -68.16" data-mapuid="kh4Txjv4YkcSQBL0syOnjI1Zkw3" data-location="Singapore" data-unlock="24" hidden="1">
+            <!-- Duplex -->
+            <frame pos="88.53 -68.16" data-mapuid="kh4Txjv4YkcSQBL0syOnjI1Zkw3" data-location="Singapore" data-car="StadiumCar" data-unlock="24" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Northern Pinewoods -->
+            <frame pos="-89.98 -20.58" data-mapuid="CoK2K1SrXgZ4n3geNHvhz8N6ak2" data-location="Canada" data-car="CanyonCar" data-unlock="24" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Infested Sewers -->
+            <frame pos="-64.09 -38.48" data-mapuid="o7Q6iUOxmQtTm2sNUcyQyL8HVv5" data-location="USA, New York" data-car="ValleyCar" data-unlock="32" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Oak Hills -->
+            <frame pos="-98.72 -41.24" data-mapuid="TmbrRy_QxcTPyLoFs4hiTh0o2md" data-location="USA, California" data-car="ValleyCar" data-unlock="32" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Cargo Isles -->
+            <frame pos="-66.52 -49.50" data-mapuid="o6SOwSGUylfbTROCOHqTm_eEkDe" data-location="Bahamas" data-car="LagoonCar" data-unlock="40" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Ocean Vortex -->
+            <frame pos="-36.90 -45.83" data-mapuid="rmw9AuOLxv6gsoycK6oL1VOrkMl" data-location="Atlantic Ocean" data-car="LagoonCar" data-unlock="40" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Jungle Of The Setting Sun -->
+            <frame pos="-56.81 -73.83" data-mapuid="420oxrqDl6RDaMIQF969GsSOgF6" data-location="Brazil, Amazonas" data-car="LagoonCar" data-unlock="48" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Glacial Cavern (not validated yet, gives no medal points) -->
+            <frame pos="-16.02 -17.22" data-mapuid="sPn6o4YBm2kiGFLUrY8VNKabQu7" data-location="Iceland" data-car="StadiumCar" data-unlock="48" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Fortress Of The Legends -->
+            <frame pos="-3.40 -24.10" data-mapuid="ajwMsBW_crWC_iwmTnDQjlJHara" data-location="United Kingdom, Scotland" data-car="LagoonCar" data-unlock="56" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Echoing Caves -->
+            <frame pos="15.54 -29.46" data-mapuid="W2hoVPEqV6hVYMtBtklmf2GLRg6" data-location="Europe, Slovakia" data-car="CanyonCar" data-unlock="56" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Enymultek 2145 -->
+            <frame pos="55.35 -32.98" data-mapuid="Y8WavMgkTn1Vq1rrLtBXryD0Qd7" data-location="Kazakhstan" data-car="ValleyCar" data-unlock="64" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Forest Tribe -->
+            <frame pos="11.81 -69.85" data-mapuid="e6ribk2a6jbS0ty0gL2bjBvFExg" data-location="Africa, Congo" data-car="ValleyCar" data-unlock="64" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Oil Processing Rig -->
+            <frame pos="47.58 -49.50" data-mapuid="ejGj9aFoPyGweyAxvCTC17V9Hik" data-location="Saudi Arabia" data-car="CanyonCar" data-unlock="72" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Hong Kong District -->
+            <frame pos="96.94 -51.34" data-mapuid="PINMK3Lia630fD4OS13P_YyRygc" data-location="Hong Kong" data-car="LagoonCar" data-unlock="72" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Augmented Reality -->
+            <frame pos="109.57 -40.93" data-mapuid="gzkrRYRd9AWTqACJGqWGwwGaMcm" data-location="South Korea" data-car="StadiumCar" data-unlock="80" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Dystopia 2050 -->
+            <frame pos="119.28 -40.63" data-mapuid="UK1CAfU1BB2gLPexSuGZRskKETa" data-location="Japan, Tokyo" data-car="StadiumCar" data-unlock="80" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Lava Power Plant -->
+            <frame pos="100.67 -72.14" data-mapuid="YxSEpxOcVBniCbLJcEIToLAre01" data-location="Indonesia" data-car="CanyonCar" data-unlock="88" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
+            <!-- Kiribati -->
+            <frame pos="146.14 -70.77" data-mapuid="l656czpY_cuFdowrpvBteTHoQA4" data-location="Pacific Ocean, Kiribati" data-car="CanyonCar" data-unlock="88" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
         </frame>
