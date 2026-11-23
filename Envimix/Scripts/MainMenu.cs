@@ -38,6 +38,7 @@ public class MainMenu : CManiaAppTitle, IContext
         public string Login;
         public string Token;
         public bool IsAdmin;
+        public bool CanAccessUnreleased;
         public string BanReason;
     }
 
@@ -191,6 +192,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public int UserTokenReceived = -1;
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserToken { get; set; } = "";
     [Local(LocalFor.LocalUser)] public bool EnvimixTurboUserIsAdmin { get; set; }
+    [Local(LocalFor.LocalUser)] public bool EnvimixTurboUserCanAccessUnreleased { get; set; }
     [Local(LocalFor.LocalUser)] public string EnvimixTurboUserBanReason { get; set; } = "";
     public int ManiaPlanetAuthReceivedAt = -1;
 
@@ -771,6 +773,8 @@ public class MainMenu : CManiaAppTitle, IContext
                 {
                     Log("Admin detected! Extra features have been enabled.");
                 }
+
+                EnvimixTurboUserCanAccessUnreleased = response.CanAccessUnreleased;
 
                 EnvimixTurboUserBanReason = response.BanReason!;
 

@@ -7,6 +7,7 @@ public class EnvimixExplore : CTmMapType, IContext
     public CUILayer ExploreLayer;
 
     public CHttpRequest? VisitMapRequest;
+    public bool MapVisitRequested;
 
     public EnvimixExplore()
     {
@@ -51,9 +52,11 @@ public class EnvimixExplore : CTmMapType, IContext
         }
 
         var originalMapUid = Metadata<string>.For(Map);
-        if (VisitMapRequest is null && originalMapUid.Get() != "" && envimixTurboUserBanReason.Get() != "")
+        var envimixTurboUserToken = Local<string>.For(LocalUser);
+        if (!MapVisitRequested && originalMapUid.Get() != "" && envimixTurboUserToken.Get() != "")
         {
-            var envimixTurboUserToken = Local<string>.For(LocalUser);
+            // webapi responds with 403 also when the player doesn't have enough medal points to unlock the map
+            MapVisitRequested = true;
             VisitMapRequest = Http.CreatePost($"{EnvimixWebAPI}/maps/{originalMapUid.Get()}", "", $"Authorization: Bearer {envimixTurboUserToken.Get()}");
         }
 

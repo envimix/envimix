@@ -179,6 +179,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }*/
     [Local(LocalFor.LocalUser)] public Dictionary<string, string> CampaignsReleasedAt { get; set; }
     [Local(LocalFor.LocalUser)] public bool CampaignsReleaseChecked { get; set; }
+    [Local(LocalFor.LocalUser)] public bool EnvimixTurboUserIsAdmin { get; set; }
+    [Local(LocalFor.LocalUser)] public bool EnvimixTurboUserCanAccessUnreleased { get; set; }
 
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
@@ -199,6 +201,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public string SelectedWorldMapUid = "";
     public string DisplayedWorldMapUid = "";
     public int WorldMapCampaignNum = -1;
+    public string WorldMapMedalsMapUid = "";
+    public int WorldMapMedalsTime = -1;
     public int WorldDiamondSelectedAt = -1;
     public float WorldMapPanelHeight;
     public float WorldMapPanelFromHeight;
@@ -1862,6 +1866,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     {
         // default car medals stack up like a pile, unearned ones are hidden
         var time = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, ScoreContextPrefix);
+        WorldMapMedalsMapUid = mapInfo.MapUid;
+        WorldMapMedalsTime = time;
         var hasTime = time >= 0;
         var hasBronze = hasTime && time <= mapInfo.TMObjective_BronzeTime;
 
@@ -1881,6 +1887,23 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             QuadWorldMapMedalBronze.Substyle = "MedalSlot";
             QuadWorldMapMedalBronze.Opacity = 0.5f;
         }
+    }
+
+    // the panel isn't rebuilt after returning from a map, so pick up a new record as soon as the score manager has it
+    private void RefreshWorldMapMedals()
+    {
+        if (Campaign is null || WorldMapCampaignNum == -1 || MapGroupNum == -1 || MapInfoNum == -1)
+        {
+            return;
+        }
+
+        var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+        if (mapInfo.MapUid == WorldMapMedalsMapUid && ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, ScoreContextPrefix) == WorldMapMedalsTime)
+        {
+            return;
+        }
+
+        UpdateWorldMapMedals(mapInfo);
     }
 
     private void UpdateWorldMapDetails(CMapInfo mapInfo)
@@ -2796,6 +2819,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         if (FrameWorldMapPanel.Visible)
         {
             UpdateWorldMapPanelPosition();
+            RefreshWorldMapMedals();
         }
 
         if (SelectedWorldDiamond is not null && FrameWorld.Visible && EnableMenuNavigationInputs)
@@ -3047,7 +3071,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             var releasedAt = CampaignsReleasedAt["Opreax"];
 
-            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
+            // admins and testers keep access before the release, the webapi allows them as well
+            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0 && !EnvimixTurboUserIsAdmin && !EnvimixTurboUserCanAccessUnreleased)
             {
                 OpreaxCampaignReleased = false;
                 labelText = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);

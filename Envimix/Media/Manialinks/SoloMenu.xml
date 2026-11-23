@@ -131,9 +131,9 @@
             <frame pos="-20 7" z-index="1">
                 <quad id="QuadOpreaxCampaignGlow" size="44 10.5" style="Bgs1InRace" substyle="BgButtonGlow" halign="center" colorize="DA0" pos="0 2.25" z-index="-1" />
                 <label id="LabelOpreaxCampaignNew" pos="25.5 -1.75" z-index="0" size="20 5" text="$FD0NEW" style="TextTitle3" halign="center" textsize="1" hidden="1"/>
-                <quad size="40 6.25" style="Bgs1" substyle="BgWindow4" halign="center" opacity=".75" colorize="DA0" pos="0 0.25" />
-                <quad size="40 6.25" z-index="1" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" halign="center" pos="0 0.25" id="QuadOpreaxCampaign" opacity="0.3" />
-                <label id="LabelOpreaxCampaign" pos="0 -3.2" z-index="2" size="55 10" text="World of Opreax" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
+                <quad size="40 6.5" style="Bgs1" substyle="BgWindow4" halign="center" opacity=".75" colorize="DA0" pos="0 0.25" />
+                <quad size="40 6.25" z-index="1" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" halign="center" pos="0 0.125" id="QuadOpreaxCampaign" opacity="0.3" />
+                <label id="LabelOpreaxCampaign" pos="0 -3.3" z-index="2" size="55 10" text="World of Opreax" valign="center2" textfont="RajdhaniMono" translate="1" halign="center" textsize="2" textprefix="$t" />
             </frame>
             <frame pos="-36 7.5" hidden="1">
                 <label id="LabelVROffzoneCountdown" pos="4 -3.75" z-index="2" size="55 10" text="0s" valign="center2" textfont="RajdhaniMono" translate="1" textsize="1.6" />
