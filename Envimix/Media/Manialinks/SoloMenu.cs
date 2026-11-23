@@ -136,6 +136,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlQuad QuadVROffzoneCampaign;
     [ManialinkControl] public required CMlQuad QuadVROffzoneDisabled;
     [ManialinkControl] public required CMlQuad QuadOpreaxCampaign;
+    [ManialinkControl] public required CMlQuad QuadOpreaxCampaignGlow;
+    [ManialinkControl] public required CMlLabel LabelOpreaxCampaign;
+    [ManialinkControl] public required CMlLabel LabelOpreaxCampaignNew;
     [ManialinkControl] public required CMlLabel LabelVROffzoneCountdown;
 
     [ManialinkControl] public required CMlFrame FrameTooltip;
@@ -170,6 +173,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, SValidationInfo>> TitleValidations { get; set; }
     [Local(LocalFor.LocalUser)] public Dictionary<string, Dictionary<string, IList<int>>> TitleSkillpoints { get; set; }*/
     [Local(LocalFor.LocalUser)] public Dictionary<string, string> CampaignsReleasedAt { get; set; }
+    [Local(LocalFor.LocalUser)] public bool CampaignsReleaseChecked { get; set; }
 
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
@@ -215,6 +219,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     public bool VRCampaignReleased;
     public bool VROffzoneCampaignReleased;
+    public bool OpreaxCampaignReleased;
     public bool VROffzoneEnabled = true;
     public bool LeaderboardsLoadedOrLoading;
 
@@ -2914,6 +2919,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         VROffzoneCampaignReleased = true;
         LabelVROffzoneCountdown.Hide();
 
+        UpdateOpreaxCampaignRelease();
+
         foreach (var control in FrameLeaderboards.Controls)
         {
             var frameScrollRecords = ((control as CMlFrame)!.GetFirstChild("FrameScrollRecords") as CMlFrame)!;
@@ -2976,8 +2983,53 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         SendCustomEvent("Quickplay", (string[])(IList<string>)unlockedMapUids);
     }
 
+    private void UpdateOpreaxCampaignRelease()
+    {
+        // locked until the release info request finishes, playing an unreleased campaign map gets the player auto-banned
+        // Opreax temporarily requires a connection and a successful release check, even for unlocked maps
+        OpreaxCampaignReleased = CampaignsReleaseChecked && LocalUser.IsConnectedToMasterServer;
+        var labelText = "World of Opreax";
+
+        if (CampaignsReleasedAt.ContainsKey("Opreax"))
+        {
+            var releasedAt = CampaignsReleasedAt["Opreax"];
+
+            if (TimeLib.Compare(releasedAt, TimeLib.GetCurrent()) > 0)
+            {
+                OpreaxCampaignReleased = false;
+                labelText = TimeLib.FormatDelta(releasedAt, TimeLib.GetCurrent(), TimeLib.EDurationFormats.Abbreviated);
+            }
+        }
+
+        if (!LocalUser.IsConnectedToMasterServer)
+        {
+            labelText = "Unavailable offline";
+        }
+
+        if (LabelOpreaxCampaign.Value != labelText)
+        {
+            LabelOpreaxCampaign.Value = labelText;
+        }
+
+        var pulse = (MathLib.Sin(Now * 0.003f) + 1) * 0.5f;
+        QuadOpreaxCampaignGlow.Opacity = 0.25f + pulse * 0.65f;
+        LabelOpreaxCampaignNew.Visible = OpreaxCampaignReleased;
+        LabelOpreaxCampaignNew.Opacity = 0.4f + pulse * 0.6f;
+
+        // release date could have been moved later while the campaign was already open
+        if (!OpreaxCampaignReleased && SelectedCampaignQuad == QuadOpreaxCampaign)
+        {
+            SelectOfficialCampaign();
+        }
+    }
+
     private void SelectOpreaxCampaign()
     {
+        if (!OpreaxCampaignReleased)
+        {
+            return;
+        }
+
         SelectCampaign(QuadOpreaxCampaign, "Opreax");
         // reveals pairs unlocked while the world map wasn't shown
         UpdateWorldUnlocks(300);

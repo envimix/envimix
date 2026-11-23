@@ -20,6 +20,13 @@ public class MainMenu : CManiaAppTitle, IContext
         public float LadderPoints;
     }
 
+    public struct STitleReleaseInfo
+    {
+        public string ReleasedAt;
+        public string Key;
+        public Dictionary<string, string> CampaignsReleasedAt;
+    }
+
     public struct SAuthenticateUserRequest
     {
         public string Token;
@@ -186,6 +193,8 @@ public class MainMenu : CManiaAppTitle, IContext
     public int ManiaPlanetAuthReceivedAt = -1;
 
     [Local(LocalFor.LocalUser)] public Dictionary<string, string> CampaignsReleasedAt { get; set; }
+    // true only after the release info request succeeds and its response is parsed
+    [Local(LocalFor.LocalUser)] public bool CampaignsReleaseChecked { get; set; }
 
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
 
@@ -216,6 +225,7 @@ public class MainMenu : CManiaAppTitle, IContext
     public CHttpRequest? StatsCompletionRequest;
     public Dictionary<string, Dictionary<string, CHttpRequest>> LeaderboardRequests;
     public CHttpRequest? RestoreRecordsRequest;
+    public CHttpRequest? TitleReleaseRequest;
 
     public string ScoreContextPrefix = "";
 
@@ -227,6 +237,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
     public void Main()
     {        
+        CampaignsReleaseChecked = false;
         Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
 
         ManiaPlanetAuthenticationRequested = true;
@@ -268,6 +279,7 @@ public class MainMenu : CManiaAppTitle, IContext
         EditorsMenuLayer.ManialinkPage = "file://Media/Manialinks/EditorsMenu.xml";
 
         RequestTotd();
+        RequestTitleRelease();
     }
 
     private static SUserInfo CreateUserInfo(CUser user)
@@ -364,6 +376,7 @@ public class MainMenu : CManiaAppTitle, IContext
                             break;
                         case "Stats":
                             RequestStats();
+                            RequestTitleRelease();
                             break;
                         case "RestoreRecords":
                             RestoreRecords();
@@ -556,6 +569,30 @@ public class MainMenu : CManiaAppTitle, IContext
             }
             Http.Destroy(StatsCompletionRequest);
             StatsCompletionRequest = null;
+        }
+
+        if (TitleReleaseRequest is not null && TitleReleaseRequest.IsCompleted)
+        {
+            CampaignsReleaseChecked = false;
+            if (TitleReleaseRequest.StatusCode == 200)
+            {
+                STitleReleaseInfo releaseInfo = new();
+                CampaignsReleaseChecked = releaseInfo.FromJson(TitleReleaseRequest.Result);
+                if (!CampaignsReleaseChecked)
+                {
+                    Log("Title release info JSON not parsed entirely, there could be some problems.");
+                }
+                else
+                {
+                    CampaignsReleasedAt = releaseInfo.CampaignsReleasedAt;
+                }
+            }
+            else
+            {
+                Log($"Title release info request failed ({TitleReleaseRequest.StatusCode}).");
+            }
+            Http.Destroy(TitleReleaseRequest);
+            TitleReleaseRequest = null;
         }
 
         if (RestoreRecordsRequest is not null && RestoreRecordsRequest.IsCompleted)
@@ -806,9 +843,21 @@ public class MainMenu : CManiaAppTitle, IContext
 
     public bool PlayMapInProgress;
 
+    private bool IsCampaignAccessible(CCampaign campaign)
+    {
+        for (var i = 36; i < MathLib.Min(48, DataFileMgr.Campaigns.Count); i++)
+        {
+            if (campaign == DataFileMgr.Campaigns[i])
+            {
+                return LocalUser.IsConnectedToMasterServer && CampaignsReleaseChecked;
+            }
+        }
+        return true;
+    }
+
     private void PlayMap(CCampaign campaign, CMapInfo mapInfo)
     {
-        if (PlayMapInProgress)
+        if (PlayMapInProgress || !IsCampaignAccessible(campaign))
         {
             return;
         }
@@ -1020,6 +1069,10 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         var campaign = GetCampaignForMaps();
+        if (!IsCampaignAccessible(campaign))
+        {
+            return;
+        }
         var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
 
         LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
@@ -1038,6 +1091,10 @@ public class MainMenu : CManiaAppTitle, IContext
         }
 
         var campaign = GetCampaignForMaps();
+        if (!IsCampaignAccessible(campaign))
+        {
+            return;
+        }
         var mapInfo = campaign.MapGroups[mapGroupNum].MapInfos[mapInfoNum];
 
         LoadingLayer.ManialinkPage = Loading.GetLoadingManialink(mapInfo, System.CurrentLocalDateText);
@@ -1158,6 +1215,16 @@ public class MainMenu : CManiaAppTitle, IContext
     private void RequestTotd()
     {
         TotdRequest = Http.CreateGet($"{EnvimixWebAPI}/totd/{LoadedTitle.TitleId}");
+    }
+
+    private void RequestTitleRelease()
+    {
+        if (TitleReleaseRequest is not null)
+        {
+            return;
+        }
+
+        TitleReleaseRequest = Http.CreateGet($"{EnvimixWebAPI}/titles/{LoadedTitle.TitleId}/release");
     }
 
     private void RequestStats()
