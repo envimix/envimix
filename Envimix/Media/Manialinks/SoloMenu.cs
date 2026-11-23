@@ -978,6 +978,32 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    private string GetDefaultCar(CMapInfo mapInfo)
+    {
+        var mapDefaultCars = Local<Dictionary<string, string>>.For(LocalUser);
+        if (mapDefaultCars.Get().ContainsKey(mapInfo.MapUid))
+        {
+            return mapDefaultCars.Get()[mapInfo.MapUid];
+        }
+
+        // Maps without explicit metadata retain the legacy collection default.
+        return $"{mapInfo.CollectionName}Car";
+    }
+
+    private bool IsDefaultCar(CMapInfo mapInfo, string car)
+    {
+        return car == GetDefaultCar(mapInfo);
+    }
+
+    private string GetScoreContext(CMapInfo mapInfo, string car, string prefix)
+    {
+        if (IsDefaultCar(mapInfo, car))
+        {
+            return prefix;
+        }
+        return $"{prefix}{car}";
+    }
+
     private void UpdatePBs(CMapInfo mapInfo, ImmutableArray<string> cars)
     {
         if (SelectedPersonalBestFrame is not null)
@@ -998,16 +1024,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             // if the car is not supposed to be there, the carName is empty string, so this is safe
             var carName = cars[carIndex];
 
-            var scoreContext = $"{ScoreContextPrefix}{carName}";
-
-            // hacky but it works for TMT
-            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
-                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
-                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
-                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
-            {
-                scoreContext = ScoreContextPrefix;
-            }
+            var scoreContext = GetScoreContext(mapInfo, carName, ScoreContextPrefix);
 
             var labelPersonalBest = (frameLeaderboard.GetFirstChild("LabelPersonalBest") as CMlLabel)!;
             labelPersonalBest.DataAttributeSet("Car", carName);
@@ -1059,11 +1076,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            // hacky but it works for TMT
-            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
-                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
-                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
-                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
+            if (IsDefaultCar(mapInfo, carName))
             {
                 labelValidation.SetText($"validated by {mapInfo.AuthorNickName}");
                 carIndex += 1;
@@ -1110,16 +1123,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             var carName = cars[carIndex];
 
-            var scoreContext = $"{ScoreContextPrefix}{carName}";
-
-            // hacky but it works for TMT
-            if ((mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
-                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
-                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
-                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar"))
-            {
-                scoreContext = ScoreContextPrefix;
-            }
+            var scoreContext = GetScoreContext(mapInfo, carName, ScoreContextPrefix);
 
             var playerTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
 
@@ -1171,11 +1175,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             var qualityGauge = (FrameQualityRatings.Controls[carIndex] as CMlGauge)!;
             var carLabel = (FrameRatingsCars.Controls[carIndex] as CMlLabel)!;
 
-            // hacky but it works for TMT
-            var isDefaultCar = (mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
-                || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
-                || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
-                || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar");
+            var isDefaultCar = IsDefaultCar(mapInfo, car);
 
             var combinationKey = $"{car}_0";
 
@@ -1903,17 +1903,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             QuadWorldMapThumbnail.ChangeImageUrl(thumbnailUrl);
         }
         LabelWorldMapEnvironment.SetText(mapInfo.CollectionName);
-        // map player model isn't exposed by CMapInfo, so it's stored on the diamond
-        var vehicle = "";
-        if (diamond is not null)
-        {
-            vehicle = diamond.Parent.DataAttributeGet("car");
-        }
-        if (vehicle == "")
-        {
-            vehicle = $"{mapInfo.CollectionName}Car";
-        }
-        LabelWorldMapVehicle.SetText(vehicle);
+        LabelWorldMapVehicle.SetText(GetDefaultCar(mapInfo));
         if (mapInfo.MapStyle == "")
         {
             LabelWorldMapStyle.SetText("Unspecified");
@@ -2158,11 +2148,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                         {
                             var scoreContext = $"{ScoreContextPrefix}{carName}";
 
-                            // hacky but it works for TMT
-                            var isDefaultCar = (mapInfo.CollectionName == "Canyon" && carName == "CanyonCar")
-                                || (mapInfo.CollectionName == "Stadium" && carName == "StadiumCar")
-                                || (mapInfo.CollectionName == "Valley" && carName == "ValleyCar")
-                                || (mapInfo.CollectionName == "Lagoon" && carName == "LagoonCar");
+                            var isDefaultCar = IsDefaultCar(mapInfo, carName);
 
                             if (isDefaultCar)
                             {
@@ -2777,6 +2763,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         SelectedCampaignQuad = QuadOfficialCampaign;
 
+        var mapDefaultCars = Local<Dictionary<string, string>>.For(LocalUser);
+        mapDefaultCars.Get().Clear();
+
         foreach (var control in FrameWorldDiamonds.Controls)
         {
             if (control is not CMlFrame location)
@@ -2784,7 +2773,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            WorldMapUnlocks[location.DataAttributeGet("mapuid")] = TextLib.ToInteger(location.DataAttributeGet("unlock"));
+            var mapUid = location.DataAttributeGet("mapuid");
+            var car = location.DataAttributeGet("car");
+            if (mapUid != "" && car != "")
+            {
+                mapDefaultCars.Get()[mapUid] = car;
+            }
+            WorldMapUnlocks[mapUid] = TextLib.ToInteger(location.DataAttributeGet("unlock"));
         }
 
         SwitchCars(false);
@@ -2846,20 +2841,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                             continue;
                         }
 
-                        // a bit of a hack but clientside on turbo maps it works - ensures no false positives
-                        if (mapInfo.CollectionName == "Canyon" && campaign.ScoreContext == ScoreContextPrefix + "CanyonCar")
-                        {
-                            continue;
-                        }
-                        if (mapInfo.CollectionName == "Stadium" && campaign.ScoreContext == ScoreContextPrefix + "StadiumCar")
-                        {
-                            continue;
-                        }
-                        if (mapInfo.CollectionName == "Valley" && campaign.ScoreContext == ScoreContextPrefix + "ValleyCar")
-                        {
-                            continue;
-                        }
-                        if (mapInfo.CollectionName == "Lagoon" && campaign.ScoreContext == ScoreContextPrefix + "LagoonCar")
+                        if (campaign.ScoreContext == $"{ScoreContextPrefix}{GetDefaultCar(mapInfo)}")
                         {
                             continue;
                         }

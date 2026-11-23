@@ -1148,6 +1148,32 @@ public class MainMenu : CManiaAppTitle, IContext
         SubmitTitleRequest = Http.CreatePost($"{EnvimixWebAPI}/titles", request.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
     }
 
+    private string GetDefaultCar(CMapInfo mapInfo)
+    {
+        var mapDefaultCars = Local<Dictionary<string, string>>.For(LocalUser);
+        if (mapDefaultCars.Get().ContainsKey(mapInfo.MapUid))
+        {
+            return mapDefaultCars.Get()[mapInfo.MapUid];
+        }
+
+        // Maps without explicit metadata retain the legacy collection default.
+        return $"{mapInfo.CollectionName}Car";
+    }
+
+    private bool IsDefaultCar(CMapInfo mapInfo, string car)
+    {
+        return car == GetDefaultCar(mapInfo);
+    }
+
+    private string GetScoreContext(CMapInfo mapInfo, string car, string prefix)
+    {
+        if (IsDefaultCar(mapInfo, car))
+        {
+            return prefix;
+        }
+        return $"{prefix}{car}";
+    }
+
     private SMapInfo AddOpreaxMapMetadata(SMapInfo mapInfo)
     {
         var result = mapInfo;
@@ -1240,7 +1266,7 @@ public class MainMenu : CManiaAppTitle, IContext
                         GoldTime = map.TMObjective_GoldTime,
                         SilverTime = map.TMObjective_SilverTime,
                         BronzeTime = map.TMObjective_BronzeTime,
-                        DefaultCar = $"{map.CollectionName}Car",
+                        DefaultCar = GetDefaultCar(map),
                         MedalPoints = 0,
                     };
                     if (campaignName == "Opreax")
@@ -1328,18 +1354,8 @@ public class MainMenu : CManiaAppTitle, IContext
                 {
                     foreach (var car in Cars)
                     {
-                        var scoreContext = $"{ScoreContextPrefix}{car}";
-                        var isDefaultCar = false;
-
-                        // hacky but it works for TMT
-                        if ((mapInfo.CollectionName == "Canyon" && car == "CanyonCar")
-                            || (mapInfo.CollectionName == "Stadium" && car == "StadiumCar")
-                            || (mapInfo.CollectionName == "Valley" && car == "ValleyCar")
-                            || (mapInfo.CollectionName == "Lagoon" && car == "LagoonCar"))
-                        {
-                            scoreContext = ScoreContextPrefix;
-                            isDefaultCar = true;
-                        }
+                        var scoreContext = GetScoreContext(mapInfo, car, ScoreContextPrefix);
+                        var isDefaultCar = IsDefaultCar(mapInfo, car);
 
                         var pbTime = ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, scoreContext);
 
