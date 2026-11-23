@@ -55,6 +55,8 @@ public class MainMenu : CManiaAppTitle, IContext
         public int SilverTime;
         public int BronzeTime;
         public int Laps;
+        public string DefaultCar;
+        public int MedalPoints;
     }
 
     public struct SSubmitMapsRequest
@@ -1146,6 +1148,41 @@ public class MainMenu : CManiaAppTitle, IContext
         SubmitTitleRequest = Http.CreatePost($"{EnvimixWebAPI}/titles", request.ToJson(), $"Authorization: Bearer {EnvimixTurboUserToken}\nContent-Type: application/json");
     }
 
+    private SMapInfo AddOpreaxMapMetadata(SMapInfo mapInfo)
+    {
+        var result = mapInfo;
+        result.DefaultCar = "";
+        var worldDiamonds = (SoloMenuLayer.LocalPage.GetFirstChild("FrameWorldDiamonds") as CMlFrame)!;
+        if (worldDiamonds is null)
+        {
+            return result;
+        }
+
+        var order = 0;
+        foreach (var control in worldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            if (location.DataAttributeGet("mapuid") == mapInfo.Uid)
+            {
+                var car = location.DataAttributeGet("car");
+                var medalPoints = location.DataAttributeGet("unlock");
+                if (car != "" && medalPoints != "")
+                {
+                    result.DefaultCar = car;
+                    result.MedalPoints = TextLib.ToInteger(medalPoints);
+                    result.Order = order;
+                }
+                return result;
+            }
+            order += 1;
+        }
+        return result;
+    }
+
     private void SubmitCampaignMaps()
     {
         SSubmitMapsRequest request = new()
@@ -1162,6 +1199,10 @@ public class MainMenu : CManiaAppTitle, IContext
         campaigns.Add(DataFileMgr.Campaigns[0]);
         campaigns.Add(DataFileMgr.Campaigns[12]);
         campaigns.Add(DataFileMgr.Campaigns[24]);
+        if (DataFileMgr.Campaigns.Count > 36)
+        {
+            campaigns.Add(DataFileMgr.Campaigns[36]);
+        }
 
         foreach (var campaign in campaigns)
         {
@@ -1181,6 +1222,11 @@ public class MainMenu : CManiaAppTitle, IContext
                         campaignName = "VROffzone";
                     }
 
+                    if (DataFileMgr.Campaigns.Count > 36 && campaign == DataFileMgr.Campaigns[36])
+                    {
+                        campaignName = "Opreax";
+                    }
+
                     SMapInfo mapInfo = new()
                     {
                         Name = map.Name,
@@ -1194,7 +1240,18 @@ public class MainMenu : CManiaAppTitle, IContext
                         GoldTime = map.TMObjective_GoldTime,
                         SilverTime = map.TMObjective_SilverTime,
                         BronzeTime = map.TMObjective_BronzeTime,
+                        DefaultCar = $"{map.CollectionName}Car",
+                        MedalPoints = 0,
                     };
+                    if (campaignName == "Opreax")
+                    {
+                        mapInfo = AddOpreaxMapMetadata(mapInfo);
+                        if (mapInfo.DefaultCar == "")
+                        {
+                            Log($"Campaign submission cancelled: missing Opreax car or medal points for {mapInfo.Uid}.");
+                            return;
+                        }
+                    }
                     if (map.TMObjective_IsLapRace)
                     {
                         mapInfo.Laps = map.TMObjective_NbLaps;
