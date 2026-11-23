@@ -184,6 +184,9 @@ public class Endscreen : CTmMlScriptIngame, IContext
     public int ExpectedActivityPoints;
     public int CurrentSkillpoints;
     public int CurrentActivityPoints;
+    // last values read from the mode, to detect when it updates them
+    public int NetSkillpoints;
+    public int NetActivityPoints;
     public int StartPointChangeAt = -1;
     public int BestTime = -1;
     public CHttpRequest? SuperMedalsRequest;
@@ -428,6 +431,10 @@ public class Endscreen : CTmMlScriptIngame, IContext
             SetLeaderboardLoadingState();
             SetPoints(car.Get());
         }
+        else
+        {
+            SyncPoints(car.Get());
+        }
 
         foreach (var control in Page.GetClassChildren_Result)
         {
@@ -534,32 +541,54 @@ public class Endscreen : CTmMlScriptIngame, IContext
         return $"{car}_{gravity.Get()}_{GetLaps()}";
     }
 
-    private void SetPoints(string car)
+    private int GetNetSkillpoints(string car)
     {
         var validationFilterKey = ConstructValidationFilterKey(car);
-
         if (Skillpoints.ContainsKey(validationFilterKey))
         {
-            CurrentSkillpoints = Skillpoints[validationFilterKey];
+            return Skillpoints[validationFilterKey];
         }
-        else
-        {
-            CurrentSkillpoints = 0;
-        }
+        return 0;
+    }
 
+    private int GetNetActivityPoints(string car)
+    {
+        var validationFilterKey = ConstructValidationFilterKey(car);
         if (ActivityPoints.ContainsKey(validationFilterKey))
         {
-            CurrentActivityPoints = ActivityPoints[validationFilterKey];
+            return ActivityPoints[validationFilterKey];
         }
-        else
-        {
-            CurrentActivityPoints = 0;
-        }
+        return 0;
+    }
+
+    private void SetPoints(string car)
+    {
+        NetSkillpoints = GetNetSkillpoints(car);
+        NetActivityPoints = GetNetActivityPoints(car);
+        CurrentSkillpoints = NetSkillpoints;
+        CurrentActivityPoints = NetActivityPoints;
 
         ExpectedSkillpoints = CurrentSkillpoints;
         ExpectedActivityPoints = CurrentActivityPoints;
         LabelSkillpoints.SetText(FormatNumberSpace(CurrentSkillpoints));
         LabelActivityPoints.SetText(FormatNumberSpace(CurrentActivityPoints));
+    }
+
+    // the mode fills the points only after the map info response arrives, which is usually after the car is set,
+    // so keep the baseline in sync outside of the endscreen, otherwise the next finish animates from 0
+    private void SyncPoints(string car)
+    {
+        if (FinishedAt != -1 || StartPointChangeAt != -1)
+        {
+            return;
+        }
+
+        if (GetNetSkillpoints(car) == NetSkillpoints && GetNetActivityPoints(car) == NetActivityPoints)
+        {
+            return;
+        }
+
+        SetPoints(car);
     }
 
     private void SetupMedals(int newBestTime)
