@@ -103,6 +103,10 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameWorld;
     [ManialinkControl] public required CMlFrame FrameWorldDiamonds;
     [ManialinkControl] public required CMlLabel LabelWorldUnlockProgress;
+    [ManialinkControl] public required CMlGauge GaugeWorldNextUnlock;
+    [ManialinkControl] public required CMlLabel LabelWorldNextUnlockProgress;
+    [ManialinkControl] public required CMlGauge GaugeWorldCampaignProgress;
+    [ManialinkControl] public required CMlLabel LabelWorldCampaignProgress;
     [ManialinkControl] public required CMlFrame FrameWorldMapPanel;
     [ManialinkControl] public required CMlFrame FrameWorldMapPanelClip;
     [ManialinkControl] public required CMlQuad QuadWorldMapPanelBackground;
@@ -2544,11 +2548,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             foreach (var mapInfo in mapGroup.MapInfos)
             {
-                if (!WorldMapUnlocks.ContainsKey(mapInfo.MapUid))
-                {
-                    continue;
-                }
-
                 SWorldMapMedals medals = new()
                 {
                     Author = mapInfo.TMObjective_AuthorTime,
@@ -2593,6 +2592,41 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             return 1;
         }
         return 0;
+    }
+
+    private void UpdateWorldProgress(int points, int nextUnlock)
+    {
+        GaugeWorldNextUnlock.Ratio = 0;
+        GaugeWorldCampaignProgress.Ratio = 0;
+
+        if (WorldMapMedals.Count == 0)
+        {
+            LabelWorldUnlockProgress.SetText("...waiting for the Opreax campaign maps...");
+            LabelWorldNextUnlockProgress.SetText("-- (next unlock)");
+            LabelWorldCampaignProgress.SetText("-- (campaign)");
+            return;
+        }
+
+        var campaignPoints = 0;
+        foreach (var (mapUid, medals) in WorldMapMedals)
+        {
+            campaignPoints += GetWorldMapMedalPoints(mapUid);
+        }
+        var maximumPoints = WorldMapMedals.Count * 5;
+        GaugeWorldCampaignProgress.Ratio = MathLib.Clamp(campaignPoints * 1f / maximumPoints, 0f, 1f);
+        LabelWorldCampaignProgress.SetText($"{campaignPoints}/{maximumPoints} $o(campaign)");
+        LabelWorldUnlockProgress.SetText("...collect medals with the default car to earn medal points");
+
+        if (nextUnlock == -1)
+        {
+            GaugeWorldNextUnlock.Ratio = 1;
+            LabelWorldNextUnlockProgress.SetText("All maps unlocked!");
+        }
+        else
+        {
+            GaugeWorldNextUnlock.Ratio = MathLib.Clamp(points * 1f / nextUnlock, 0f, 1f);
+            LabelWorldNextUnlockProgress.SetText($"{points}/{nextUnlock} $o(next unlock)");
+        }
     }
 
     private void UpdateWorldUnlocks(int revealDelay)
@@ -2673,18 +2707,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             WorldUnlocksInitialized = true;
         }
 
-        if (WorldMapMedals.Count == 0)
-        {
-            LabelWorldUnlockProgress.SetText("...waiting for the Opreax campaign maps...");
-        }
-        else if (nextUnlock == -1)
-        {
-            LabelWorldUnlockProgress.SetText($"All maps unlocked! Medal points: $o{points}");
-        }
-        else
-        {
-            LabelWorldUnlockProgress.SetText($"...collect medals with the default car to unlock more maps   $o{points} / {nextUnlock} points");
-        }
+        UpdateWorldProgress(points, nextUnlock);
     }
 
     private void UpdateWorldDiamondHeartbeats()

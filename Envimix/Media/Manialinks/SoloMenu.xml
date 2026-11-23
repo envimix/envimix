@@ -164,7 +164,19 @@
             </frame>
             <frame id="FrameWorld" z-index="1" hidden="1">
                 <quad class="WorldMapBackground" pos="0 -1" z-index="0" size="307.5 117.5" image="file://Media/Images/World.jpg" halign="center" scriptevents="1"/>
-                <label id="LabelWorldUnlockProgress" pos="152 -114.5" z-index="1" size="150 5" text="...collect medals with the default car to unlock more maps" halign="right" textfont="Oswald" textsize="1"/>
+                <label id="LabelWorldUnlockProgress" pos="152 -114.5" z-index="1" size="150 5" text="...collect medals with the default car to earn medal points" halign="right" textfont="Oswald" textsize="1"/>
+                <gauge id="GaugeWorldNextUnlock" pos="-152 -110" z-index="1" size="40 7.5" drawbg="0" valign="center" ratio="0"/>
+                <label id="LabelWorldNextUnlockProgress" pos="-112.5 -110" z-index="1" size="75 5" text="Next unlock: --" valign="center" textsize="0.7" textfont="OswaldMono" textprefix="$o"/>
+                <gauge id="GaugeWorldCampaignProgress" pos="-152 -114" z-index="1" size="40 7.5" drawbg="0" valign="center" ratio="0"/>
+                <label id="LabelWorldCampaignProgress" pos="-112.5 -114" z-index="1" size="75 5" text="Campaign: --" valign="center" textsize="0.7" textfont="OswaldMono" textprefix="$o"/>
+                <quad pos="-148.5 -94.5" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo"/>
+                <label pos="-146.25 -94.35" z-index="1" size="20 5" text="5 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                <quad pos="-148.5 -98" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalGold"/>
+                <label pos="-146.25 -97.8" z-index="1" size="20 5" text="3 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                <quad pos="-148.5 -101.5" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver"/>
+                <label pos="-146.25 -101.35" z-index="1" size="20 5" text="2 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                <quad pos="-148.5 -105" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze"/>
+                <label pos="-146.25 -104.8" z-index="1" size="20 5" text="1 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
             </frame>
         </frame>
     </frame>
