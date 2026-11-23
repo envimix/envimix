@@ -2607,7 +2607,9 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            points += GetWorldMapMedalPoints(location.DataAttributeGet("mapuid"));
+            var medalPoints = GetWorldMapMedalPoints(location.DataAttributeGet("mapuid"));
+            location.DataAttributeSet("medalpoints", medalPoints.ToString());
+            points += medalPoints;
         }
 
         WorldMedalPoints = points;
@@ -2685,6 +2687,40 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    private void UpdateWorldDiamondHeartbeats()
+    {
+        var phase = Now % 5000;
+        var scale = 1f;
+        if (phase < 360)
+        {
+            scale += MathLib.Sin(phase / 360f * MathLib.PI()) * 0.12f;
+        }
+        else if (phase < 660)
+        {
+            scale += MathLib.Sin((phase - 360) / 300f * MathLib.PI()) * 0.07f;
+        }
+
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            var diamond = (location.Controls[0] as CMlFrame)!;
+            var icon = (diamond.Controls[1] as CMlQuad)!;
+            if (FrameWorld.Visible && EnableMenuNavigationInputs && location.Visible
+                && location.DataAttributeGet("revealed") == "1" && location.DataAttributeGet("medalpoints") != "5")
+            {
+                icon.RelativeScale = scale;
+            }
+            else
+            {
+                icon.RelativeScale = 1;
+            }
+        }
+    }
+
     public void Main()
     {
         FrameCampaignOverview.RelativePosition_V3.Y = -50;
@@ -2726,6 +2762,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
     public void Loop()
     {
+        UpdateWorldDiamondHeartbeats();
         UpdateWorldMapPanelAnimation();
         if (FrameWorldMapPanel.Visible)
         {
