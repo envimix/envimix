@@ -216,6 +216,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public Dictionary<string, SWorldMapMedals> WorldMapMedals;
     public int WorldMapMedalsCampaignCount = -1;
     public int WorldMedalPoints;
+    public bool WorldSecretsFound;
     public bool WorldUnlocksInitialized;
 
     public CMlQuad? FocusedControl;
@@ -1889,8 +1890,22 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
-    // the panel isn't rebuilt after returning from a map, so pick up a new record as soon as the score manager has it
-    private void RefreshWorldMapMedals()
+    private void UpdateWorldMapSecretPlace(string mapUid)
+    {
+        var persistent_SecretPlace = Persistent<Dictionary<string, int>>.For(LocalUser);
+        var secretPlaceText = "Undiscovered";
+        if (persistent_SecretPlace.Get().ContainsKey(mapUid) && persistent_SecretPlace.Get()[mapUid] > 0)
+        {
+            secretPlaceText = "Discovered";
+        }
+        if (LabelWorldMapSecretPlace.Value != secretPlaceText)
+        {
+            LabelWorldMapSecretPlace.SetText(secretPlaceText);
+        }
+    }
+
+    // the panel isn't rebuilt after returning from a map, so refresh secrets independently of new records
+    private void RefreshWorldMapProgress()
     {
         if (Campaign is null || WorldMapCampaignNum == -1 || MapGroupNum == -1 || MapInfoNum == -1)
         {
@@ -1898,6 +1913,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
 
         var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+        UpdateWorldMapSecretPlace(mapInfo.MapUid);
         if (mapInfo.MapUid == WorldMapMedalsMapUid && ScoreMgr.Map_GetRecord(null, mapInfo.MapUid, ScoreContextPrefix) == WorldMapMedalsTime)
         {
             return;
@@ -1944,16 +1960,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             LabelWorldMapTrackmaster.SetText(TimeToTextWithMilli(mapInfo.TMObjective_AuthorTime));
         }
 
-        var persistent_SecretPlace = Persistent<Dictionary<string, int>>.For(LocalUser);
-        if (persistent_SecretPlace.Get().ContainsKey(mapInfo.MapUid) && persistent_SecretPlace.Get()[mapInfo.MapUid] > 0)
-        {
-            LabelWorldMapSecretPlace.SetText("Discovered");
-        }
-        else
-        {
-            LabelWorldMapSecretPlace.SetText("Undiscovered");
-        }
-
+        UpdateWorldMapSecretPlace(mapInfo.MapUid);
         UpdateWorldMapMedals(mapInfo);
 
         var showPanel = FrameWorld.Visible && EnableMenuNavigationInputs && diamond is not null;
@@ -2649,6 +2656,38 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    // every secret map present in the campaign must have its secret place discovered (counted by Secret.xml in the map)
+    private bool HasFoundAllWorldSecrets()
+    {
+        var persistent_SecretPlace = Persistent<Dictionary<string, int>>.For(LocalUser);
+
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            var mapUid = location.DataAttributeGet("mapuid");
+            if (location.DataAttributeGet("secret") != "1" || !WorldMapMedals.ContainsKey(mapUid))
+            {
+                continue;
+            }
+
+            if (!persistent_SecretPlace.Get().ContainsKey(mapUid) || persistent_SecretPlace.Get()[mapUid] <= 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool IsSecretRewardLocked(CMlFrame location)
+    {
+        return location.DataAttributeGet("secretreward") == "1" && !WorldSecretsFound;
+    }
+
     private void UpdateWorldUnlocks(int revealDelay)
     {
         LoadWorldMapMedals();
@@ -2667,11 +2706,13 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
 
         WorldMedalPoints = points;
+        WorldSecretsFound = HasFoundAllWorldSecrets();
 
         // only animate newly unlocked pairs when the player can actually see them, otherwise keep them hidden until then
         var canAnimate = WorldUnlocksInitialized && FrameWorld.Visible && EnableMenuNavigationInputs;
         var nextUnlock = -1;
         var revealCount = 0;
+        Dictionary<string, string> locked = new();
 
         foreach (var control in FrameWorldDiamonds.Controls)
         {
@@ -2680,8 +2721,19 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            if (!WorldMapMedals.ContainsKey(location.DataAttributeGet("mapuid")))
+            var mapUid = location.DataAttributeGet("mapuid");
+
+            if (!WorldMapMedals.ContainsKey(mapUid))
             {
+                location.Hide();
+                location.DataAttributeSet("revealed", "");
+                continue;
+            }
+
+            // the secret reward stays hidden (and isn't announced as the next unlock) until every secret is found
+            if (IsSecretRewardLocked(location))
+            {
+                locked[mapUid] = "not all secrets have been found";
                 location.Hide();
                 location.DataAttributeSet("revealed", "");
                 continue;
@@ -2695,6 +2747,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 {
                     nextUnlock = unlock;
                 }
+                locked[mapUid] = $"not enough medal points ({points}/{unlock})";
                 location.Hide();
                 location.DataAttributeSet("revealed", "");
                 continue;
@@ -2720,6 +2773,11 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             RevealWorldDiamond(location, revealDelay + revealCount * 250);
             revealCount += 1;
         }
+
+        // read by EnvimixSolo and EnvimixExplore to kick out of locked maps without relying on the webapi (works offline)
+        // maps of a campaign that isn't loaded yet are left out, so nothing is locked by mistake
+        var lockedWorldMaps = Local<Dictionary<string, string>>.For(LocalUser);
+        lockedWorldMaps.Set(locked);
 
         // the first pass with loaded campaigns shows already unlocked maps without animation
         if (DataFileMgr.Campaigns.Count > OpreaxCampaignNum)
@@ -2819,7 +2877,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         if (FrameWorldMapPanel.Visible)
         {
             UpdateWorldMapPanelPosition();
-            RefreshWorldMapMedals();
+            RefreshWorldMapProgress();
         }
 
         if (SelectedWorldDiamond is not null && FrameWorld.Visible && EnableMenuNavigationInputs)
@@ -3052,7 +3110,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
 
             var mapUid = location.DataAttributeGet("mapuid");
-            if (WorldMapMedals.ContainsKey(mapUid) && WorldMapUnlocks[mapUid] <= WorldMedalPoints)
+            if (WorldMapMedals.ContainsKey(mapUid) && WorldMapUnlocks[mapUid] <= WorldMedalPoints && !IsSecretRewardLocked(location))
             {
                 unlockedMapUids.Add(mapUid);
             }

@@ -58,6 +58,8 @@ public class MainMenu : CManiaAppTitle, IContext
         public int Laps;
         public string DefaultCar;
         public int MedalPoints;
+        public bool Secret;
+        public bool SecretReward;
     }
 
     public struct SSubmitMapsRequest
@@ -1204,6 +1206,8 @@ public class MainMenu : CManiaAppTitle, IContext
                 {
                     result.DefaultCar = car;
                     result.MedalPoints = TextLib.ToInteger(medalPoints);
+                    result.Secret = location.DataAttributeGet("secret") == "1";
+                    result.SecretReward = location.DataAttributeGet("secretreward") == "1";
                     result.Order = order;
                 }
                 return result;

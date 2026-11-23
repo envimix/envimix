@@ -100,6 +100,8 @@ public class EnvimixSolo : Envimix
     [Local(LocalFor.Users0)] public string EnvimixTurboUserToken { get; set; } = "";
     [Local(LocalFor.Users0)] public string EnvimixTurboUserBanReason { get; set; } = "";
     [Local(LocalFor.Users0)] public string TitleKey { get; set; } = "";
+    // filled by the solo menu with world maps the player hasn't unlocked yet (map uid -> reason)
+    [Local(LocalFor.Users0)] public Dictionary<string, string> LockedWorldMaps { get; set; }
 
     [Netwrite] public bool RatingOpen { get; set; }
     [Netwrite] public bool ReplaySaved { get; set; }
@@ -148,7 +150,15 @@ public class EnvimixSolo : Envimix
 
     public override void OnMapStart()
     {
-        if (!ExploreMode)
+        // local progression check, the webapi enforces the same on map visit but that can't happen offline
+        // explore runs on a copy of the map, so EnvimixExplore checks the original map uid instead
+        if (!ExploreMode && LockedWorldMaps.ContainsKey(Map.MapInfo.MapUid))
+        {
+            Log(nameof(EnvimixSolo), $"Forcing quit as the map is locked: {LockedWorldMaps[Map.MapInfo.MapUid]}.");
+            // no early return, this body is inlined into a label in the generated script
+            ForceQuit = true;
+        }
+        else if (!ExploreMode)
         {
             RequestMapVisit();
         }

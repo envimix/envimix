@@ -52,6 +52,15 @@ public class EnvimixExplore : CTmMapType, IContext
         }
 
         var originalMapUid = Metadata<string>.For(Map);
+
+        // local progression check filled by the solo menu, works also when the webapi can't be reached
+        var lockedWorldMaps = Local<Dictionary<string, string>>.For(LocalUser);
+        if (originalMapUid.Get() != "" && lockedWorldMaps.Get().ContainsKey(originalMapUid.Get()))
+        {
+            Log($"Forcing quit as the map is locked: {lockedWorldMaps.Get()[originalMapUid.Get()]}.");
+            QuickQuit();
+        }
+
         var envimixTurboUserToken = Local<string>.For(LocalUser);
         if (!MapVisitRequested && originalMapUid.Get() != "" && envimixTurboUserToken.Get() != "")
         {
