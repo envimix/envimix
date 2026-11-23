@@ -6,7 +6,7 @@
     </framemodel>
     <framemodel id="FramemodelMap">
         <quad size="14.75 14.75" halign="center" valign="center" bgcolor="222" opacity="0.75" z-index="0"/>
-        <quad id="QuadMapButton" size="15 15" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" z-index="1" scriptevents="1" opacity="0.5" hidden="1"/>
+        <quad id="QuadMapButton" size="15 15" halign="center" valign="center" style="Bgs1" substyle="BgCardInventoryItem" z-index="5" scriptevents="1" opacity="0.5" hidden="1"/>
         <quad id="QuadMapThumbnail" size="14 14" halign="center" valign="center" image="file://Thumbnails/MapUid/YAGV4LM73qshYEC2mHm_RJqrOM8" z-index="2" hidden="1"/>
         <quad id="QuadMapName" size="7 5" halign="right" valign="bottom" bgcolor="222" opacity="0.9" z-index="3" pos="7 -7"/>
         <label id="LabelMapName" z-index="4" size="15 15" text="001" valign="bottom" textsize="2" textfont="OswaldMono" pos="6 -6.6" halign="right" hidden="1"/>
