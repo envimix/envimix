@@ -85,7 +85,7 @@
                 <label id="LabelWorldMapVehicle" pos="27 -15" z-index="0" size="35 5" text="StadiumCar" textfont="Oswald" textsize="1" valign="center2" textprefix="Vehicle: $o"/>
                 <label id="LabelWorldMapStyle" pos="27 -19" z-index="0" size="35 5" text="Offroad" textfont="Oswald" textsize="1" valign="center2" textprefix="Style: $o"/>
                 <label id="LabelWorldMapTrackmaster" pos="27 -23" z-index="0" size="35 5" text="0.45.094" textfont="Oswald" textsize="1" valign="center2" textprefix="Trackmaster: $o"/>
-                <label pos="27 -31.5" z-index="0" size="35 5" text="Undiscovered" textfont="Oswald" textsize="1" valign="center2" textprefix="Secret Place: $o"/>
+                <label id="LabelWorldMapSecretPlace" pos="27 -31.5" z-index="0" size="35 5" text="Undiscovered" textfont="Oswald" textsize="1" valign="center2" textprefix="Secret Place: $o"/>
                 <frame pos="28.5 -11" hidden="1">
                     <quad z-index="0" size="4 4" halign="center" valign="center" image="file://Media/Images/Environments/Canyon.png"/>
                     <label pos="2.7 -0.2" z-index="0" size="15 5" text="Canyon" textfont="Oswald" textsize="0.7" valign="center2" textprefix="$o"/>

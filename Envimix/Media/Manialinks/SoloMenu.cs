@@ -118,6 +118,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelWorldMapVehicle;
     [ManialinkControl] public required CMlLabel LabelWorldMapStyle;
     [ManialinkControl] public required CMlLabel LabelWorldMapTrackmaster;
+    [ManialinkControl] public required CMlLabel LabelWorldMapSecretPlace;
     [ManialinkControl] public required CMlQuad QuadWorldMapMedalAuthor;
     [ManialinkControl] public required CMlQuad QuadWorldMapMedalGold;
     [ManialinkControl] public required CMlQuad QuadWorldMapMedalSilver;
@@ -1928,6 +1929,16 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         else
         {
             LabelWorldMapTrackmaster.SetText(TimeToTextWithMilli(mapInfo.TMObjective_AuthorTime));
+        }
+
+        var persistent_SecretPlace = Persistent<Dictionary<string, int>>.For(LocalUser);
+        if (persistent_SecretPlace.Get().ContainsKey(mapInfo.MapUid) && persistent_SecretPlace.Get()[mapInfo.MapUid] > 0)
+        {
+            LabelWorldMapSecretPlace.SetText("Discovered");
+        }
+        else
+        {
+            LabelWorldMapSecretPlace.SetText("Undiscovered");
         }
 
         UpdateWorldMapMedals(mapInfo);
