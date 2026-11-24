@@ -209,6 +209,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public float WorldMapPanelTargetHeight;
     public int WorldMapPanelResizeAt = -1;
     public float WorldMapPanelWidth;
+    public float WorldMapPanelTargetWidth;
     public int WorldMapPanelOpenAt = -1;
     public bool WorldMapPanelFlipped;
 
@@ -1776,7 +1777,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         var left = 0f;
         if (WorldMapPanelFlipped)
         {
-            left = 65 - WorldMapPanelWidth;
+            left = WorldMapPanelTargetWidth - WorldMapPanelWidth;
         }
 
         QuadWorldMapPanelBackground.Size.X = WorldMapPanelWidth;
@@ -1794,12 +1795,38 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         ApplyWorldMapPanelWidth();
     }
 
+    // the panel grows to fit the style text, but never shrinks below its default width
+    private void FitWorldMapPanelToStyle()
+    {
+        var width = MathLib.Max(65f, 30f + LabelWorldMapStyle.ComputeWidth(LabelWorldMapStyle.Value) + 3f);
+        if (width == WorldMapPanelTargetWidth)
+        {
+            return;
+        }
+
+        WorldMapPanelTargetWidth = width;
+        LabelWorldMapName.Size.X = width - 5;
+        LabelWorldMapLocation.Size.X = width - 5;
+        LabelWorldMapStyle.Size.X = width - 30;
+        QuadWorldMapMedalBronze.RelativePosition_V3.X = width - 9;
+        QuadWorldMapMedalSilver.RelativePosition_V3.X = width - 10;
+        QuadWorldMapMedalGold.RelativePosition_V3.X = width - 11;
+        QuadWorldMapMedalAuthor.RelativePosition_V3.X = width - 12;
+
+        // snap to the new width, unless the opening animation is still running towards it
+        if (WorldMapPanelOpenAt == -1)
+        {
+            WorldMapPanelWidth = width;
+            ApplyWorldMapPanelWidth();
+        }
+    }
+
     private void UpdateWorldMapPanelAnimation()
     {
         if (WorldMapPanelOpenAt != -1)
         {
             var openingElapsed = MathLib.Clamp(Now - WorldMapPanelOpenAt, 0, 220);
-            var width = AnimLib.EaseOutQuad(openingElapsed, 0, 65, 220);
+            var width = AnimLib.EaseOutQuad(openingElapsed, 0, WorldMapPanelTargetWidth, 220);
             WorldMapPanelWidth = width;
             ApplyWorldMapPanelWidth();
 
@@ -1839,7 +1866,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         var worldPosition = FrameWorld.AbsolutePosition_V3;
         var worldScale = (float)FrameWorld.AbsoluteScale;
         var panelScale = (float)FrameWorldMapPanel.AbsoluteScale;
-        var panelWidth = 65 * panelScale;
+        var panelWidth = WorldMapPanelTargetWidth * panelScale;
         var padding = worldScale;
         var gap = 5 * worldScale;
         var left = (float)worldPosition.X - 153.75f * worldScale + padding;
@@ -1943,14 +1970,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
         LabelWorldMapEnvironment.SetText(mapInfo.CollectionName);
         LabelWorldMapVehicle.SetText(GetDefaultCar(mapInfo));
-        if (mapInfo.MapStyle == "")
+        // curated styles on the diamond take priority over the style embedded in the map file
+        var mapStyle = mapInfo.MapStyle;
+        if (diamond is not null && diamond.Parent.DataAttributeExists("style"))
         {
-            LabelWorldMapStyle.SetText("Unspecified");
+            mapStyle = diamond.Parent.DataAttributeGet("style");
         }
-        else
+        if (mapStyle == "")
         {
-            LabelWorldMapStyle.SetText(mapInfo.MapStyle);
+            mapStyle = "Unspecified";
         }
+        LabelWorldMapStyle.SetText($"Style: $o{mapStyle}");
+        FitWorldMapPanelToStyle();
         if (mapInfo.TMObjective_AuthorTime < 0)
         {
             LabelWorldMapTrackmaster.SetText("-:--.---");
@@ -2854,6 +2885,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         WorldMapPanelHeight = 12;
         WorldMapPanelFromHeight = 12;
         WorldMapPanelTargetHeight = 12;
+        WorldMapPanelTargetWidth = 65;
 
         TM2Cars = new() { "CanyonCar", "StadiumCar", "ValleyCar", "LagoonCar", "TrafficCar", "" };
         TMUFCars = new() { "DesertCar", "SnowCar", "RallyCar", "IslandCar", "BayCar", "CoastCar" };
