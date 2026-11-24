@@ -2401,6 +2401,20 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
     }
 
+    // the "new" dot is only shown on maps revealed by an unlock animation, until they're hovered
+    private void HideWorldDiamondNewDot(CMlFrame diamond)
+    {
+        var dot = (diamond.Controls[2] as CMlQuad)!;
+        if (!dot.Visible)
+        {
+            return;
+        }
+
+        AnimMgr.Flush(dot);
+        AnimMgr.Add(dot, "<quad scale=\"0\"/>", 180, CAnimManager.EAnimManagerEasing.QuadIn);
+        AnimMgr.Add(dot, "<quad hidden=\"1\"/>", Now + 180, 0, CAnimManager.EAnimManagerEasing.Linear);
+    }
+
     private void HoverWorldDiamond(CMlFrame diamond)
     {
         if (HoveredWorldDiamond == diamond)
@@ -2411,6 +2425,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         ClearWorldDiamondHover(false);
         HoveredWorldDiamond = diamond;
         HoveredWorldMapUid = diamond.Parent.DataAttributeGet("mapuid");
+        HideWorldDiamondNewDot(diamond);
         AnimMgr.Flush(diamond);
         AnimMgr.Add(diamond, "<frame scale=\"1.2\"/>", 180, CAnimManager.EAnimManagerEasing.QuadOut);
         if (SelectedWorldDiamond is null)
@@ -2541,17 +2556,23 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     private void RevealWorldDiamond(CMlFrame location, int delay)
     {
         var icon = ((location.Controls[0] as CMlFrame)!.Controls[1] as CMlQuad)!;
+        var dot = ((location.Controls[0] as CMlFrame)!.Controls[2] as CMlQuad)!;
 
         location.DataAttributeSet("revealed", "1");
 
         AnimMgr.Flush(location);
         AnimMgr.Flush(icon);
+        AnimMgr.Flush(dot);
         location.RelativeScale = 4;
         icon.Opacity = 0;
+        dot.Opacity = 0;
+        dot.RelativeScale = 1;
+        dot.Show();
         location.Show();
 
         AnimMgr.Add(location, "<frame scale=\"1\"/>", Now + delay, 700, CAnimManager.EAnimManagerEasing.QuadOut);
         AnimMgr.Add(icon, "<quad opacity=\"1\"/>", Now + delay, 500, CAnimManager.EAnimManagerEasing.QuadOut);
+        AnimMgr.Add(dot, "<quad opacity=\"1\"/>", Now + delay + 500, 300, CAnimManager.EAnimManagerEasing.QuadOut);
         Audio.PlaySoundEvent(CAudioManager.ELibSound.ScoreIncrease, SoundVariant: 0, VolumedB: 0.8f, Delay: delay);
     }
 
@@ -2770,7 +2791,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            RevealWorldDiamond(location, revealDelay + revealCount * 250);
+            // never sooner than 0.7s after the unlock is detected
+            RevealWorldDiamond(location, MathLib.Max(revealDelay, 700) + revealCount * 250);
             revealCount += 1;
         }
 

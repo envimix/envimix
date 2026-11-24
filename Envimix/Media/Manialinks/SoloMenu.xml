@@ -3,6 +3,7 @@
     <framemodel id="FramemodelWorldDiamond">
         <quad size="10 10" halign="center" valign="center" style="Bgs1" substyle="Glow" modulatecolor="0A5" pos="0 0.5" z-index="0" opacity="0.7" hidden="1"/>
         <quad class="WorldDiamond" size="5 5" halign="center" valign="center" scriptevents="1" image="file://Media/Images/DO.png" z-index="1"/>
+        <quad pos="2 -1.5" z-index="2" size="1.5 1.5" style="Icons64x64_1" substyle="LvlYellow" colorize="F80" halign="center" valign="center" hidden="1"/>
     </framemodel>
     <framemodel id="FramemodelMap">
         <quad size="14.75 14.75" halign="center" valign="center" bgcolor="222" opacity="0.75" z-index="0"/>
@@ -359,7 +360,7 @@
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Shattered Worlds -->
-            <frame pos="100.67 -71.99" data-mapuid="hHwz2k4z0WrYPgtYnuTZXmWSUll" data-location="Indonesia" data-car="LagoonCar" data-secret="1" data-unlock="176" hidden="1">
+            <frame pos="100.67 -71.99" data-mapuid="jMKvGNR16d1A0ocMdaRfOQ9U5lg" data-location="Indonesia" data-car="LagoonCar" data-secret="1" data-unlock="176" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Dystopia 2050 -->
