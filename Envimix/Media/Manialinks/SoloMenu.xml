@@ -390,6 +390,10 @@
             <frame pos="47.42 -49.50" data-mapuid="kQOkSENicijagboNk2gXIS3gF0h" data-location="UAE, Dubai" data-car="LagoonCar" data-secret="1" data-unlock="200" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
+            <!-- Atlantic City -->
+            <frame pos="-56.85 -54.70" data-mapuid="ZRMy2gjqz7D0EFRPKS0lNeL6OXc" data-location="Puerto Rico" data-car="LagoonCar" data-secretreward="1" data-unlock="0" hidden="1">
+                <frameinstance modelid="FramemodelWorldDiamond"/>
+            </frame>
         </frame>
     </frame>
     <frame pos="0 -1.5" z-index="1" clip="1" clipsizen="320 130" clipposn="0 25">
