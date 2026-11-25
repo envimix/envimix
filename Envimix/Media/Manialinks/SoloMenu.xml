@@ -81,12 +81,13 @@
 				<quad id="QuadWorldMapMedalSilver" pos="55 -2" z-index="1" size="8 8" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver"/>
 				<quad id="QuadWorldMapMedalGold" pos="54 -2" z-index="2" size="8 8" halign="center" valign="center" style="MedalsBig" substyle="MedalGold"/>
 				<quad id="QuadWorldMapMedalAuthor" pos="53 -2" z-index="3" size="8 8" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo"/>
-                <quad id="QuadWorldMapThumbnail" pos="-0.3 -8.5" z-index="0" size="25 25" bgcolor="FFFA"/>
-                <label id="LabelWorldMapEnvironment" pos="27 -11" z-index="0" size="35 5" text="Canyon" textfont="Oswald" textsize="1" valign="center2" textprefix="Environment: $o"/>
-                <label id="LabelWorldMapVehicle" pos="27 -15" z-index="0" size="35 5" text="StadiumCar" textfont="Oswald" textsize="1" valign="center2" textprefix="Vehicle: $o"/>
-                <label id="LabelWorldMapStyle" pos="27 -19" z-index="0" size="35 5" text="Style: $oOffroad" textfont="Oswald" textsize="1" valign="center2"/>
-                <label id="LabelWorldMapTrackmaster" pos="27 -23" z-index="0" size="35 5" text="0.45.094" textfont="Oswald" textsize="1" valign="center2" textprefix="Trackmaster: $o"/>
-                <label id="LabelWorldMapSecretPlace" pos="27 -31.5" z-index="0" size="35 5" text="Undiscovered" textfont="Oswald" textsize="1" valign="center2" textprefix="Secret Place: $o"/>
+                <quad id="QuadWorldMapThumbnail" pos="-0.3 -8.5" size="25 25" bgcolor="FFFA"/>
+                <label id="LabelWorldMapEnvironment" pos="27 -11" size="35 5" text="Canyon" textfont="Oswald" textsize="1" valign="center2" textprefix="Environment: $o"/>
+                <label id="LabelWorldMapVehicle" pos="27 -15" size="35 5" text="StadiumCar" textfont="Oswald" textsize="1" valign="center2" textprefix="Vehicle: $o"/>
+                <label id="LabelWorldMapStyle" pos="27 -19" size="35 5" text="Style: $oOffroad" textfont="Oswald" textsize="1" valign="center2"/>
+                <label id="LabelWorldMapTrackmaster" pos="27 -23" size="35 5" text="0.45.094" textfont="Oswald" textsize="1" valign="center2" textprefix="Trackmaster: $o"/>
+                <label id="LabelWorldMapSecretPlace" pos="27 -27" size="35 5" text="Undiscovered" textfont="Oswald" textsize="1" valign="center2" textprefix="Secret Place: $o"/>
+                <label id="LabelWorldMapTrailer" pos="27 -32" size="24 6" text="" textcolor="F00" valign="center2" scriptevents="1" textsize="2" style="TextCardRaceRank"/>
                 <frame pos="28.5 -11" hidden="1">
                     <quad z-index="0" size="4 4" halign="center" valign="center" image="file://Media/Images/Environments/Canyon.png"/>
                     <label pos="2.7 -0.2" z-index="0" size="15 5" text="Canyon" textfont="Oswald" textsize="0.7" valign="center2" textprefix="$o"/>
@@ -165,230 +166,233 @@
             </frame>
             <frame id="FrameWorld" z-index="1" hidden="1">
                 <quad class="WorldMapBackground" pos="0 -1" z-index="0" size="307.5 117.5" image="file://Media/Images/World.jpg" halign="center" scriptevents="1"/>
-                <label id="LabelWorldUnlockProgress" pos="152 -114.5" z-index="1" size="150 5" text="...collect medals with the default car unlock more maps" halign="right" textfont="Oswald" textsize="1"/>
-                <gauge id="GaugeWorldNextUnlock" pos="-152 -110" z-index="1" size="40 7.5" drawbg="0" valign="center" ratio="0"/>
-                <label id="LabelWorldNextUnlockProgress" pos="-112.5 -110" z-index="1" size="75 5" text="Next unlock: --" valign="center" textsize="0.7" textfont="OswaldMono" textprefix="$o"/>
-                <gauge id="GaugeWorldCampaignProgress" pos="-152 -114" z-index="1" size="40 7.5" drawbg="0" valign="center" ratio="0"/>
-                <label id="LabelWorldCampaignProgress" pos="-112.5 -114" z-index="1" size="75 5" text="Campaign: --" valign="center" textsize="0.7" textfont="OswaldMono" textprefix="$o"/>
-                <quad pos="-148.5 -94.5" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo"/>
-                <label pos="-146.25 -94.35" z-index="1" size="20 5" text="5 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
-                <quad pos="-148.5 -98" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalGold"/>
-                <label pos="-146.25 -97.8" z-index="1" size="20 5" text="3 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
-                <quad pos="-148.5 -101.5" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver"/>
-                <label pos="-146.25 -101.35" z-index="1" size="20 5" text="2 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
-                <quad pos="-148.5 -105" z-index="1" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze"/>
-                <label pos="-146.25 -104.8" z-index="1" size="20 5" text="1 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                <label id="LabelWorldUnlockProgress" pos="152 -112" z-index="1" size="150 5" text="...collect medals with the default car unlock more maps" halign="right" textfont="Oswald" textsize="0.7" />
+				<label pos="152 -115" z-index="1" size="150 5" text="...report any default car cuts or suggest improvements on $l[https://discord.com/invite/Pb6WV22Xuh]the Opreax Discord server" halign="right" textfont="Oswald" textsize="0.7" />
+                <frame pos="-153.5 -96.5" z-index="1">
+                    <gauge id="GaugeWorldNextUnlock" pos="0 -15" size="40 7.5" drawbg="0" valign="center" ratio="0"/>
+                    <label id="LabelWorldNextUnlockProgress" pos="39.5 -15" size="75 5" text="Next unlock: --" valign="center" textsize="0.7" textfont="OswaldMono" textprefix="$o"/>
+                    <gauge id="GaugeWorldCampaignProgress" pos="0 -18.5" size="40 7.5" drawbg="0" valign="center" ratio="0"/>
+                    <label id="LabelWorldCampaignProgress" pos="39.5 -18.5" size="75 5" text="Campaign: --" valign="center" textsize="0.7" textfont="OswaldMono" textprefix="$o"/>
+                    <quad pos="3.5 0" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalNadeo"/>
+                    <label pos="5.75 0.15" size="20 5" text="5 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                    <quad pos="3.5 -3.5" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalGold"/>
+                    <label pos="5.75 -3.3" size="20 5" text="3 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                    <quad pos="3.5 -7" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalSilver"/>
+                    <label pos="5.75 -6.85" size="20 5" text="2 points" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                    <quad pos="3.5 -10.5" size="3 3" halign="center" valign="center" style="MedalsBig" substyle="MedalBronze"/>
+                    <label pos="5.75 -10.3" size="20 5" text="1 point" valign="center" textfont="OswaldMono" textsize="0.7"/>
+                </frame>
             </frame>
         </frame>
     </frame>
     <frame pos="0 -1.5" z-index="1" clip="1" clipsizen="320 130" clipposn="0 25">
         <frame id="FrameWorldDiamonds" pos="0 80" hidden="1">
             <!-- Northern Pinewoods -->
-            <frame pos="-79.79 -31.75" data-mapuid="CoK2K1SrXgZ4n3geNHvhz8N6ak2" data-location="USA, Minnesota" data-car="CanyonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="0">
+            <frame pos="-79.79 -31.75" data-mapuid="CoK2K1SrXgZ4n3geNHvhz8N6ak2" data-trailer="https://www.youtube.com/watch?v=FG6vsGEvkSw" data-location="USA, Minnesota" data-car="CanyonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="0">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Oak Hills -->
-            <frame pos="15.54 -29.46" data-mapuid="TmbrRy_QxcTPyLoFs4hiTh0o2md" data-location="Europe, Slovakia" data-car="ValleyCar" data-secret="1" data-style="Fullspeed, Wood, Platform" data-unlock="0">
+            <frame pos="15.54 -29.46" data-mapuid="TmbrRy_QxcTPyLoFs4hiTh0o2md" data-trailer="https://www.youtube.com/watch?v=SzIKZdNgIm4" data-location="Europe, Slovakia" data-car="ValleyCar" data-secret="1" data-style="Fullspeed, Wood, Platform" data-unlock="0">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Yukinawa Mountains -->
-            <frame pos="122.03 -34.35" data-mapuid="y9hKJkHzBH7bGyU_Ult0txsjtE5" data-location="Japan" data-car="LagoonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="8" hidden="1">
+            <frame pos="122.03 -34.35" data-mapuid="y9hKJkHzBH7bGyU_Ult0txsjtE5" data-trailer="https://www.youtube.com/watch?v=1JPWBQIBnoc" data-location="Japan" data-car="LagoonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="8" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Vega Complex -->
-            <frame pos="128.50 -97.39" data-mapuid="s48VmJIi7vRYIRy1DorNNlIzeR4" data-location="Australia, Sydney" data-car="StadiumCar" data-secret="1" data-style="Tech" data-unlock="8" hidden="1">
+            <frame pos="128.50 -97.39" data-mapuid="s48VmJIi7vRYIRy1DorNNlIzeR4" data-trailer="https://www.youtube.com/watch?v=UqEw5W2aQ-E" data-location="Australia, Sydney" data-car="StadiumCar" data-secret="1" data-style="Tech" data-unlock="8" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Lava Power Plant -->
-            <frame pos="-84.97 -54.40" data-mapuid="YxSEpxOcVBniCbLJcEIToLAre01" data-location="Mexico" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="16" hidden="1">
+            <frame pos="-84.97 -54.40" data-mapuid="YxSEpxOcVBniCbLJcEIToLAre01" data-trailer="https://www.youtube.com/watch?v=veU96_FEKsk" data-location="Mexico" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="16" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- The Apex Trail -->
-            <frame pos="88.69 -34.96" data-mapuid="2fJ6sA5FeC_zzKOCOyLmNPsnO_g" data-location="Mongolia" data-car="ValleyCar" data-secret="1" data-style="Precision, Tight, Platform" data-unlock="16" hidden="1">
+            <frame pos="88.69 -34.96" data-mapuid="2fJ6sA5FeC_zzKOCOyLmNPsnO_g" data-trailer="https://www.youtube.com/watch?v=FXEt-D-L7BE" data-location="Mongolia" data-car="ValleyCar" data-secret="1" data-style="Precision, Tight, Platform" data-unlock="16" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Swamp Of Sorrows -->
-            <frame pos="42.89 -23.03" data-mapuid="3QAI3e38MF7CA94dGfTR2HQARD3" data-location="Russia" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Offroad" data-unlock="24" hidden="1">
+            <frame pos="42.89 -23.03" data-mapuid="3QAI3e38MF7CA94dGfTR2HQARD3" data-trailer="https://www.youtube.com/watch?v=f-0-5rKXsUo" data-location="Russia" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Offroad" data-unlock="24" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Jungle Of The Setting Sun -->
-            <frame pos="40.14 -85.45" data-mapuid="420oxrqDl6RDaMIQF969GsSOgF6" data-location="Africa, Madagascar" data-car="LagoonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="24" hidden="1">
+            <frame pos="40.14 -85.45" data-mapuid="420oxrqDl6RDaMIQF969GsSOgF6" data-trailer="https://www.youtube.com/watch?v=go2gsZz74no" data-location="Africa, Madagascar" data-car="LagoonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="24" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- The Biofarm -->
-            <frame pos="-91.93 -40.78" data-mapuid="gZTMJ9yHCXZFQNmciCfsW0devee" data-location="USA, Colorado" data-car="CanyonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="32" hidden="1">
+            <frame pos="-91.93 -40.78" data-mapuid="gZTMJ9yHCXZFQNmciCfsW0devee" data-trailer="https://www.youtube.com/watch?v=W_PtUv3Glog" data-location="USA, Colorado" data-car="CanyonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="32" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Sky Net -->
-            <frame pos="-132.06 -17.52" data-mapuid="UJbNzVWI0v_mx0DPQsmr0EIFQnb" data-location="USA, Alaska" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift" data-unlock="32" hidden="1">
+            <frame pos="-132.06 -17.52" data-mapuid="UJbNzVWI0v_mx0DPQsmr0EIFQnb" data-trailer="https://www.youtube.com/watch?v=CurPKUPKHzQ" data-location="USA, Alaska" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift" data-unlock="32" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Metropolis -->
-            <frame pos="99.53 -94.79" data-mapuid="BQBJicP5twORuaF3JXpRkQlcXIh" data-location="Australia, Perth" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Platform" data-unlock="40" hidden="1">
+            <frame pos="99.53 -94.79" data-mapuid="BQBJicP5twORuaF3JXpRkQlcXIh" data-trailer="https://www.youtube.com/watch?v=wUcbs5SGXCw" data-location="Australia, Perth" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Platform" data-unlock="40" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Upstream -->
-            <frame pos="92.41 -58.68" data-mapuid="OBEZ97UMcXasFLiqLfRaPm3wY91" data-location="Vietnam" data-car="ValleyCar" data-secret="1" data-style="Fullspeed, Precision, Tight" data-unlock="40" hidden="1">
+            <frame pos="92.41 -58.68" data-mapuid="OBEZ97UMcXasFLiqLfRaPm3wY91" data-trailer="https://www.youtube.com/watch?v=lIgS_DeS53Q" data-location="Vietnam" data-car="ValleyCar" data-secret="1" data-style="Fullspeed, Precision, Tight" data-unlock="40" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Altima -->
-            <frame pos="93.54 -45.52" data-mapuid="txuUnyAR_p5V_uop31PaoibbU26" data-location="China" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech, Platform" data-unlock="48" hidden="1">
+            <frame pos="93.54 -45.52" data-mapuid="txuUnyAR_p5V_uop31PaoibbU26" data-trailer="https://www.youtube.com/watch?v=uMsfsZA3Qvk" data-location="China" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech, Platform" data-unlock="48" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Augmented Reality -->
-            <frame pos="-39.33 -87.60" data-mapuid="gzkrRYRd9AWTqACJGqWGwwGaMcm" data-location="Brazil, Sao Paulo" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Platform, Nodrift" data-unlock="48" hidden="1">
+            <frame pos="-39.33 -87.60" data-mapuid="gzkrRYRd9AWTqACJGqWGwwGaMcm" data-trailer="https://www.youtube.com/watch?v=mvWEmtJIrH0" data-location="Brazil, Sao Paulo" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Platform, Nodrift" data-unlock="48" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Cargo Isles -->
-            <frame pos="-66.52 -49.50" data-mapuid="o6SOwSGUylfbTROCOHqTm_eEkDe" data-location="Bahamas" data-car="LagoonCar" data-secret="1" data-style="Fullspeed" data-unlock="56" hidden="1">
+            <frame pos="-66.52 -49.50" data-mapuid="o6SOwSGUylfbTROCOHqTm_eEkDe" data-trailer="https://www.youtube.com/watch?v=Unybgt-dclo" data-location="Bahamas" data-car="LagoonCar" data-secret="1" data-style="Fullspeed" data-unlock="56" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Zenlands -->
-            <frame pos="1.29 -31.75" data-mapuid="2E8U5zKkYv_GyDoGyEjzqxQt1Lb" data-location="Europe, France" data-car="ValleyCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="56" hidden="1">
+            <frame pos="1.29 -31.75" data-mapuid="2E8U5zKkYv_GyDoGyEjzqxQt1Lb" data-trailer="https://www.youtube.com/watch?v=ocsFFn0hoD4" data-location="Europe, France" data-car="ValleyCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="56" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Desert Catacombs -->
-            <frame pos="-7.28 -53.02" data-mapuid="CG12yY4wUAqiVSRXzJjFP6CWmfi" data-location="Africa, Mauritania" data-car="StadiumCar" data-secret="1" data-unlock="64" hidden="1">
+            <frame pos="-7.28 -53.02" data-mapuid="CG12yY4wUAqiVSRXzJjFP6CWmfi" data-trailer="https://www.youtube.com/watch?v=WGtBMnGZF7g" data-location="Africa, Mauritania" data-car="StadiumCar" data-secret="1" data-unlock="64" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Raven Island -->
-            <frame pos="-63.93 -106.57" data-mapuid="7WW9Lzx5LidyV0JV_8CbzojfEmk" data-location="South America, Chile" data-car="LagoonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="64" hidden="1">
+            <frame pos="-63.93 -106.57" data-mapuid="7WW9Lzx5LidyV0JV_8CbzojfEmk" data-trailer="https://www.youtube.com/watch?v=wLosdUqC3V0" data-location="South America, Chile" data-car="LagoonCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="64" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Toxic Foundry -->
-            <frame pos="76.55 -26.24" data-mapuid="gzJ0EVAz71xL39gr7uIGHO6k0H1" data-location="Russia" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Platform, Tech" data-unlock="72" hidden="1">
+            <frame pos="76.55 -26.24" data-mapuid="gzJ0EVAz71xL39gr7uIGHO6k0H1" data-trailer="https://www.youtube.com/watch?v=OxFn-x6olO8" data-location="Russia" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Platform, Tech" data-unlock="72" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Xenon Station -->
-            <frame pos="-36.41 -10.33" data-mapuid="v8blcMwxvpT62rUTIKs3eOATvQf" data-location="Orbit above Greenland" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift" data-unlock="72" hidden="1">
+            <frame pos="-36.41 -10.33" data-mapuid="v8blcMwxvpT62rUTIKs3eOATvQf" data-trailer="https://www.youtube.com/watch?v=O7qkyQCqyfE" data-location="Orbit above Greenland" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift" data-unlock="72" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Zenith -->
-            <frame pos="55.35 -33.13" data-mapuid="lSw0W6WMb13k_RhL1qUlQ1HIN1e" data-location="Kazakhstan" data-car="ValleyCar" data-secret="1" data-unlock="80" hidden="1">
+            <frame pos="55.35 -33.13" data-mapuid="lSw0W6WMb13k_RhL1qUlQ1HIN1e" data-trailer="https://www.youtube.com/watch?v=7rRGwTGBLWo" data-location="Kazakhstan" data-car="ValleyCar" data-secret="1" data-unlock="80" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Fortress Of The Legends -->
-            <frame pos="17.48 -79.79" data-mapuid="ajwMsBW_crWC_iwmTnDQjlJHara" data-location="Africa, Angola" data-car="LagoonCar" data-secret="1" data-style="Brake, Platform" data-unlock="80" hidden="1">
+            <frame pos="17.48 -79.79" data-mapuid="ajwMsBW_crWC_iwmTnDQjlJHara" data-trailer="https://www.youtube.com/watch?v=NwVUSQDUE2Y" data-location="Africa, Angola" data-car="LagoonCar" data-secret="1" data-style="Brake, Platform" data-unlock="80" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Trinity Of Spectrum -->
-            <frame pos="-98.72 -41.39" data-mapuid="BETU0u7eWzwE3xF3HzZTMwcIl86" data-location="USA, Los Angeles" data-car="StadiumCar" data-secret="1" data-style="Tech" data-unlock="88" hidden="1">
+            <frame pos="-98.72 -41.39" data-mapuid="BETU0u7eWzwE3xF3HzZTMwcIl86" data-trailer="https://www.youtube.com/watch?v=0C4PsPqxyfE" data-location="USA, Los Angeles" data-car="StadiumCar" data-secret="1" data-style="Tech" data-unlock="88" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Tempest Rocks -->
-            <frame pos="13.43 -36.49" data-mapuid="FUwKmAszyFCLSxO4RMedImJSFS1" data-location="Europe, Italy" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="88" hidden="1">
+            <frame pos="13.43 -36.49" data-mapuid="FUwKmAszyFCLSxO4RMedImJSFS1" data-trailer="https://www.youtube.com/watch?v=HvbcSyUbF7M" data-location="Europe, Italy" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="88" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Tokyo -->
-            <frame pos="119.28 -40.63" data-mapuid="qgAYPF6PGhCnfbMSrGHHvl_Cug1" data-location="Japan, Tokyo" data-car="CanyonCar" data-secret="1" data-style="Tech, Fullspeed, Platform" data-unlock="96" hidden="1">
+            <frame pos="119.28 -40.63" data-mapuid="qgAYPF6PGhCnfbMSrGHHvl_Cug1" data-trailer="https://www.youtube.com/watch?v=1aeh065po4k" data-location="Japan, Tokyo" data-car="CanyonCar" data-secret="1" data-style="Tech, Fullspeed, Platform" data-unlock="96" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Forest Tribe -->
-            <frame pos="-47.74 -96.16" data-mapuid="e6ribk2a6jbS0ty0gL2bjBvFExg" data-location="South America, Uruguay" data-car="ValleyCar" data-secret="1" data-style="Offroad, Brake" data-unlock="96" hidden="1">
+            <frame pos="-47.74 -96.16" data-mapuid="e6ribk2a6jbS0ty0gL2bjBvFExg" data-trailer="https://www.youtube.com/watch?v=Y7Qr8pt23Yg" data-location="South America, Uruguay" data-car="ValleyCar" data-secret="1" data-style="Offroad, Brake" data-unlock="96" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Castle On The Jade Peak -->
-            <frame pos="7.93 -31.45" data-mapuid="J1AqdJ3VNtbOUmqK5KLORBV4Yvd" data-location="Europe, Switzerland" data-car="ValleyCar" data-secret="1" data-style="Offroad, Gravel" data-unlock="104" hidden="1">
+            <frame pos="7.93 -31.45" data-mapuid="J1AqdJ3VNtbOUmqK5KLORBV4Yvd" data-trailer="https://www.youtube.com/watch?v=T0hwzbPPR1E" data-location="Europe, Switzerland" data-car="ValleyCar" data-secret="1" data-style="Offroad, Gravel" data-unlock="104" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Wetlands -->
-            <frame pos="98.24 -66.18" data-mapuid="F0K6gX67q7uh0DaX68uBfdvype2" data-location="Malaysia" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Wood" data-unlock="104" hidden="1">
+            <frame pos="98.24 -66.18" data-mapuid="F0K6gX67q7uh0DaX68uBfdvype2" data-trailer="https://www.youtube.com/watch?v=93GN9X0YN78" data-location="Malaysia" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Wood" data-unlock="104" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <!-- Glacial Cavern (not validated yet, gives no medal points) -->
-            <frame pos="-16.02 -17.22" data-mapuid="sPn6o4YBm2kiGFLUrY8VNKabQu7" data-location="Iceland" data-car="StadiumCar" data-secret="1" data-style="Fullspeed" data-unlock="112" hidden="1">
+            <!-- Glacial Cavern -->
+            <frame pos="-16.02 -17.22" data-mapuid="sPn6o4YBm2kiGFLUrY8VNKabQu7" data-trailer="https://www.youtube.com/watch?v=gudOkakbOmY" data-location="Iceland" data-car="StadiumCar" data-secret="1" data-style="Fullspeed" data-unlock="112" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- The Portal -->
-            <frame pos="144.69 -106.11" data-mapuid="Q5bBcyZqKLSBShoBF3jQl7aSZbf" data-location="New Zealand" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Platform" data-unlock="112" hidden="1">
+            <frame pos="144.69 -106.11" data-mapuid="Q5bBcyZqKLSBShoBF3jQl7aSZbf" data-trailer="https://www.youtube.com/watch?v=8_BTUPYh6rs" data-location="New Zealand" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Platform" data-unlock="112" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Oil Processing Rig -->
-            <frame pos="65.71 -94.94" data-mapuid="ejGj9aFoPyGweyAxvCTC17V9Hik" data-location="Indian Ocean" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="120" hidden="1">
+            <frame pos="65.71 -94.94" data-mapuid="ejGj9aFoPyGweyAxvCTC17V9Hik" data-trailer="https://www.youtube.com/watch?v=b_vw47u_49E" data-location="Indian Ocean" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="120" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Simulation Cube -->
-            <frame pos="101.64 -48.89" data-mapuid="iHT2VUImhNVig3wa89oNpTtXdg4" data-location="China" data-car="LagoonCar" data-secret="1" data-style="Rollercoaster, Fullspeed" data-unlock="120" hidden="1">
+            <frame pos="101.64 -48.89" data-mapuid="iHT2VUImhNVig3wa89oNpTtXdg4" data-trailer="https://www.youtube.com/watch?v=dkNWBj7yUqM" data-location="China" data-car="LagoonCar" data-secret="1" data-style="Rollercoaster, Fullspeed" data-unlock="120" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Duplex -->
-            <frame pos="88.53 -68.16" data-mapuid="kh4Txjv4YkcSQBL0syOnjI1Zkw3" data-location="Singapore" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift" data-unlock="128" hidden="1">
+            <frame pos="88.53 -68.16" data-mapuid="kh4Txjv4YkcSQBL0syOnjI1Zkw3" data-trailer="https://www.youtube.com/watch?v=93PmXUTFEj0" data-location="Singapore" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift" data-unlock="128" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
-            <!-- Shadowhunter (not validated yet, gives no medal points) -->
-            <frame pos="22.17 -47.97" data-mapuid="zUsD4XD2ndyLmOaBHXmJsTAFJ46" data-location="Africa, Egypt" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Tech, Offroad" data-unlock="128" hidden="1">
+            <!-- Shadowhunter -->
+            <frame pos="22.17 -47.97" data-mapuid="DqEOMUhaBUxaBGPCB5rQHyVfSpd" data-trailer="https://www.youtube.com/watch?v=S-dHJGWs9X0" data-location="Africa, Egypt" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Tech, Offroad" data-unlock="128" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Underground Research Facility -->
-            <frame pos="87.88 -13.70" data-mapuid="yqVrxOcdyVybF0eiCYruc2Zug7h" data-location="Russia" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="136" hidden="1">
+            <frame pos="87.88 -13.70" data-mapuid="yqVrxOcdyVybF0eiCYruc2Zug7h" data-trailer="https://www.youtube.com/watch?v=AFqpJHh9KIs" data-location="Russia" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="136" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Temple At Azure Summit -->
-            <frame pos="-3.24 -23.95" data-mapuid="ZE2rhVa9cgVy_Umrh6ZXSXhX1Zm" data-location="United Kingdom, Scotland" data-car="ValleyCar" data-secret="1" data-style="Platform" data-unlock="136" hidden="1">
+            <frame pos="-3.24 -23.95" data-mapuid="ZE2rhVa9cgVy_Umrh6ZXSXhX1Zm" data-trailer="https://www.youtube.com/watch?v=Wwf5KlV1pbc" data-location="United Kingdom, Scotland" data-car="ValleyCar" data-secret="1" data-style="Platform" data-unlock="136" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Hong Kong District -->
-            <frame pos="96.78 -51.34" data-mapuid="PINMK3Lia630fD4OS13P_YyRygc" data-location="Hong Kong" data-car="LagoonCar" data-secret="1" data-style="Handbrake, Drift, Platform" data-unlock="144" hidden="1">
+            <frame pos="96.78 -51.34" data-mapuid="PINMK3Lia630fD4OS13P_YyRygc" data-trailer="https://www.youtube.com/watch?v=xoQp5Ucb2kw" data-location="Hong Kong" data-car="LagoonCar" data-secret="1" data-style="Handbrake, Drift, Platform" data-unlock="144" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Kiribati -->
-            <frame pos="146.14 -70.77" data-mapuid="l656czpY_cuFdowrpvBteTHoQA4" data-location="Pacific Ocean, Kiribati" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="144" hidden="1">
+            <frame pos="146.14 -70.77" data-mapuid="l656czpY_cuFdowrpvBteTHoQA4" data-trailer="https://www.youtube.com/watch?v=Y3PtXEZ9zeE" data-location="Pacific Ocean, Kiribati" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="144" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Planetarium -->
-            <frame pos="32.21 -38.02" data-mapuid="V_SjT2HAmznYoRSUpNwpLNGLGN7" data-location="Turkey" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift, Tech" data-unlock="152" hidden="1">
+            <frame pos="32.21 -38.02" data-mapuid="V_SjT2HAmznYoRSUpNwpLNGLGN7" data-trailer="https://www.youtube.com/watch?v=nZSgjFf9j9g" data-location="Turkey" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Nodrift, Tech" data-unlock="152" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Infested Sewers -->
-            <frame pos="-75.58 -35.58" data-mapuid="o7Q6iUOxmQtTm2sNUcyQyL8HVv5" data-location="USA, Chicago" data-car="ValleyCar" data-secret="1" data-style="Precision, Tight" data-unlock="152" hidden="1">
+            <frame pos="-75.58 -35.58" data-mapuid="o7Q6iUOxmQtTm2sNUcyQyL8HVv5" data-trailer="https://www.youtube.com/watch?v=ZTrDzC83R5c" data-location="USA, Chicago" data-car="ValleyCar" data-secret="1" data-style="Precision, Tight" data-unlock="152" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Timeless Mist -->
-            <frame pos="-56.97 -73.98" data-mapuid="EsPF3q3dVmjsISzNSRSI8DFDep8" data-location="Brazil, Amazonas" data-car="LagoonCar" data-secret="1" data-style="Rollercoaster, Fullspeed" data-unlock="160" hidden="1">
+            <frame pos="-56.97 -73.98" data-mapuid="EsPF3q3dVmjsISzNSRSI8DFDep8" data-trailer="https://www.youtube.com/watch?v=UTR4ZGA3G30" data-location="Brazil, Amazonas" data-car="LagoonCar" data-secret="1" data-style="Rollercoaster, Fullspeed" data-unlock="160" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Tomb Of White Serpent -->
-            <frame pos="11.65 -70.00" data-mapuid="JTuklS_vYqGojPPNGd8FdcOrtr3" data-location="Africa, Kongo" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Offroad, Tech" data-unlock="160" hidden="1">
+            <frame pos="11.65 -70.00" data-mapuid="JTuklS_vYqGojPPNGd8FdcOrtr3" data-trailer="https://www.youtube.com/watch?v=mT9verdUWlQ" data-location="Africa, Kongo" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Offroad, Tech" data-unlock="160" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Sanctuary Of Elements -->
-            <frame pos="67.00 -51.64" data-mapuid="0MOBzvFck6RTi8erVfL07_tBxa7" data-location="India" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Platform" data-unlock="168" hidden="1">
+            <frame pos="67.00 -51.64" data-mapuid="0MOBzvFck6RTi8erVfL07_tBxa7" data-trailer="https://www.youtube.com/watch?v=LQeL6Qv6K3I" data-location="India" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Platform" data-unlock="168" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Astral Rift -->
-            <frame pos="22.82 -16.61" data-mapuid="f4rWWXixebbz901VMEkbmmJiI32" data-location="Europe, Finland" data-car="ValleyCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="168" hidden="1">
+            <frame pos="22.82 -16.61" data-mapuid="f4rWWXixebbz901VMEkbmmJiI32" data-trailer="https://www.youtube.com/watch?v=Nk2s_-aOsOY" data-location="Europe, Finland" data-car="ValleyCar" data-secret="1" data-style="Offroad, Fullspeed" data-unlock="168" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Shattered Worlds -->
-            <frame pos="100.67 -71.99" data-mapuid="jMKvGNR16d1A0ocMdaRfOQ9U5lg" data-location="Indonesia" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Offroad, Rollercoaster" data-unlock="176" hidden="1">
+            <frame pos="100.67 -71.99" data-mapuid="jMKvGNR16d1A0ocMdaRfOQ9U5lg" data-trailer="https://www.youtube.com/watch?v=ITKNGPulf9M" data-location="Indonesia" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Offroad, Rollercoaster" data-unlock="176" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Dystopia 2050 -->
-            <frame pos="-64.09 -38.48" data-mapuid="UK1CAfU1BB2gLPexSuGZRskKETa" data-location="USA, New York" data-car="StadiumCar" data-secret="1" data-style="Tech" data-unlock="176" hidden="1">
+            <frame pos="-64.09 -38.48" data-mapuid="UK1CAfU1BB2gLPexSuGZRskKETa" data-trailer="https://www.youtube.com/watch?v=5Ign-7u_n4U" data-location="USA, New York" data-car="StadiumCar" data-secret="1" data-style="Tech" data-unlock="176" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Ocean Vortex -->
-            <frame pos="-36.90 -45.83" data-mapuid="rmw9AuOLxv6gsoycK6oL1VOrkMl" data-location="Atlantic Ocean" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Rollercoaster, Wood" data-unlock="184" hidden="1">
+            <frame pos="-36.90 -45.83" data-mapuid="rmw9AuOLxv6gsoycK6oL1VOrkMl" data-trailer="https://www.youtube.com/watch?v=5OEMyrD4aLk" data-location="Atlantic Ocean" data-car="LagoonCar" data-secret="1" data-style="Fullspeed, Rollercoaster, Wood" data-unlock="184" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Echoing Caves -->
-            <frame pos="-90.15 -20.58" data-mapuid="W2hoVPEqV6hVYMtBtklmf2GLRg6" data-location="Canada" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech, Wood" data-unlock="184" hidden="1">
+            <frame pos="-90.15 -20.58" data-mapuid="W2hoVPEqV6hVYMtBtklmf2GLRg6" data-trailer="https://www.youtube.com/watch?v=5JDgpbklnlo" data-location="Canada" data-car="CanyonCar" data-secret="1" data-style="Fullspeed, Tech, Wood" data-unlock="184" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- The Ancient Ruins -->
-            <frame pos="8.90 -18.75" data-mapuid="xprl_Xc8SBR835UW357OCoHNgmj" data-location="Europe, Norway" data-car="ValleyCar" data-secret="1" data-style="Offroad, Platform" data-unlock="192" hidden="1">
+            <frame pos="8.90 -18.75" data-mapuid="xprl_Xc8SBR835UW357OCoHNgmj" data-trailer="https://www.youtube.com/watch?v=msUp2h9dUcI" data-location="Europe, Norway" data-car="ValleyCar" data-secret="1" data-style="Offroad, Platform" data-unlock="192" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Botanical Gardens -->
-            <frame pos="-5.34 -37.72" data-mapuid="zA906S0ZRgGed5UAmE93agMUQVh" data-location="Europe, Spain" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="192" hidden="1">
+            <frame pos="-5.34 -37.72" data-mapuid="zA906S0ZRgGed5UAmE93agMUQVh" data-trailer="https://www.youtube.com/watch?v=seLXZuNPetE" data-location="Europe, Spain" data-car="StadiumCar" data-secret="1" data-style="Fullspeed, Tech" data-unlock="192" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Enymultek 2145 -->
-            <frame pos="109.41 -40.47" data-mapuid="Y8WavMgkTn1Vq1rrLtBXryD0Qd7" data-location="South Korea" data-car="ValleyCar" data-secret="1" data-style="Fullspeed, Tech, Platform" data-unlock="200" hidden="1">
+            <frame pos="109.41 -40.47" data-mapuid="Y8WavMgkTn1Vq1rrLtBXryD0Qd7" data-trailer="https://www.youtube.com/watch?v=YGQ_pcO52hc" data-location="South Korea" data-car="ValleyCar" data-secret="1" data-style="Fullspeed, Tech, Platform" data-unlock="200" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Singularity -->
-            <frame pos="47.42 -49.50" data-mapuid="kQOkSENicijagboNk2gXIS3gF0h" data-location="UAE, Dubai" data-car="LagoonCar" data-secret="1" data-style="Fullspeed" data-unlock="200" hidden="1">
+            <frame pos="47.42 -49.50" data-mapuid="kQOkSENicijagboNk2gXIS3gF0h" data-trailer="https://www.youtube.com/watch?v=je2prxbxEhM" data-location="UAE, Dubai" data-car="LagoonCar" data-secret="1" data-style="Fullspeed" data-unlock="200" hidden="1">
                 <frameinstance modelid="FramemodelWorldDiamond"/>
             </frame>
             <!-- Atlantic City -->

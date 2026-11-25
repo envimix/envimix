@@ -118,6 +118,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelWorldMapVehicle;
     [ManialinkControl] public required CMlLabel LabelWorldMapStyle;
     [ManialinkControl] public required CMlLabel LabelWorldMapTrackmaster;
+    [ManialinkControl] public required CMlLabel LabelWorldMapTrailer;
     [ManialinkControl] public required CMlLabel LabelWorldMapSecretPlace;
     [ManialinkControl] public required CMlQuad QuadWorldMapMedalAuthor;
     [ManialinkControl] public required CMlQuad QuadWorldMapMedalGold;
@@ -430,6 +431,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         MouseClick += (control, controlId) =>
         {
+            if (control == LabelWorldMapTrailer && FrameWorld.Visible && EnableMenuNavigationInputs)
+            {
+                var trailerUrl = control.DataAttributeGet("trailer");
+                if (trailerUrl != "")
+                {
+                    OpenLink(trailerUrl, CMlScript.LinkType.ExternalBrowser);
+                }
+            }
             if (control.HasClass("WorldMapBackground") && FrameWorld.Visible && EnableMenuNavigationInputs)
             {
                 DeselectWorldDiamond();
@@ -1952,6 +1961,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     private void UpdateWorldMapDetails(CMapInfo mapInfo)
     {
         LabelWorldMapName.SetText(mapInfo.Name);
+        var trailerUrl = "";
         var diamond = SelectedWorldDiamond;
         if (diamond is null)
         {
@@ -1961,7 +1971,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         {
             WorldMapPanelDiamond = diamond;
             LabelWorldMapLocation.SetText(diamond.Parent.DataAttributeGet("location"));
+            if (diamond.Parent.DataAttributeExists("trailer"))
+            {
+                trailerUrl = diamond.Parent.DataAttributeGet("trailer");
+            }
         }
+
+        LabelWorldMapTrailer.Visible = trailerUrl != "";
+        LabelWorldMapTrailer.DataAttributeSet("trailer", trailerUrl);
 
         var thumbnailUrl = $"file://Thumbnails/MapUid/{mapInfo.MapUid}";
         if (QuadWorldMapThumbnail.ImageUrl != thumbnailUrl)
