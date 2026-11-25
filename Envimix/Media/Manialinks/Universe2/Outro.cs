@@ -22,6 +22,8 @@ public class Outro : CTmMlScriptIngame, IContext
     [Netwrite(NetFor.UI)] public string ClientCar { get; set; }
 
     [Local(LocalFor.LocalUser)] public string EnvimixOpenMapUid { get; set; } = "";
+    // filled by the solo menu with world maps the player hasn't unlocked yet (map uid -> reason)
+    [Local(LocalFor.LocalUser)] public Dictionary<string, string> LockedWorldMaps { get; set; }
 
     [Netread] public bool ReplaySaved { get; set; }
 
@@ -322,6 +324,7 @@ public class Outro : CTmMlScriptIngame, IContext
     private ImmutableArray<string> GetAllMaps()
     {
         ImmutableArray<string> allMaps = new();
+        var lockedWorldMaps = LockedWorldMaps;
         foreach (var campaign in DataFileMgr.Campaigns)
         {
             foreach (var mapGroup in campaign.MapGroups)
@@ -329,6 +332,14 @@ public class Outro : CTmMlScriptIngame, IContext
                 for (var i = 0; i < mapGroup.MapInfos.Count; i++)
                 {
                     var mapInfo = mapGroup.MapInfos[i];
+
+                    // skip world maps that aren't unlocked yet, EnvimixSolo would kick out of them anyway
+                    // the current map is always kept so the prev/next index stays anchored
+                    if (mapInfo.MapUid != Map.MapInfo.MapUid && lockedWorldMaps.ContainsKey(mapInfo.MapUid))
+                    {
+                        continue;
+                    }
+
                     allMaps.Add(mapInfo.MapUid);
                 }
             }
