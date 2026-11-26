@@ -82,23 +82,23 @@
 					</frame>
 					<label pos="-5.5 -10" z-index="0" size="33 4" text="$aaa[unknown mode]" textsize="2" textfont="BiryaniDemiBold" id="LabelMode"/>
                     <label pos="-5.5 -14.25" z-index="0" size="33 4" text="10:00" textsize="1.5" textfont="BiryaniDemiBold" id="LabelTimeLimit" textcolor="AAA"/>
-					<frame pos="33 -11.5">
-						<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5"/>
-						<quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadButtonModeHelp" data-nav="True"/>
-						<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" opacity=".8" style="TextTitle3"/>
-					</frame>
-                    <frame pos="33 -18.5" id="FrameButtonServerDetails">
-                        <quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5" />
-                        <quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".1" id="QuadButtonServerDetails" data-nav="True" />
-						<quad z-index="1" size="4.5 4.5" image="file://Media/Images/Discord.png" halign="center" valign="center" />
-                    </frame>
-                    <frame pos="33 -25.5" id="FrameButtonSessionDetails">
-                        <quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5" />
-                        <quad pos="0 0" z-index="0" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadButtonSessionDetails" data-nav="True" />
-						<label z-index="1" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2" pos="0 -.35" translate="1" style="TextTitle3" id="LabelButtonSessionDetails" />
-                    </frame>
 					<label pos="-5.5 -23" z-index="0" size="18 5" textprefix="📷 " text="0/10$ff0🔒" textfont="RajdhaniMono" valign="bottom" textsize="2" id="LabelSpectatorCount" scriptevents="1" style="TextCardRaceRank"/>
 					<label pos="-5.5 -28" z-index="0" size="18 5" textprefix="👥 " text="0/10$ff0🔒" textfont="RajdhaniMono" valign="bottom" textsize="2" id="LabelPlayerCount" scriptevents="1" style="TextCardRaceRank"/>
+				</frame>
+				<frame pos="33 -46.5">
+					<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5"/>
+					<quad pos="0 0" z-index="1" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadButtonModeHelp" data-nav="True"/>
+					<label z-index="2" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2.5" pos="0 -.35" translate="1" opacity=".8" style="TextTitle3"/>
+				</frame>
+				<frame pos="33 -53.5" id="FrameButtonServerDetails">
+					<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5" />
+					<quad pos="0 0" z-index="1" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadButtonServerDetails" data-nav="True" />
+					<quad z-index="2" size="4.5 4.5" image="file://Media/Images/Discord.png" halign="center" valign="center" />
+				</frame>
+				<frame pos="33 -60.5" id="FrameButtonSessionDetails">
+					<quad pos="0 0" z-index="0" size="8 7" style="Bgs1" substyle="BgCardList" halign="center" valign="center" modulatecolor="258" opacity=".5" />
+					<quad pos="0 0" z-index="1" size="7.75 6.75" halign="center" valign="center2" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" colorize="258" opacity=".5" id="QuadButtonSessionDetails" data-nav="True" />
+					<label z-index="2" size="6 5" text="" halign="center" valign="center2" textfont="RajdhaniMono" textsize="2" pos="0 -.35" translate="1" style="TextTitle3" id="LabelButtonSessionDetails" />
 				</frame>
 				<frame pos="0 -68">
 					<quad size="79 10" style="Bgs1" substyle="BgCardList" halign="center" modulatecolor="F00" opacity=".5"/>
