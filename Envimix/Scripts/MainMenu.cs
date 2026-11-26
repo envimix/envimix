@@ -313,6 +313,7 @@ public class MainMenu : CManiaAppTitle, IContext
         // events cannot use yield inside, so we collect lb request and process it after event loop
         var lbRequestMapUid = "";
         var lbRequestLaps = 0;
+        var lbRequestZone = "World";
         ImmutableArray<string> lbRequestCars = new();
 
         foreach (var e in PendingEvents)
@@ -391,6 +392,11 @@ public class MainMenu : CManiaAppTitle, IContext
                             lbRequestMapUid = e.CustomEventData[0];
                             lbRequestLaps = TextLib.ToInteger(e.CustomEventData[1]);
                             lbRequestCars.FromJson(e.CustomEventData[2]);
+                            lbRequestZone = "World";
+                            if (e.CustomEventData.Count > 3 && e.CustomEventData[3] != "")
+                            {
+                                lbRequestZone = e.CustomEventData[3];
+                            }
                             break;
                         case "Quickplay":
                             ImmutableArray<string> unlockedMapUids = new();
@@ -440,7 +446,7 @@ public class MainMenu : CManiaAppTitle, IContext
 
         if (lbRequestMapUid != "")
         {
-            RequestLeaderboards(lbRequestMapUid, lbRequestLaps, lbRequestCars);
+            RequestLeaderboards(lbRequestMapUid, lbRequestLaps, lbRequestCars, lbRequestZone);
         }
 
         CheckToken();
@@ -615,11 +621,18 @@ public class MainMenu : CManiaAppTitle, IContext
             RestoreRecordsRequest = null;
         }
 
-        ImmutableArray<string> mapUidsToRemove = new();
+        ImmutableArray<string> requestKeysToRemove = new();
 
-        foreach (var (mapUid, requests) in LeaderboardRequests)
+        foreach (var (requestKey, requests) in LeaderboardRequests)
         {
             ImmutableArray<string> lbRequestsToRemove = new();
+            IList<string> requestKeyParts = TextLib.Split("@", requestKey);
+            var mapUid = requestKeyParts[0];
+            var zone = "World";
+            if (requestKeyParts.Count > 1)
+            {
+                zone = requestKeyParts[1];
+            }
 
             foreach (var (car, request) in requests)
             {
@@ -630,13 +643,13 @@ public class MainMenu : CManiaAppTitle, IContext
 
                 if (request.StatusCode == 200)
                 {
-                    Log($"Leaderboard from map {mapUid} for car {car} received (200).");
-                    LayerCustomEvent(SoloMenuLayer, "LeaderboardData", new[] { mapUid, car, request.Result });
+                    Log($"Leaderboard from map {mapUid} for car {car} in zone {zone} received (200).");
+                    LayerCustomEvent(SoloMenuLayer, "LeaderboardData", new[] { mapUid, car, request.Result, zone });
                 }
                 else
                 {
-                    Log($"Leaderboard request from map {mapUid} for car {car} failed ({request.StatusCode}).");
-                    LayerCustomEvent(SoloMenuLayer, "LeaderboardError", new[] { mapUid, car, request.StatusCode.ToString() });
+                    Log($"Leaderboard request from map {mapUid} for car {car} in zone {zone} failed ({request.StatusCode}).");
+                    LayerCustomEvent(SoloMenuLayer, "LeaderboardError", new[] { mapUid, car, request.StatusCode.ToString(), zone });
                 }
 
                 Http.Destroy(request);
@@ -645,18 +658,18 @@ public class MainMenu : CManiaAppTitle, IContext
 
             foreach (var car in lbRequestsToRemove)
             {
-                LeaderboardRequests[mapUid].Remove(car);
+                LeaderboardRequests[requestKey].Remove(car);
             }
 
-            if (LeaderboardRequests[mapUid].Count == 0)
+            if (LeaderboardRequests[requestKey].Count == 0)
             {
-                mapUidsToRemove.Add(mapUid);
+                requestKeysToRemove.Add(requestKey);
             }
         }
 
-        foreach (var mapUid in mapUidsToRemove)
+        foreach (var requestKey in requestKeysToRemove)
         {
-            LeaderboardRequests.Remove(mapUid);
+            LeaderboardRequests.Remove(requestKey);
         }
     }
 
@@ -1561,8 +1574,11 @@ public class MainMenu : CManiaAppTitle, IContext
         }
     }
 
-    private void RequestLeaderboards(string mapUid, int laps, ImmutableArray<string> cars)
+    // requests are keyed by "mapUid@zone" so leaderboards of different zones don't replace each other
+    private void RequestLeaderboards(string mapUid, int laps, ImmutableArray<string> cars, string zone)
     {
+        var requestKey = $"{mapUid}@{zone}";
+
         foreach (var car in cars)
         {
             if (car == "")
@@ -1570,17 +1586,17 @@ public class MainMenu : CManiaAppTitle, IContext
                 continue;
             }
 
-            if (LeaderboardRequests.ContainsKey(mapUid) && LeaderboardRequests[mapUid].ContainsKey(car))
+            if (LeaderboardRequests.ContainsKey(requestKey) && LeaderboardRequests[requestKey].ContainsKey(car))
             {
-                Http.Destroy(LeaderboardRequests[mapUid][car]);
+                Http.Destroy(LeaderboardRequests[requestKey][car]);
             }
 
-            if (!LeaderboardRequests.ContainsKey(mapUid))
+            if (!LeaderboardRequests.ContainsKey(requestKey))
             {
-                LeaderboardRequests[mapUid] = new();
+                LeaderboardRequests[requestKey] = new();
             }
 
-            LeaderboardRequests[mapUid][car] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{mapUid}/{car}?gravity=0&laps={laps}");
+            LeaderboardRequests[requestKey][car] = Http.CreateGet($"{EnvimixWebAPI}/envimania/records/{mapUid}/{car}?gravity=0&laps={laps}&zone={zone}");
             Yield(); // requesting more than 2 at once creates some lag
         }
     }

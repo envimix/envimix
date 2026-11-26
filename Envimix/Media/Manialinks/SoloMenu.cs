@@ -95,6 +95,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlFrame FrameLeaderboards;
     [ManialinkControl] public required CMlQuad QuadTM2Cars;
     [ManialinkControl] public required CMlQuad QuadTMUFCars;
+    [ManialinkControl] public required CMlQuad QuadLeaderboardZone;
+    [ManialinkControl] public required CMlLabel LabelLeaderboardZone;
     [ManialinkControl] public required CMlFrame FrameCampaignOverview;
     [ManialinkControl] public required CMlFrame FrameMapOverview;
     [ManialinkControl] public required CMlFrame FrameCampaign;
@@ -187,6 +189,8 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public Dictionary<string, Dictionary<string, SEnvimaniaRecordsResponse>> Leaderboards;
     public Dictionary<string, int> LeaderboardRequestTimestamps;
     public Dictionary<string, Dictionary<string, int>> LeaderboardErrors;
+    // 0 is World, every next index goes one level deeper in the user's zone path
+    public int LeaderboardZoneIndex;
 
     public Dictionary<string, Dictionary<string, string>> TitleStars;
     public Dictionary<string, Dictionary<string, SCombinationStat>> TitleCombinations;
@@ -281,6 +285,17 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             {
                 Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
             }
+        };
+
+        QuadLeaderboardZone.MouseClick += () =>
+        {
+            CycleLeaderboardZone();
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Valid, 0, 1);
+        };
+
+        QuadLeaderboardZone.MouseOver += () =>
+        {
+            Audio.PlaySoundEvent(CAudioManager.ELibSound.Focus, 2, 1);
         };
 
         QuadPlay.MouseClick += () =>
@@ -418,15 +433,25 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     var mapUid = data[0];
                     var car = data[1];
                     var recordsJson = data[2];
+                    var recordsZone = "World";
+                    if (data.Length > 3)
+                    {
+                        recordsZone = data[3];
+                    }
                     SEnvimaniaRecordsResponse response = new();
                     response.FromJson(recordsJson);
-                    ProcessLeaderboardData(mapUid, car, response);
+                    ProcessLeaderboardData(GetLeaderboardKey(mapUid, recordsZone), car, response);
                     break;
                 case "LeaderboardError":
                     var errorMapUid = data[0];
                     var errorCar = data[1];
                     var errorCode = data[2];
-                    ProcessLeaderboardError(errorMapUid, errorCar, TextLib.ToInteger(errorCode));
+                    var errorZone = "World";
+                    if (data.Length > 3)
+                    {
+                        errorZone = data[3];
+                    }
+                    ProcessLeaderboardError(GetLeaderboardKey(errorMapUid, errorZone), errorCar, TextLib.ToInteger(errorCode));
                     break;
             }
         };
@@ -1371,6 +1396,70 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         return DataFileMgr.Campaigns[0];
     }
 
+    // shrinks the label's current text size until the text fits its width
+    // glyph widths don't scale exactly linearly with the text size and a single line label clips text as wide as itself,
+    // so shrink with a margin and measure again until the text fits
+    // prefix must match the label's textprefix (e.g. "$o" or "$t"), ComputeWidth doesn't apply it
+    private void FitLabelText(CMlLabel label, string text, string prefix)
+    {
+        // mono fonts (OswaldMono, RajdhaniMono) draw every glyph (spaces and narrow letters too) as wide as a digit,
+        // measuring only the text underestimates texts with many spaces or narrow letters
+        var visibleLength = TextLib.Length(TextLib.StripFormatting(text));
+        var monoProbe = "";
+        var probeLength = 0;
+        while (probeLength < visibleLength)
+        {
+            monoProbe = $"{monoProbe}0";
+            probeLength += 1;
+        }
+
+        var maxWidth = (float)label.Size.X * 0.92f;
+        var textWidth = MathLib.Max(label.ComputeWidth($"{prefix}{text}"), label.ComputeWidth($"{prefix}{monoProbe}"));
+        var attempts = 0;
+
+        while (textWidth > maxWidth && attempts < 4)
+        {
+            label.TextSizeReal *= maxWidth / textWidth;
+            var newWidth = MathLib.Max(label.ComputeWidth($"{prefix}{text}"), label.ComputeWidth($"{prefix}{monoProbe}"));
+
+            // stop if the measured width doesn't follow the text size, so the text isn't shrunk again for nothing
+            if (newWidth >= textWidth)
+            {
+                break;
+            }
+
+            textWidth = newWidth;
+            attempts += 1;
+        }
+    }
+
+    // leaderboards are cached per map and zone
+    private string GetLeaderboardKey(string mapUid, string zone)
+    {
+        return $"{mapUid}@{zone}";
+    }
+
+    // full zone path for the leaderboard request, e.g. "World|Europe|Czech Republic", falls back to World
+    private string GetLeaderboardZone()
+    {
+        IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
+        if (zones.Count == 0 || LeaderboardZoneIndex >= zones.Count)
+        {
+            return "World";
+        }
+
+        var zone = zones[0];
+        // a ManiaScript for loop counts down when the end is below the start, so no for loop here
+        var i = 1;
+        while (i <= LeaderboardZoneIndex)
+        {
+            zone = $"{zone}|{zones[i]}";
+            i += 1;
+        }
+
+        return zone;
+    }
+
     private void UpdateLeaderboards(bool resetScroll)
     {
         if (DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1 || MapSelectedAt == -1)
@@ -1387,6 +1476,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         Campaign = GetCampaignForMaps();
         var selectedMapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
+        var leaderboardKey = GetLeaderboardKey(selectedMapInfo.MapUid, GetLeaderboardZone());
 
         ImmutableArray<string> cars = new();
         if (IsTMUF)
@@ -1426,12 +1516,12 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
             carIndex += 1;
 
-            if (!Leaderboards.ContainsKey(selectedMapInfo.MapUid) || !Leaderboards[selectedMapInfo.MapUid].ContainsKey(carName))
+            if (!Leaderboards.ContainsKey(leaderboardKey) || !Leaderboards[leaderboardKey].ContainsKey(carName))
             {
                 // check for any error
-                if (LeaderboardErrors.ContainsKey(selectedMapInfo.MapUid) && LeaderboardErrors[selectedMapInfo.MapUid].ContainsKey(carName))
+                if (LeaderboardErrors.ContainsKey(leaderboardKey) && LeaderboardErrors[leaderboardKey].ContainsKey(carName))
                 {
-                    var errorCode = LeaderboardErrors[selectedMapInfo.MapUid][carName];
+                    var errorCode = LeaderboardErrors[leaderboardKey][carName];
 
                     if (errorCode == 10006)
                     {
@@ -1452,7 +1542,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 continue;
             }
 
-            var lb = Leaderboards[selectedMapInfo.MapUid][carName];
+            var lb = Leaderboards[leaderboardKey][carName];
 
             frameScrollRecords.ScrollMax.Y = MathLib.Max(0f, (lb.Records.Length - 10) * 5f);
 
@@ -1571,6 +1661,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         var mapUid = selectedMapInfo.MapUid;
         var laps = GetLaps(selectedMapInfo);
+        var zone = GetLeaderboardZone();
 
         ImmutableArray<string> cars = new();
         ImmutableArray<string> carsToRequest = new();
@@ -1590,7 +1681,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         foreach (var car in carsToRequest)
         {
-            var timestampKey = $"{mapUid}_{car}_{laps}";
+            var timestampKey = $"{mapUid}_{car}_{laps}_{zone}";
 
             if (LeaderboardRequestTimestamps.ContainsKey(timestampKey) && Now - LeaderboardRequestTimestamps[timestampKey] < 50000)
             {
@@ -1648,29 +1739,65 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
             }
         }
 
-        SendCustomEvent("LoadLeaderboards", new[] { mapUid, laps.ToString(), carsToRequest.ToJson() });
+        SendCustomEvent("LoadLeaderboards", new[] { mapUid, laps.ToString(), carsToRequest.ToJson(), zone });
     }
 
-    private void ProcessLeaderboardData(string mapUid, string car, SEnvimaniaRecordsResponse response)
+    private void ProcessLeaderboardData(string leaderboardKey, string car, SEnvimaniaRecordsResponse response)
     {
-        if (!Leaderboards.ContainsKey(mapUid))
+        if (!Leaderboards.ContainsKey(leaderboardKey))
         {
-            Leaderboards[mapUid] = new();
+            Leaderboards[leaderboardKey] = new();
         }
 
-        Leaderboards[mapUid][car] = response;
+        Leaderboards[leaderboardKey][car] = response;
         UpdateLeaderboards(false);
     }
 
-    private void ProcessLeaderboardError(string mapUid, string car, int code)
+    private void ProcessLeaderboardError(string leaderboardKey, string car, int code)
     {
-        if (!LeaderboardErrors.ContainsKey(mapUid))
+        if (!LeaderboardErrors.ContainsKey(leaderboardKey))
         {
-            LeaderboardErrors[mapUid] = new();
+            LeaderboardErrors[leaderboardKey] = new();
         }
 
-        LeaderboardErrors[mapUid][car] = code;
+        LeaderboardErrors[leaderboardKey][car] = code;
         UpdateLeaderboards(false);
+    }
+
+    private void UpdateLeaderboardZoneLabel()
+    {
+        IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
+        var zoneName = "World";
+        if (zones.Count == 0 || LeaderboardZoneIndex >= zones.Count)
+        {
+            LeaderboardZoneIndex = 0;
+        }
+        else if (zones[LeaderboardZoneIndex] != "")
+        {
+            zoneName = zones[LeaderboardZoneIndex];
+        }
+
+        LabelLeaderboardZone.TextSizeReal = 2;
+        LabelLeaderboardZone.SetText(zoneName);
+        FitLabelText(LabelLeaderboardZone, zoneName, "$t");
+    }
+
+    // World, then one level deeper on each click, then back to World
+    private void CycleLeaderboardZone()
+    {
+        IList<string> zones = TextLib.Split("|", LocalUser.ZonePath);
+        LeaderboardZoneIndex += 1;
+        if (LeaderboardZoneIndex >= zones.Count)
+        {
+            LeaderboardZoneIndex = 0;
+        }
+
+        UpdateLeaderboardZoneLabel();
+
+        if (MapSelectedAt != -1)
+        {
+            LoadLeaderboards(true);
+        }
     }
 
     private void SwitchCars(bool isTMUF)
@@ -2125,39 +2252,6 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         OpenLink($"https://envimix.gbx.tools/maps/{mapUid}", CMlScript.LinkType.ExternalBrowser);
     }
 
-    // glyph widths don't scale exactly linearly with the text size and a single line label clips text as wide as itself,
-    // so shrink with a margin and measure again until the name fits
-    private void FitSelectedMapName(string name)
-    {
-        // the label draws in OswaldMono where every glyph (spaces and narrow letters too) is as wide as a digit,
-        // measuring only the name underestimates names with many spaces or narrow letters
-        var visibleLength = TextLib.Length(TextLib.StripFormatting(name));
-        var monoProbe = "";
-        for (var i = 0; i < visibleLength; i++)
-        {
-            monoProbe = $"{monoProbe}0";
-        }
-
-        var maxWidth = (float)LabelSelectedMapName.Size.X * 0.92f;
-        var nameWidth = MathLib.Max(LabelSelectedMapName.ComputeWidth("$o" + name), LabelSelectedMapName.ComputeWidth("$o" + monoProbe));
-        var attempts = 0;
-
-        while (nameWidth > maxWidth && attempts < 4)
-        {
-            LabelSelectedMapName.TextSizeReal *= maxWidth / nameWidth;
-            var newWidth = MathLib.Max(LabelSelectedMapName.ComputeWidth("$o" + name), LabelSelectedMapName.ComputeWidth("$o" + monoProbe));
-
-            // stop if the measured width doesn't follow the text size, so the name isn't shrunk again for nothing
-            if (newWidth >= nameWidth)
-            {
-                break;
-            }
-
-            nameWidth = newWidth;
-            attempts += 1;
-        }
-    }
-
     private void UpdateWorldMapPanel()
     {
         LabelSelectedMapName.TextSizeReal = 3;
@@ -2210,7 +2304,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         Campaign = GetCampaignForMaps();
         var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
         LabelSelectedMapName.SetText(mapInfo.Name);
-        FitSelectedMapName(mapInfo.Name);
+        FitLabelText(LabelSelectedMapName, mapInfo.Name, "$o");
         QuadPlay.Show();
         QuadExplore.Show();
         UpdateGeneralStats(mapInfo);
@@ -3163,6 +3257,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         }
 
         SwitchCars(false);
+        UpdateLeaderboardZoneLabel();
         SetupCampaign(false, false);
         UpdateWorldUnlocks(0);
 
