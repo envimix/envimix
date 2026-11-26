@@ -87,7 +87,8 @@
                 <label id="LabelWorldMapStyle" pos="27 -19" size="35 5" text="Style: $oOffroad" textfont="Oswald" textsize="1" valign="center2"/>
                 <label id="LabelWorldMapTrackmaster" pos="27 -23" size="35 5" text="0.45.094" textfont="Oswald" textsize="1" valign="center2" textprefix="Trackmaster: $o"/>
                 <label id="LabelWorldMapSecretPlace" pos="27 -27" size="35 5" text="Undiscovered" textfont="Oswald" textsize="1" valign="center2" textprefix="Secret Place: $o"/>
-                <label id="LabelWorldMapTrailer" pos="27 -32" size="24 6" text="" textcolor="F00" valign="center2" scriptevents="1" textsize="2" style="TextCardRaceRank"/>
+                <label id="LabelWorldMapTrailer" pos="27 -32" size="5 6" text="" textcolor="F00" valign="center2" scriptevents="1" textsize="2" style="TextCardRaceRank"/>
+                <label id="LabelWorldMapWebsite" pos="32 -32" size="5 6" text="" valign="center2" scriptevents="1" textsize="2" style="TextCardMedium"/>
                 <frame pos="28.5 -11" hidden="1">
                     <quad z-index="0" size="4 4" halign="center" valign="center" image="file://Media/Images/Environments/Canyon.png"/>
                     <label pos="2.7 -0.2" z-index="0" size="15 5" text="Canyon" textfont="Oswald" textsize="0.7" valign="center2" textprefix="$o"/>
@@ -454,7 +455,7 @@
             <quad z-index="0" size="310 40" style="Bgs1" substyle="BgCardList"/>
             <frame z-index="1">
                 <frame pos="25 -5">
-                    <label id="LabelSelectedMapName" z-index="0" size="45 10" text="0" halign="center" textsize="9" textfont="OswaldMono" textprefix="$o" autonewline="0" maxline="1" hidden="0"/>
+                    <label id="LabelSelectedMapName" z-index="0" size="45 10" text="0" halign="center" textsize="9" style="TextCardRaceRank" textfont="OswaldMono" textprefix="$o" autonewline="0" maxline="1" hidden="0" scriptevents="1"/>
                     <frame pos="0 -12.5">
                         <quad size="45 12" style="Bgs1" substyle="BgTitle" halign="center" opacity=".5" modulatecolor="0F0"/>
                         <quad id="QuadPlay" size="45 11.75" style="Bgs1" substyle="BgCardInventoryItem" scriptevents="1" opacity=".75" halign="center" pos="0 -0.125"/>

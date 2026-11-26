@@ -119,6 +119,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     [ManialinkControl] public required CMlLabel LabelWorldMapStyle;
     [ManialinkControl] public required CMlLabel LabelWorldMapTrackmaster;
     [ManialinkControl] public required CMlLabel LabelWorldMapTrailer;
+    [ManialinkControl] public required CMlLabel LabelWorldMapWebsite;
     [ManialinkControl] public required CMlLabel LabelWorldMapSecretPlace;
     [ManialinkControl] public required CMlQuad QuadWorldMapMedalAuthor;
     [ManialinkControl] public required CMlQuad QuadWorldMapMedalGold;
@@ -440,6 +441,14 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                     OpenLink(trailerUrl, CMlScript.LinkType.ExternalBrowser);
                 }
             }
+            if (control == LabelWorldMapWebsite && FrameWorld.Visible && EnableMenuNavigationInputs)
+            {
+                OpenWorldMapOnSite(LabelWorldMapWebsite.DataAttributeGet("mapuid"));
+            }
+            if (control == LabelSelectedMapName)
+            {
+                OpenWorldMapOnSite(GetSelectedMapUid());
+            }
             if (control.HasClass("WorldMapBackground") && FrameWorld.Visible && EnableMenuNavigationInputs)
             {
                 DeselectWorldDiamond();
@@ -530,6 +539,18 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         MouseOver += (control, controlId) =>
         {
+            if (control == LabelWorldMapWebsite && FrameWorld.Visible && EnableMenuNavigationInputs)
+            {
+                UpdateTooltip("Open on envimix.gbx.tools");
+            }
+            if (control == LabelSelectedMapName && GetSelectedMapUid() != "")
+            {
+                UpdateTooltip("Open on envimix.gbx.tools");
+            }
+            if (control == LabelWorldMapTrailer && FrameWorld.Visible && EnableMenuNavigationInputs)
+            {
+                UpdateTooltip("Trailer");
+            }
             if (control.HasClass("WorldDiamond") && FrameWorld.Visible && EnableMenuNavigationInputs)
             {
                 HoverWorldDiamond((control.Parent as CMlFrame)!);
@@ -578,16 +599,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
                 switch (action)
                 {
                     case CMlScriptEvent.EMenuNavAction.Cancel:
-                        if (SelectedWorldDiamond is not null)
-                        {
-                            DeselectWorldDiamond();
-                            ClearWorldDiamondHover(false);
-                            HoverWorldDiamond(worldDiamond);
-                        }
-                        else
-                        {
-                            SendCustomEvent("MainMenu", new[] { "" });
-                        }
+                        SendCustomEvent("MainMenu", new[] { "" });
                         break;
                     case CMlScriptEvent.EMenuNavAction.Select:
                         // first press selects the diamond, second press plays it, like a double click
@@ -2028,6 +2040,16 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         LabelWorldMapTrailer.Visible = trailerUrl != "";
         LabelWorldMapTrailer.DataAttributeSet("trailer", trailerUrl);
+        LabelWorldMapWebsite.DataAttributeSet("mapuid", mapInfo.MapUid);
+        // takes the trailer's spot when the map has no trailer
+        if (LabelWorldMapTrailer.Visible)
+        {
+            LabelWorldMapWebsite.RelativePosition_V3.X = 32;
+        }
+        else
+        {
+            LabelWorldMapWebsite.RelativePosition_V3.X = 27;
+        }
 
         var thumbnailUrl = $"file://Thumbnails/MapUid/{mapInfo.MapUid}";
         if (QuadWorldMapThumbnail.ImageUrl != thumbnailUrl)
@@ -2068,6 +2090,72 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         FrameWorldMapPanel.Visible = showPanel;
         SetWorldMapPanelExpanded(SelectedWorldDiamond is not null && SelectedWorldMapUid == mapInfo.MapUid);
         UpdateWorldMapPanelPosition();
+    }
+
+    // uid of the map shown above the play button (name on the world map, number in other campaigns), "" when none
+    private string GetSelectedMapUid()
+    {
+        if (!EnableMenuNavigationInputs || DataFileMgr.Campaigns.Count == 0 || MapGroupNum == -1 || MapInfoNum == -1)
+        {
+            return "";
+        }
+
+        // without a resolved world map, GetCampaignForMaps falls back to the official campaign
+        if (SelectedCampaignQuad == QuadOpreaxCampaign && WorldMapCampaignNum == -1)
+        {
+            return "";
+        }
+
+        var campaign = GetCampaignForMaps();
+        if (MapGroupNum >= campaign.MapGroups.Count || MapInfoNum >= campaign.MapGroups[MapGroupNum].MapInfos.Count)
+        {
+            return "";
+        }
+
+        return campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum].MapUid;
+    }
+
+    private void OpenWorldMapOnSite(string mapUid)
+    {
+        if (mapUid == "")
+        {
+            return;
+        }
+
+        OpenLink($"https://envimix.gbx.tools/maps/{mapUid}", CMlScript.LinkType.ExternalBrowser);
+    }
+
+    // glyph widths don't scale exactly linearly with the text size and a single line label clips text as wide as itself,
+    // so shrink with a margin and measure again until the name fits
+    private void FitSelectedMapName(string name)
+    {
+        // the label draws in OswaldMono where every glyph (spaces and narrow letters too) is as wide as a digit,
+        // measuring only the name underestimates names with many spaces or narrow letters
+        var visibleLength = TextLib.Length(TextLib.StripFormatting(name));
+        var monoProbe = "";
+        for (var i = 0; i < visibleLength; i++)
+        {
+            monoProbe = $"{monoProbe}0";
+        }
+
+        var maxWidth = (float)LabelSelectedMapName.Size.X * 0.92f;
+        var nameWidth = MathLib.Max(LabelSelectedMapName.ComputeWidth("$o" + name), LabelSelectedMapName.ComputeWidth("$o" + monoProbe));
+        var attempts = 0;
+
+        while (nameWidth > maxWidth && attempts < 4)
+        {
+            LabelSelectedMapName.TextSizeReal *= maxWidth / nameWidth;
+            var newWidth = MathLib.Max(LabelSelectedMapName.ComputeWidth("$o" + name), LabelSelectedMapName.ComputeWidth("$o" + monoProbe));
+
+            // stop if the measured width doesn't follow the text size, so the name isn't shrunk again for nothing
+            if (newWidth >= nameWidth)
+            {
+                break;
+            }
+
+            nameWidth = newWidth;
+            attempts += 1;
+        }
     }
 
     private void UpdateWorldMapPanel()
@@ -2122,11 +2210,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         Campaign = GetCampaignForMaps();
         var mapInfo = Campaign.MapGroups[MapGroupNum].MapInfos[MapInfoNum];
         LabelSelectedMapName.SetText(mapInfo.Name);
-        var nameWidth = LabelSelectedMapName.ComputeWidth("$o" + mapInfo.Name);
-        if (nameWidth > LabelSelectedMapName.Size.X)
-        {
-            LabelSelectedMapName.TextSizeReal *= (float)LabelSelectedMapName.Size.X / nameWidth;
-        }
+        FitSelectedMapName(mapInfo.Name);
         QuadPlay.Show();
         QuadExplore.Show();
         UpdateGeneralStats(mapInfo);
