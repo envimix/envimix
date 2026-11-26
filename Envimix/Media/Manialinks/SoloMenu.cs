@@ -205,6 +205,7 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
     public string WorldMapMedalsMapUid = "";
     public int WorldMapMedalsTime = -1;
     public int WorldDiamondSelectedAt = -1;
+    public CMlFrame? WorldNavCandidate;
     public float WorldMapPanelHeight;
     public float WorldMapPanelFromHeight;
     public float WorldMapPanelTargetHeight;
@@ -565,266 +566,314 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
 
         MenuNavigation += (action) =>
         {
-            if (SelectedCampaignQuad == QuadOpreaxCampaign && FocusedControl is null)
+            var worldDiamond = HoveredWorldDiamond;
+            if (worldDiamond is null)
             {
-                FocusedControl = QuadOpreaxCampaign;
+                worldDiamond = SelectedWorldDiamond;
             }
 
-            switch (action)
+            // focus is on the world map when nothing in the campaign row is focused and a diamond is hovered or selected
+            if (SelectedCampaignQuad == QuadOpreaxCampaign && FrameWorld.Visible && FocusedControl is null && worldDiamond is not null)
             {
-                case CMlScriptEvent.EMenuNavAction.Cancel:
-                    SendCustomEvent("MainMenu", new[] { "" });
-                    break;
-                case CMlScriptEvent.EMenuNavAction.Up:
-                    if (FocusedControl is null)
-                    {
-                        if (MapInfoNum == -1)
+                switch (action)
+                {
+                    case CMlScriptEvent.EMenuNavAction.Cancel:
+                        if (SelectedWorldDiamond is not null)
                         {
-                            MapInfoNum = 0;
-                            MapGroupNum = 0;
+                            DeselectWorldDiamond();
+                            ClearWorldDiamondHover(false);
+                            HoverWorldDiamond(worldDiamond);
                         }
                         else
                         {
-                            if (MapInfoNum % 10 < 5)
+                            SendCustomEvent("MainMenu", new[] { "" });
+                        }
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Select:
+                        // first press selects the diamond, second press plays it, like a double click
+                        SelectWorldDiamond(worldDiamond);
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Up:
+                        MoveWorldMapNavigation(worldDiamond, 0, 1);
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Down:
+                        MoveWorldMapNavigation(worldDiamond, 0, -1);
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Left:
+                        MoveWorldMapNavigation(worldDiamond, -1, 0);
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Right:
+                        MoveWorldMapNavigation(worldDiamond, 1, 0);
+                        break;
+                }
+            }
+            else
+            {
+                if (SelectedCampaignQuad == QuadOpreaxCampaign && FocusedControl is null)
+                {
+                    FocusedControl = QuadOpreaxCampaign;
+                }
+
+                switch (action)
+                {
+                    case CMlScriptEvent.EMenuNavAction.Cancel:
+                        SendCustomEvent("MainMenu", new[] { "" });
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Up:
+                        if (FocusedControl is null)
+                        {
+                            if (MapInfoNum == -1)
                             {
-                                if (MapGroupNum == 0)
+                                MapInfoNum = 0;
+                                MapGroupNum = 0;
+                            }
+                            else
+                            {
+                                if (MapInfoNum % 10 < 5)
                                 {
-                                    if (MapInfoNum is 0 or 1 or 5 or 6)
+                                    if (MapGroupNum == 0)
                                     {
-                                        FocusedControl = QuadQuickplay;
+                                        if (MapInfoNum is 0 or 1 or 5 or 6)
+                                        {
+                                            FocusedControl = QuadQuickplay;
+                                        }
+                                        if (MapInfoNum is 2 or 3 or 4 or 7 or 8 or 9)
+                                        {
+                                            FocusedControl = QuadOfficialCampaign;
+                                        }
+                                        if (MapInfoNum >= 10)
+                                        {
+                                            FocusedControl = QuadVRCampaign;
+                                        }
                                     }
-                                    if (MapInfoNum is 2 or 3 or 4 or 7 or 8 or 9)
+                                    else
                                     {
-                                        FocusedControl = QuadOfficialCampaign;
-                                    }
-                                    if (MapInfoNum >= 10)
-                                    {
-                                        FocusedControl = QuadVRCampaign;
+                                        MapGroupNum -= 1;
+                                        MapInfoNum += 5;
                                     }
                                 }
                                 else
                                 {
-                                    MapGroupNum -= 1;
-                                    MapInfoNum += 5;
-                                }
-                            }
-                            else
-                            {
-                                MapInfoNum -= 5;
-                            }
-                        }
-                        SetupCampaign(false, true);
-                        UnloadLeaderboards();
-                    }
-                    if (FocusedControl is not null)
-                    {
-                        FocusedControl.StyleSelected = true;
-                    }
-                    break;
-                case CMlScriptEvent.EMenuNavAction.Down:
-                    if (FocusedControl is null)
-                    {
-                        if (MapInfoNum == -1)
-                        {
-                            MapInfoNum = 0;
-                            MapGroupNum = 0;
-                        }
-                        else
-                        {
-                            if (MapInfoNum % 10 < 5)
-                            {
-                                MapInfoNum += 5;
-                            }
-                            else
-                            {
-                                if (MapGroupNum == GetCampaignForMaps().MapGroups.Count - 1)
-                                {
-                                }
-                                else
-                                {
-                                    MapGroupNum += 1;
                                     MapInfoNum -= 5;
                                 }
                             }
+                            SetupCampaign(false, true);
+                            UnloadLeaderboards();
                         }
-                        SetupCampaign(false, true);
-                        UnloadLeaderboards();
-                    }
-                    else if (SelectedCampaignQuad != QuadOpreaxCampaign)
-                    {
-                        SetupCampaign(false, false);
-                        UnloadLeaderboards();
-                        FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
-                        FocusedControl = null;
-                    }
-                    if (FocusedControl is not null)
-                    {
-                        FocusedControl.StyleSelected = true;
-                    }
-                    break;
-                case CMlScriptEvent.EMenuNavAction.Left:
-                    if (FocusedControl is null)
-                    {
-                        if (MapInfoNum == -1)
+                        if (FocusedControl is not null)
                         {
-                            MapInfoNum = 0;
-                            MapGroupNum = 0;
+                            FocusedControl.StyleSelected = true;
                         }
-                        else
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Down:
+                        if (FocusedControl is null)
                         {
-                            if (MapInfoNum == 0)
-                            {
-                                MapInfoNum = 34;
-                            }
-                            else if (MapInfoNum == 5)
-                            {
-                                MapInfoNum = 39;
-                            }
-                            else
-                            {
-                                if (MapInfoNum % 5 == 0)
-                                {
-                                    MapInfoNum -= 6;
-                                }
-                                else
-                                {
-                                    MapInfoNum -= 1;
-                                }
-                            }
-                        }
-                        SetupCampaign(false, true);
-                        UnloadLeaderboards();
-                    }
-                    else
-                    {
-                        FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
-                    }
-                    if (FocusedControl == QuadQuickplay)
-                    {
-                        FocusedControl = QuadOpreaxCampaign;
-                    }
-                    else if (FocusedControl == QuadOfficialCampaign)
-                    {
-                        FocusedControl = QuadQuickplay;
-                    }
-                    else if (FocusedControl == QuadVRCampaign)
-                    {
-                        FocusedControl = QuadOfficialCampaign;
-                    }
-                    else if (FocusedControl == QuadVROffzoneCampaign)
-                    {
-                        FocusedControl = QuadVRCampaign;
-                    }
-                    else if (FocusedControl == QuadOpreaxCampaign)
-                    {
-                        FocusedControl = QuadVROffzoneCampaign;
-                    }
-                    if (FocusedControl is not null)
-                    {
-                        FocusedControl.StyleSelected = true;
-                    }
-                    break;
-                case CMlScriptEvent.EMenuNavAction.Right:
-                    if (FocusedControl is null)
-                    {
-                        if (MapInfoNum == -1)
-                        {
-                            MapInfoNum = 0;
-                            MapGroupNum = 0;
-                        }
-                        else
-                        {
-                            if (MapInfoNum == 34)
+                            if (MapInfoNum == -1)
                             {
                                 MapInfoNum = 0;
-                            }
-                            else if (MapInfoNum == 39)
-                            {
-                                MapInfoNum = 5;
+                                MapGroupNum = 0;
                             }
                             else
                             {
-                                if (MapInfoNum % 5 == 4)
+                                if (MapInfoNum % 10 < 5)
                                 {
-                                    MapInfoNum += 6;
+                                    MapInfoNum += 5;
                                 }
                                 else
                                 {
-                                    MapInfoNum += 1;
+                                    if (MapGroupNum == GetCampaignForMaps().MapGroups.Count - 1)
+                                    {
+                                    }
+                                    else
+                                    {
+                                        MapGroupNum += 1;
+                                        MapInfoNum -= 5;
+                                    }
                                 }
                             }
+                            SetupCampaign(false, true);
+                            UnloadLeaderboards();
                         }
-                        SetupCampaign(false, true);
-                        UnloadLeaderboards();
-                    }
-                    else
-                    {
-                        FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
-                    }
-                    if (FocusedControl == QuadQuickplay)
-                    {
-                        FocusedControl = QuadOfficialCampaign;
-                    }
-                    else if (FocusedControl == QuadOfficialCampaign)
-                    {
-                        FocusedControl = QuadVRCampaign;
-                    }
-                    else if (FocusedControl == QuadVRCampaign)
-                    {
-                        FocusedControl = QuadVROffzoneCampaign;
-                    }
-                    else if (FocusedControl == QuadVROffzoneCampaign)
-                    {
-                        FocusedControl = QuadOpreaxCampaign;
-                    }
-                    else if (FocusedControl == QuadOpreaxCampaign)
-                    {
-                        FocusedControl = QuadQuickplay;
-                    }
-                    if (FocusedControl is not null)
-                    {
-                        FocusedControl.StyleSelected = true;
-                    }
-                    break;
-                case CMlScriptEvent.EMenuNavAction.Select:
-                    if (FocusedControl is null)
-                    {
-                        if (MapGroupNum != -1 && MapInfoNum != -1)
+                        else if (SelectedCampaignQuad != QuadOpreaxCampaign)
                         {
-                            if (LeaderboardsLoadedOrLoading)
+                            SetupCampaign(false, false);
+                            UnloadLeaderboards();
+                            FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
+                            FocusedControl = null;
+                        }
+                        else if (FrameWorld.Visible)
+                        {
+                            EnterWorldMapNavigation();
+                        }
+                        if (FocusedControl is not null)
+                        {
+                            FocusedControl.StyleSelected = true;
+                        }
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Left:
+                        if (FocusedControl is null)
+                        {
+                            if (MapInfoNum == -1)
                             {
-                                PlaySelectedMap();
+                                MapInfoNum = 0;
+                                MapGroupNum = 0;
                             }
                             else
                             {
-                                LoadLeaderboards(true);
+                                if (MapInfoNum == 0)
+                                {
+                                    MapInfoNum = 34;
+                                }
+                                else if (MapInfoNum == 5)
+                                {
+                                    MapInfoNum = 39;
+                                }
+                                else
+                                {
+                                    if (MapInfoNum % 5 == 0)
+                                    {
+                                        MapInfoNum -= 6;
+                                    }
+                                    else
+                                    {
+                                        MapInfoNum -= 1;
+                                    }
+                                }
                             }
+                            SetupCampaign(false, true);
+                            UnloadLeaderboards();
                         }
-                    }
-                    else
-                    {
+                        else
+                        {
+                            FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
+                        }
                         if (FocusedControl == QuadQuickplay)
                         {
-                            Quickplay();
+                            FocusedControl = QuadOpreaxCampaign;
                         }
                         else if (FocusedControl == QuadOfficialCampaign)
                         {
-                            SelectOfficialCampaign();
+                            FocusedControl = QuadQuickplay;
                         }
                         else if (FocusedControl == QuadVRCampaign)
                         {
-                            SelectVRCampaign();
+                            FocusedControl = QuadOfficialCampaign;
                         }
                         else if (FocusedControl == QuadVROffzoneCampaign)
                         {
-                            ToggleVROffzoneCampaign();
+                            FocusedControl = QuadVRCampaign;
                         }
                         else if (FocusedControl == QuadOpreaxCampaign)
                         {
-                            SelectOpreaxCampaign();
+                            FocusedControl = QuadVROffzoneCampaign;
                         }
-                    }
-                    break;
+                        if (FocusedControl is not null)
+                        {
+                            FocusedControl.StyleSelected = true;
+                        }
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Right:
+                        if (FocusedControl is null)
+                        {
+                            if (MapInfoNum == -1)
+                            {
+                                MapInfoNum = 0;
+                                MapGroupNum = 0;
+                            }
+                            else
+                            {
+                                if (MapInfoNum == 34)
+                                {
+                                    MapInfoNum = 0;
+                                }
+                                else if (MapInfoNum == 39)
+                                {
+                                    MapInfoNum = 5;
+                                }
+                                else
+                                {
+                                    if (MapInfoNum % 5 == 4)
+                                    {
+                                        MapInfoNum += 6;
+                                    }
+                                    else
+                                    {
+                                        MapInfoNum += 1;
+                                    }
+                                }
+                            }
+                            SetupCampaign(false, true);
+                            UnloadLeaderboards();
+                        }
+                        else
+                        {
+                            FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
+                        }
+                        if (FocusedControl == QuadQuickplay)
+                        {
+                            FocusedControl = QuadOfficialCampaign;
+                        }
+                        else if (FocusedControl == QuadOfficialCampaign)
+                        {
+                            FocusedControl = QuadVRCampaign;
+                        }
+                        else if (FocusedControl == QuadVRCampaign)
+                        {
+                            FocusedControl = QuadVROffzoneCampaign;
+                        }
+                        else if (FocusedControl == QuadVROffzoneCampaign)
+                        {
+                            FocusedControl = QuadOpreaxCampaign;
+                        }
+                        else if (FocusedControl == QuadOpreaxCampaign)
+                        {
+                            FocusedControl = QuadQuickplay;
+                        }
+                        if (FocusedControl is not null)
+                        {
+                            FocusedControl.StyleSelected = true;
+                        }
+                        break;
+                    case CMlScriptEvent.EMenuNavAction.Select:
+                        if (FocusedControl is null)
+                        {
+                            if (MapGroupNum != -1 && MapInfoNum != -1)
+                            {
+                                if (LeaderboardsLoadedOrLoading)
+                                {
+                                    PlaySelectedMap();
+                                }
+                                else
+                                {
+                                    LoadLeaderboards(true);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (FocusedControl == QuadQuickplay)
+                            {
+                                Quickplay();
+                            }
+                            else if (FocusedControl == QuadOfficialCampaign)
+                            {
+                                SelectOfficialCampaign();
+                            }
+                            else if (FocusedControl == QuadVRCampaign)
+                            {
+                                SelectVRCampaign();
+                            }
+                            else if (FocusedControl == QuadVROffzoneCampaign)
+                            {
+                                ToggleVROffzoneCampaign();
+                            }
+                            else if (FocusedControl == QuadOpreaxCampaign)
+                            {
+                                SelectOpreaxCampaign();
+                            }
+                        }
+                        break;
+                }
             }
         };
     }
@@ -2538,6 +2587,101 @@ public class SoloMenu : CManiaAppTitleLayer, IContext
         AnimMgr.Add(glow, "<quad scale=\"1\"/>", 180, CAnimManager.EAnimManagerEasing.QuadOut);
         UpdateWorldMapPanel();
         AudioPlayClick();
+    }
+
+    // only unlocked diamonds that already went through their reveal animation can be focused
+    private bool IsWorldDiamondNavigable(CMlFrame location)
+    {
+        return location.Visible && location.DataAttributeGet("revealed") == "1";
+    }
+
+    // closest navigable diamond from (fromX, fromY) towards (dirX, dirY), stored in WorldNavCandidate
+    private void FindWorldDiamondInDirection(CMlFrame? from, float fromX, float fromY, float dirX, float dirY)
+    {
+        WorldNavCandidate = null;
+        var bestScore = -1f;
+
+        foreach (var control in FrameWorldDiamonds.Controls)
+        {
+            if (control is not CMlFrame location)
+            {
+                continue;
+            }
+
+            if (!IsWorldDiamondNavigable(location))
+            {
+                continue;
+            }
+
+            var diamond = (location.Controls[0] as CMlFrame)!;
+            if (diamond == from)
+            {
+                continue;
+            }
+
+            var dx = (float)location.RelativePosition_V3.X - fromX;
+            var dy = (float)location.RelativePosition_V3.Y - fromY;
+            var along = dx * dirX + dy * dirY;
+            if (along <= 0f)
+            {
+                continue;
+            }
+
+            // diamonds lined up with the direction win over closer ones off to the side
+            var across = MathLib.Abs(dx * dirY - dy * dirX);
+            var score = along + across * 2f;
+            if (bestScore < 0f || score < bestScore)
+            {
+                bestScore = score;
+                WorldNavCandidate = diamond;
+            }
+        }
+    }
+
+    // moves the menu navigation from the campaign row onto the world map
+    private void EnterWorldMapNavigation()
+    {
+        var start = SelectedWorldDiamond;
+        if (start is null)
+        {
+            // the diamond closest to the top of the map
+            FindWorldDiamondInDirection(null, 0, 0, 0, -1);
+            start = WorldNavCandidate;
+        }
+
+        if (start is null)
+        {
+            return;
+        }
+
+        if (FocusedControl is not null)
+        {
+            FocusedControl.StyleSelected = IsCampaignSelected(FocusedControl);
+            FocusedControl = null;
+        }
+
+        HoverWorldDiamond(start);
+    }
+
+    private void MoveWorldMapNavigation(CMlFrame current, float dirX, float dirY)
+    {
+        FindWorldDiamondInDirection(current, (float)current.Parent.RelativePosition_V3.X, (float)current.Parent.RelativePosition_V3.Y, dirX, dirY);
+
+        if (WorldNavCandidate is null)
+        {
+            // nothing further up, go back to the campaign row
+            if (dirY > 0f)
+            {
+                ClearWorldDiamondHover(true);
+                FocusedControl = QuadOpreaxCampaign;
+                QuadOpreaxCampaign.StyleSelected = true;
+            }
+            return;
+        }
+
+        // browsing with arrows drops the selection, Select picks the new diamond
+        DeselectWorldDiamond();
+        HoverWorldDiamond(WorldNavCandidate!);
     }
 
     private void SelectCampaign(CMlQuad quad, string campaignName)
